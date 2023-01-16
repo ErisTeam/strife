@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/tauri";
+import { emit, listen } from "@tauri-apps/api/event";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,13 @@ function App() {
   }
   async function test() {
     setGreetMsg(await invoke("test", { login: login(), password: password() }));
+  }
+
+  async function event() {
+    await listen("rs2js", (event) => {
+      console.log("js: rs2js: " + event);
+      let input = event.payload;
+    });
   }
 
   return (

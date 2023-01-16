@@ -5,12 +5,9 @@ mod gateway_handler;
 
 extern crate tokio;
 
-use std::{ sync::{ Mutex, Arc } };
+use std::{ sync::{ Mutex } };
 
-use base64::{ engine::general_purpose, Engine };
-
-use rsa::{ pkcs8::EncodePublicKey };
-use tauri::{ State };
+use tauri::{ State, Manager };
 use tokio::sync::mpsc;
 use websocket::{ OwnedMessage };
 
@@ -24,47 +21,21 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn test(login: &str, password: &str, state: State<test>) -> String {
-    // Generate a new RSA key pair
-    //TODO ("move to gateway_handler");
-    let mut rng = rand::thread_rng();
-    use rsa::{ RsaPrivateKey, RsaPublicKey };
-    let bits = 2048;
-    let private_key = RsaPrivateKey::new(&mut rng, bits).expect("failed to generate a key");
-    let public_key = RsaPublicKey::from(&private_key);
-
-    let der = public_key.to_public_key_der().unwrap();
-    let public_key_base64 = general_purpose::STANDARD.encode(der.as_bytes());
-
-    println!("Public key: {:?}", public_key_base64);
-
-    state.sender
-        .lock()
-        .unwrap()
-        .blocking_send(
-            OwnedMessage::Text(
-                serde_json
-                    ::to_string(
-                        &(discord::gateway::init_packet::InitPacket {
-                            op: "init".to_string(),
-                            encoded_public_key: public_key_base64.clone(),
-                        })
-                    )
-                    .unwrap()
-            )
-        )
-        .unwrap();
-
-    format!("{public_key_base64} ")
+    format!("no ")
 }
 struct test {
     sender: Mutex<mpsc::Sender<OwnedMessage>>,
+}
+
+fn rs2js<R: tauri::Runtime>(message: String, manager: &impl Manager<R>) {
+    manager.emit_all("rs2js", message).unwrap();
 }
 
 fn main() {
     use websocket::client::r#async::Client;
     println!("Starting");
 
-    let gate = Arc::new(DiscordGateway::new());
+    let mut gate = DiscordGateway::new();
 
     let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(1);
     let (async_proc_output_tx, mut async_proc_output_rx) = mpsc::channel::<String>(1);
@@ -78,7 +49,16 @@ fn main() {
             //
 
             tauri::async_runtime::spawn(async move {
+                gate.generate_keys();
                 gate.connect(async_proc_input_rx, async_proc_output_tx).await;
+            });
+            let app_handle = app.handle();
+            tauri::async_runtime::spawn(async move {
+                loop {
+                    if let Some(output) = async_proc_output_rx.recv().await {
+                        rs2js(output, &app_handle);
+                    }
+                }
             });
             Ok(())
         })

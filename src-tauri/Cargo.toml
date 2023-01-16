@@ -15,11 +15,10 @@ tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
 #crypto
-#ring = "*"
 rsa = "*"
 rand = "0.8.5"
-#rustls = "0.20.8"
-#openssl = "0.10.45"
+
+sha2 = "0.10.6"
 
 
 base64 = "0.21.0"
