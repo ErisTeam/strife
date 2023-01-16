@@ -14,14 +14,24 @@ rust-version = "1.57"
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-ring = "*"
-base64 = "0.21.0"
-websocket = "0.26.5"
+#crypto
+#ring = "*"
+rsa = "*"
+rand = "0.8.5"
+#rustls = "0.20.8"
+#openssl = "0.10.45"
 
+
+base64 = "0.21.0"
+
+
+
+websocket = "0.26.5"
+#async functionality
 tokio = { version = "1", features = ["full"] }
 futures = "0.3.25"
 
-#tokio-tungstenite = {version = "*",features = ["native-tls"] }
+
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
