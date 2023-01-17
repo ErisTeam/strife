@@ -37,8 +37,8 @@ fn main() {
 
     let mut gate = DiscordGateway::new();
 
-    let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(1);
-    let (async_proc_output_tx, mut async_proc_output_rx) = mpsc::channel::<String>(1);
+    let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
+    let (async_proc_output_tx, mut async_proc_output_rx) = mpsc::channel::<String>(32);
 
     let t = test { sender: Mutex::new(async_proc_input_tx) };
 
@@ -47,19 +47,24 @@ fn main() {
         .manage(t)
         .setup(|app| {
             //
-
-            tauri::async_runtime::spawn(async move {
-                gate.generate_keys();
-                gate.connect(async_proc_input_rx, async_proc_output_tx).await;
-            });
             let app_handle = app.handle();
             tauri::async_runtime::spawn(async move {
                 loop {
-                    if let Some(output) = async_proc_output_rx.recv().await {
+                    //println!("gtf 3");
+                    let r = async_proc_output_rx.try_recv();
+                    if r.is_ok() {
+                        let output = r.unwrap();
+                        println!("recived: {}", output);
                         rs2js(output, &app_handle);
                     }
                 }
             });
+            tauri::async_runtime::spawn(async move {
+                gate.generate_keys();
+                gate.run(async_proc_input_rx, async_proc_output_tx).await;
+                //gate.connect(async_proc_input_rx, async_proc_output_tx).await;
+            });
+
             Ok(())
         })
 

@@ -22,4 +22,12 @@ pub enum GatewayPacket {
     #[serde(rename = "pending_remote_init")] PendingRemoteInit {
         fingerprint: String,
     },
+    #[serde(rename = "pending_ticket")] PendingTicket {
+        encrypted_user_payload: String,
+    },
+
+    #[serde(rename = "pending_login")] PendingLogin {
+        ticket: String,
+    },
+    #[serde(rename = "cancel")] Cancel {},
 }

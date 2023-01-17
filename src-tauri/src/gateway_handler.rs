@@ -116,17 +116,8 @@ impl DiscordGateway {
 
         self.send_proof(client, data);
     }
-
-    pub async fn connect(
-        &self,
-        reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
-        sender: tokio::sync::mpsc::Sender<String>
-    ) {
-        println!("Connecting");
+    fn conn(&self) -> Client<TlsStream<TcpStream>> {
         use websocket::ClientBuilder;
-
-        *self.connected.lock().unwrap() = true;
-
         let mut headers = websocket::header::Headers::new();
         headers.set(websocket::header::Origin("https://discord.com".to_string()));
         let mut client = ClientBuilder::new("wss://remote-auth-gateway.discord.gg/?v=2")
@@ -135,6 +126,30 @@ impl DiscordGateway {
             .connect_secure(None)
             .unwrap();
         client.set_nonblocking(true).unwrap();
+        client
+    }
+    pub async fn run(
+        &self,
+        reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
+        sender: tokio::sync::mpsc::Sender<String>
+    ) {
+        let mut reciver = reciver;
+        let mut sender = sender;
+        while !self.connect(&mut reciver, &mut sender).await {
+            print!("Reconnecting");
+        }
+    }
+
+    pub async fn connect(
+        &self,
+        reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,
+        sender: &mut tokio::sync::mpsc::Sender<String>
+    ) -> bool {
+        println!("Connecting");
+
+        *self.connected.lock().unwrap() = true;
+
+        let mut client = self.conn();
 
         let mut instant = std::time::Instant::now();
 
@@ -171,18 +186,28 @@ impl DiscordGateway {
                             GatewayPacket::NonceProofServer { encrypted_nonce } =>
                                 self.handle_once_proof(&mut client, encrypted_nonce),
                             GatewayPacket::PendingRemoteInit { fingerprint } => {
+                                println!("Fingerprint: {}", fingerprint);
                                 sender.send(fingerprint).await.unwrap();
+
+                                // sender.send(fingerprint).await.unwrap();
                             }
-                            GatewayPacket::PendingRemoteInit { fingerprint } => {
-                                sender.send(fingerprint).await.unwrap();
+                            GatewayPacket::PendingTicket { encrypted_user_payload } => {
+                                let decrypted = general_purpose::URL_SAFE_NO_PAD
+                                    .decode(encrypted_user_payload.as_bytes())
+                                    .unwrap();
+                                //split decrypted :
+                                let splited = String::from_utf8(decrypted)
+                                    .unwrap()
+                                    .split(':')
+                                    .collect::<Vec<&str>>();
                             }
                             _ => {}
                         }
                     }
                     OwnedMessage::Close(reason) => {
                         println!("Close {:?}", reason);
-                        todo!("reconnect"); //todo reconnect
-                        break;
+
+                        return false;
                     }
                     m => {
                         println!("Not text {:?}", m);
@@ -195,7 +220,8 @@ impl DiscordGateway {
                 instant.elapsed().as_millis() > (*self.heartbeat_interval.lock().unwrap() as u128)
             {
                 if !ack_recived {
-                    todo!("reconnect"); //todo reconnect
+                    return false;
+                    //todo!("reconnect"); //todo reconnect
                 }
                 ack_recived = false;
                 instant = std::time::Instant::now();
@@ -205,6 +231,6 @@ impl DiscordGateway {
                 println!("Heartbeat");
             }
         }
-        //todo return status;
+        return status;
     }
 }
