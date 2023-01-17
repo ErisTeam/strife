@@ -42,6 +42,14 @@ impl DiscordGateway {
         let public_key_base64 = general_purpose::STANDARD.encode(
             &self.public_key.as_ref().unwrap().to_public_key_der().unwrap()
         );
+        let t = serde_json
+            ::to_string(
+                &(discord::gateway::gateway_packet::GatewayPacket::Init {
+                    encoded_public_key: public_key_base64.clone(),
+                })
+            )
+            .unwrap();
+        println!("{}", t);
         client
             .send_message(
                 &OwnedMessage::Text(
@@ -132,6 +140,8 @@ impl DiscordGateway {
 
         let mut ack_recived = true;
 
+        let mut started = false;
+
         let mut reciver = reciver;
 
         let mut status = true;
@@ -154,10 +164,15 @@ impl DiscordGateway {
                             GatewayPacket::HeartbeatAck {} => {
                                 ack_recived = true;
                             }
-                            GatewayPacket::Hello { heartbeat_interval, timeout_ms } =>
-                                self.handle_hello(&mut client, heartbeat_interval, timeout_ms),
+                            GatewayPacket::Hello { heartbeat_interval, timeout_ms } => {
+                                started = true;
+                                self.handle_hello(&mut client, heartbeat_interval, timeout_ms);
+                            }
                             GatewayPacket::NonceProofServer { encrypted_nonce } =>
                                 self.handle_once_proof(&mut client, encrypted_nonce),
+                            GatewayPacket::PendingRemoteInit { fingerprint } => {
+                                sender.send(fingerprint).await.unwrap();
+                            }
                             GatewayPacket::PendingRemoteInit { fingerprint } => {
                                 sender.send(fingerprint).await.unwrap();
                             }
@@ -165,7 +180,7 @@ impl DiscordGateway {
                         }
                     }
                     OwnedMessage::Close(reason) => {
-                        println!("Close");
+                        println!("Close {:?}", reason);
                         todo!("reconnect"); //todo reconnect
                         break;
                     }
@@ -175,7 +190,10 @@ impl DiscordGateway {
                 }
             }
 
-            if instant.elapsed().as_millis() > (*self.heartbeat_interval.lock().unwrap() as u128) {
+            if
+                started &&
+                instant.elapsed().as_millis() > (*self.heartbeat_interval.lock().unwrap() as u128)
+            {
                 if !ack_recived {
                     todo!("reconnect"); //todo reconnect
                 }

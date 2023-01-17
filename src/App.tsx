@@ -1,8 +1,10 @@
-import { createSignal } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import { emit, listen } from "@tauri-apps/api/event";
 import "./App.css";
+
+import qrcode from "qrcode";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
@@ -10,6 +12,8 @@ function App() {
 
   const [login, setLogin] = createSignal("");
   const [password, setPassword] = createSignal("");
+
+  const [qr, setQr] = createSignal("");
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -19,12 +23,16 @@ function App() {
     setGreetMsg(await invoke("test", { login: login(), password: password() }));
   }
 
-  async function event() {
+  onMount(async () => {
     await listen("rs2js", (event) => {
       console.log("js: rs2js: " + event);
-      let input = event.payload;
+      let input: string = event.payload as string;
+      console.log(input);
+      qrcode.toDataURL("https://discordapp.com/ra/" + input, (err, url) => {
+        setQr(url);
+      });
     });
-  }
+  });
 
   return (
     <div class="container">
@@ -57,6 +65,7 @@ function App() {
         <input type="text" onChange={(e) => setLogin(e.currentTarget.value)} />
         <input type="password" onChange={(e) => setPassword(e.currentTarget.value)} />
         <button onclick={() => test()}>test</button>
+        <img src={qr()} />
       </div>
 
       <p>{greetMsg}</p>

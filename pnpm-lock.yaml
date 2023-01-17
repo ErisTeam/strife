@@ -1,9 +1,10 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@tauri-apps/api': ^1.2.0
   '@tauri-apps/cli': ^1.2.2
   '@types/node': ^18.7.10
+  '@types/qrcode': ^1.5.0
   qrcode: ^1.5.1
   solid-js: ^1.4.7
   typescript: ^4.7.4
@@ -18,6 +19,7 @@ dependencies:
 devDependencies:
   '@tauri-apps/cli': 1.2.2
   '@types/node': 18.11.18
+  '@types/qrcode': 1.5.0
   typescript: 4.9.4
   vite: 4.0.4_@types+node@18.11.18
   vite-plugin-solid: 2.5.0_solid-js@1.6.8+vite@4.0.4
@@ -680,6 +682,12 @@ packages:
 
   /@types/node/18.11.18:
     resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
+    dev: true
+
+  /@types/qrcode/1.5.0:
+    resolution: {integrity: sha512-x5ilHXRxUPIMfjtM+1vf/GPTRWZ81nqscursm5gMznJeK9M0YnZ1c3bEvRLQ0zSSgedLx1J6MGL231ObQGGhaA==}
+    dependencies:
+      '@types/node': 18.11.18
     dev: true
 
   /ansi-regex/5.0.1:
