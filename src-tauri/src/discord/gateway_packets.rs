@@ -1,8 +1,8 @@
 use serde::{ Deserialize, Serialize };
-
+/// todo description
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "op")]
-pub enum GatewayPacket {
+pub enum MobileAuthGatewayPackets {
     #[serde(rename = "heartbeat")] Heartbeat {},
     #[serde(rename = "heartbeat_ack")] HeartbeatAck {},
     #[serde(rename = "hello")] Hello {

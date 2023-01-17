@@ -1,17 +1,18 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 mod discord;
-mod gateway_handler;
+mod mobile_auth_gateway_handler;
+mod webview_packets;
 
 extern crate tokio;
 
-use std::{ sync::{ Mutex } };
+use std::{ sync::{ Mutex, Arc } };
 
 use tauri::{ State, Manager };
 use tokio::sync::mpsc;
 use websocket::{ OwnedMessage };
 
-use crate::{ gateway_handler::DiscordGateway };
+use crate::{ mobile_auth_gateway_handler::MobileAuthHandler };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -20,49 +21,73 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn test(login: &str, password: &str, state: State<test>) -> String {
+fn test(
+    login: &str,
+    password: &str
+    //   , state: State<Arc<test_state>>
+) -> String {
+    //let mut s = state.state.lock().unwrap();
+    //*s += 1;
     format!("no ")
 }
+//todo move to seperate file
 struct test {
     sender: Mutex<mpsc::Sender<OwnedMessage>>,
 }
 
-fn rs2js<R: tauri::Runtime>(message: String, manager: &impl Manager<R>) {
-    manager.emit_all("rs2js", message).unwrap();
+struct test_state {
+    pub state: Mutex<i32>,
+}
+
+struct test2 {
+    s: Arc<test_state>,
+}
+
+fn mobile_auth_event<R: tauri::Runtime>(message: String, manager: &impl Manager<R>) {
+    manager.emit_all("mobileAuth", message).unwrap();
 }
 
 fn main() {
     use websocket::client::r#async::Client;
     println!("Starting");
 
-    let mut gate = DiscordGateway::new();
+    let mut gate = MobileAuthHandler::new();
 
     let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
-    let (async_proc_output_tx, mut async_proc_output_rx) = mpsc::channel::<String>(32);
+    let (async_proc_output_tx, mut async_proc_output_rx) =
+        mpsc::channel::<webview_packets::MobileAuth>(32);
 
     let t = test { sender: Mutex::new(async_proc_input_tx) };
+
+    //let tt = Arc::new(test_state { state: Mutex::new(0) });
+    //let a = test2 { s: tt.clone() };
 
     tauri::Builder
         ::default()
         .manage(t)
+        //.manage(tt)
         .setup(|app| {
-            //
             let app_handle = app.handle();
             tauri::async_runtime::spawn(async move {
                 loop {
-                    //println!("gtf 3");
                     let r = async_proc_output_rx.try_recv();
                     if r.is_ok() {
                         let output = r.unwrap();
-                        println!("recived: {}", output);
-                        rs2js(output, &app_handle);
+                        println!("recived: {:?}", output);
+                        mobile_auth_event(serde_json::to_string(&output).unwrap(), &app_handle);
                     }
                 }
             });
+            // tauri::async_runtime::spawn(async move {
+            //     loop {
+            //         println!("{:?}", a.s.state.lock().unwrap());
+            //         //sleep 1 second
+            //         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            //     }
+            // });
             tauri::async_runtime::spawn(async move {
                 gate.generate_keys();
                 gate.run(async_proc_input_rx, async_proc_output_tx).await;
-                //gate.connect(async_proc_input_rx, async_proc_output_tx).await;
             });
 
             Ok(())

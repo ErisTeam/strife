@@ -4,10 +4,13 @@ use base64::{ engine::{ general_purpose }, Engine };
 use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, PaddingScheme };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
-use crate::discord::{ gateway::{ gateway_packet::{ GatewayPacket } }, self };
+use crate::{
+    discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets } },
+    webview_packets,
+};
 
-pub struct DiscordGateway {
-    url: Mutex<String>,
+pub struct MobileAuthHandler {
+    pub qrcode_url: Mutex<String>,
 
     pub timeout_ms: Arc<Mutex<u64>>,
     pub heartbeat_interval: Arc<Mutex<u64>>,
@@ -17,10 +20,10 @@ pub struct DiscordGateway {
     pub public_key: Option<RsaPublicKey>,
     private_key: Option<RsaPrivateKey>,
 }
-impl DiscordGateway {
+impl MobileAuthHandler {
     pub fn new() -> Self {
         Self {
-            url: Mutex::new("".to_string()),
+            qrcode_url: Mutex::new("".to_string()),
             timeout_ms: Arc::new(Mutex::new(0)),
             heartbeat_interval: Arc::new(Mutex::new(0)),
             connected: Mutex::new(false),
@@ -44,7 +47,7 @@ impl DiscordGateway {
         );
         let t = serde_json
             ::to_string(
-                &(discord::gateway::gateway_packet::GatewayPacket::Init {
+                &(discord::gateway_packets::MobileAuthGatewayPackets::Init {
                     encoded_public_key: public_key_base64.clone(),
                 })
             )
@@ -55,7 +58,7 @@ impl DiscordGateway {
                 &OwnedMessage::Text(
                     serde_json
                         ::to_string(
-                            &(discord::gateway::gateway_packet::GatewayPacket::Init {
+                            &(discord::gateway_packets::MobileAuthGatewayPackets::Init {
                                 encoded_public_key: public_key_base64.clone(),
                             })
                         )
@@ -82,7 +85,7 @@ impl DiscordGateway {
                 &OwnedMessage::Text(
                     serde_json
                         ::to_string(
-                            &(discord::gateway::gateway_packet::GatewayPacket::NonceProofClient {
+                            &(discord::gateway_packets::MobileAuthGatewayPackets::NonceProofClient {
                                 proof: base64.clone(),
                             })
                         )
@@ -120,7 +123,7 @@ impl DiscordGateway {
         use websocket::ClientBuilder;
         let mut headers = websocket::header::Headers::new();
         headers.set(websocket::header::Origin("https://discord.com".to_string()));
-        let mut client = ClientBuilder::new("wss://remote-auth-gateway.discord.gg/?v=2")
+        let client = ClientBuilder::new("wss://remote-auth-gateway.discord.gg/?v=2")
             .unwrap()
             .custom_headers(&headers)
             .connect_secure(None)
@@ -131,7 +134,7 @@ impl DiscordGateway {
     pub async fn run(
         &self,
         reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
-        sender: tokio::sync::mpsc::Sender<String>
+        sender: tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
     ) {
         let mut reciver = reciver;
         let mut sender = sender;
@@ -143,7 +146,7 @@ impl DiscordGateway {
     pub async fn connect(
         &self,
         reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,
-        sender: &mut tokio::sync::mpsc::Sender<String>
+        sender: &mut tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
     ) -> bool {
         println!("Connecting");
 
@@ -157,9 +160,7 @@ impl DiscordGateway {
 
         let mut started = false;
 
-        let mut reciver = reciver;
-
-        let mut status = true;
+        let mut _status = true;
 
         loop {
             let message = client.recv_message();
@@ -175,38 +176,54 @@ impl DiscordGateway {
                 match message {
                     OwnedMessage::Text(text) => {
                         println!("Text: {}", text);
-                        match serde_json::from_str::<GatewayPacket>(&text).unwrap() {
-                            GatewayPacket::HeartbeatAck {} => {
+                        match
+                            serde_json
+                                ::from_str::<gateway_packets::MobileAuthGatewayPackets>(&text)
+                                .unwrap()
+                        {
+                            MobileAuthGatewayPackets::HeartbeatAck {} => {
                                 ack_recived = true;
                             }
-                            GatewayPacket::Hello { heartbeat_interval, timeout_ms } => {
+                            MobileAuthGatewayPackets::Hello { heartbeat_interval, timeout_ms } => {
                                 started = true;
                                 self.handle_hello(&mut client, heartbeat_interval, timeout_ms);
                             }
-                            GatewayPacket::NonceProofServer { encrypted_nonce } =>
+                            MobileAuthGatewayPackets::NonceProofServer { encrypted_nonce } =>
                                 self.handle_once_proof(&mut client, encrypted_nonce),
-                            GatewayPacket::PendingRemoteInit { fingerprint } => {
+                            MobileAuthGatewayPackets::PendingRemoteInit { fingerprint } => {
                                 println!("Fingerprint: {}", fingerprint);
-                                sender.send(fingerprint).await.unwrap();
+                                sender
+                                    .send(webview_packets::MobileAuth::Qrcode {
+                                        qrcode: format!("https://discordapp.com/ra/{}", fingerprint),
+                                    }).await
+                                    .unwrap();
 
                                 // sender.send(fingerprint).await.unwrap();
                             }
-                            GatewayPacket::PendingTicket { encrypted_user_payload } => {
-                                let decrypted = general_purpose::URL_SAFE_NO_PAD
+                            MobileAuthGatewayPackets::PendingTicket { encrypted_user_payload } => {
+                                println!("Ticket: {}", encrypted_user_payload);
+                                let decrypted = general_purpose::STANDARD
                                     .decode(encrypted_user_payload.as_bytes())
                                     .unwrap();
+                                let decrypted = self.decrypt(decrypted);
                                 //split decrypted :
-                                let splited = String::from_utf8(decrypted)
-                                    .unwrap()
-                                    .split(':')
-                                    .collect::<Vec<&str>>();
+                                let string = String::from_utf8(decrypted).unwrap();
+                                let splited = string.split(':').collect::<Vec<&str>>();
+                                println!("{:?}", string);
+                                sender
+                                    .send(webview_packets::MobileAuth::TicketData {
+                                        user_id: splited[0].to_string(),
+                                        discriminator: splited[1].to_string(),
+                                        avatar_hash: splited[2].to_string(),
+                                        username: splited[3].to_string(),
+                                    }).await
+                                    .unwrap();
                             }
                             _ => {}
                         }
                     }
                     OwnedMessage::Close(reason) => {
                         println!("Close {:?}", reason);
-
                         return false;
                     }
                     m => {
@@ -221,16 +238,17 @@ impl DiscordGateway {
             {
                 if !ack_recived {
                     return false;
-                    //todo!("reconnect"); //todo reconnect
                 }
                 ack_recived = false;
                 instant = std::time::Instant::now();
-                let heartbeat = serde_json::to_string(&(GatewayPacket::Heartbeat {})).unwrap();
+                let heartbeat = serde_json
+                    ::to_string(&(MobileAuthGatewayPackets::Heartbeat {}))
+                    .unwrap();
                 let heartbeat = OwnedMessage::Text(heartbeat);
                 client.send_message(&heartbeat).unwrap();
                 println!("Heartbeat");
             }
         }
-        return status;
+        return _status;
     }
 }
