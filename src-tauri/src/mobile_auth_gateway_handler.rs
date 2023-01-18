@@ -7,6 +7,7 @@ use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 use crate::{
     discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets } },
     webview_packets,
+    main_app_state::MainState,
 };
 
 pub struct MobileAuthHandler {
@@ -19,17 +20,24 @@ pub struct MobileAuthHandler {
 
     pub public_key: Option<RsaPublicKey>,
     private_key: Option<RsaPrivateKey>,
+
+    app_state: Arc<MainState>,
 }
 impl MobileAuthHandler {
-    pub fn new() -> Self {
+    pub fn new(app_state: Arc<MainState>) -> Self {
         Self {
             qrcode_url: Mutex::new("".to_string()),
             timeout_ms: Arc::new(Mutex::new(0)),
             heartbeat_interval: Arc::new(Mutex::new(0)),
             connected: Mutex::new(false),
+            app_state,
             public_key: None,
             private_key: None,
         }
+    }
+    fn decrypt(&self, bytes: Vec<u8>) -> Vec<u8> {
+        let padding = PaddingScheme::new_oaep::<sha2::Sha256>();
+        self.private_key.as_ref().unwrap().decrypt(padding, &bytes).unwrap()
     }
     pub fn generate_keys(&mut self) {
         let mut rng = rand::thread_rng();
@@ -67,10 +75,7 @@ impl MobileAuthHandler {
             )
             .unwrap();
     }
-    fn decrypt(&self, bytes: Vec<u8>) -> Vec<u8> {
-        let padding = PaddingScheme::new_oaep::<sha2::Sha256>();
-        self.private_key.as_ref().unwrap().decrypt(padding, &bytes).unwrap()
-    }
+
     fn send_proof(&self, client: &mut Client<TlsStream<TcpStream>>, data: Vec<u8>) {
         use sha2::Digest;
         println!("data {:?}", general_purpose::STANDARD.encode(&data));
@@ -131,6 +136,23 @@ impl MobileAuthHandler {
         client.set_nonblocking(true).unwrap();
         client
     }
+
+    async fn get_token(&self, ticket: String) {
+        let client = reqwest::Client::new();
+        let res = client
+            .post("https://discord.com/api/v9/users/@me/remote-auth/login")
+            .header("Content-Type", "application/json")
+            .body(
+                serde_json
+                    ::to_string(&(discord::http_packets::Auth::Login { ticket: ticket }))
+                    .unwrap()
+            )
+            .send().await
+            .unwrap();
+        let text = res.json::<discord::http_packets::Auth>().await.unwrap();
+        println!("{:?}", text);
+    }
+
     pub async fn run(
         &self,
         reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
@@ -197,8 +219,6 @@ impl MobileAuthHandler {
                                         qrcode: format!("https://discordapp.com/ra/{}", fingerprint),
                                     }).await
                                     .unwrap();
-
-                                // sender.send(fingerprint).await.unwrap();
                             }
                             MobileAuthGatewayPackets::PendingTicket { encrypted_user_payload } => {
                                 println!("Ticket: {}", encrypted_user_payload);
@@ -218,6 +238,10 @@ impl MobileAuthHandler {
                                         username: splited[3].to_string(),
                                     }).await
                                     .unwrap();
+                            }
+                            MobileAuthGatewayPackets::PendingLogin { ticket } => {
+                                todo!("Pending login"); //todo handle login
+                                return true;
                             }
                             _ => {}
                         }

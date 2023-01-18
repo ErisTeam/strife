@@ -16,7 +16,7 @@ function App() {
   const [login, setLogin] = createSignal("");
   const [password, setPassword] = createSignal("");
 
-  const [qr, setQr] = createSignal("");
+  const [image, setImage] = createSignal("");
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -35,12 +35,12 @@ function App() {
         let i = input as { type: string; qrcode: string };
 
         qrcode.toDataURL(i.qrcode, (err: any, url: any) => {
-          setQr(url);
+          setImage(url);
         });
       } else if (input.type == "ticketData") {
         let i = input as { type: string; userId: string; discriminator: string; username: string; avatarHash: string };
         setGreetMsg(`userId: ${i.userId}, discriminator: ${i.discriminator}, username: ${i.username}, avatarHash: ${i.avatarHash}`);
-        setQr(`https://cdn.discordapp.com/avatars/${i.userId}/${i.avatarHash}.webp?size=128`);
+        setImage(`https://cdn.discordapp.com/avatars/${i.userId}/${i.avatarHash}.webp?size=128`);
       }
     });
   });
@@ -76,7 +76,7 @@ function App() {
         <input type="text" onChange={(e) => setLogin(e.currentTarget.value)} />
         <input type="password" onChange={(e) => setPassword(e.currentTarget.value)} />
         <button onclick={() => test()}>test</button>
-        <img src={qr()} />
+        <img src={image()} />
       </div>
 
       <p>{greetMsg}</p>

@@ -3,16 +3,17 @@
 mod discord;
 mod mobile_auth_gateway_handler;
 mod webview_packets;
+mod main_app_state;
 
 extern crate tokio;
 
 use std::{ sync::{ Mutex, Arc } };
 
-use tauri::{ State, Manager };
+use tauri::{ Manager };
 use tokio::sync::mpsc;
 use websocket::{ OwnedMessage };
 
-use crate::{ mobile_auth_gateway_handler::MobileAuthHandler };
+use crate::{ mobile_auth_gateway_handler::MobileAuthHandler, main_app_state::MainState };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -51,7 +52,9 @@ fn main() {
     use websocket::client::r#async::Client;
     println!("Starting");
 
-    let mut gate = MobileAuthHandler::new();
+    let main_state = Arc::new(MainState::new());
+
+    let mut gate = MobileAuthHandler::new(main_state.clone());
 
     let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
     let (async_proc_output_tx, mut async_proc_output_rx) =
