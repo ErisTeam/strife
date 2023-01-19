@@ -3,7 +3,9 @@ use std::sync::Mutex;
 #[derive(Debug)]
 pub enum LoginStatus {
     NotLoggedIn,
-    LoggedIn,
+    LoggedIn {
+        token: String,
+    },
 }
 
 #[derive(Debug)]

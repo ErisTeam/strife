@@ -275,7 +275,6 @@ impl MobileAuthHandler {
                                             .unwrap();
                                     }
                                 }
-                                //todo!("Pending login"); //todo handle login
                                 return true;
                             }
                             _ => {}

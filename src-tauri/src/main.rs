@@ -20,6 +20,10 @@ use crate::{ mobile_auth_gateway_handler::MobileAuthHandler, main_app_state::Mai
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
+#[tauri::command]
+fn get_qrcode() -> String {
+    "a".to_string()
+}
 
 #[tauri::command]
 fn test(
@@ -36,12 +40,20 @@ struct test {
     sender: Mutex<mpsc::Sender<OwnedMessage>>,
 }
 
-struct test_state {
-    pub state: Mutex<i32>,
+struct a {
+    state: Arc<MainState>,
 }
-
-struct test2 {
-    s: Arc<test_state>,
+impl a {
+    pub fn start_mobile_auth(&self) {
+        let mut gate = MobileAuthHandler::new(self.state.clone());
+        let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
+        let (async_proc_output_tx, mut async_proc_output_rx) =
+            mpsc::channel::<webview_packets::MobileAuth>(32);
+        tauri::async_runtime::spawn(async move {
+            gate.generate_keys();
+            gate.run(async_proc_input_rx, async_proc_output_tx).await;
+        });
+    }
 }
 
 fn mobile_auth_event<R: tauri::Runtime>(message: String, manager: &impl Manager<R>) {

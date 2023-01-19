@@ -22,13 +22,15 @@ function App() {
 	// For testing, delete later
 	const [testValue, setTestValue] = createSignal('');
 
-	async function greet() {
-		// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-		setGreetMsg(await invoke('greet', { name: name() }));
-	}
-	async function test() {
-		setGreetMsg(await invoke('test', { login: login(), password: password() }));
-	}
+  onMount(async () => {
+    let qrcode = await invoke("getQrcode");
+    console.log(qrcode);
+    startListener((event) => {
+      console.log("js: rs2js: " + event);
+      let input = JSON.parse(event.payload) as { type: string };
+      console.log(input);
+      if (input.type == "qrcode") {
+        let i = input as { type: string; qrcode: string };
 
 	onMount(async () => {
 		//let qrcode = await invoke("getQrcode");
