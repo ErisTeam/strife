@@ -14,4 +14,8 @@ pub enum MobileAuth {
         avatar_hash: String,
         username: String,
     },
+    #[serde(rename = "loginSuccess")] LoginSuccess {},
+    #[serde(rename = "loginError")] LoginError {
+        error: String,
+    },
 }

@@ -5,11 +5,14 @@ use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, PaddingScheme };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
 use crate::{
-    discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets } },
+    discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
     webview_packets,
     main_app_state::MainState,
 };
 
+pub enum Messages {
+    Close {},
+}
 pub struct MobileAuthHandler {
     pub qrcode_url: Mutex<String>,
 
@@ -137,7 +140,7 @@ impl MobileAuthHandler {
         client
     }
 
-    async fn get_token(&self, ticket: String) {
+    async fn get_token(&self, ticket: String) -> Result<String, String> {
         let client = reqwest::Client::new();
         let res = client
             .post("https://discord.com/api/v9/users/@me/remote-auth/login")
@@ -149,8 +152,23 @@ impl MobileAuthHandler {
             )
             .send().await
             .unwrap();
-        let text = res.json::<discord::http_packets::Auth>().await.unwrap();
-        println!("{:?}", text);
+
+        let json = res.json::<discord::http_packets::Auth>().await.unwrap();
+        match json {
+            discord::http_packets::Auth::LoginResponse { encrypted_token } => {
+                let bytes = general_purpose::STANDARD.decode(encrypted_token.as_bytes()).unwrap();
+                let token = String::from_utf8(self.decrypt(bytes)).unwrap();
+                Ok(token)
+            }
+            Auth::Error { code, errors, message } => {
+                println!("{} {} {}", code, errors, message);
+                Err(message)
+            }
+            _ => {
+                println!("Unknown");
+                Err("Unknown".to_string())
+            }
+        }
     }
 
     pub async fn run(
@@ -240,7 +258,24 @@ impl MobileAuthHandler {
                                     .unwrap();
                             }
                             MobileAuthGatewayPackets::PendingLogin { ticket } => {
-                                todo!("Pending login"); //todo handle login
+                                client.shutdown().unwrap();
+                                match self.get_token(ticket).await {
+                                    Ok(token) => {
+                                        sender
+                                            .send(
+                                                webview_packets::MobileAuth::LoginSuccess {}
+                                            ).await
+                                            .unwrap();
+                                    }
+                                    Err(message) => {
+                                        sender
+                                            .send(webview_packets::MobileAuth::LoginError {
+                                                error: message,
+                                            }).await
+                                            .unwrap();
+                                    }
+                                }
+                                //todo!("Pending login"); //todo handle login
                                 return true;
                             }
                             _ => {}
