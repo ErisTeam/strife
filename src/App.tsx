@@ -1,10 +1,11 @@
 /** @format */
 
-import { createSignal, onMount } from "solid-js";
-import logo from "./assets/logo.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import { emit, listen } from "@tauri-apps/api/event";
-import "./App.css";
+import { createSignal, onMount } from 'solid-js';
+import logo from './assets/logo.svg';
+import { invoke } from '@tauri-apps/api/tauri';
+import { emit, listen } from '@tauri-apps/api/event';
+import './App.css';
+import Input from './test/components/Input/Input';
 
 import qrcode from "qrcode";
 import { startListener } from "./test";
@@ -18,13 +19,16 @@ function App() {
 
   const [image, setImage] = createSignal("");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name: name() }));
-  }
-  async function test() {
-    setGreetMsg(await invoke("test", { login: login(), password: password() }));
-  }
+	// For testing, delete later
+	const [testValue, setTestValue] = createSignal('');
+
+	async function greet() {
+		// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+		setGreetMsg(await invoke('greet', { name: name() }));
+	}
+	async function test() {
+		setGreetMsg(await invoke('test', { login: login(), password: password() }));
+	}
 
   onMount(async () => {
     startListener((event) => {
@@ -72,16 +76,18 @@ function App() {
         </div>
       </div>
 
-      <div>
-        <input type="text" onChange={(e) => setLogin(e.currentTarget.value)} />
-        <input type="password" onChange={(e) => setPassword(e.currentTarget.value)} />
-        <button onclick={() => test()}>test</button>
-        <img src={image()} />
-      </div>
+			<Input
+				type='text'
+				onChange={(e) => {
+					setTestValue(e.currentTarget.value);
+					console.log(e.currentTarget.value);
+				}}
+				required
+			></Input>
 
-      <p>{greetMsg}</p>
-    </div>
-  );
+			<p>{greetMsg}</p>
+		</div>
+	);
 }
 
 export default App;
