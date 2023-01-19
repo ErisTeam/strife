@@ -1,7 +1,7 @@
 /** @format */
 
-import { Setter } from 'solid-js';
 import { InputType } from './../../types';
+import style from './Input.module.css';
 import './Input.module.css';
 
 interface InputProps {
@@ -32,7 +32,7 @@ function Input(prop: InputProps) {
 			minLength={prop.minLength}
 			pattern={prop.pattern}
 			onchange={prop.onChange}
-		></input>
+		/>
 	);
 }
 
