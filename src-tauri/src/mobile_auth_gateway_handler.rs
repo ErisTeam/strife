@@ -7,15 +7,10 @@ use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 use crate::{
     discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
     webview_packets,
-    main_app_state::MainState,
+    main_app_state::{ MainState, State },
 };
 
-pub enum Messages {
-    Close {},
-}
 pub struct MobileAuthHandler {
-    pub qrcode_url: Mutex<String>,
-
     pub timeout_ms: Arc<Mutex<u64>>,
     pub heartbeat_interval: Arc<Mutex<u64>>,
 
@@ -29,7 +24,6 @@ pub struct MobileAuthHandler {
 impl MobileAuthHandler {
     pub fn new(app_state: Arc<MainState>) -> Self {
         Self {
-            qrcode_url: Mutex::new("".to_string()),
             timeout_ms: Arc::new(Mutex::new(0)),
             heartbeat_interval: Arc::new(Mutex::new(0)),
             connected: Mutex::new(false),
@@ -181,6 +175,11 @@ impl MobileAuthHandler {
         while !self.connect(&mut reciver, &mut sender).await {
             print!("Reconnecting");
         }
+        println!("shutting down mobile auth")
+    }
+
+    async fn handle_message(&self, message: OwnedMessage) {
+        todo!("move to this function")
     }
 
     pub async fn connect(
@@ -200,7 +199,7 @@ impl MobileAuthHandler {
 
         let mut started = false;
 
-        let mut _status = true;
+        let mut user_id = None;
 
         loop {
             let message = client.recv_message();
@@ -232,11 +231,16 @@ impl MobileAuthHandler {
                                 self.handle_once_proof(&mut client, encrypted_nonce),
                             MobileAuthGatewayPackets::PendingRemoteInit { fingerprint } => {
                                 println!("Fingerprint: {}", fingerprint);
+                                let qr_url = format!("https://discordapp.com/ra/{}", fingerprint);
                                 sender
                                     .send(webview_packets::MobileAuth::Qrcode {
-                                        qrcode: format!("https://discordapp.com/ra/{}", fingerprint),
+                                        qrcode: qr_url.clone(),
                                     }).await
                                     .unwrap();
+                                let mut state = self.app_state.state.lock().unwrap();
+                                if matches!(&*state, State::LoginScreen { .. }) {
+                                    *state = State::LoginScreen { qr_url: qr_url.clone() };
+                                }
                             }
                             MobileAuthGatewayPackets::PendingTicket { encrypted_user_payload } => {
                                 println!("Ticket: {}", encrypted_user_payload);
@@ -248,6 +252,7 @@ impl MobileAuthHandler {
                                 let string = String::from_utf8(decrypted).unwrap();
                                 let splited = string.split(':').collect::<Vec<&str>>();
                                 println!("{:?}", string);
+                                user_id = Some(splited[0].to_string());
                                 sender
                                     .send(webview_packets::MobileAuth::TicketData {
                                         user_id: splited[0].to_string(),
@@ -266,6 +271,13 @@ impl MobileAuthHandler {
                                                 webview_packets::MobileAuth::LoginSuccess {}
                                             ).await
                                             .unwrap();
+                                        if user_id.is_some() {
+                                            self.app_state.tokens
+                                                .lock()
+                                                .unwrap()
+                                                .insert(user_id.unwrap(), token);
+                                        }
+                                        //self.app_state.tokens_old.lock().unwrap().push(token);
                                     }
                                     Err(message) => {
                                         sender
@@ -306,7 +318,8 @@ impl MobileAuthHandler {
                 client.send_message(&heartbeat).unwrap();
                 println!("Heartbeat");
             }
+            //tokio thread sleep
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
         }
-        return _status;
     }
 }

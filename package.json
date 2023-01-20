@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.2",
+    "@tauri-apps/cli": "^1.2.3",
     "@types/node": "^18.7.10",
     "@types/qrcode": "^1.5.0",
     "typescript": "^4.7.4",
