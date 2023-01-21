@@ -266,18 +266,17 @@ impl MobileAuthHandler {
                                 client.shutdown().unwrap();
                                 match self.get_token(ticket).await {
                                     Ok(token) => {
-                                        sender
-                                            .send(
-                                                webview_packets::MobileAuth::LoginSuccess {}
-                                            ).await
-                                            .unwrap();
                                         if user_id.is_some() {
                                             self.app_state.tokens
                                                 .lock()
                                                 .unwrap()
                                                 .insert(user_id.unwrap(), token);
+                                            sender
+                                                .send(
+                                                    webview_packets::MobileAuth::LoginSuccess {}
+                                                ).await
+                                                .unwrap();
                                         }
-                                        //self.app_state.tokens_old.lock().unwrap().push(token);
                                     }
                                     Err(message) => {
                                         sender

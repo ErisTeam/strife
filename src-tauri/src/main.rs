@@ -1,7 +1,7 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 mod discord;
-mod mobile_auth_gateway_handler;
+mod modules;
 mod webview_packets;
 mod main_app_state;
 mod manager;

@@ -13,9 +13,6 @@ pub enum State {
 
 #[derive(Debug)]
 pub struct MainState {
-    #[deprecated(note = "please use `tokens` instead")]
-    pub tokens_old: Mutex<Vec<String>>,
-
     pub tokens: Mutex<HashMap<String, String>>,
 
     sender: Mutex<mpsc::Sender<Messages>>,
@@ -25,7 +22,6 @@ pub struct MainState {
 impl MainState {
     pub fn new(sender: Mutex<mpsc::Sender<Messages>>) -> Self {
         Self {
-            tokens_old: Mutex::new(vec![]),
             tokens: Mutex::new(HashMap::new()),
             sender,
             state: Mutex::new(State::LoginScreen { qr_url: String::new() }),

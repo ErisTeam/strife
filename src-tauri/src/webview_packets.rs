@@ -19,3 +19,6 @@ pub enum MobileAuth {
         error: String,
     },
 }
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
+pub enum gateway {}

@@ -31,3 +31,12 @@ pub enum MobileAuthGatewayPackets {
     },
     #[serde(rename = "cancel")] Cancel {},
 }
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "op")]
+pub enum GatewayPackets {
+    #[serde(rename = "heartbeat")] Heartbeat {
+        d: u64,
+    },
+    #[serde(rename = "heartbeat")] HeartbeatNull {},
+    #[serde(rename = "heartbeat_ack")] HeartbeatAck {},
+}

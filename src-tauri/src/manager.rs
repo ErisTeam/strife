@@ -6,7 +6,7 @@ use websocket::OwnedMessage;
 
 use crate::{
     main_app_state::MainState,
-    mobile_auth_gateway_handler::MobileAuthHandler,
+    modules::mobile_auth_gateway_handler::MobileAuthHandler,
     webview_packets,
 };
 #[derive(Debug)]
@@ -85,6 +85,7 @@ impl ThreadManager {
                         match what {
                             Modules::MobileAuth => {
                                 if let Some(sender) = self.mobile_auth_sender.take() {
+                                    //sender.lock().unwrap().send();
                                     todo!("close mobile auth");
                                 }
                             }
