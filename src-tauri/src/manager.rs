@@ -1,4 +1,4 @@
-use std::sync::{ Arc, Mutex };
+use std::{ sync::{ Arc, Mutex }, collections::HashMap };
 
 use tauri::{ AppHandle, Manager };
 use tokio::sync::mpsc;
@@ -12,6 +12,7 @@ use crate::{
 #[derive(Debug)]
 pub enum Modules {
     MobileAuth,
+    Gateway,
 }
 #[derive(Debug)]
 pub enum Messages {
@@ -29,12 +30,14 @@ pub struct ThreadManager {
 
     mobile_auth_sender: Option<Mutex<mpsc::Sender<OwnedMessage>>>,
 
+    senders: HashMap<Modules, mpsc::Sender<OwnedMessage>>,
+
     reciver: mpsc::Receiver<Messages>,
 }
 
 impl ThreadManager {
     pub fn new(state: Arc<MainState>, reciver: mpsc::Receiver<Messages>) -> Self {
-        Self { state, mobile_auth_sender: None, reciver }
+        Self { state, mobile_auth_sender: None, reciver, senders: HashMap::new() }
     }
     pub fn start_mobile_auth(&mut self, handle: AppHandle) {
         println!("Starting mobile auth");
@@ -80,6 +83,9 @@ impl ThreadManager {
                                     self.start_mobile_auth(handle.clone());
                                 }
                             }
+                            Modules::Gateway => {
+                                todo!("start gateway");
+                            }
                         }
                     Messages::Close { what } =>
                         match what {
@@ -88,6 +94,9 @@ impl ThreadManager {
                                     //sender.lock().unwrap().send();
                                     todo!("close mobile auth");
                                 }
+                            }
+                            Modules::Gateway => {
+                                todo!("close gateway");
                             }
                         }
                 }

@@ -17,7 +17,10 @@ use crate::{ main_app_state::MainState, manager::ThreadManager };
 #[tauri::command]
 fn get_qrcode(state: State<Arc<MainState>>) -> String {
     println!("test");
-    state.send(manager::Messages::Start { what: manager::Modules::MobileAuth });
+    let s = state.send(manager::Messages::Start { what: manager::Modules::MobileAuth });
+    if let Some(s) = s {
+        return s;
+    }
     format!("no {:?}", state.state.lock().unwrap())
 }
 #[tauri::command]

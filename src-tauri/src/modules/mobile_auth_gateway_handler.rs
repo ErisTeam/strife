@@ -8,6 +8,7 @@ use crate::{
     discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
     webview_packets,
     main_app_state::{ MainState, State },
+    modules::gateway_trait::send_heartbeat,
 };
 
 pub struct MobileAuthHandler {
@@ -301,22 +302,33 @@ impl MobileAuthHandler {
                 }
             }
 
-            if
-                started &&
-                instant.elapsed().as_millis() > (*self.heartbeat_interval.lock().unwrap() as u128)
-            {
-                if !ack_recived {
-                    return false;
-                }
-                ack_recived = false;
-                instant = std::time::Instant::now();
-                let heartbeat = serde_json
-                    ::to_string(&(MobileAuthGatewayPackets::Heartbeat {}))
-                    .unwrap();
-                let heartbeat = OwnedMessage::Text(heartbeat);
-                client.send_message(&heartbeat).unwrap();
-                println!("Heartbeat");
-            }
+            send_heartbeat(
+                &mut instant,
+                started,
+                *self.heartbeat_interval.lock().unwrap(),
+                &mut ack_recived,
+                &mut client,
+                &(|| {
+                    Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap())
+                })
+            );
+
+            // if
+            //     started &&
+            //     instant.elapsed().as_millis() > (*self.heartbeat_interval.lock().unwrap() as u128)
+            // {
+            //     if !ack_recived {
+            //         return false;
+            //     }
+            //     ack_recived = false;
+            //     instant = std::time::Instant::now();
+            //     let heartbeat = serde_json
+            //         ::to_string(&(MobileAuthGatewayPackets::Heartbeat {}))
+            //         .unwrap();
+            //     let heartbeat = OwnedMessage::Text(heartbeat);
+            //     client.send_message(&heartbeat).unwrap();
+            //     println!("Heartbeat");
+            // }
             //tokio thread sleep
             tokio::time::sleep(std::time::Duration::from_millis(10)).await;
         }

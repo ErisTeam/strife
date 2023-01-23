@@ -2,16 +2,30 @@ use std::{ sync::Arc, net::TcpStream };
 
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
-use crate::{ main_app_state::MainState, webview_packets, discord::gateway_packets::GatewayPackets };
+use crate::{
+    main_app_state::MainState,
+    webview_packets,
+    discord::gateway_packets::GatewayPackets,
+    modules::gateway_trait::send_heartbeat,
+};
+
+use super::gateway_trait;
 
 pub struct Gateway {
     pub timeout_ms: Arc<u64>,
     pub heartbeat_interval: Arc<u64>,
     pub state: Arc<MainState>,
+
+    token: String,
 }
 impl Gateway {
     pub fn new(state: Arc<MainState>) -> Self {
-        Self { state, timeout_ms: Arc::new(0), heartbeat_interval: Arc::new(0) }
+        Self {
+            state,
+            timeout_ms: Arc::new(0),
+            heartbeat_interval: Arc::new(0),
+            token: "".to_string(),
+        }
     }
     fn conn(&self) -> Client<TlsStream<TcpStream>> {
         use websocket::ClientBuilder;
@@ -26,12 +40,15 @@ impl Gateway {
         client
     }
     pub async fn run(
-        &self,
+        &mut self,
         reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
-        sender: tokio::sync::mpsc::Sender<webview_packets::gateway>
+        sender: tokio::sync::mpsc::Sender<webview_packets::Gateway>,
+        token: String
     ) {
         let mut reciver = reciver;
         let mut sender = sender;
+
+        self.token = token;
         while !self.connect(&mut reciver, &mut sender).await {
             print!("Reconnecting");
         }
@@ -40,7 +57,7 @@ impl Gateway {
     pub async fn connect(
         &self,
         reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,
-        sender: &mut tokio::sync::mpsc::Sender<webview_packets::gateway>
+        sender: &mut tokio::sync::mpsc::Sender<webview_packets::Gateway>
     ) -> bool {
         println!("Connecting");
 
@@ -78,25 +95,46 @@ impl Gateway {
                     }
                 }
             }
-            if started && instant.elapsed().as_millis() > (*self.heartbeat_interval as u128) {
-                if !ack_recived {
-                    return false;
-                }
-                ack_recived = false;
-                instant = std::time::Instant::now();
-                let heartbeat;
-                if last_s.is_none() {
-                    heartbeat = serde_json::to_string(&(GatewayPackets::HeartbeatNull {})).unwrap();
-                } else {
-                    heartbeat = serde_json
-                        ::to_string(&(GatewayPackets::Heartbeat { d: last_s.unwrap() }))
-                        .unwrap();
-                }
+            let last_s = last_s.clone();
+            send_heartbeat(
+                &mut instant,
+                started,
+                *self.heartbeat_interval,
+                &mut ack_recived,
+                &mut client,
+                &(|| -> Option<String> {
+                    if last_s.is_none() {
+                        return Some(
+                            serde_json::to_string(&(GatewayPackets::HeartbeatNull {})).unwrap()
+                        );
+                    } else {
+                        return Some(
+                            serde_json
+                                ::to_string(&(GatewayPackets::Heartbeat { d: last_s.unwrap() }))
+                                .unwrap()
+                        );
+                    }
+                })
+            );
+            // if started && instant.elapsed().as_millis() > (*self.heartbeat_interval as u128) {
+            //     if !ack_recived {
+            //         return false;
+            //     }
+            //     ack_recived = false;
+            //     instant = std::time::Instant::now();
+            //     let heartbeat;
+            //     if last_s.is_none() {
+            //         heartbeat = serde_json::to_string(&(GatewayPackets::HeartbeatNull {})).unwrap();
+            //     } else {
+            //         heartbeat = serde_json
+            //             ::to_string(&(GatewayPackets::Heartbeat { d: last_s.unwrap() }))
+            //             .unwrap();
+            //     }
 
-                let heartbeat = OwnedMessage::Text(heartbeat);
-                client.send_message(&heartbeat).unwrap();
-                println!("Heartbeat");
-            }
+            //     let heartbeat = OwnedMessage::Text(heartbeat);
+            //     client.send_message(&heartbeat).unwrap();
+            //     println!("Heartbeat");
+            // }
             //tokio thread sleep
             tokio::time::sleep(std::time::Duration::from_millis(10)).await;
         }

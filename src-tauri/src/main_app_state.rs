@@ -30,17 +30,18 @@ impl MainState {
     pub fn is_logged_in(&self) -> bool {
         self.tokens.lock().unwrap().len() > 0
     }
-    pub fn send(&self, msg: Messages) {
+    pub fn send(&self, msg: Messages) -> Option<String> {
         println!("sending: {:?}", msg);
         let state = self.state.lock().unwrap();
         match &*state {
-            State::LoginScreen { .. } => {
-                //if qr_url.is_empty() {
-                self.sender.lock().unwrap().blocking_send(msg).unwrap();
-                //todo return
-                //}
-                //todo return
+            State::LoginScreen { qr_url } => {
+                if qr_url.is_empty() {
+                    self.sender.lock().unwrap().blocking_send(msg).unwrap();
+                } else {
+                    return Some(qr_url.clone());
+                }
             }
         }
+        None
     }
 }

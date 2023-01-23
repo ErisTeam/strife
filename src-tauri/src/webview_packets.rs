@@ -21,4 +21,4 @@ pub enum MobileAuth {
 }
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
-pub enum gateway {}
+pub enum Gateway {}

@@ -3,7 +3,7 @@ const [ticket, setTicket] = createSignal('');
 const [token, setToken] = createSignal('');
 const LoginState = createContext({ ticket, setTicket, token, setToken });
 
-export function LoginStateProvider(props) {
+export function LoginStateProvider(props:any) {
 	return (
 		<LoginState.Provider value={{ ticket, setTicket, token, setToken }}>
 			{props.children}
