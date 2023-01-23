@@ -8,6 +8,7 @@ import Tests from './Tests';
 import qrcode from 'qrcode';
 import { getToken, startListener } from './test';
 import { GuildsResponse, UsersResponse } from './discord';
+import { Link } from '@solidjs/router';
 
 function Prev() {
 	const [greetMsg, setGreetMsg] = createSignal('');
@@ -56,7 +57,15 @@ function Prev() {
 		console.log(json);
 	}
 	onMount(async () => {
-		await invoke('get_qrcode', {});
+		let r: string = await invoke('get_qrcode', {});
+		console.log(r);
+
+		if (!r.startsWith('no')) {
+			qrcode.toDataURL(r, (err: any, url: any) => {
+				setImage(url);
+			});
+		}
+
 		//let qrcode = await invoke("getQrcode");
 		//console.log(qrcode);
 		startListener((event) => {
@@ -114,6 +123,8 @@ function Prev() {
 					</p>
 				);
 			})}
+
+			<Link href="/login">test</Link>
 
 			<Tests />
 		</div>

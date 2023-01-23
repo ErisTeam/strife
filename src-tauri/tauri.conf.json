@@ -64,10 +64,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 720,
+        "height": 600,
         "resizable": true,
         "title": "cord-clone",
-        "width": 1280
+        "width": 800
       }
     ]
   }
