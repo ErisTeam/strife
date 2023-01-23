@@ -1,0 +1,16 @@
+import { createSignal, createContext, useContext } from 'solid-js';
+const [ticket, setTicket] = createSignal('');
+const [token, setToken] = createSignal('');
+const LoginState = createContext({ ticket, setTicket, token, setToken });
+
+export function LoginStateProvider(props) {
+	return (
+		<LoginState.Provider value={{ ticket, setTicket, token, setToken }}>
+			{props.children}
+		</LoginState.Provider>
+	);
+}
+
+export function useLoginState() {
+	return useContext(LoginState);
+}

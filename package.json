@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
   },
   "license": "MIT",
   "devDependencies": {
@@ -21,6 +22,9 @@
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
     "qrcode": "^1.5.1",
-    "solid-js": "^1.4.7"
+    "solid-js": "^1.4.7",
+    		"prettier": "^2.8.1",
+		"solid-hcaptcha": "^0.2.6",
+    "@solidjs/router": "^0.5.1"
   }
 }
