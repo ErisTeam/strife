@@ -94,7 +94,7 @@ function Prev() {
 		let r: string = await invoke('get_qrcode', {});
 		console.log(r);
 
-		if (!r.startsWith('no')) {
+		if (r) {
 			qrcode.toDataURL(r, (err: any, url: any) => {
 				setImage(url);
 			});

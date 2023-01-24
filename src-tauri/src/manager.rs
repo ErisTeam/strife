@@ -9,11 +9,17 @@ use crate::{
     modules::mobile_auth_gateway_handler::MobileAuthHandler,
     webview_packets,
 };
+
+/// # Information
+/// TODO
 #[derive(Debug)]
 pub enum Modules {
     MobileAuth,
     Gateway,
 }
+
+/// # Information
+/// TODO
 #[derive(Debug)]
 pub enum Messages {
     Close {
@@ -24,9 +30,11 @@ pub enum Messages {
     },
 }
 
+/// # Information
+/// TODO
 #[derive(Debug)]
 pub struct ThreadManager {
-    state: Arc<MainState>,
+    state: Arc<MainState>, 
 
     mobile_auth_sender: Option<Mutex<mpsc::Sender<OwnedMessage>>>,
 
@@ -46,6 +54,7 @@ impl ThreadManager {
         let (async_proc_output_tx, mut async_proc_output_rx) =
             mpsc::channel::<webview_packets::MobileAuth>(32);
 
+            // TODO: Make this a function
         tauri::async_runtime::spawn(async move {
             loop {
                 if let Some(output) = async_proc_output_rx.recv().await {
@@ -101,7 +110,7 @@ impl ThreadManager {
                         }
                 }
             } else {
-                println!("closing HOW? and also gami is a furry");
+                println!("Closing HOW? Also gami is a furry!");
                 break;
             }
         }

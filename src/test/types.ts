@@ -17,7 +17,14 @@ woof bark bark woof woof woof woof bark
 woof bark bark bark woof woof bark bark 
 */
 
-type InputType = 'text' | 'number' | 'email' | 'password' | 'search' | 'hidden' | string;
+type InputType =
+	| 'text'
+	| 'number'
+	| 'email'
+	| 'password'
+	| 'search'
+	| 'hidden'
+	| string;
 type ButtonType = 'button' | 'submit' | 'reset';
 type TextAreaType = 'soft' | 'hard' | 'off';
 

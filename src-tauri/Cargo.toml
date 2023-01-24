@@ -1,40 +1,33 @@
 [package]
 name = "cord-clone"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "A better Discord client, built with Tauri."
+authors = ["Pietruszka123 <3", "Frytak", "Gami"]
 license = ""
-repository = ""
+repository = "https://github.com/pietruszka123/TNaDC"
 edition = "2021"
 rust-version = "1.57"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-#crypto
+# Crypto 🐕‍🦺coin
 rsa = "*"
 rand = "0.8.5"
-
 sha2 = "0.10.6"
-
-
 base64 = "0.21.0"
 
-reqwest = {version = "0.11.13",features = ["json"] }
-
-websocket = "0.26.5"
-#async functionality
+# Async functionality 🗼
 tokio = { version = "1", features = ["full"] }
-futures = "0.3.25"
 
-
-
+# idk idc
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.2", features = ["http-all", "shell-open"] }
+
+reqwest = {version = "0.11.13",features = ["json"] }
+websocket = "0.26.5"
 
 [features]
 # by default Tauri runs in production mode
