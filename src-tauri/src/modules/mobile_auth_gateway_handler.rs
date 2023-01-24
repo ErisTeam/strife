@@ -69,6 +69,7 @@ impl MobileAuthHandler {
     pub fn generate_keys(&mut self) {
         let mut rng = rand::thread_rng();
 		println!("Generating keys...");
+		println!("Generating keys...");
 
         let bits = 2048;
 
@@ -217,10 +218,12 @@ impl MobileAuthHandler {
         while !self.connect(&mut reciver, &mut sender).await {
             println!("Reconnecting");
         }
+		println!("shutting down mobile auth")
+	}
 
-    async fn handle_message(&self, message: OwnedMessage) {
-        todo!("move to this function")
-    }
+	async fn handle_message(&self, message: OwnedMessage) {
+		todo!("move to this function")
+	}
 
     /// # Information
     /// TODO
