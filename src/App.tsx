@@ -12,7 +12,9 @@ const App: Component = () => {
 	const [ticket, setTicket] = createSignal('');
 	const [token, setToken] = createSignal('');
 	return (
-		<Router>
+		<>
+			<div>test</div>
+
 			<Routes>
 				<Route path="/" component={(<Prev />) as Component} />
 				<Route path="/app" />
@@ -24,7 +26,7 @@ const App: Component = () => {
 					</LoginStateProvider>
 				</Route>
 			</Routes>
-		</Router>
+		</>
 	);
 };
 

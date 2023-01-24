@@ -2,6 +2,7 @@ import { Component, createSignal, Show } from 'solid-js';
 import HCaptcha from 'solid-hcaptcha';
 import { useNavigate } from '@solidjs/router';
 import { useLoginState } from './LoginState';
+import { invoke } from '@tauri-apps/api';
 
 const Main = () => {
 	const LoginState: any = useLoginState();
@@ -50,9 +51,22 @@ const Main = () => {
 		<div>
 			<h1>Hemlo</h1>
 			<form
-				onSubmit={(e) => {
+				onSubmit={async (e) => {
 					e.preventDefault();
-					logIn();
+					console.log(`Email: ${email()} captcha: ${captchaToken()}`);
+					let res: any = JSON.parse(
+						await invoke('login', {
+							captcha_token: captchaToken(),
+							login: email(),
+							password: password(),
+						})
+					);
+					console.log(res, res.captcha_sitekey);
+					setShowCaptcha(true);
+					setCaptchaKey(res.captcha_sitekey);
+
+					console.log(captchaKey());
+					//logIn();
 				}}
 			>
 				<input

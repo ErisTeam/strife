@@ -10,47 +10,54 @@ extern crate tokio;
 
 use std::{ sync::{ Mutex, Arc } };
 
+use modules::login::Login;
 use tauri::{ State };
 use tokio::sync::mpsc;
 
 use crate::{ main_app_state::MainState, manager::ThreadManager };
 #[tauri::command]
 fn get_qrcode(state: State<Arc<MainState>>) -> String {
-    println!("test");
-    let s = state.send(manager::Messages::Start { what: manager::Modules::MobileAuth });
-    if let Some(s) = s {
-        return s;
-    }
-    format!("no {:?}", state.state.lock().unwrap())
+	println!("test");
+	let s = state.send(manager::Messages::Start { what: manager::Modules::MobileAuth });
+	if let Some(s) = s {
+		return s;
+	}
+	format!("no {:?}", state.state.lock().unwrap())
 }
 #[tauri::command]
 fn get_token(id: String, state: State<Arc<MainState>>) -> Option<String> {
-    //state.tokens_old.lock().unwrap()[0].clone()
-    state.tokens.lock().unwrap().get(&id).cloned()
+	//state.tokens_old.lock().unwrap()[0].clone()
+	state.tokens.lock().unwrap().get(&id).cloned()
+}
+
+#[tauri::command]
+async fn login(captcha_token: Option<String>, login: String, password: String) -> String {
+	let a = Login::new();
+	return serde_json::to_string(&a.login(captcha_token, login, password).await).unwrap();
 }
 
 fn main() {
-    println!("Starting");
+	println!("Starting");
 
-    let (input, rec) = mpsc::channel(32);
+	let (input, rec) = mpsc::channel(32);
 
-    let main_state = Arc::new(MainState::new(Mutex::new(input)));
+	let main_state = Arc::new(MainState::new(Mutex::new(input)));
 
-    let mut m = ThreadManager::new(main_state.clone(), rec);
+	let mut m = ThreadManager::new(main_state.clone(), rec);
 
-    tauri::Builder
-        ::default()
-        .manage(main_state)
-        .setup(|app| {
-            let app_handle = app.handle();
-            tauri::async_runtime::spawn(async move {
-                m.run(app_handle).await;
-            });
-            Ok(())
-        })
+	tauri::Builder
+		::default()
+		.manage(main_state)
+		.setup(|app| {
+			let app_handle = app.handle();
+			tauri::async_runtime::spawn(async move {
+				m.run(app_handle).await;
+			});
+			Ok(())
+		})
 
-        .invoke_handler(tauri::generate_handler![get_qrcode, get_token])
+		.invoke_handler(tauri::generate_handler![get_qrcode, get_token, login])
 
-        .run(tauri::generate_context!())
-        .expect("Error while running tauri application.");
+		.run(tauri::generate_context!())
+		.expect("Error while running tauri application.");
 }
