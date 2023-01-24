@@ -5,10 +5,10 @@ use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, PaddingScheme };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
 use crate::{
-    discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
-    webview_packets,
-    main_app_state::{ MainState, State },
-    modules::gateway_trait::send_heartbeat,
+	discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
+	webview_packets,
+	main_app_state::{ MainState, State },
+	modules::gateway_trait::send_heartbeat,
 };
 
 /// # Information
@@ -35,15 +35,15 @@ use crate::{
 /// For more information on how all of this functions you <br>
 /// should visit the [Unofficial Discord API](https://luna.gitlab.io/discord-unofficial-docs/desktop_remote_auth_v2.html).
 pub struct MobileAuthHandler {
-    pub timeout_ms: Arc<Mutex<u64>>,
-    pub heartbeat_interval: Arc<Mutex<u64>>,
+	pub timeout_ms: Arc<Mutex<u64>>,
+	pub heartbeat_interval: Arc<Mutex<u64>>,
 
-    pub connected: Mutex<bool>,
+	pub connected: Mutex<bool>,
 
-    pub public_key: Option<RsaPublicKey>,
-    private_key: Option<RsaPrivateKey>,
+	pub public_key: Option<RsaPublicKey>,
+	private_key: Option<RsaPrivateKey>,
 
-    app_state: Arc<MainState>,
+	app_state: Arc<MainState>,
 }
 impl MobileAuthHandler {
     pub fn new(app_state: Arc<MainState>) -> Self {
@@ -68,6 +68,7 @@ impl MobileAuthHandler {
     /// Generates a public and private key.
     pub fn generate_keys(&mut self) {
         let mut rng = rand::thread_rng();
+		println!("Generating keys...");
 
         let bits = 2048;
 
@@ -185,23 +186,23 @@ impl MobileAuthHandler {
             .await
             .unwrap();
 
-        let json = res.json::<discord::http_packets::Auth>().await.unwrap();
-        match json {
-            discord::http_packets::Auth::LoginResponse { encrypted_token } => {
-                let bytes = general_purpose::STANDARD.decode(encrypted_token.as_bytes()).unwrap();
-                let token = String::from_utf8(self.decrypt(bytes)).unwrap();
-                Ok(token)
-            }
-            Auth::Error { code, errors, message } => {
-                println!("{} {} {}", code, errors, message);
-                Err(message)
-            }
-            _ => {
-                println!("Unknown");
-                Err("Unknown".to_string())
-            }
-        }
-    }
+		let json = res.json::<discord::http_packets::Auth>().await.unwrap();
+		match json {
+			discord::http_packets::Auth::LoginResponse { encrypted_token } => {
+				let bytes = general_purpose::STANDARD.decode(encrypted_token.as_bytes()).unwrap();
+				let token = String::from_utf8(self.decrypt(bytes)).unwrap();
+				Ok(token)
+			}
+			Auth::Error { code, errors, message } => {
+				println!("{} {} {}", code, errors, message);
+				Err(message)
+			}
+			_ => {
+				println!("Unknown");
+				Err("Unknown".to_string())
+			}
+		}
+	}
 
     /// # Information
     /// Runs the mobile auth.
@@ -217,7 +218,8 @@ impl MobileAuthHandler {
             println!("Reconnecting");
         }
 
-        println!("Shutting down mobile auth")
+    async fn handle_message(&self, message: OwnedMessage) {
+        todo!("move to this function")
     }
 
     /// # Information
@@ -229,7 +231,7 @@ impl MobileAuthHandler {
     ) -> bool {
         println!("Connecting...");
 
-        *self.connected.lock().unwrap() = true;
+		*self.connected.lock().unwrap() = true;
 
         let mut client = self.conn();
         let mut instant = std::time::Instant::now();
