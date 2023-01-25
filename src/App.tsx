@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web';
-import { Routes, Route, Router } from '@solidjs/router';
+import { Routes, Route, Router, hashIntegration } from '@solidjs/router';
 import { Component, createSignal } from 'solid-js';
 
 import './style.css';
@@ -12,7 +12,7 @@ const App: Component = () => {
 	const [ticket, setTicket] = createSignal('');
 	const [token, setToken] = createSignal('');
 	return (
-		<>
+		<Router source={hashIntegration()}>
 			<div>test</div>
 
 			<Routes>
@@ -26,7 +26,7 @@ const App: Component = () => {
 					</LoginStateProvider>
 				</Route>
 			</Routes>
-		</>
+		</Router>
 	);
 };
 
