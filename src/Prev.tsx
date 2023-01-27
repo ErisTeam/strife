@@ -1,8 +1,5 @@
 import { createSignal, onCleanup, onMount } from 'solid-js';
-import logo from './assets/logo.svg';
 import { invoke } from '@tauri-apps/api/tauri';
-import { emit, listen } from '@tauri-apps/api/event';
-import './Prev.css';
 import Tests from './Tests';
 
 import qrcode from 'qrcode';
@@ -13,9 +10,6 @@ import { A, Link } from '@solidjs/router';
 function Prev() {
 	const [greetMsg, setGreetMsg] = createSignal('');
 	const [name, setName] = createSignal('');
-
-	const [login, setLogin] = createSignal('');
-	const [password, setPassword] = createSignal('');
 
 	const [image, setImage] = createSignal('');
 

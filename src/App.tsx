@@ -30,4 +30,4 @@ const App: Component = () => {
 	);
 };
 
-export default App;
+render(() => <App />, document.getElementById('root') as HTMLElement);

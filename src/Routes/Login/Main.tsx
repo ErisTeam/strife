@@ -84,7 +84,6 @@ const Main = () => {
 			</form>
 
 			<Show when={showCaptcha()}>
-				{/* TODO: GET AFTER FAILED LOGIN ATTEMPT */}
 				<HCaptcha
 					sitekey={captchaKey()}
 					onVerify={(token) => setCaptchaToken(token)}
