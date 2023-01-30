@@ -10,7 +10,12 @@
 <body>
   <div id="root"></div>
 
-  <script src="/src/index.tsx" type="module"></script>
+  <script src="/src/App.tsx" type="module"></script>
+  <script>
+    if (window.location.href == 'http://192.168.1.13:1420') {
+      window.location.replace('http://192.168.1.13:1420');
+    }
+  </script>
 </body>
 
 </html>

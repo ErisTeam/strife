@@ -123,7 +123,7 @@ function Prev() {
 				);
 			})}
 
-			{/* <A href="/login">test</A> */}
+			<A href="/login">test</A>
 
 			<Tests />
 		</div>

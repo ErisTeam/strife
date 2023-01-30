@@ -1,8 +1,15 @@
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
+import autoprefixer from "autoprefixer";
+
 
 export default defineConfig({
   plugins: [solidPlugin()],
+  css:{
+    postcss:{
+      plugins:[autoprefixer, require('postcss-nested')]
+    }
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors

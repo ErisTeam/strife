@@ -1,10 +1,14 @@
 import { Component, createSignal, Show } from 'solid-js';
 import { useLoginState } from './LoginState';
+import { useAppState } from '../../AppState';
+import { useNavigate } from '@solidjs/router';
 
 const MFA = () => {
 	const [MFACode, setMFACode] = createSignal('');
 	const [useSMS, setUseSMS] = createSignal(false);
 	const LoginState: any = useLoginState();
+	const AppState: any = useAppState();
+	const navigate = useNavigate();
 	async function sendSMS() {
 		const url = 'https://discord.com/api/v9/auth/mfa/sms/send';
 		const data = {
@@ -40,8 +44,13 @@ const MFA = () => {
 				body: JSON.stringify(data),
 			});
 			let resData = await response.json();
-			console.log(resData);
+
 			LoginState.setToken(resData.token);
+			AppState.setUserToken(resData.token);
+			localStorage.setItem('userToken', resData.token);
+			console.log(AppState.userToken());
+			navigate('/app');
+
 			/* TODO: send to rust to open gateway */
 		} else {
 			const url = 'https://discord.com/api/v9/auth/mfa/totp';
@@ -60,21 +69,12 @@ const MFA = () => {
 				body: JSON.stringify(data),
 			});
 			let resData = await response.json();
-			console.log(resData);
 			LoginState.setToken(resData.token);
+			AppState.setUserToken(resData.token);
+			localStorage.setItem('userToken', resData.token);
+			console.log(AppState.userToken());
+			navigate('/app');
 		}
-	}
-	async function getGuilds() {
-		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
-		const response = await fetch(url, {
-			method: 'GET',
-
-			headers: {
-				Authorization: `${LoginState.token()}`,
-			},
-		});
-		let resData = await response.json();
-		console.log(resData);
 	}
 
 	return (
@@ -94,7 +94,6 @@ const MFA = () => {
 
 			<button onClick={() => sendSMS()}>Send SMS</button>
 			<button onClick={() => verifyMFA()}>Continue</button>
-			<button onClick={() => getGuilds()}>Get Guilds</button>
 		</div>
 	);
 };

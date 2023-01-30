@@ -42,8 +42,19 @@ const Main = () => {
 
 		console.log(resData);
 		if (resData.token == null && resData.sms == true) {
-			LoginState.setTicket(resData.ticket);
 			navigate('/login/mfa');
+			LoginState.setTicket(resData.ticket);
+			console.log(`Email: ${email()} captcha: ${captchaToken()}`);
+			let res: any = JSON.parse(
+				await invoke('logIn', {
+					captcha_token: captchaToken(),
+					login: email(),
+					password: password(),
+				})
+			);
+			console.log(res, res.captcha_sitekey);
+
+			console.log(captchaKey());
 		}
 	}
 
@@ -53,20 +64,8 @@ const Main = () => {
 			<form
 				onSubmit={async (e) => {
 					e.preventDefault();
-					console.log(`Email: ${email()} captcha: ${captchaToken()}`);
-					let res: any = JSON.parse(
-						await invoke('login', {
-							captcha_token: captchaToken(),
-							login: email(),
-							password: password(),
-						})
-					);
-					console.log(res, res.captcha_sitekey);
-					setShowCaptcha(true);
-					setCaptchaKey(res.captcha_sitekey);
 
-					console.log(captchaKey());
-					//logIn();
+					logIn();
 				}}
 			>
 				<input

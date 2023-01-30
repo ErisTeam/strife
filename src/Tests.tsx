@@ -11,11 +11,12 @@ import TextArea from './test/components/TextArea/TextArea';
 function Tests() {
 	return (
 		<div class={style.mainDiv}>
-			<Input type='text' placeholder='Gami to Furras' />
-			<Button type='submit'>Gami to Furras</Button>
-			<CheckBox value='Test CheckBox' />
+			<h1>TESTs</h1>
+			<Input type="text" placeholder="Gami to Furras" />
+			<Button type="submit">Gami to Furras</Button>
+			<CheckBox value="Test CheckBox" />
 			<Switch rounded />
-			<TextArea wrap='hard' placeholder='Gami to Furras' />
+			<TextArea wrap="hard" placeholder="Gami to Furras" />
 		</div>
 	);
 }
