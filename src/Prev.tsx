@@ -138,13 +138,6 @@ function Prev() {
 					</Show>
 					<img src={image()} />
 				</div>
-				<button
-					onClick={async (e) => {
-						await emit('g', { test: 'test' });
-					}}
-				>
-					test
-				</button>
 			</div>
 
 			<p>{greetMsg}</p>
@@ -156,7 +149,7 @@ function Prev() {
 				);
 			})}
 
-			<A href="/login">test</A>
+			<A href="/gamitofurras">Gami to Furras</A>
 
 			<Tests />
 		</div>

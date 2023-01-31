@@ -5,6 +5,8 @@ import {
 	Router,
 	hashIntegration,
 	Outlet,
+	A,
+	Navigate,
 } from '@solidjs/router';
 import { Component, createSignal } from 'solid-js';
 import Application from './Routes/App/Application';
@@ -24,8 +26,18 @@ const App: Component = () => {
 				<div>test</div>
 
 				<Routes>
-					<Route path="/" component={(<Prev />) as Component} />
-					<Route path="/test" component={(<Tests />) as Component} />
+					<Route path="/" component={Prev}></Route>
+
+					<Route path="/test" component={Tests} />
+
+					<Route
+						path={'/gamitofurras'}
+						element={
+							<div>
+								<h1>gami to furras</h1>
+							</div>
+						}
+					></Route>
 
 					<Route
 						path="/app"
@@ -35,13 +47,13 @@ const App: Component = () => {
 							</>
 						}
 					>
-						<Route path="/" component={(<Application />) as Component} />
+						<Route path="/" component={Application} />
 					</Route>
 
 					<Route path="/login">
 						<LoginStateProvider>
-							<Route path="/" component={(<Main />) as Component} />
-							<Route path="/mfa" component={(<MFA />) as Component} />
+							<Route path="/" component={Main} />
+							<Route path="/mfa" component={MFA} />
 						</LoginStateProvider>
 					</Route>
 				</Routes>
