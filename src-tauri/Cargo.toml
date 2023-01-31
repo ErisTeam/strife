@@ -36,6 +36,8 @@ default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
+
+#! Remove For Production
 [profile.release.package.wry]
 debug = true
 debug-assertions = true
@@ -45,3 +47,4 @@ codegen-units = 1 # Compile crates one after another so the compiler can optimiz
 lto = true # Enables link to optimizations
 opt-level = "s" # Optimize for binary size
 # strip = true  # Automatically strip symbols from the binary.
+#! -----------------------------

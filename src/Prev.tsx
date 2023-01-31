@@ -110,6 +110,8 @@ function Prev() {
 			});
 		}
 
+		let b = await invoke('test', {});
+		console.log('b', b);
 		//let qrcode = await invoke("getQrcode");
 		//console.log(qrcode);
 	});
