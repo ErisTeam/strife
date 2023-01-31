@@ -2,8 +2,8 @@ import { useAppState } from './AppState';
 const AppState: any = useAppState();
 import { Guild } from './discord';
 
-class API {
-	static async updateGuilds() {
+export default {
+	async updateGuilds() {
 		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
 		const response = await fetch(url, {
 			method: 'GET',
@@ -48,6 +48,5 @@ class API {
 			AppState.setUserGuilds((prev: any) => [...prev, guild]);
 			console.log(AppState.userGuilds());
 		});
-	}
-}
-export default API;
+	},
+};

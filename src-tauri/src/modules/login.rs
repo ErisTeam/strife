@@ -15,6 +15,9 @@ pub struct LoginResponse {
 	captcha_key: Vec<String>,
 	captcha_sitekey: String,
 	captcha_service: String,
+	token: Option<String>,
+	sms: Option<bool>,
+	ticket: Option<String>,
 }
 
 pub struct Login {}

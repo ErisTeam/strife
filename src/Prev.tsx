@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from 'solid-js';
+import { createSignal, onCleanup, onMount, Show } from 'solid-js';
 import { invoke } from '@tauri-apps/api/tauri';
 import Tests from './Tests';
 
@@ -6,10 +6,17 @@ import qrcode from 'qrcode';
 import { getToken, startListener, useTaurListener } from './test';
 import { GuildsResponse, UsersResponse } from './discord';
 import { A, Link } from '@solidjs/router';
+import HCaptcha from 'solid-hcaptcha';
+import { emit } from '@tauri-apps/api/event';
 
 function Prev() {
 	const [greetMsg, setGreetMsg] = createSignal('');
 	const [name, setName] = createSignal('');
+	const [password, setPassword] = createSignal('');
+
+	const [captcha_token, setCaptchaToken] = createSignal('');
+
+	const [captcha_key, setCaptchaKey] = createSignal('');
 
 	const [image, setImage] = createSignal('');
 
@@ -19,9 +26,18 @@ function Prev() {
 
 	const [userId, setUserId] = createSignal('');
 
-	async function test() {
-		console.log('test');
-		setGreetMsg(await invoke('get_qrcode', {}));
+	async function login() {
+		console.log(`test`);
+		let res: any = await invoke('login', {
+			captcha_token: captcha_token(),
+			login: name(),
+			password: password(),
+		});
+		let json = JSON.parse(res);
+		console.log(json);
+		if (json.captcha_key.includes('captcha-required')) {
+			setCaptchaKey(json.captcha_sitekey);
+		}
 	}
 
 	async function getGuilds() {
@@ -103,15 +119,32 @@ function Prev() {
 			<div class="row">
 				<div>
 					<input
-						id="greet-input"
 						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder="Enter a name..."
+						placeholder="Login"
 					/>
-					<button type="button" onClick={() => test()}>
-						Greet
+					<input
+						type="password"
+						placeholder="password"
+						onChange={(e) => setPassword(e.currentTarget.value)}
+					/>
+					<button type="button" onClick={() => login()}>
+						Login
 					</button>
+					<Show when={captcha_key()}>
+						<HCaptcha
+							sitekey={captcha_key()}
+							onVerify={(token) => setCaptchaToken(token)}
+						/>
+					</Show>
 					<img src={image()} />
 				</div>
+				<button
+					onClick={async (e) => {
+						await emit('g', { test: 'test' });
+					}}
+				>
+					test
+				</button>
 			</div>
 
 			<p>{greetMsg}</p>
