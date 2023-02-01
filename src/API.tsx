@@ -1,9 +1,11 @@
 import { useAppState } from './AppState';
 const AppState: any = useAppState();
-import { Guild } from './discord';
+import { GuildType } from './discord';
 
 export default {
 	async updateGuilds() {
+		AppState.setUserGuilds([]);
+
 		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
 		const response = await fetch(url, {
 			method: 'GET',
@@ -14,6 +16,7 @@ export default {
 		});
 		let resData = await response.json();
 		let guildIds: string[] = [];
+		console.log(resData);
 
 		resData.guild_affinities.forEach((e: any) => {
 			guildIds.push(e.guild_id);
@@ -31,7 +34,7 @@ export default {
 			let resData = await response.json();
 
 			/* create Guild based on data from response */
-			let guild: Guild = {
+			let guild: GuildType = {
 				id: resData.id,
 				name: resData.name,
 				icon: resData.icon,

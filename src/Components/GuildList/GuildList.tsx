@@ -2,6 +2,7 @@ import { Component, createSignal, Show, onMount, For } from 'solid-js';
 import { useAppState } from '../../AppState';
 import API from '../../API';
 
+import Guild from '../Guild/Guild';
 const GuildList = () => {
 	const AppState: any = useAppState();
 
@@ -13,11 +14,7 @@ const GuildList = () => {
 		<nav>
 			<ul>
 				<For each={AppState.userGuilds()}>
-					{(guild) => (
-						<li>
-							<a href={`/app/${guild.id}`}>{guild.name}</a>
-						</li>
-					)}
+					{(guild) => <Guild id={guild.id} />}
 				</For>
 			</ul>
 		</nav>

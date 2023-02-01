@@ -8,18 +8,23 @@ import {
 	A,
 	Navigate,
 } from '@solidjs/router';
-import { Component, createSignal } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
 import Application from './Routes/App/Application';
 import Tests from './Tests';
 import './style.css';
 import Main from './Routes/Login/Main';
 import MFA from './Routes/Login/MFA';
-import GuildList from './Components/ServerList/GuildList';
+import GuildList from './Components/GuildList/GuildList';
 import Prev from './Prev';
 import { LoginStateProvider } from './Routes/Login/LoginState';
 import { AppStateProvider } from './AppState';
+import { useAppState } from './AppState';
 
 const App: Component = () => {
+	const AppState: any = useAppState();
+	onMount(async () => {
+		AppState.setUserToken(localStorage.getItem('userToken'));
+	});
 	return (
 		<AppStateProvider>
 			<Router source={hashIntegration()}>

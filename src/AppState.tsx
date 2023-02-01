@@ -1,8 +1,8 @@
 import { createSignal, createContext, useContext } from 'solid-js';
-import { Guild } from './discord';
+import { GuildType } from './discord';
 const [userToken, setUserToken] = createSignal('');
 
-const [userGuilds, setUserGuilds] = createSignal([] as Guild[]);
+const [userGuilds, setUserGuilds] = createSignal([] as GuildType[]);
 const AppState = createContext({
 	userToken,
 	setUserToken,

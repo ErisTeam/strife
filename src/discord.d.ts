@@ -13,7 +13,7 @@ type Role = {
 	managed: boolean;
 	mentionable: boolean;
 };
-type Guild = {
+type GuildType = {
 	id: string;
 	name: string;
 	icon: string;
@@ -26,4 +26,4 @@ type Guild = {
 	ownerId: string;
 	roles: Role[];
 };
-export type { GuildsResponse, UsersResponse, Role, Guild };
+export type { GuildsResponse, UsersResponse, Role, GuildType };

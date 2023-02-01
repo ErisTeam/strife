@@ -12,10 +12,6 @@ import Tests from '../../Tests';
 const Application = () => {
 	const AppState: any = useAppState();
 
-	onMount(async () => {
-		AppState.setUserToken(localStorage.getItem('userToken'));
-	});
-
 	return (
 		<div>
 			<h1>LELELLEE</h1>
