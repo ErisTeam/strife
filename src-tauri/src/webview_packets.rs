@@ -4,11 +4,34 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
+use crate::modules::login;
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
+#[serde(rename_all = "camelCase")]
+pub enum Auth {
+	LoginSuccess {
+		user_id: String,
+		user_settings: login::UserSettings,
+	},
+	RequireAuth {
+		captcha_key: Vec<String>,
+		captcha_sitekey: String,
+		captcha_service: String,
+
+		sms: Option<bool>,
+		ticket: Option<String>,
+	},
+	Error {
+		code: u64,
+		errors: login::err,
+		message: String,
+	},
+}
 
 /// # Information
 /// `MobileAuth` is used for sending data associated with <br>
 /// QR code authentication between Rust and React.
-/// 
+///
 /// # More Information
 /// `MobileAuth` may be of type: <br>
 /// - `Qrcode` <br>
@@ -17,37 +40,38 @@ use serde::{ Deserialize, Serialize };
 /// - `LoginError` <br>
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub enum MobileAuth {
-    /// # Information
-    /// Contains a String with the QR code.
-    #[serde(rename = "qrcode")]
-    Qrcode {
-        qrcode: String,
-    },
+	/// # Information
+	/// Contains a String with the QR code.
+	#[serde(rename = "qrcode")]
+	Qrcode {
+		qrcode: String,
+	},
 
-    /// # Information
-    /// Used for sending user login data .
-    #[serde(rename = "ticketData")]
-    TicketData {
-        #[serde(rename = "userId")]
-        user_id: String,
-        discriminator: String,
-        #[serde(rename = "avatarHash")]
-        avatar_hash: String,
-        username: String,
-    },
+	/// # Information
+	/// Used for sending user login data .
+	#[serde(rename = "ticketData")]
+	TicketData {
+		#[serde(rename = "userId")]
+		user_id: String,
+		discriminator: String,
+		#[serde(rename = "avatarHash")]
+		avatar_hash: String,
+		username: String,
+	},
 
-    /// # Information
-    /// TODO
-    #[serde(rename = "loginSuccess")]
-    LoginSuccess {},
+	/// # Information
+	/// TODO
+	#[serde(rename = "loginSuccess")]
+	LoginSuccess {},
 
-    /// # Information
-    /// Contains an error message if anything went wrong.
-    #[serde(rename = "loginError")]
-    LoginError {
-        error: String,
-    },
+	/// # Information
+	/// Contains an error message if anything went wrong.
+	#[serde(rename = "loginError")]
+	LoginError {
+		error: String,
+	},
 }
 
 /// # Information

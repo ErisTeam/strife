@@ -14,8 +14,6 @@ function Prev() {
 	const [name, setName] = createSignal('');
 	const [password, setPassword] = createSignal('');
 
-	const [captcha_token, setCaptchaToken] = createSignal('');
-
 	const [captcha_key, setCaptchaKey] = createSignal('');
 
 	const [image, setImage] = createSignal('');
@@ -26,22 +24,46 @@ function Prev() {
 
 	const [userId, setUserId] = createSignal('');
 
-	async function login() {
-		console.log(`test`);
+	async function login(captcha_token: string | null = null) {
+		console.log(`test`, captcha_token);
 		let res: any = await invoke('login', {
-			captcha_token: captcha_token(),
+			captchaToken: captcha_token,
 			login: name(),
 			password: password(),
 		});
-		let json = JSON.parse(res);
-		console.log(json);
-		if (json.captcha_key.includes('captcha-required')) {
-			setCaptchaKey(json.captcha_sitekey);
+
+		console.log(res);
+		if (res.captcha_key?.includes('captcha-required')) {
+			setCaptchaKey(res.captcha_sitekey);
 		}
+		if (res.type == 'loginSuccess') {
+			setUserId(res.user_id);
+		}
+		setGreetMsg(JSON.stringify(res));
+	}
+	async function logout() {
+		let token = await getToken(userId());
+		if (!token) {
+			setGreetMsg('No token');
+			return;
+		}
+		// let res = await invoke('logout', {
+		// 	token: token,
+		// });
+		//https://discord.com/api/v9/auth/logout
 	}
 
 	async function getGuilds() {
+		if (!userId()) {
+			setGreetMsg('No user id');
+			return;
+		}
 		let token = await getToken(userId());
+		if (!token) {
+			setGreetMsg('No token');
+			return;
+		}
+		console.log(token);
 		let json: GuildsResponse = await (
 			await fetch('https://discord.com/api/v9/users/@me/affinities/guilds', {
 				headers: new Headers({
@@ -53,8 +75,16 @@ function Prev() {
 		console.log(json);
 		setGuilds(json.guild_affinities);
 	}
-	async function get_users() {
-		let token: string = await invoke('get_token', { id: userId() });
+	async function getUsers() {
+		if (!userId()) {
+			setGreetMsg('No user id');
+			return;
+		}
+		let token = await getToken(userId());
+		if (!token) {
+			setGreetMsg('No token');
+			return;
+		}
 		let json: UsersResponse = await (
 			await fetch('https://discord.com/api/v9/users/@me/affinities/users', {
 				headers: new Headers({
@@ -92,7 +122,7 @@ function Prev() {
 				`https://cdn.discordapp.com/avatars/${i.userId}/${i.avatarHash}.webp?size=128`
 			);
 		} else if (input.type == 'loginSuccess') {
-			getGuilds();
+			setGreetMsg('login success');
 		}
 	});
 	onCleanup(async () => {
@@ -110,8 +140,8 @@ function Prev() {
 			});
 		}
 
-		let b = await invoke('test', {});
-		console.log('b', b);
+		// let b = await invoke('test', {});
+		// console.log('b', b);
 		//let qrcode = await invoke("getQrcode");
 		//console.log(qrcode);
 	});
@@ -135,13 +165,32 @@ function Prev() {
 					<Show when={captcha_key()}>
 						<HCaptcha
 							sitekey={captcha_key()}
-							onVerify={(token) => setCaptchaToken(token)}
+							onVerify={(token) => {
+								login(token);
+							}}
 						/>
 					</Show>
 					<img src={image()} />
 				</div>
 			</div>
-
+			<div class="row">
+				<div>
+					<button
+						onClick={() => {
+							getGuilds();
+						}}
+					>
+						Get Guilds
+					</button>
+					<button
+						onClick={() => {
+							getUsers();
+						}}
+					>
+						Get Users
+					</button>
+				</div>
+			</div>
 			<p>{greetMsg}</p>
 			{guilds().map((guild) => {
 				return (

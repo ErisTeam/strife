@@ -12,8 +12,8 @@ use crate::{
 use super::gateway_trait;
 
 pub struct Gateway {
-	pub timeout_ms: Arc<u64>,
-	pub heartbeat_interval: Arc<u64>,
+	pub timeout_ms: u64,
+	pub heartbeat_interval: u64,
 	pub state: Arc<MainState>,
 
 	token: String,
@@ -22,8 +22,8 @@ impl Gateway {
 	pub fn new(state: Arc<MainState>) -> Self {
 		Self {
 			state,
-			timeout_ms: Arc::new(0),
-			heartbeat_interval: Arc::new(0),
+			timeout_ms: 0,
+			heartbeat_interval: 0,
 			token: "".to_string(),
 		}
 	}
@@ -100,7 +100,7 @@ impl Gateway {
 			send_heartbeat(
 				&mut instant,
 				started,
-				*self.heartbeat_interval,
+				self.heartbeat_interval,
 				&mut ack_recived,
 				&mut client,
 				&(|| -> Option<String> {

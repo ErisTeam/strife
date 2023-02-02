@@ -14,29 +14,29 @@ use crate::{
 /// # Information
 /// Handles the QR code authentication, as well as sending <br>
 /// the heartbeats.
-/// 
+///
 /// # More Information
-/// 
+///
 /// To start the authentication we generate a public key and <br>
 /// send it to discord. We should receive encrypted data, <br>
 /// decrypt it and send it back to ensure that the key is working.
-/// 
+///
 /// After that, when the user scans the QE code, we are going <br>
 /// to receive encrypted user data which contains:
 ///     - `user ID` (snowflake)
 ///     - `user discriminator` (int)
 ///     - `user avatar hash` (hex)
 ///     - `username` (string) <br>
-/// 
+///
 /// On the users app there should appear a prompt to accept or <br>
 /// decline the logging in attempt. When the user accepts we <br>
 /// are going to receive a ticket.
-/// 
+///
 /// For more information on how all of this functions you <br>
 /// should visit the [Unofficial Discord API](https://luna.gitlab.io/discord-unofficial-docs/desktop_remote_auth_v2.html).
 pub struct MobileAuthHandler {
-	pub timeout_ms: Arc<Mutex<u64>>,
-	pub heartbeat_interval: Arc<Mutex<u64>>,
+	timeout_ms: u64,
+	heartbeat_interval: u64,
 
 	pub connected: Mutex<bool>,
 
@@ -48,8 +48,8 @@ pub struct MobileAuthHandler {
 impl MobileAuthHandler {
 	pub fn new(app_state: Arc<MainState>) -> Self {
 		Self {
-			timeout_ms: Arc::new(Mutex::new(0)),
-			heartbeat_interval: Arc::new(Mutex::new(0)),
+			timeout_ms: 0,
+			heartbeat_interval: 0,
 			connected: Mutex::new(false),
 			app_state,
 			public_key: None,
@@ -98,7 +98,27 @@ impl MobileAuthHandler {
 			.unwrap();
 	}
 
-	fn send_proof(&self, client: &mut Client<TlsStream<TcpStream>>, data: Vec<u8>) {
+	fn handle_hello(
+		&mut self,
+		client: &mut Client<TlsStream<TcpStream>>,
+		heartbeat_interval: u64,
+		timeout_ms: u64
+	) {
+		self.timeout_ms = timeout_ms;
+		self.heartbeat_interval = heartbeat_interval;
+		println!("hello {} {}", heartbeat_interval, timeout_ms);
+		self.send_init(client);
+	}
+
+	fn handle_once_proof(
+		&self,
+		client: &mut Client<TlsStream<TcpStream>>,
+		encrypted_nonce: String
+	) {
+		let bytes = general_purpose::STANDARD.decode(encrypted_nonce.as_bytes()).unwrap();
+
+		let data = self.decrypt(bytes);
+
 		use sha2::Digest;
 		println!("data {:?}", general_purpose::STANDARD.encode(&data));
 		let mut hasher = sha2::Sha256::new();
@@ -121,30 +141,6 @@ impl MobileAuthHandler {
 			)
 			.unwrap();
 		println!("Sent proof");
-	}
-
-	fn handle_hello(
-		&self,
-		client: &mut Client<TlsStream<TcpStream>>,
-		heartbeat_interval: u64,
-		timeout_ms: u64
-	) {
-		*self.timeout_ms.lock().unwrap() = timeout_ms;
-		*self.heartbeat_interval.lock().unwrap() = heartbeat_interval;
-		println!("hello {} {}", heartbeat_interval, timeout_ms);
-		self.send_init(client);
-	}
-
-	fn handle_once_proof(
-		&self,
-		client: &mut Client<TlsStream<TcpStream>>,
-		encrypted_nonce: String
-	) {
-		let bytes = general_purpose::STANDARD.decode(encrypted_nonce.as_bytes()).unwrap();
-
-		let data = self.decrypt(bytes);
-
-		self.send_proof(client, data);
 	}
 	fn conn(&self) -> Client<TlsStream<TcpStream>> {
 		use websocket::ClientBuilder;
@@ -191,24 +187,21 @@ impl MobileAuthHandler {
 	}
 
 	pub async fn run(
-		&self,
+		&mut self,
 		reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
 		sender: tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
 	) {
 		let mut reciver = reciver;
 		let mut sender = sender;
 		while !self.connect(&mut reciver, &mut sender).await {
+			*self.connected.lock().unwrap() = false;
 			print!("Reconnecting");
 		}
 		println!("shutting down mobile auth")
 	}
 
-	async fn handle_message(&self, message: OwnedMessage) {
-		todo!("move to this function")
-	}
-
 	pub async fn connect(
-		&self,
+		&mut self,
 		reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,
 		sender: &mut tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
 	) -> bool {
@@ -256,15 +249,19 @@ impl MobileAuthHandler {
 								self.handle_once_proof(&mut client, encrypted_nonce),
 							MobileAuthGatewayPackets::PendingRemoteInit { fingerprint } => {
 								println!("Fingerprint: {}", fingerprint);
-								let qr_url = format!("https://discordapp.com/ra/{}", fingerprint);
+								let new_qr_url =
+									format!("https://discordapp.com/ra/{}", fingerprint);
 								sender
 									.send(webview_packets::MobileAuth::Qrcode {
-										qrcode: qr_url.clone(),
+										qrcode: new_qr_url.clone(),
 									}).await
 									.unwrap();
 								let mut state = self.app_state.state.lock().unwrap();
-								if matches!(&*state, State::LoginScreen { .. }) {
-									*state = State::LoginScreen { qr_url: qr_url.clone() };
+								match *state {
+									State::LoginScreen { ref mut qr_url, .. } => {
+										*qr_url = new_qr_url;
+									}
+									_ => {}
 								}
 							}
 							MobileAuthGatewayPackets::PendingTicket { encrypted_user_payload } => {
@@ -329,7 +326,7 @@ impl MobileAuthHandler {
 			send_heartbeat(
 				&mut instant,
 				started,
-				*self.heartbeat_interval.lock().unwrap(),
+				self.heartbeat_interval,
 				&mut ack_recived,
 				&mut client,
 				&(|| {

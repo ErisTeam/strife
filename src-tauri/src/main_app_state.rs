@@ -1,6 +1,6 @@
 use std::{ sync::Mutex, collections::HashMap };
 
-use tauri::{ App, AppHandle, Manager };
+use tauri::{ AppHandle, Manager };
 use tokio::sync::mpsc;
 
 use crate::manager::Messages;
@@ -9,6 +9,7 @@ use crate::manager::Messages;
 pub enum State {
 	LoginScreen {
 		qr_url: String,
+		captcha_token: Option<String>,
 	},
 }
 
@@ -26,7 +27,7 @@ impl MainState {
 		Self {
 			tokens: Mutex::new(HashMap::new()),
 			sender,
-			state: Mutex::new(State::LoginScreen { qr_url: String::new() }),
+			state: Mutex::new(State::LoginScreen { qr_url: String::new(), captcha_token: None }),
 			handlers: Mutex::new(Vec::new()),
 		}
 	}
@@ -46,9 +47,9 @@ impl MainState {
 		handlers.clear();
 
 		match &*state {
-			State::LoginScreen { qr_url } => {
+			State::LoginScreen { qr_url, .. } => {
 				println!("Registering event handler for g (global");
-				let h = handle.listen_global("g", |event| {
+				let h = handle.listen_global("get_qrcode", |event| {
 					println!("got event-name with payload {:?}", event.payload());
 				});
 				handlers.push(h);
