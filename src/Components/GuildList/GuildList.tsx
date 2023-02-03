@@ -3,7 +3,12 @@ import { useAppState } from '../../AppState';
 import API from '../../API';
 
 import Guild from '../Guild/Guild';
-const GuildList = () => {
+import style from './GuildList.module.css';
+interface GuildListProps {
+	className?: string;
+}
+
+const GuildList = (props: GuildListProps) => {
 	const AppState: any = useAppState();
 
 	onMount(async () => {
@@ -11,7 +16,7 @@ const GuildList = () => {
 	});
 
 	return (
-		<nav>
+		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>
 				<For each={AppState.userGuilds()}>
 					{(guild) => <Guild id={guild.id} />}

@@ -33,7 +33,6 @@ export default {
 			});
 			let resData = await response.json();
 
-			/* create Guild based on data from response */
 			let guild: GuildType = {
 				id: resData.id,
 				name: resData.name,

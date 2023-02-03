@@ -27,7 +27,7 @@ const Guild = (props: GuildProps) => {
 					alt={guild.name}
 				/>
 			</A>
-			<div></div>
+			<span>{guild.name}</span>
 		</li>
 	);
 };

@@ -1,2 +1,60 @@
 .guild {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* set all transform speed to 100ms */
+
+	aspect-ratio: 1/1;
+	width: 65%;
+	margin: 0 auto;
+	margin-top: 0.75rem;
+	position: relative;
+	img {
+		transition: all 500ms;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 50%;
+	}
+	span {
+		opacity: 0;
+		position: absolute;
+		padding: 0.5rem;
+		border-radius: 12px;
+		background-color: var(--depth4);
+		left: 5rem;
+		color: var(--text);
+		width: 16ch;
+		text-align: center;
+		translate: -100%;
+		transition: all 500ms;
+	}
+}
+.guild:hover {
+	img {
+		border-radius: 15%;
+	}
+	span {
+		opacity: 1;
+		translate: 0;
+	}
+}
+
+.guild::before {
+	position: absolute;
+	content: '';
+	width: 0rem;
+	height: 0rem;
+	display: block;
+	left: -1.2rem;
+	top: calc(50% - 0.5rem);
+	background-color: var(--text);
+	border-radius: 100px;
+
+	transition: all 400ms ease-in-out;
+}
+.guild:hover::before {
+	width: 0.75rem;
+	height: 2rem;
+	top: calc(50% - 1.1rem);
 }

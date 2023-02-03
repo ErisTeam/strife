@@ -19,6 +19,7 @@ import Prev from './Prev';
 import { LoginStateProvider } from './Routes/Login/LoginState';
 import { AppStateProvider } from './AppState';
 import { useAppState } from './AppState';
+import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
 
 const App: Component = () => {
 	const AppState: any = useAppState();
@@ -28,8 +29,6 @@ const App: Component = () => {
 	return (
 		<AppStateProvider>
 			<Router source={hashIntegration()}>
-				<div>test</div>
-
 				<Routes>
 					<Route path="/" component={Prev}></Route>
 
@@ -44,14 +43,7 @@ const App: Component = () => {
 						}
 					></Route>
 
-					<Route
-						path="/app"
-						element={
-							<>
-								<GuildList /> <Outlet />
-							</>
-						}
-					>
+					<Route path="/app" element={<ApplicationWrapper />}>
 						<Route path="/" component={Application} />
 					</Route>
 

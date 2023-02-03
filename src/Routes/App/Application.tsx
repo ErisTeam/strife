@@ -8,12 +8,13 @@ import {
 	hashIntegration,
 } from '@solidjs/router';
 import Tests from '../../Tests';
+import style from './Application.module.css';
 
 const Application = () => {
 	const AppState: any = useAppState();
 
 	return (
-		<div>
+		<div class={style.app}>
 			<h1>LELELLEE</h1>
 		</div>
 	);
