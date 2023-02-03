@@ -17,7 +17,6 @@
 		border-radius: 50%;
 	}
 	span {
-		pointer-events: none;
 		opacity: 0;
 		position: absolute;
 		padding: 0.5rem;

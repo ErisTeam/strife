@@ -1,8 +1,34 @@
 import { useAppState } from './AppState';
 const AppState: any = useAppState();
-import { GuildType } from './discord';
+import { GuildType, ChannelType } from './discord';
 
 export default {
+	async updateCurrentChannels(id: string) {
+		AppState.setCurrentGuildChannels([] as ChannelType[]);
+
+		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
+		const response = await fetch(url, {
+			method: 'GET',
+
+			headers: {
+				Authorization: `${AppState.userToken()}`,
+			},
+		});
+		let resData = await response.json();
+
+		resData.forEach((e: any) => {
+			let channel: ChannelType = {
+				id: e.id,
+				name: e.name,
+				type: e.type,
+				topic: e.topic,
+				position: e.position,
+				permission_overwrites: e.permission_overwrites,
+				parent_id: e.parent_id,
+			};
+			AppState.setCurrentGuildChannels((prev: any) => [...prev, channel]);
+		});
+	},
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 
@@ -16,7 +42,6 @@ export default {
 		});
 		let resData = await response.json();
 		let guildIds: string[] = [];
-		console.log(resData);
 
 		resData.guild_affinities.forEach((e: any) => {
 			guildIds.push(e.guild_id);
@@ -45,10 +70,10 @@ export default {
 				banner: resData.banner,
 				ownerId: resData.owner_id,
 				roles: resData.roles,
+				system_channel_id: resData.system_channel_id,
 			};
 
 			AppState.setUserGuilds((prev: any) => [...prev, guild]);
-			console.log(AppState.userGuilds());
 		});
 	},
 };

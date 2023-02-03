@@ -43,8 +43,11 @@ const App: Component = () => {
 						}
 					></Route>
 
-					<Route path="/app" element={<ApplicationWrapper />}>
+					<Route path="/app" component={ApplicationWrapper}>
 						<Route path="/" component={Application} />
+						<Route path="/:guildId" component={Application}>
+							<Route path="/:channelId" component={Application} />
+						</Route>
 					</Route>
 
 					<Route path="/login">
