@@ -1,16 +1,24 @@
-use std::{ sync::Mutex, collections::HashMap };
+use std::{ sync::{ Mutex, Arc }, collections::HashMap };
 
 use tauri::{ AppHandle, Manager };
 use tokio::sync::mpsc;
+use websocket::OwnedMessage;
 
-use crate::manager::Messages;
+use crate::{
+	manager::{ ThreadManager },
+	modules::mobile_auth_gateway_handler::MobileAuthHandler,
+	webview_packets,
+};
 
 #[derive(Debug, PartialEq)]
 pub enum State {
 	LoginScreen {
 		qr_url: String,
 		captcha_token: Option<String>,
+		ticket: Option<String>,
+		use_sms: bool,
 	},
+	MainApp {},
 }
 
 #[derive(Debug)]
@@ -18,17 +26,22 @@ pub struct MainState {
 	pub tokens: Mutex<HashMap<String, String>>,
 	pub state: Mutex<State>,
 
-	sender: Mutex<mpsc::Sender<Messages>>,
-
 	handlers: Mutex<Vec<tauri::EventHandler>>,
+
+	pub thread_manager: Mutex<Option<ThreadManager>>,
 }
 impl MainState {
-	pub fn new(sender: Mutex<mpsc::Sender<Messages>>) -> Self {
+	pub fn new() -> Self {
 		Self {
 			tokens: Mutex::new(HashMap::new()),
-			sender,
-			state: Mutex::new(State::LoginScreen { qr_url: String::new(), captcha_token: None }),
+			state: Mutex::new(State::LoginScreen {
+				qr_url: String::new(),
+				captcha_token: None,
+				ticket: None,
+				use_sms: false,
+			}),
 			handlers: Mutex::new(Vec::new()),
+			thread_manager: Mutex::new(None),
 		}
 	}
 
@@ -54,12 +67,19 @@ impl MainState {
 				});
 				handlers.push(h);
 			}
+			State::MainApp {} => {
+				let a = self.thread_manager.lock().unwrap();
+				let thread_manager = a.as_ref().unwrap();
+				thread_manager.stop_mobile_auth();
+			}
+			_ => {}
 		}
 	}
 
-	pub fn send(&self, msg: Messages) {
-		println!("sending: {:?}", msg);
-
-		self.sender.lock().unwrap().blocking_send(msg).unwrap();
+	pub fn start_mobile_auth(&self, handle: AppHandle) {
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle);
+	}
+	pub fn start_gateway(&self, handle: AppHandle, token: String) {
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token);
 	}
 }

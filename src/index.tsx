@@ -7,8 +7,9 @@ import {
 	Outlet,
 	A,
 	Navigate,
+	Link,
 } from '@solidjs/router';
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component, createSignal, Match, onMount, Switch } from 'solid-js';
 import Application from './Routes/App/Application';
 import Tests from './Tests';
 import './style.css';
@@ -27,38 +28,43 @@ const App: Component = () => {
 		AppState.setUserToken(localStorage.getItem('userToken'));
 	});
 	return (
-		<AppStateProvider>
-			<Router source={hashIntegration()}>
-				<Routes>
-					<Route path="/" component={Prev}></Route>
+		<Router>
+			<Switch fallback={<h1>USE TAURI</h1>}>
+				<Match when={!!window.__TAURI_IPC__}>
+					<AppStateProvider>
+						<Routes>
+							<Route path="/" component={Prev}></Route>
 
-					<Route path="/test" component={Tests} />
+							<Route path="/test" component={Tests} />
 
-					<Route
-						path={'/gamitofurras'}
-						element={
-							<div>
-								<h1>gami to furras</h1>
-							</div>
-						}
-					></Route>
+							<Route
+								path={'/gamitofurras'}
+								element={
+									<div>
+										<h1>gami to furras</h1>
+										<Link href="/">t</Link>
+									</div>
+								}
+							></Route>
 
-					<Route path="/app" component={ApplicationWrapper}>
-						<Route path="/" component={Application} />
-						<Route path="/:guildId" component={Application}>
-							<Route path="/:channelId" component={Application} />
-						</Route>
-					</Route>
+							<Route path="/app" component={ApplicationWrapper}>
+								<Route path="/" component={Application} />
+								<Route path="/:guildId" component={Application}>
+									<Route path="/:channelId" component={Application} />
+								</Route>
+							</Route>
 
-					<Route path="/login">
-						<LoginStateProvider>
-							<Route path="/" component={Main} />
-							<Route path="/mfa" component={MFA} />
-						</LoginStateProvider>
-					</Route>
-				</Routes>
-			</Router>
-		</AppStateProvider>
+							<Route path="/login">
+								<LoginStateProvider>
+									<Route path="/" component={Main} />
+									<Route path="/mfa" component={MFA} />
+								</LoginStateProvider>
+							</Route>
+						</Routes>
+					</AppStateProvider>
+				</Match>
+			</Switch>
+		</Router>
 	);
 };
 

@@ -8,7 +8,7 @@ use crate::{
 	discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
 	webview_packets,
 	main_app_state::{ MainState, State },
-	modules::gateway_trait::send_heartbeat,
+	modules::gateway_utils::send_heartbeat,
 };
 
 /// # Information
@@ -225,6 +225,9 @@ impl MobileAuthHandler {
 			let m = reciver.try_recv();
 			if m.is_ok() {
 				let m = m.unwrap();
+				if matches!(m, OwnedMessage::Close(_)) {
+					return true;
+				}
 				client.send_message(&m).unwrap();
 			}
 

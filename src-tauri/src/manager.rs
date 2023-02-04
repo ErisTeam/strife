@@ -6,7 +6,7 @@ use websocket::OwnedMessage;
 
 use crate::{
 	main_app_state::MainState,
-	modules::mobile_auth_gateway_handler::MobileAuthHandler,
+	modules::{ mobile_auth_gateway_handler::MobileAuthHandler, gateway::Gateway },
 	webview_packets,
 };
 
@@ -21,33 +21,30 @@ pub enum Modules {
 /// # Information
 /// TODO
 #[derive(Debug)]
-pub enum Messages {
-	Close {
-		what: Modules,
-	},
-	Start {
-		what: Modules,
-	},
-}
-
-/// # Information
-/// TODO
-#[derive(Debug)]
 pub struct ThreadManager {
 	state: Arc<MainState>,
 
 	mobile_auth_sender: Option<Mutex<mpsc::Sender<OwnedMessage>>>,
 
-	senders: HashMap<Modules, mpsc::Sender<OwnedMessage>>,
+	gateway_sender: Option<Mutex<mpsc::Sender<OwnedMessage>>>,
 
-	reciver: mpsc::Receiver<Messages>,
+	senders: HashMap<Modules, mpsc::Sender<OwnedMessage>>,
 }
 
 impl ThreadManager {
-	pub fn new(state: Arc<MainState>, reciver: mpsc::Receiver<Messages>) -> Self {
-		Self { state, mobile_auth_sender: None, reciver, senders: HashMap::new() }
+	pub fn new(state: Arc<MainState>) -> Self {
+		Self {
+			state,
+			mobile_auth_sender: None,
+			senders: HashMap::new(),
+			gateway_sender: None,
+		}
 	}
-	pub fn start_mobile_auth(&mut self, handle: AppHandle) {
+	pub fn start_mobile_auth(&mut self, handle: AppHandle) -> Result<(), String> {
+		if self.mobile_auth_sender.is_some() {
+			println!("Mobile auth already running");
+			return Err("Mobile auth already running".to_string());
+		}
 		println!("Starting mobile auth");
 		let mut gate = MobileAuthHandler::new(self.state.clone());
 		let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
@@ -71,48 +68,39 @@ impl ThreadManager {
 			gate.generate_keys();
 			gate.run(async_proc_input_rx, async_proc_output_tx).await;
 		});
+		Ok(())
 	}
-	pub async fn run(&mut self, handle: AppHandle) {
-		loop {
-			println!("waiting for message");
-			if let Some(msg) = self.reciver.recv().await {
-				match msg {
-					Messages::Start { what } =>
-						match what {
-							Modules::MobileAuth => {
-								if
-									self.mobile_auth_sender.is_none() ||
-									self.mobile_auth_sender
-										.as_ref()
-										.unwrap()
-										.lock()
-										.unwrap()
-										.is_closed()
-								{
-									self.start_mobile_auth(handle.clone());
-								}
-							}
-							Modules::Gateway => {
-								todo!("start gateway");
-							}
-						}
-					Messages::Close { what } =>
-						match what {
-							Modules::MobileAuth => {
-								if let Some(sender) = self.mobile_auth_sender.take() {
-									//sender.lock().unwrap().send();
-									todo!("close mobile auth");
-								}
-							}
-							Modules::Gateway => {
-								todo!("close gateway");
-							}
-						}
-				}
-			} else {
-				println!("Closing HOW? Also gami is a furry!");
-				break;
-			}
+
+	pub fn stop_mobile_auth(&self) {
+		if let Some(sender) = self.mobile_auth_sender.as_ref() {
+			let mut sender = sender.lock().unwrap();
+			sender.blocking_send(OwnedMessage::Close(None)).unwrap();
 		}
+	}
+	pub fn start_gateway(&mut self, handle: AppHandle, token: String) {
+		println!("Starting gateway");
+		let mut gate = Gateway::new(self.state.clone());
+		let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
+		let (async_proc_output_tx, mut async_proc_output_rx) =
+			mpsc::channel::<webview_packets::Gateway>(32);
+
+		// TODO: Make this a function
+		tauri::async_runtime::spawn(async move {
+			loop {
+				if let Some(output) = async_proc_output_rx.recv().await {
+					println!("gateway event listener recived: {:?}", output);
+					handle.emit_all("gateway", serde_json::to_string(&output).unwrap()).unwrap();
+				} else {
+					println!("gateway event listener closing");
+					break;
+				}
+			}
+		});
+		self.gateway_sender = Some(Mutex::new(async_proc_input_tx));
+
+		let token = token.clone();
+		tauri::async_runtime::spawn(async move {
+			gate.run(async_proc_input_rx, async_proc_output_tx, token).await;
+		});
 	}
 }

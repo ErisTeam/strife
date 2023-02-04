@@ -4,14 +4,14 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::modules::login;
+use crate::modules::auth;
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum Auth {
 	LoginSuccess {
 		user_id: String,
-		user_settings: login::UserSettings,
+		user_settings: auth::UserSettings,
 	},
 	RequireAuth {
 		captcha_key: Vec<String>,
@@ -19,11 +19,24 @@ pub enum Auth {
 		captcha_service: String,
 
 		sms: Option<bool>,
-		ticket: Option<String>,
 	},
+
 	Error {
 		code: u64,
-		errors: login::err,
+		errors: auth::err,
+		message: String,
+	},
+}
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
+#[serde(rename_all = "camelCase")]
+pub enum MFA {
+	SmsSendingResult {
+		success: bool,
+		message: String,
+	},
+	VerifyResult {
+		success: bool,
 		message: String,
 	},
 }

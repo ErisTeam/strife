@@ -3,6 +3,7 @@ import { useLoginState } from './LoginState';
 import { useAppState } from '../../AppState';
 import { useNavigate } from '@solidjs/router';
 
+//todo remove
 const MFA = () => {
 	const [MFACode, setMFACode] = createSignal('');
 	const [useSMS, setUseSMS] = createSignal(false);
@@ -26,6 +27,7 @@ const MFA = () => {
 		console.log(resData);
 		setUseSMS(true);
 	}
+
 	async function verifyMFA() {
 		if (useSMS() == true) {
 			const url = 'https://discord.com/api/v9/auth/mfa/sms';

@@ -5,9 +5,12 @@ import Tests from './Tests';
 import qrcode from 'qrcode';
 import { getToken, startListener, useTaurListener } from './test';
 import { GuildsResponse, UsersResponse } from './discord';
-import { A, Link } from '@solidjs/router';
+import { Link, useBeforeLeave } from '@solidjs/router';
 import HCaptcha from 'solid-hcaptcha';
 import { emit } from '@tauri-apps/api/event';
+import A from './Anchor';
+
+import './prev.css';
 
 function Prev() {
 	const [greetMsg, setGreetMsg] = createSignal('');
@@ -125,7 +128,7 @@ function Prev() {
 			setGreetMsg('login success');
 		}
 	});
-	onCleanup(async () => {
+	useBeforeLeave(async () => {
 		console.log('cleanup');
 		(await a)();
 		console.log('cleanup done');
@@ -200,7 +203,10 @@ function Prev() {
 				);
 			})}
 
-			<A href="/gamitofurras">Gami to Furras</A>
+			<A href="/gamitofurras" state="LoginScreen">
+				Gami to Furras
+			</A>
+			<Link href="/gamitofurras">Gami to Furras2</Link>
 
 			<Tests />
 		</div>

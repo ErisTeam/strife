@@ -6,10 +6,10 @@ use crate::{
 	main_app_state::MainState,
 	webview_packets,
 	discord::gateway_packets::GatewayPackets,
-	modules::gateway_trait::send_heartbeat,
+	modules::gateway_utils::send_heartbeat,
 };
 
-use super::gateway_trait;
+use super::gateway_utils;
 
 pub struct Gateway {
 	pub timeout_ms: u64,
