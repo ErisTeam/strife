@@ -14,10 +14,10 @@ pub enum Auth {
 		user_settings: auth::UserSettings,
 	},
 	RequireAuth {
-		captcha_key: Vec<String>,
-		captcha_sitekey: String,
-		captcha_service: String,
-
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+		mfa: Option<bool>,
 		sms: Option<bool>,
 	},
 
@@ -51,7 +51,7 @@ pub enum MFA {
 /// - `TicketData` <br>
 /// - `LoginSuccess` <br>
 /// - `LoginError` <br>
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum MobileAuth {

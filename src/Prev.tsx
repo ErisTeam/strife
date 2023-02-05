@@ -1,45 +1,45 @@
-import { createSignal, onCleanup, onMount, Show } from 'solid-js';
-import { invoke } from '@tauri-apps/api/tauri';
-import Tests from './Tests';
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { invoke } from "@tauri-apps/api/tauri";
+import Tests from "./Tests";
 
-import qrcode from 'qrcode';
-import { getToken, startListener, useTaurListener } from './test';
-import { GuildsResponse, UsersResponse } from './discord';
-import { Link, useBeforeLeave } from '@solidjs/router';
-import HCaptcha from 'solid-hcaptcha';
-import { emit } from '@tauri-apps/api/event';
-import A from './Anchor';
+import qrcode from "qrcode";
+import { getToken, startListener, useTaurListener } from "./test";
+import { GuildsResponse, UsersResponse } from "./discord";
+import { Link, useBeforeLeave } from "@solidjs/router";
+import HCaptcha from "solid-hcaptcha";
+import { emit } from "@tauri-apps/api/event";
+import A from "./Anchor";
 
-import './prev.css';
+import "./prev.css";
 
 function Prev() {
-	const [greetMsg, setGreetMsg] = createSignal('');
-	const [name, setName] = createSignal('');
-	const [password, setPassword] = createSignal('');
+	const [greetMsg, setGreetMsg] = createSignal("");
+	const [name, setName] = createSignal("");
+	const [password, setPassword] = createSignal("");
 
-	const [captcha_key, setCaptchaKey] = createSignal('');
+	const [captcha_key, setCaptchaKey] = createSignal("");
 
-	const [image, setImage] = createSignal('');
+	const [image, setImage] = createSignal("");
 
 	const [guilds, setGuilds] = createSignal<
 		Array<{ guild_id: string; affinity: number }>
 	>([]);
 
-	const [userId, setUserId] = createSignal('');
+	const [userId, setUserId] = createSignal("");
 
 	async function login(captcha_token: string | null = null) {
 		console.log(`test`, captcha_token);
-		let res: any = await invoke('login', {
+		let res: any = await invoke("login", {
 			captchaToken: captcha_token,
 			login: name(),
 			password: password(),
 		});
 
 		console.log(res);
-		if (res.captcha_key?.includes('captcha-required')) {
+		if (res.captcha_key?.includes("captcha-required")) {
 			setCaptchaKey(res.captcha_sitekey);
 		}
-		if (res.type == 'loginSuccess') {
+		if (res.type == "loginSuccess") {
 			setUserId(res.user_id);
 		}
 		setGreetMsg(JSON.stringify(res));
@@ -47,7 +47,7 @@ function Prev() {
 	async function logout() {
 		let token = await getToken(userId());
 		if (!token) {
-			setGreetMsg('No token');
+			setGreetMsg("No token");
 			return;
 		}
 		// let res = await invoke('logout', {
@@ -58,21 +58,21 @@ function Prev() {
 
 	async function getGuilds() {
 		if (!userId()) {
-			setGreetMsg('No user id');
+			setGreetMsg("No user id");
 			return;
 		}
 		let token = await getToken(userId());
 		if (!token) {
-			setGreetMsg('No token');
+			setGreetMsg("No token");
 			return;
 		}
 		console.log(token);
 		let json: GuildsResponse = await (
-			await fetch('https://discord.com/api/v9/users/@me/affinities/guilds', {
+			await fetch("https://discord.com/api/v9/users/@me/affinities/guilds", {
 				headers: new Headers({
 					authorization: token as string,
 				}),
-				method: 'GET',
+				method: "GET",
 			})
 		).json();
 		console.log(json);
@@ -80,68 +80,86 @@ function Prev() {
 	}
 	async function getUsers() {
 		if (!userId()) {
-			setGreetMsg('No user id');
+			setGreetMsg("No user id");
 			return;
 		}
 		let token = await getToken(userId());
 		if (!token) {
-			setGreetMsg('No token');
+			setGreetMsg("No token");
 			return;
 		}
 		let json: UsersResponse = await (
-			await fetch('https://discord.com/api/v9/users/@me/affinities/users', {
+			await fetch("https://discord.com/api/v9/users/@me/affinities/users", {
 				headers: new Headers({
 					authorization: token,
 				}),
 
-				method: 'GET',
+				method: "GET",
 			})
 		).json();
 		console.log(json);
 	}
-	const a = startListener((event) => {
-		console.log('js: rs2js: ' + event);
-		let input = JSON.parse(event.payload) as { type: string };
-		console.log(input);
-		if (input.type == 'qrcode') {
-			let i = input as { type: string; qrcode: string };
+	const a = startListener("mobileAuth", (event) => {
+		console.log("js: rs2js: ", event);
 
-			qrcode.toDataURL(i.qrcode, (err: any, url: any) => {
-				setImage(url);
-			});
-		} else if (input.type == 'ticketData') {
-			let i = input as {
-				type: string;
-				userId: string;
-				discriminator: string;
-				username: string;
-				avatarHash: string;
-			};
-			setUserId(i.userId);
-			setGreetMsg(
-				`userId: ${i.userId}, discriminator: ${i.discriminator}, username: ${i.username}, avatarHash: ${i.avatarHash}`
-			);
-			setImage(
-				`https://cdn.discordapp.com/avatars/${i.userId}/${i.avatarHash}.webp?size=128`
-			);
-		} else if (input.type == 'loginSuccess') {
-			setGreetMsg('login success');
+		interface i {
+			type: string;
+		}
+		interface qrcode extends i {
+			type: "qrcode";
+			qrcode: string;
+		}
+		interface ticketData extends i {
+			type: "ticketData";
+			userId: string;
+			discriminator: string;
+			username: string;
+			avatarHash: string;
+		}
+
+		let input = JSON.parse(event.payload) as
+			| qrcode
+			| ticketData
+			| { type: "loginSuccess" };
+		console.log(input);
+		switch (input.type) {
+			case "qrcode":
+				console.log(input.qrcode);
+				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
+					setImage(url);
+				});
+				break;
+
+			case "ticketData":
+				setUserId(input.userId);
+				setGreetMsg(
+					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
+				);
+				setImage(
+					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
+				);
+				break;
+			case "loginSuccess":
+				setGreetMsg("login success");
+				break;
 		}
 	});
 	useBeforeLeave(async () => {
-		console.log('cleanup');
+		console.log("cleanup");
 		(await a)();
-		console.log('cleanup done');
+		console.log("cleanup done");
 	});
 	onMount(async () => {
-		let r: string = await invoke('get_qrcode', {});
-		console.log(r);
+		//await invoke("set_state", { state: "test" });
+		//let r: string = await invoke('get_qrcode', {});
+		await emit("requestQrcode", {});
+		// console.log(r);
 
-		if (r) {
-			qrcode.toDataURL(r, (err: any, url: any) => {
-				setImage(url);
-			});
-		}
+		// if (r) {
+		// 	qrcode.toDataURL(r, (err: any, url: any) => {
+		// 		setImage(url);
+		// 	});
+		// }
 
 		// let b = await invoke('test', {});
 		// console.log('b', b);

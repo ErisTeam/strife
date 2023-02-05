@@ -43,10 +43,10 @@ pub enum LoginResponse {
 		user_id: String,
 	},
 	RequireAuth {
-		captcha_key: Vec<String>,
-		captcha_sitekey: String,
-		captcha_service: String,
-
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+		mfa: Option<bool>,
 		sms: Option<bool>,
 		ticket: Option<String>,
 	},

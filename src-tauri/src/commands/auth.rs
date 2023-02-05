@@ -159,6 +159,7 @@ pub async fn login(
 			captcha_service,
 			sms,
 			ticket,
+			mfa,
 		} => {
 			if ticket.is_some() && sms.is_some() {
 				match *state.state.lock().unwrap() {
@@ -174,6 +175,7 @@ pub async fn login(
 				captcha_sitekey,
 				captcha_service,
 				sms,
+				mfa,
 			})
 		}
 
