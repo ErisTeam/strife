@@ -17,6 +17,10 @@ function Prev() {
 	const [name, setName] = createSignal("");
 	const [password, setPassword] = createSignal("");
 
+	const [code, setCode] = createSignal("");
+
+	const [requireCode, setRequireCode] = createSignal(false);
+
 	const [captcha_key, setCaptchaKey] = createSignal("");
 
 	const [image, setImage] = createSignal("");
@@ -38,6 +42,11 @@ function Prev() {
 		console.log(res);
 		if (res.captcha_key?.includes("captcha-required")) {
 			setCaptchaKey(res.captcha_sitekey);
+		}
+		if (res.type == "RequireAuth") {
+			if (res.mfa || res.sms) {
+				setRequireCode(true);
+			}
 		}
 		if (res.type == "loginSuccess") {
 			setUserId(res.user_id);
@@ -117,7 +126,7 @@ function Prev() {
 			avatarHash: string;
 		}
 
-		let input = JSON.parse(event.payload) as
+		let input = event.payload as unknown as
 			| qrcode
 			| ticketData
 			| { type: "loginSuccess" };
@@ -191,6 +200,25 @@ function Prev() {
 							}}
 						/>
 					</Show>
+					<Show when={requireCode()}>
+						<form
+							onSubmit={async (e) => {
+								e.preventDefault();
+								let res = await invoke("verify_login", { code: code() });
+								console.log(res);
+							}}
+						>
+							<input
+								type="text"
+								name="code"
+								placeholder="Code"
+								onChange={(e) => {
+									setCode(e.currentTarget.value);
+								}}
+							/>
+							<button type="submit">submit</button>
+						</form>
+					</Show>
 					<img src={image()} />
 				</div>
 			</div>
@@ -209,6 +237,25 @@ function Prev() {
 						}}
 					>
 						Get Users
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div>
+					<button
+						onClick={async () => {
+							await invoke("set_state", { state: "main" });
+						}}
+					>
+						change state to main
+					</button>
+					<button
+						onClick={async (e) => {
+							console.log("start gateway");
+							await emit("startGateway", { user_id: userId() });
+						}}
+					>
+						Start Gateway
 					</button>
 				</div>
 			</div>

@@ -54,6 +54,9 @@ impl Gateway {
 		}
 		println!("shutting down mobile auth")
 	}
+
+	fn init_message(&self) {}
+
 	pub async fn connect(
 		&self,
 		reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,

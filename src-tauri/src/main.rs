@@ -25,15 +25,19 @@ use crate::{ main_app_state::MainState, manager::ThreadManager };
 #[tauri::command]
 fn set_state(state: String, s: State<Arc<MainState>>, handle: tauri::AppHandle) {
 	println!("change state {}", state);
-	s.change_state(
-		main_app_state::State::LoginScreen {
-			qr_url: String::new(),
-			captcha_token: None,
-			ticket: None,
-			use_sms: false,
-		},
-		handle
-	)
+	if state == "main" {
+		s.change_state(main_app_state::State::MainApp {}, handle);
+	} else {
+		s.change_state(
+			main_app_state::State::LoginScreen {
+				qr_url: String::new(),
+				captcha_token: None,
+				ticket: None,
+				use_sms: false,
+			},
+			handle
+		)
+	}
 }
 
 // TODO: Move this to cammands.rs

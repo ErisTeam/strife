@@ -77,7 +77,11 @@ impl ThreadManager {
 			sender.blocking_send(OwnedMessage::Close(None)).unwrap();
 		}
 	}
-	pub fn start_gateway(&mut self, handle: AppHandle, token: String) {
+	pub fn start_gateway(&mut self, handle: AppHandle, token: String) -> Result<(), String> {
+		if self.gateway_sender.is_some() {
+			println!("Gateway already running");
+			return Err("Gateway already running".to_string());
+		}
 		println!("Starting gateway");
 		let mut gate = Gateway::new(self.state.clone());
 		let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
@@ -102,5 +106,6 @@ impl ThreadManager {
 		tauri::async_runtime::spawn(async move {
 			gate.run(async_proc_input_rx, async_proc_output_tx, token).await;
 		});
+		Ok(())
 	}
 }

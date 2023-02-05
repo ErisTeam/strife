@@ -27,22 +27,7 @@ pub fn start_mobile_auth(state: State<Arc<MainState>>, handle: tauri::AppHandle)
 	// }
 	// None
 }
-#[tauri::command]
-pub fn get_qrcode(state: State<Arc<MainState>>, handle: tauri::AppHandle) -> Option<String> {
-	match &*state.state.lock().unwrap() {
-		crate::main_app_state::State::LoginScreen { qr_url, .. } => {
-			if !qr_url.is_empty() {
-				return Some(qr_url.clone());
-			}
-
-			// state.send(manager::Messages::Start {
-			// 	what: manager::Modules::MobileAuth,
-			// });
-		}
-		_ => {}
-	}
-	None
-}
+//todo switch to events
 #[tauri::command]
 pub async fn send_sms(state: State<'_, Arc<MainState>>) -> Result<webview_packets::MFA, ()> {
 	let ticket;
@@ -103,7 +88,7 @@ pub async fn verify_login(
 		let res = Auth::verify_sms(ticket, code).await;
 		todo!("return response to webview");
 	} else {
-		Auth::verify_totp(ticket, code).await;
+		let res = Auth::verify_totp(ticket, code).await;
 		todo!("return response to webview");
 	}
 }

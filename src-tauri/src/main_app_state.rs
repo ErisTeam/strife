@@ -71,6 +71,13 @@ impl MainState {
 				let a = self.thread_manager.lock().unwrap();
 				let thread_manager = a.as_ref().unwrap();
 				thread_manager.stop_mobile_auth();
+
+				self.event_manager
+					.lock()
+					.unwrap()
+					.as_mut()
+					.unwrap()
+					.register_for_main_app(handle.clone());
 			}
 			_ => {}
 		}
