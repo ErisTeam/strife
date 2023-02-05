@@ -146,11 +146,14 @@ pub async fn login(
 			ticket,
 			mfa,
 		} => {
-			if ticket.is_some() && sms.is_some() {
+			println!("ticket: {:?}", ticket);
+			if ticket.is_some() {
 				match *state.state.lock().unwrap() {
 					main_app_state::State::LoginScreen { ref mut ticket, ref mut use_sms, .. } => {
 						*ticket = ticket.clone();
-						*use_sms = sms.unwrap();
+						if sms.is_some() {
+							*use_sms = true;
+						}
 					}
 					_ => {}
 				}

@@ -51,8 +51,8 @@ impl MainState {
 		self.tokens.lock().unwrap().len() > 0
 	}
 
-	pub fn change_state(&self, state: State, handle: AppHandle) {
-		*self.state.lock().unwrap() = state;
+	pub fn change_state(&self, new_state: State, handle: AppHandle) {
+		*self.state.lock().unwrap() = new_state;
 		let state = self.state.lock().unwrap();
 
 		match &*state {
