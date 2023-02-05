@@ -143,14 +143,14 @@ pub async fn login(
 			captcha_sitekey,
 			captcha_service,
 			sms,
-			ticket,
+			ticket: new_ticket,
 			mfa,
 		} => {
-			println!("ticket: {:?}", ticket);
-			if ticket.is_some() {
+			println!("ticket: {:?}", new_ticket);
+			if new_ticket.is_some() {
 				match *state.state.lock().unwrap() {
 					main_app_state::State::LoginScreen { ref mut ticket, ref mut use_sms, .. } => {
-						*ticket = ticket.clone();
+						*ticket = new_ticket.clone();
 						if sms.is_some() {
 							*use_sms = true;
 						}
