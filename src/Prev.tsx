@@ -20,7 +20,7 @@ function Prev() {
 	const [code, setCode] = createSignal("");
 
 	const [requireCode, setRequireCode] = createSignal(false);
-
+	const [didSendSMS, setDidSendSMS] = createSignal(false);
 	const [captcha_key, setCaptchaKey] = createSignal("");
 
 	const [image, setImage] = createSignal("");
@@ -43,11 +43,11 @@ function Prev() {
 		if (res.captcha_key?.includes("captcha-required")) {
 			setCaptchaKey(res.captcha_sitekey);
 		}
-		if (res.type == "RequireAuth") {
-			if (res.mfa || res.sms) {
-				setRequireCode(true);
-			}
+
+		if (res.mfa || res.sms) {
+			setRequireCode(true);
 		}
+
 		if (res.type == "loginSuccess") {
 			setUserId(res.user_id);
 		}
@@ -204,7 +204,10 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								let res = await invoke("verify_login", { code: code() });
+								let res = await invoke("verify_login", {
+									code: code(),
+									isSms: didSendSMS(),
+								});
 								console.log(res);
 							}}
 						>
@@ -216,6 +219,14 @@ function Prev() {
 									setCode(e.currentTarget.value);
 								}}
 							/>
+							<button
+								type="button"
+								onclick={() => {
+									setDidSendSMS(true);
+								}}
+							>
+								Send SMS
+							</button>
 							<button type="submit">submit</button>
 						</form>
 					</Show>
@@ -272,8 +283,6 @@ function Prev() {
 				Gami to Furras
 			</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>
-
-			<Tests />
 		</div>
 	);
 }
