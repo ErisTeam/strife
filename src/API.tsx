@@ -7,6 +7,18 @@ export default {
 	async getToken(user_id: string) {
 		return (await invoke("get_token", { id: user_id })) as string | null;
 	},
+	async getCurrentUser() {
+		const url = "https://discord.com/api/v9/users/@me";
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: `${AppState.userToken()}`,
+			},
+		});
+		let resData = await response.json();
+		console.log(resData);
+		return resData;
+	},
 	async updateCurrentChannels(id: string) {
 		AppState.setCurrentGuildChannels([] as ChannelType[]);
 

@@ -2,5 +2,5 @@
 	"bracketSameLine": false,
 	"bracketSpacing": true,
 	"useTabs": true,
-	"singleQuote": false
+	"singleQuote": true
 }
