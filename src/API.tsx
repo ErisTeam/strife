@@ -1,14 +1,18 @@
-import { useAppState } from './AppState';
+import { useAppState } from "./AppState";
 const AppState: any = useAppState();
-import { GuildType, ChannelType } from './discord';
+import { GuildType, ChannelType } from "./discord";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export default {
+	async getToken(user_id: string) {
+		return (await invoke("get_token", { id: user_id })) as string | null;
+	},
 	async updateCurrentChannels(id: string) {
 		AppState.setCurrentGuildChannels([] as ChannelType[]);
 
 		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
 		const response = await fetch(url, {
-			method: 'GET',
+			method: "GET",
 
 			headers: {
 				Authorization: `${AppState.userToken()}`,
@@ -32,9 +36,9 @@ export default {
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 
-		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
+		const url = "https://discord.com/api/v9/users/@me/affinities/guilds";
 		const response = await fetch(url, {
-			method: 'GET',
+			method: "GET",
 
 			headers: {
 				Authorization: `${AppState.userToken()}`,
@@ -50,7 +54,7 @@ export default {
 		guildIds.forEach(async (id) => {
 			const url = `https://discord.com/api/v9/guilds/${id}?with_counts=true`;
 			const response = await fetch(url, {
-				method: 'GET',
+				method: "GET",
 
 				headers: {
 					Authorization: `${AppState.userToken()}`,

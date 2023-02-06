@@ -1,9 +1,10 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
 import Tests from "./Tests";
+import API from "./API";
 
 import qrcode from "qrcode";
-import { getToken, startListener, useTaurListener } from "./test";
+import { startListener, useTaurListener } from "./test";
 import { GuildsResponse, UsersResponse } from "./discord";
 import { Link, useBeforeLeave } from "@solidjs/router";
 import HCaptcha from "solid-hcaptcha";
@@ -54,7 +55,7 @@ function Prev() {
 		setGreetMsg(JSON.stringify(res));
 	}
 	async function logout() {
-		let token = await getToken(userId());
+		let token = await API.getToken(userId());
 		if (!token) {
 			setGreetMsg("No token");
 			return;
@@ -70,7 +71,7 @@ function Prev() {
 			setGreetMsg("No user id");
 			return;
 		}
-		let token = await getToken(userId());
+		let token = await API.getToken(userId());
 		if (!token) {
 			setGreetMsg("No token");
 			return;
@@ -92,7 +93,7 @@ function Prev() {
 			setGreetMsg("No user id");
 			return;
 		}
-		let token = await getToken(userId());
+		let token = await API.getToken(userId());
 		if (!token) {
 			setGreetMsg("No token");
 			return;
