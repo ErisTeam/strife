@@ -27,9 +27,6 @@ function Prev() {
 
 	const [image, setImage] = createSignal('');
 
-	const [guilds, setGuilds] = createSignal<
-		Array<{ guild_id: string; affinity: number }>
-	>([]);
 	const AppState = useAppState();
 
 	const [userId, setUserId] = createSignal('');
@@ -52,12 +49,12 @@ function Prev() {
 		}
 
 		if (res.type == 'loginSuccess') {
-			setUserId(res.user_id);
+			AppState.setUserID(res.user_id);
 		}
 		setshowMsg(JSON.stringify(res));
 	}
 	async function logout() {
-		let token = await API.getToken(userId());
+		let token = await API.getToken(AppState.userID());
 		if (!token) {
 			setshowMsg('No token');
 			return;
@@ -100,7 +97,7 @@ function Prev() {
 				break;
 
 			case 'ticketData':
-				setUserId(input.userId);
+				AppState.setUserID(input.userId);
 				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
 				);
@@ -207,20 +204,13 @@ function Prev() {
 				<button
 					onClick={async (e) => {
 						console.log('start gateway');
-						await emit('startGateway', { user_id: userId() });
+						await emit('startGateway', { user_id: AppState.userID() });
 					}}
 				>
 					Start Gateway
 				</button>
 			</div>
 			<p>{showMsg}</p>
-			{guilds().map((guild) => {
-				return (
-					<p>
-						{guild.guild_id} {guild.affinity}
-					</p>
-				);
-			})}
 
 			<A href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
