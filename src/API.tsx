@@ -17,7 +17,12 @@ export default {
 		});
 		let resData = await response.json();
 		console.log(resData);
+
 		return resData;
+	},
+	async updateCurrentUser() {
+		const res = await this.getCurrentUser();
+		AppState.setUserID(res.id);
 	},
 	async updateCurrentChannels(id: string) {
 		AppState.setCurrentGuildChannels([] as ChannelType[]);

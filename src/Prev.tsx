@@ -1,46 +1,42 @@
-import { createSignal, onCleanup, onMount, Show } from 'solid-js';
-import { invoke } from '@tauri-apps/api/tauri';
-import Tests from './Tests';
-import API from './API';
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { invoke } from "@tauri-apps/api/tauri";
+import API from "./API";
 
-import qrcode from 'qrcode';
-import { startListener, useTaurListener } from './test';
-import { GuildsResponse, UsersResponse } from './discord';
-import { Link, useBeforeLeave } from '@solidjs/router';
-import HCaptcha from 'solid-hcaptcha';
-import { emit } from '@tauri-apps/api/event';
-import { useAppState } from './AppState';
-import A from './Anchor';
+import qrcode from "qrcode";
+import { startListener } from "./test";
+import { Link, useBeforeLeave } from "@solidjs/router";
+import HCaptcha from "solid-hcaptcha";
+import { emit } from "@tauri-apps/api/event";
+import { useAppState } from "./AppState";
+import A from "./Anchor";
 
-import './prev.css';
+import "./prev.css";
 
 function Prev() {
-	const [showMsg, setshowMsg] = createSignal('');
-	const [name, setName] = createSignal('');
-	const [password, setPassword] = createSignal('');
+	const [showMsg, setshowMsg] = createSignal("");
+	const [name, setName] = createSignal("");
+	const [password, setPassword] = createSignal("");
 
-	const [code, setCode] = createSignal('');
+	const [code, setCode] = createSignal("");
 
 	const [requireCode, setRequireCode] = createSignal(false);
 	const [didSendSMS, setDidSendSMS] = createSignal(false);
-	const [captcha_key, setCaptchaKey] = createSignal('');
+	const [captcha_key, setCaptchaKey] = createSignal("");
 
-	const [image, setImage] = createSignal('');
+	const [image, setImage] = createSignal("");
 
 	const AppState = useAppState();
 
-	const [userId, setUserId] = createSignal('');
-
 	async function login(captcha_token: string | null = null) {
 		console.log(`test`, captcha_token);
-		let res: any = await invoke('login', {
+		let res: any = await invoke("login", {
 			captchaToken: captcha_token,
 			login: name(),
 			password: password(),
 		});
 
 		console.log(res);
-		if (res.captcha_key?.includes('captcha-required')) {
+		if (res.captcha_key?.includes("captcha-required")) {
 			setCaptchaKey(res.captcha_sitekey);
 		}
 
@@ -48,7 +44,7 @@ function Prev() {
 			setRequireCode(true);
 		}
 
-		if (res.type == 'loginSuccess') {
+		if (res.type == "loginSuccess") {
 			AppState.setUserID(res.user_id);
 		}
 		setshowMsg(JSON.stringify(res));
@@ -56,7 +52,7 @@ function Prev() {
 	async function logout() {
 		let token = await API.getToken(AppState.userID());
 		if (!token) {
-			setshowMsg('No token');
+			setshowMsg("No token");
 			return;
 		}
 		// let res = await invoke('logout', {
@@ -65,18 +61,18 @@ function Prev() {
 		//https://discord.com/api/v9/auth/logout
 	}
 
-	const a = startListener('mobileAuth', (event) => {
+	const a = startListener("mobileAuth", (event) => {
 		/* console.log('js: rs2js: ', event); */
 
 		interface i {
 			type: string;
 		}
 		interface qrcode extends i {
-			type: 'qrcode';
+			type: "qrcode";
 			qrcode: string;
 		}
 		interface ticketData extends i {
-			type: 'ticketData';
+			type: "ticketData";
 			userId: string;
 			discriminator: string;
 			username: string;
@@ -86,17 +82,17 @@ function Prev() {
 		let input = event.payload as unknown as
 			| qrcode
 			| ticketData
-			| { type: 'loginSuccess' };
+			| { type: "loginSuccess" };
 		console.log(input);
 		switch (input.type) {
-			case 'qrcode':
+			case "qrcode":
 				console.log(input.qrcode);
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
 				});
 				break;
 
-			case 'ticketData':
+			case "ticketData":
 				AppState.setUserID(input.userId);
 				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
@@ -105,20 +101,24 @@ function Prev() {
 					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
 				);
 				break;
-			case 'loginSuccess':
-				setshowMsg('login success');
+			case "loginSuccess":
+				setshowMsg("login success");
 				break;
 		}
 	});
 	useBeforeLeave(async () => {
-		console.log('cleanup');
+		console.log("cleanup");
 		(await a)();
-		console.log('cleanup done');
+		console.log("cleanup done");
 	});
+
 	onMount(async () => {
+		if (localStorage.getItem("userToken")) {
+			AppState.setUserToken(localStorage.getItem("userToken") as string);
+		}
 		//await invoke("set_state", { state: "test" });
 		//let r: string = await invoke('get_qrcode', {});
-		await emit('requestQrcode', {});
+		await emit("requestQrcode", {});
 		// console.log(r);
 
 		// if (r) {
@@ -135,6 +135,7 @@ function Prev() {
 
 	return (
 		<div class="container">
+			<h1>{AppState.userToken()}</h1>
 			<div class="row">
 				<div>
 					<input
@@ -161,11 +162,12 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								let res: any = await invoke('verify_login', {
+								let res: any = await invoke("verify_login", {
 									code: code(),
 									isSms: didSendSMS(),
 								});
 								AppState.setUserToken(res.token);
+								localStorage.setItem("userToken", res.token);
 								let resData = await API.getCurrentUser();
 								AppState.setUserID(resData.id);
 								console.log(AppState.userID());
@@ -196,24 +198,35 @@ function Prev() {
 			<div>
 				<button
 					onClick={async () => {
-						await invoke('set_state', { state: 'main' });
+						await invoke("set_state", { state: "main" });
 					}}
 				>
 					change state to main
 				</button>
 				<button
 					onClick={async (e) => {
-						console.log('start gateway');
-						await emit('startGateway', { user_id: AppState.userID() });
+						console.log("start gateway");
+						await emit("startGateway", { user_id: AppState.userID() });
 					}}
 				>
 					Start Gateway
+				</button>
+				<button
+					onClick={async (e) => {
+						API.updateCurrentUser();
+					}}
+				>
+					Update User
 				</button>
 			</div>
 			<p>{showMsg}</p>
 
 			<A href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
+			</A>
+			<A href="/app" state="ApplicationScreen">
+				{" "}
+				Application{" "}
 			</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>
 		</div>
