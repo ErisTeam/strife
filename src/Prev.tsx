@@ -9,6 +9,7 @@ import { GuildsResponse, UsersResponse } from "./discord";
 import { Link, useBeforeLeave } from "@solidjs/router";
 import HCaptcha from "solid-hcaptcha";
 import { emit } from "@tauri-apps/api/event";
+import { useAppState } from "./AppState";
 import A from "./Anchor";
 
 import "./prev.css";
@@ -29,6 +30,7 @@ function Prev() {
 	const [guilds, setGuilds] = createSignal<
 		Array<{ guild_id: string; affinity: number }>
 	>([]);
+	const AppState = useAppState();
 
 	const [userId, setUserId] = createSignal("");
 
@@ -205,11 +207,11 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								let res = await invoke("verify_login", {
+								let res: any = await invoke("verify_login", {
 									code: code(),
 									isSms: didSendSMS(),
 								});
-								console.log(res);
+								AppState.setUserToken(res.token);
 							}}
 						>
 							<input

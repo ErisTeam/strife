@@ -1,12 +1,12 @@
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-
 use tauri::State;
 
 use crate::{
     main_app_state::{self, MainState},
     manager,
-    modules::auth::{Auth, LoginResponse},
-    webview_packets,
+    modules::auth::{Auth, LoginResponse, UserSettings},
+    webview_packets::{self, MFA},
 };
 #[tauri::command]
 pub fn start_mobile_auth(state: State<Arc<MainState>>, handle: tauri::AppHandle) -> Option<String> {
@@ -99,7 +99,19 @@ pub async fn verify_login(
         todo!("return response to webview");
     } else {
         let res = Auth::verify_totp(ticket, code).await;
-        todo!("return response to webview");
+        #[derive(Serialize, Deserialize, Debug)]
+        struct Res {
+            token: Option<String>,
+            user_settings: UserSettings,
+        }
+        println!("res: {:?}", res);
+        let resr: Res = serde_json::from_str(&res).unwrap();
+
+        println!("token: ${:?}", resr.token);
+        Ok(webview_packets::MFA::VerifyResult {
+            success: true,
+            token: resr.token,
+        })
     }
 }
 
