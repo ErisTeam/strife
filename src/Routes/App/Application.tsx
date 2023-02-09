@@ -1,14 +1,15 @@
-import { Component, createSignal, Show, onMount } from 'solid-js';
-import { useAppState } from '../../AppState';
+import { Component, createSignal, Show, onMount } from "solid-js";
+import { useAppState } from "../../AppState";
 
-import style from './Application.module.css';
-import API from '../../API';
+import style from "./Application.module.css";
+import API from "../../API";
 import {
 	useParams,
 	useBeforeLeave,
 	BeforeLeaveEventArgs,
-} from '@solidjs/router';
-import ChannelList from '../../Components/ChannelList/ChannelList';
+} from "@solidjs/router";
+import ChannelList from "../../Components/ChannelList/ChannelList";
+import RelationshipList from "../../Components/RelationshipList/RelationshipList";
 
 const Application = () => {
 	const AppState: any = useAppState();
@@ -20,7 +21,7 @@ const Application = () => {
 	});
 	useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
 		console.log(e.to);
-		const toGuild = e.to.toString().split('/')[2];
+		const toGuild = e.to.toString().split("/")[2];
 		console.log(toGuild);
 		if (toGuild != params.guildId.toString()) {
 			setShouldRender(false);
@@ -34,6 +35,7 @@ const Application = () => {
 			<Show when={shouldRedner()}>
 				<ChannelList />
 			</Show>
+			<RelationshipList />
 		</div>
 	);
 };

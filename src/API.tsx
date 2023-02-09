@@ -1,16 +1,16 @@
-import { useAppState } from "./AppState";
+import { useAppState } from './AppState';
 const AppState: any = useAppState();
-import { GuildType, ChannelType } from "./discord";
-import { invoke } from "@tauri-apps/api/tauri";
+import { GuildType, ChannelType, Relationship } from './discord';
+import { invoke } from '@tauri-apps/api/tauri';
 
 export default {
 	async getToken(user_id: string) {
-		return (await invoke("get_token", { id: user_id })) as string | null;
+		return (await invoke('get_token', { id: user_id })) as string | null;
 	},
 	async getCurrentUser() {
-		const url = "https://discord.com/api/v9/users/@me";
+		const url = 'https://discord.com/api/v9/users/@me';
 		const response = await fetch(url, {
-			method: "GET",
+			method: 'GET',
 			headers: {
 				Authorization: `${AppState.userToken()}`,
 			},
@@ -29,7 +29,7 @@ export default {
 
 		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
 		const response = await fetch(url, {
-			method: "GET",
+			method: 'GET',
 
 			headers: {
 				Authorization: `${AppState.userToken()}`,
@@ -53,9 +53,9 @@ export default {
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 
-		const url = "https://discord.com/api/v9/users/@me/affinities/guilds";
+		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
 		const response = await fetch(url, {
-			method: "GET",
+			method: 'GET',
 
 			headers: {
 				Authorization: `${AppState.userToken()}`,
@@ -71,7 +71,7 @@ export default {
 		guildIds.forEach(async (id) => {
 			const url = `https://discord.com/api/v9/guilds/${id}?with_counts=true`;
 			const response = await fetch(url, {
-				method: "GET",
+				method: 'GET',
 
 				headers: {
 					Authorization: `${AppState.userToken()}`,
@@ -95,6 +95,46 @@ export default {
 			};
 
 			AppState.setUserGuilds((prev: any) => [...prev, guild]);
+		});
+	},
+
+	/**
+	 * Updates the AppState `relationships`
+	 */
+	async updateRelationships() {
+		AppState.setRelationshpis([]);
+
+		if (!AppState.userToken()) {
+			console.error("No user token found! Can't update relationships!");
+			return;
+		}
+
+		const url = 'https://discord.com/api/v9//users/@me/relationships';
+		const response = await fetch(url, {
+			method: 'GET',
+			headers: {
+				Authorization: `${AppState.userToken()}`,
+			},
+		});
+
+		const res = await response.json();
+
+		res.forEach((e: any) => {
+			const relationship: Relationship = {
+				id: e.id,
+				type: e.type,
+				user: {
+					avatar: e.user.avatar,
+					avatar_decoration: e.user.avatar_decoration,
+					discriminator: e.user.discriminator,
+					display_name: e.user.display_name,
+					id: e.user.id,
+					public_flags: e.user.public_flags,
+					username: e.user.username,
+				},
+			};
+
+			AppState.setRelationshpis((prev: any) => [...prev, relationship]);
 		});
 	},
 };
