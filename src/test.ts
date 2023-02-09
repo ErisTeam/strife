@@ -19,8 +19,6 @@ async function useTaurListener(callback: (event: Event<string>) => void) {
 	});
 }
 
-async function getToken(user_id: string) {
-	return (await invoke("get_token", { id: user_id })) as string | null;
-}
 
-export { startListener, getToken, useTaurListener };
+
+export { startListener,  useTaurListener };

@@ -1,35 +1,31 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
-import Tests from "./Tests";
+import API from "./API";
 
 import qrcode from "qrcode";
-import { getToken, startListener, useTaurListener } from "./test";
-import { GuildsResponse, UsersResponse } from "./discord";
+import { startListener } from "./test";
 import { Link, useBeforeLeave } from "@solidjs/router";
 import HCaptcha from "solid-hcaptcha";
 import { emit } from "@tauri-apps/api/event";
+import { useAppState } from "./AppState";
 import A from "./Anchor";
 
 import "./prev.css";
 
 function Prev() {
-	const [greetMsg, setGreetMsg] = createSignal("");
+	const [showMsg, setshowMsg] = createSignal("");
 	const [name, setName] = createSignal("");
 	const [password, setPassword] = createSignal("");
 
 	const [code, setCode] = createSignal("");
 
 	const [requireCode, setRequireCode] = createSignal(false);
-
+	const [didSendSMS, setDidSendSMS] = createSignal(false);
 	const [captcha_key, setCaptchaKey] = createSignal("");
 
 	const [image, setImage] = createSignal("");
 
-	const [guilds, setGuilds] = createSignal<
-		Array<{ guild_id: string; affinity: number }>
-	>([]);
-
-	const [userId, setUserId] = createSignal("");
+	const AppState = useAppState();
 
 	async function login(captcha_token: string | null = null) {
 		console.log(`test`, captcha_token);
@@ -52,15 +48,16 @@ function Prev() {
 				}
 			}
 		}
+
 		if (res.type == "loginSuccess") {
-			setUserId(res.user_id);
+			AppState.setUserID(res.user_id);
 		}
-		setGreetMsg(JSON.stringify(res));
+		setshowMsg(JSON.stringify(res));
 	}
 	async function logout() {
-		let token = await getToken(userId());
+		let token = await API.getToken(AppState.userID());
 		if (!token) {
-			setGreetMsg("No token");
+			setshowMsg("No token");
 			return;
 		}
 		// let res = await invoke('logout', {
@@ -69,51 +66,8 @@ function Prev() {
 		//https://discord.com/api/v9/auth/logout
 	}
 
-	async function getGuilds() {
-		if (!userId()) {
-			setGreetMsg("No user id");
-			return;
-		}
-		let token = await getToken(userId());
-		if (!token) {
-			setGreetMsg("No token");
-			return;
-		}
-		console.log(token);
-		let json: GuildsResponse = await (
-			await fetch("https://discord.com/api/v9/users/@me/affinities/guilds", {
-				headers: new Headers({
-					authorization: token as string,
-				}),
-				method: "GET",
-			})
-		).json();
-		console.log(json);
-		setGuilds(json.guild_affinities);
-	}
-	async function getUsers() {
-		if (!userId()) {
-			setGreetMsg("No user id");
-			return;
-		}
-		let token = await getToken(userId());
-		if (!token) {
-			setGreetMsg("No token");
-			return;
-		}
-		let json: UsersResponse = await (
-			await fetch("https://discord.com/api/v9/users/@me/affinities/users", {
-				headers: new Headers({
-					authorization: token,
-				}),
-
-				method: "GET",
-			})
-		).json();
-		console.log(json);
-	}
 	const a = startListener("mobileAuth", (event) => {
-		console.log("js: rs2js: ", event);
+		/* console.log('js: rs2js: ', event); */
 
 		interface i {
 			type: string;
@@ -144,8 +98,8 @@ function Prev() {
 				break;
 
 			case "ticketData":
-				setUserId(input.userId);
-				setGreetMsg(
+				AppState.setUserID(input.userId);
+				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
 				);
 				setImage(
@@ -153,7 +107,7 @@ function Prev() {
 				);
 				break;
 			case "loginSuccess":
-				setGreetMsg("login success");
+				setshowMsg("login success");
 				break;
 		}
 	});
@@ -162,7 +116,11 @@ function Prev() {
 		(await a)();
 		console.log("cleanup done");
 	});
+
 	onMount(async () => {
+		if (localStorage.getItem("userToken")) {
+			AppState.setUserToken(localStorage.getItem("userToken") as string);
+		}
 		//await invoke("set_state", { state: "test" });
 		//let r: string = await invoke('get_qrcode', {});
 		await emit("requestQrcode", {});
@@ -182,6 +140,7 @@ function Prev() {
 
 	return (
 		<div class="container">
+			<h1>{AppState.userToken()}</h1>
 			<div class="row">
 				<div>
 					<input
@@ -208,8 +167,15 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								let res = await invoke("verify_login", { code: code() });
-								console.log(res);
+								let res: any = await invoke("verify_login", {
+									code: code(),
+									isSms: didSendSMS(),
+								});
+								AppState.setUserToken(res.token);
+								localStorage.setItem("userToken", res.token);
+								let resData = await API.getCurrentUser();
+								AppState.setUserID(resData.id);
+								console.log(AppState.userID());
 							}}
 						>
 							<input
@@ -220,64 +186,54 @@ function Prev() {
 									setCode(e.currentTarget.value);
 								}}
 							/>
+							<button
+								type="button"
+								onclick={() => {
+									setDidSendSMS(true);
+								}}
+							>
+								Send SMS
+							</button>
 							<button type="submit">submit</button>
 						</form>
 					</Show>
-					<img src={image()} />
+					<img src={image()} alt="fuck off" />
 				</div>
 			</div>
-			<div class="row">
-				<div>
-					<button
-						onClick={() => {
-							getGuilds();
-						}}
-					>
-						Get Guilds
-					</button>
-					<button
-						onClick={() => {
-							getUsers();
-						}}
-					>
-						Get Users
-					</button>
-				</div>
+			<div>
+				<button
+					onClick={async () => {
+						await invoke("set_state", { state: "main" });
+					}}
+				>
+					change state to main
+				</button>
+				<button
+					onClick={async (e) => {
+						console.log("start gateway");
+						await emit("startGateway", { user_id: AppState.userID() });
+					}}
+				>
+					Start Gateway
+				</button>
+				<button
+					onClick={async (e) => {
+						API.updateCurrentUser();
+					}}
+				>
+					Update User
+				</button>
 			</div>
-			<div class="row">
-				<div>
-					<button
-						onClick={async () => {
-							await invoke("set_state", { state: "main" });
-						}}
-					>
-						change state to main
-					</button>
-					<button
-						onClick={async (e) => {
-							console.log("start gateway");
-							await emit("startGateway", { user_id: userId() });
-						}}
-					>
-						Start Gateway
-					</button>
-				</div>
-			</div>
-			<p>{greetMsg}</p>
-			{guilds().map((guild) => {
-				return (
-					<p>
-						{guild.guild_id} {guild.affinity}
-					</p>
-				);
-			})}
+			<p>{showMsg}</p>
 
 			<A href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
 			</A>
+			<A href="/app" state="ApplicationScreen">
+				{" "}
+				Application{" "}
+			</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>
-
-			<Tests />
 		</div>
 	);
 }
