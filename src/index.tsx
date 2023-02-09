@@ -1,22 +1,30 @@
-import { render } from "solid-js/web";
-import { Routes, Route, Router, Link } from "@solidjs/router";
-import { Component, createSignal, Match, onMount, Switch } from "solid-js";
-import Application from "./Routes/App/Application";
-import Tests from "./Tests";
-import "./style.css";
-import Main from "./Routes/Login/Main";
-import MFA from "./Routes/Login/MFA";
-import Prev from "./Prev";
-import { LoginStateProvider } from "./Routes/Login/LoginState";
-import { AppStateProvider } from "./AppState";
-import { useAppState } from "./AppState";
-import ApplicationWrapper from "./Components/ApplicationWrapper/ApplicationWrapper";
+// SolidJS
+import { render } from 'solid-js/web';
+import { Routes, Route, Router, Link } from '@solidjs/router';
+import { Component, Match, onMount, Switch } from 'solid-js';
+
+// API
+import { LoginStateProvider } from './Routes/Login/LoginState';
+import { AppStateProvider, useAppState } from './AppState';
+
+// Components
+import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
+import Application from './Routes/App/Application';
+import Tests from './Tests';
+import Main from './Routes/Login/Main';
+import MFA from './Routes/Login/MFA';
+import Prev from './Prev';
+
+// Style
+import './style.css';
 
 const App: Component = () => {
 	const AppState: any = useAppState();
+
 	onMount(async () => {
-		AppState.setUserToken(localStorage.getItem("userToken"));
+		AppState.setUserToken(localStorage.getItem('userToken'));
 	});
+
 	return (
 		<Router>
 			<Switch fallback={<h1>USE TAURI</h1>}>
@@ -28,7 +36,7 @@ const App: Component = () => {
 							<Route path="/test" component={Tests} />
 
 							<Route
-								path={"/gamitofurras"}
+								path={'/gamitofurras'}
 								element={
 									<div>
 										<h1>gami to furras</h1>
@@ -58,4 +66,4 @@ const App: Component = () => {
 	);
 };
 
-render(() => <App />, document.getElementById("root") as HTMLElement);
+render(() => <App />, document.getElementById('root') as HTMLElement);

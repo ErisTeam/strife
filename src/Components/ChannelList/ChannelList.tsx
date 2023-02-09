@@ -1,28 +1,35 @@
-import { Component, createSignal, Show, onMount, For } from 'solid-js';
-import { useAppState } from '../../AppState';
+// SolidJS
+import { createSignal, onMount, For } from 'solid-js';
 
-import style from './ChannelList.module.css';
+// API
+import { useAppState } from '../../AppState';
 import { ChannelType } from '../../discord';
+
+// Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';
-import API from '../../API';
-import { useParams } from '@solidjs/router';
+
+//Style
+import style from './ChannelList.module.css';
+
 interface ChannelListProps {
 	className?: string;
 }
 
 const ChannelList = (props: ChannelListProps) => {
-	const params: any = useParams();
 	const AppState: any = useAppState();
+
 	const [categories, setCategories] = createSignal([] as ChannelType[]);
 	const [channels, setChannels] = createSignal([] as ChannelType[]);
+
 	onMount(async () => {
-		console.log(AppState.currentGuildChannels());
 		setCategories(
 			AppState.currentGuildChannels().filter(
 				(channel: ChannelType) => channel.type === 4
 			)
 		);
+
 		setCategories(categories().sort((a, b) => a.position - b.position));
+
 		setChannels(
 			AppState.currentGuildChannels().filter(
 				(channel: ChannelType) => channel.type !== 4

@@ -1,13 +1,20 @@
+// SolidJS
 import { For } from 'solid-js';
-import Channel from '../Channel/Channel';
+
+// API
 import { ChannelType } from '../../discord';
+
+// Components
+import Channel from '../Channel/Channel';
+
+// Style
 import style from './ChannelCategory.module.css';
 
 interface ChannelCategoryProps {
-	className?: string;
-	childrenChannels: ChannelType[];
 	id: string;
+	className?: string;
 	data: ChannelType;
+	childrenChannels: ChannelType[];
 }
 
 const ChannelCategory = (props: ChannelCategoryProps) => {
@@ -24,4 +31,5 @@ const ChannelCategory = (props: ChannelCategoryProps) => {
 		</li>
 	);
 };
+
 export default ChannelCategory;

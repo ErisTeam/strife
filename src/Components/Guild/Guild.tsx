@@ -1,9 +1,12 @@
-import { Component, createSignal, Show, onMount, For } from "solid-js";
-import { useAppState } from "../../AppState";
-import API from "../../API";
-import { A, BeforeLeaveEventArgs, useBeforeLeave } from "@solidjs/router";
-import style from "./Guild.module.css";
-import { GuildType } from "../../discord";
+// SolidJS
+import { A } from '@solidjs/router';
+
+// API
+import { useAppState } from '../../AppState';
+import { GuildType } from '../../discord';
+
+// Style
+import style from './Guild.module.css';
 
 interface GuildProps {
 	id: string;
@@ -25,4 +28,5 @@ const Guild = (props: GuildProps) => {
 		</li>
 	);
 };
+
 export default Guild;

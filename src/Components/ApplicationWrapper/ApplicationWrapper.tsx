@@ -1,13 +1,13 @@
+// SolidJS
 import { Outlet } from '@solidjs/router';
-import { Component, createSignal, Show, onMount, For } from 'solid-js';
-import style from './ApplicationWrapper.module.css';
-import { useAppState } from '../../AppState';
 
+// Components
 import GuildList from '../GuildList/GuildList';
 
-const ApplicationWrapper = () => {
-	const AppState: any = useAppState();
+// Style
+import style from './ApplicationWrapper.module.css';
 
+const ApplicationWrapper = () => {
 	return (
 		<div class={style.wrapper}>
 			<GuildList className={style.list} />

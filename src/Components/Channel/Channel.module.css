@@ -30,6 +30,7 @@
 		transition: all 500ms;
 	}
 }
+
 .guild:hover {
 	img {
 		border-radius: 15%;
@@ -53,6 +54,7 @@
 
 	transition: all 400ms ease-in-out;
 }
+
 .guild:hover::before {
 	width: 0.75rem;
 	height: 2rem;

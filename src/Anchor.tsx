@@ -1,15 +1,19 @@
-import { AnchorProps, Link, Navigate, useNavigate } from '@solidjs/router';
+// SolidJS
+import { JSX } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+
+// Tauri
 import { invoke } from '@tauri-apps/api';
-import { emit } from '@tauri-apps/api/event';
-import { createResource, JSX } from 'solid-js';
+
 interface Props {
 	state: 'LoginScreen' | String;
 	href: string;
 	children: JSX.Element;
 }
+
 const A = (props: Props) => {
-	//createResource(async () => );
 	const navigate = useNavigate();
+
 	return (
 		<a
 			href={props.href}
@@ -23,4 +27,5 @@ const A = (props: Props) => {
 		</a>
 	);
 };
+
 export default A;

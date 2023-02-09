@@ -1,8 +1,13 @@
-import { Component, createSignal, Show } from 'solid-js';
-import HCaptcha from 'solid-hcaptcha';
+// SolidJS
+import { createSignal, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { useLoginState } from './LoginState';
+import HCaptcha from 'solid-hcaptcha';
+
+// Tauri
 import { invoke } from '@tauri-apps/api';
+
+// API
+import { useLoginState } from './LoginState';
 
 const Main = () => {
 	const LoginState: any = useLoginState();
@@ -15,24 +20,24 @@ const Main = () => {
 
 	async function logIn() {
 		const url = 'https://discord.com/api/v9/auth/login';
-		const data = {
-			captcha_key: captchaToken(),
-			gift_code_sku_id: null,
-			login: email(),
-			login_source: null,
-			password: password(),
-			undelete: false,
-		};
 		const response = await fetch(url, {
 			method: 'POST',
-
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			credentials: 'include',
-			body: JSON.stringify(data),
+			body: JSON.stringify({
+				captcha_key: captchaToken(),
+				gift_code_sku_id: null,
+				login: email(),
+				login_source: null,
+				password: password(),
+				undelete: false,
+			}),
 		});
+
 		let resData = await response.json();
+
 		if (typeof resData?.captcha_key !== 'undefined') {
 			if (resData?.captcha_key[0] == 'captcha-required') {
 				setShowCaptcha(true);
@@ -40,7 +45,6 @@ const Main = () => {
 			}
 		}
 
-		console.log(resData);
 		if (resData.token == null && resData.sms == true) {
 			navigate('/login/mfa');
 			LoginState.setTicket(resData.ticket);
@@ -91,4 +95,5 @@ const Main = () => {
 		</div>
 	);
 };
+
 export default Main;

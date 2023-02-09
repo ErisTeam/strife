@@ -1,8 +1,12 @@
+// SolidJS
 import { onMount, For } from 'solid-js';
-import { useAppState } from '../../AppState';
+
+// API
 import API from '../../API';
+import { useAppState } from '../../AppState';
 import { Relationship } from '../../discord';
 
+// Style
 import style from './RelationshipList.module.css';
 
 const RelationshipList = () => {

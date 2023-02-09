@@ -1,21 +1,22 @@
-import { Component, createSignal, Show, onMount, For } from 'solid-js';
-import { useAppState } from '../../AppState';
-import API from '../../API';
+// SolidJS
 import { A } from '@solidjs/router';
-import style from './Channel.module.css';
+
+// API
 import { ChannelType } from '../../discord';
+
+// Style
+import style from './Channel.module.css';
 
 interface ChannelProps {
 	data: ChannelType;
 }
 
 const Channel = (props: ChannelProps) => {
-	const AppState: any = useAppState();
-
 	return (
 		<li class={style.channel}>
 			<A href={props.data.id}>{props.data.name}</A>
 		</li>
 	);
 };
+
 export default Channel;

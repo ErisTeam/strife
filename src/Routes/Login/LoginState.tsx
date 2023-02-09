@@ -1,8 +1,11 @@
-import { createSignal, createContext, useContext } from "solid-js";
-const [ticket, setTicket] = createSignal("");
-const [token, setToken] = createSignal("");
+// SolidJS
+import { createSignal, createContext, useContext } from 'solid-js';
+
+const [ticket, setTicket] = createSignal('');
+const [token, setToken] = createSignal('');
 const LoginState = createContext({ ticket, setTicket, token, setToken });
-//todo remove this
+
+// TODO: Remove this
 export function LoginStateProvider(props: any) {
 	return (
 		<LoginState.Provider value={{ ticket, setTicket, token, setToken }}>

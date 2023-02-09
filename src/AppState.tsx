@@ -1,14 +1,18 @@
-import { createSignal, createContext, useContext } from "solid-js";
-import { GuildType, Relationship } from "./discord";
-import { ChannelType } from "./discord";
-const [userToken, setUserToken] = createSignal("");
-const [userID, setUserID] = createSignal("");
+// SolidJS
+import { createSignal, createContext, useContext } from 'solid-js';
+
+// API
+import { GuildType, Relationship, ChannelType } from './discord';
+
+const [userToken, setUserToken] = createSignal('');
+const [userID, setUserID] = createSignal('');
 
 const [userGuilds, setUserGuilds] = createSignal([] as GuildType[]);
 const [currentGuildChannels, setCurrentGuildChannels] = createSignal(
 	[] as ChannelType[]
 );
 const [relationships, setRelationshpis] = createSignal([] as Relationship[]);
+
 const AppState = createContext({
 	userToken,
 	setUserToken,

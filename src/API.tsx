@@ -1,41 +1,73 @@
+// SolidJS
 import { useAppState } from './AppState';
-const AppState: any = useAppState();
-import { GuildType, ChannelType, Relationship } from './discord';
+
+// Tauri
 import { invoke } from '@tauri-apps/api/tauri';
 
+// API
+import { GuildType, ChannelType, Relationship } from './discord';
+
+const AppState: any = useAppState();
+
 export default {
+	/**
+	 * Sends a request to the Rust API to get the user's token
+	 * @param user_id
+	 */
 	async getToken(user_id: string) {
 		return (await invoke('get_token', { id: user_id })) as string | null;
 	},
+
+	/**
+	 * Updates the AppState of `currentUser`
+	 */
 	async getCurrentUser() {
+		if (!AppState.userToken()) {
+			console.error("No user token found! Can't update current user!");
+			return;
+		}
+
 		const url = 'https://discord.com/api/v9/users/@me';
-		const response = await fetch(url, {
+		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
 				Authorization: `${AppState.userToken()}`,
 			},
 		});
-		let resData = await response.json();
-		console.log(resData);
+
+		let resData = await resDataponse.json();
 
 		return resData;
 	},
+
+	/**
+	 * Updates the AppState of `userId`
+	 */
 	async updateCurrentUser() {
-		const res = await this.getCurrentUser();
-		AppState.setUserID(res.id);
+		const resData = await this.getCurrentUser();
+		AppState.setUserID(resData.id);
 	},
+
+	/**
+	 * Updates the AppState of `currentChannels`
+	 */
 	async updateCurrentChannels(id: string) {
+		if (!AppState.userToken()) {
+			console.error("No user token found! Can't update current channels!");
+			return;
+		}
+
 		AppState.setCurrentGuildChannels([] as ChannelType[]);
 
 		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
-		const response = await fetch(url, {
+		const resDataponse = await fetch(url, {
 			method: 'GET',
-
 			headers: {
 				Authorization: `${AppState.userToken()}`,
 			},
 		});
-		let resData = await response.json();
+
+		let resData = await resDataponse.json();
 
 		resData.forEach((e: any) => {
 			let channel: ChannelType = {
@@ -50,18 +82,28 @@ export default {
 			AppState.setCurrentGuildChannels((prev: any) => [...prev, channel]);
 		});
 	},
+
+	/**
+	 * Updates the AppState of `guilds`
+	 */
 	async updateGuilds() {
+		if (!AppState.userToken()) {
+			console.error("No user token found! Can't update guilds!");
+			return;
+		}
+
 		AppState.setUserGuilds([]);
 
 		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
-		const response = await fetch(url, {
+		const resDataponse = await fetch(url, {
 			method: 'GET',
-
 			headers: {
 				Authorization: `${AppState.userToken()}`,
 			},
 		});
-		let resData = await response.json();
+
+		let resData = await resDataponse.json();
+
 		let guildIds: string[] = [];
 
 		resData.guild_affinities.forEach((e: any) => {
@@ -70,14 +112,14 @@ export default {
 
 		guildIds.forEach(async (id) => {
 			const url = `https://discord.com/api/v9/guilds/${id}?with_counts=true`;
-			const response = await fetch(url, {
+			const resDataponse = await fetch(url, {
 				method: 'GET',
-
 				headers: {
 					Authorization: `${AppState.userToken()}`,
 				},
 			});
-			let resData = await response.json();
+
+			let resData = await resDataponse.json();
 
 			let guild: GuildType = {
 				id: resData.id,
@@ -99,27 +141,27 @@ export default {
 	},
 
 	/**
-	 * Updates the AppState `relationships`
+	 * Updates the AppState of `relationships`
 	 */
 	async updateRelationships() {
-		AppState.setRelationshpis([]);
-
 		if (!AppState.userToken()) {
 			console.error("No user token found! Can't update relationships!");
 			return;
 		}
 
+		AppState.setRelationshpis([]);
+
 		const url = 'https://discord.com/api/v9//users/@me/relationships';
-		const response = await fetch(url, {
+		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
 				Authorization: `${AppState.userToken()}`,
 			},
 		});
 
-		const res = await response.json();
+		const resData = await resDataponse.json();
 
-		res.forEach((e: any) => {
+		resData.forEach((e: any) => {
 			const relationship: Relationship = {
 				id: e.id,
 				type: e.type,

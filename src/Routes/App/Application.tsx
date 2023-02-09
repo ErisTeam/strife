@@ -1,28 +1,36 @@
-import { Component, createSignal, Show, onMount } from "solid-js";
-import { useAppState } from "../../AppState";
-
-import style from "./Application.module.css";
-import API from "../../API";
+// SolidJS
+import { createSignal, Show, onMount } from 'solid-js';
 import {
 	useParams,
 	useBeforeLeave,
 	BeforeLeaveEventArgs,
-} from "@solidjs/router";
-import ChannelList from "../../Components/ChannelList/ChannelList";
-import RelationshipList from "../../Components/RelationshipList/RelationshipList";
+} from '@solidjs/router';
+
+// API
+import API from '../../API';
+
+// Components
+import ChannelList from '../../Components/ChannelList/ChannelList';
+import RelationshipList from '../../Components/RelationshipList/RelationshipList';
+
+// Styles
+import style from './Application.module.css';
 
 const Application = () => {
-	const AppState: any = useAppState();
 	const params = useParams();
 	const [shouldRedner, setShouldRender] = createSignal(false);
+
 	onMount(async () => {
+		if (params.guildId == undefined) return;
+
 		await API.updateCurrentChannels(params.guildId.toString());
 		setShouldRender(true);
 	});
+
+	// TODO: Idk what this does, explain or delete it
 	useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
-		console.log(e.to);
-		const toGuild = e.to.toString().split("/")[2];
-		console.log(toGuild);
+		const toGuild = e.to.toString().split('/')[2];
+
 		if (toGuild != params.guildId.toString()) {
 			setShouldRender(false);
 			await API.updateCurrentChannels(toGuild);
@@ -34,9 +42,10 @@ const Application = () => {
 		<div class={style.app}>
 			<Show when={shouldRedner()}>
 				<ChannelList />
+				<RelationshipList />
 			</Show>
-			<RelationshipList />
 		</div>
 	);
 };
+
 export default Application;
