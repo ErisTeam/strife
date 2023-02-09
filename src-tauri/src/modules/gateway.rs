@@ -5,7 +5,7 @@ use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 use crate::{
 	main_app_state::MainState,
 	webview_packets,
-	discord::gateway_packets::GatewayPackets,
+	discord::gateway_packets::{ GatewayPackets, InitData, Properties, Presence, ClientState },
 	modules::gateway_utils::send_heartbeat,
 };
 
@@ -55,7 +55,29 @@ impl Gateway {
 		println!("shutting down mobile auth")
 	}
 
-	fn init_message(&self) {}
+	fn init_message(&self, client: &mut Client<TlsStream<TcpStream>>, token: String) {
+		let data = GatewayPackets::Identify {
+			d: InitData {
+				token,
+				capabilities: 4093,
+				//encoding: "JSON".to_string(),
+				properties: Properties::default(),
+				presence: Presence::default(),
+				compress: false,
+				client_state: ClientState {
+					guild_versions: None,
+					highest_last_message_id: "0".to_string(),
+					read_state_version: 0,
+					user_guild_settings_version: -1,
+					user_settings_version: -1,
+					private_channels_version: "0".to_string(),
+					api_code_version: 0,
+				},
+			},
+		};
+		println!("{:?}", data);
+		client.send_message(&OwnedMessage::Text(serde_json::to_string(&data).unwrap())).unwrap();
+	}
 
 	pub async fn connect(
 		&self,
@@ -76,6 +98,8 @@ impl Gateway {
 
 		//let mut user_id = None;
 
+		self.init_message(&mut client, self.token.clone());
+
 		loop {
 			let message = client.recv_message();
 
@@ -88,11 +112,13 @@ impl Gateway {
 			if message.is_ok() {
 				let message = message.unwrap();
 				match message {
-					OwnedMessage::Text(text) => {}
+					OwnedMessage::Text(text) => {
+						println!("Gateway Text {:?}", text);
+					}
 
 					OwnedMessage::Close(reason) => {
 						println!("Close {:?}", reason);
-						return false;
+						return true;
 					}
 					m => {
 						println!("Not text {:?}", m);

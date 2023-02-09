@@ -35,9 +35,12 @@ pub enum MFA {
 		success: bool,
 		message: String,
 	},
-	VerifyResult {
-		success: bool,
+	VerifyError {
 		message: String,
+	},
+	VerifySuccess {
+		user_id: String,
+		user_settings: auth::UserSettings,
 	},
 }
 

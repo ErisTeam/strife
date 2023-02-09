@@ -57,6 +57,19 @@ pub enum LoginResponse {
 	},
 }
 
+#[derive(Deserialize, Debug)]
+pub enum MFAResponse {
+	Success {
+		token: String,
+		user_settings: UserSettings,
+		user_id: String,
+	},
+	Error {
+		code: u64,
+		message: String,
+	},
+}
+
 pub struct Auth {}
 
 impl Auth {
@@ -112,7 +125,7 @@ impl Auth {
 		println!("json: {}", text);
 		todo!("verify_sms")
 	}
-	pub async fn verify_totp(ticket: String, code: String) {
+	pub async fn verify_totp(ticket: String, code: String) -> Result<MFAResponse, ()> {
 		let client = reqwest::Client::new();
 		let res = client
 			.post("https://discord.com/api/v9/auth/mfa/totp")
@@ -124,6 +137,11 @@ impl Auth {
 			.unwrap();
 		let text = res.text().await.unwrap();
 		println!("json: {}", text);
-		todo!("verify_totp")
+		let res = serde_json::from_str::<MFAResponse>(&text);
+		if res.is_err() {
+			return Err(());
+		} else {
+			return Ok(res.unwrap());
+		}
 	}
 }

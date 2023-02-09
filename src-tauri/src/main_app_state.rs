@@ -17,7 +17,7 @@ pub enum State {
 		qr_url: String, //todo change to Option<String>
 		captcha_token: Option<String>,
 		ticket: Option<String>,
-		use_sms: bool,
+		use_mfa: bool,
 	},
 	MainApp {},
 }
@@ -30,6 +30,8 @@ pub struct MainState {
 	pub event_manager: Mutex<Option<EventManager>>,
 
 	pub thread_manager: Mutex<Option<ThreadManager>>,
+
+	//todo pub system_info: Mutex<SystemInfo>
 }
 impl MainState {
 	pub fn new() -> Self {
@@ -39,12 +41,16 @@ impl MainState {
 				qr_url: String::new(),
 				captcha_token: None,
 				ticket: None,
-				use_sms: false,
+				use_mfa: false,
 			}),
 
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
 		}
+	}
+
+	pub fn add_token(&self, token: String, id: String) {
+		self.tokens.lock().unwrap().insert(id, token);
 	}
 
 	pub fn is_logged_in(&self) -> bool {

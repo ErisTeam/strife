@@ -33,7 +33,7 @@ fn set_state(state: String, s: State<Arc<MainState>>, handle: tauri::AppHandle) 
 				qr_url: String::new(),
 				captcha_token: None,
 				ticket: None,
-				use_sms: false,
+				use_mfa: false,
 			},
 			handle
 		)
@@ -71,7 +71,7 @@ fn main() {
 					qr_url: String::new(),
 					captcha_token: None,
 					ticket: None,
-					use_sms: false,
+					use_mfa: false,
 				},
 				app_handle
 			);

@@ -46,6 +46,10 @@ function Prev() {
 		if (res.type == "RequireAuth") {
 			if (res.mfa || res.sms) {
 				setRequireCode(true);
+
+				if (res.sms) {
+					await invoke("send_sm", {});
+				}
 			}
 		}
 		if (res.type == "loginSuccess") {

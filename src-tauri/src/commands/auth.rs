@@ -5,7 +5,7 @@ use tauri::State;
 use crate::{
 	main_app_state::{ MainState, self },
 	webview_packets,
-	modules::auth::{ Auth, LoginResponse },
+	modules::auth::{ Auth, LoginResponse, MFAResponse },
 	manager,
 };
 #[tauri::command]
@@ -34,7 +34,7 @@ pub async fn send_sms(state: State<'_, Arc<MainState>>) -> Result<webview_packet
 	let use_sms;
 	{
 		let app_state = state.state.lock().unwrap();
-		if let main_app_state::State::LoginScreen { use_sms: u, ticket: t, .. } = &*app_state {
+		if let main_app_state::State::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
 			ticket = t.clone();
 			use_sms = *u;
 		} else {
@@ -65,7 +65,7 @@ pub async fn verify_login(
 	let use_sms;
 	{
 		let app_state = state.state.lock().unwrap();
-		if let main_app_state::State::LoginScreen { use_sms: u, ticket: t, .. } = &*app_state {
+		if let main_app_state::State::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
 			ticket = t.clone();
 			use_sms = *u;
 		} else {
@@ -89,7 +89,26 @@ pub async fn verify_login(
 		todo!("return response to webview");
 	} else {
 		let res = Auth::verify_totp(ticket, code).await;
-		todo!("return response to webview");
+		if res.is_err() {
+			return Ok(webview_packets::MFA::VerifyError {
+				message: "unknown error".to_string(),
+			});
+		}
+		let res = res.unwrap();
+		match res {
+			MFAResponse::Success { token, user_id, user_settings } => {
+				state.add_token(token, user_id.clone());
+				return Ok(webview_packets::MFA::VerifySuccess {
+					user_id: user_id,
+					user_settings: user_settings,
+				});
+			}
+			MFAResponse::Error { message, .. } => {
+				return Ok(webview_packets::MFA::VerifyError {
+					message,
+				});
+			}
+		}
 	}
 }
 
@@ -149,10 +168,10 @@ pub async fn login(
 			println!("ticket: {:?}", new_ticket);
 			if new_ticket.is_some() {
 				match *state.state.lock().unwrap() {
-					main_app_state::State::LoginScreen { ref mut ticket, ref mut use_sms, .. } => {
+					main_app_state::State::LoginScreen { ref mut ticket, ref mut use_mfa, .. } => {
 						*ticket = new_ticket.clone();
-						if sms.is_some() {
-							*use_sms = true;
+						if mfa.is_some() {
+							*use_mfa = true;
 						}
 					}
 					_ => {}
