@@ -73,7 +73,7 @@ impl ThreadManager {
 
 	pub fn stop_mobile_auth(&self) {
 		if let Some(sender) = self.mobile_auth_sender.as_ref() {
-			let mut sender = sender.lock().unwrap();
+			let sender = sender.lock().unwrap();
 			sender.blocking_send(OwnedMessage::Close(None)).unwrap();
 		}
 	}

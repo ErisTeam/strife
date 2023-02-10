@@ -1,15 +1,8 @@
-use std::{ sync::{ Mutex, Arc }, collections::HashMap };
+use std::{ sync::{ Mutex }, collections::HashMap };
 
-use tauri::{ AppHandle, Manager };
-use tokio::sync::mpsc;
-use websocket::OwnedMessage;
+use tauri::{ AppHandle };
 
-use crate::{
-	manager::{ ThreadManager },
-	modules::mobile_auth_gateway_handler::MobileAuthHandler,
-	webview_packets,
-	event_manager::EventManager,
-};
+use crate::{ manager::{ ThreadManager }, event_manager::EventManager };
 
 #[derive(Debug, PartialEq)]
 pub enum State {

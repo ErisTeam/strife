@@ -9,8 +9,6 @@ use crate::{
 	modules::gateway_utils::send_heartbeat,
 };
 
-use super::gateway_utils;
-
 pub struct Gateway {
 	pub timeout_ms: u64,
 	pub heartbeat_interval: u64,

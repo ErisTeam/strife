@@ -19,7 +19,7 @@ const MFA = () => {
 		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				ticket: LoginState.ticket(),
@@ -39,7 +39,7 @@ const MFA = () => {
 			const response = await fetch(url, {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				credentials: 'include',
 				body: JSON.stringify({
@@ -57,18 +57,18 @@ const MFA = () => {
 			localStorage.setItem('userToken', resData.token);
 
 			console.log(AppState.userToken());
-			navigate('/app');
+			navigate("/app");
 
 			/* TODO: send to rust to open gateway */
 		} else {
 			const url = 'https://discord.com/api/v9/auth/mfa/totp';
 			const response = await fetch(url, {
-				method: 'POST',
+				method: "POST",
 
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
-				credentials: 'include',
+				credentials: "include",
 
 				body: JSON.stringify({
 					code: MFACode(),
@@ -85,7 +85,7 @@ const MFA = () => {
 			localStorage.setItem('userToken', resData.token);
 
 			console.log(AppState.userToken());
-			navigate('/app');
+			navigate("/app");
 		}
 	}
 

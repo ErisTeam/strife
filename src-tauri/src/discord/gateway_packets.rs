@@ -1,5 +1,3 @@
-use std::os;
-
 use serde::{ Deserialize, Serialize };
 
 /// # Information

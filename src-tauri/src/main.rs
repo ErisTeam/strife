@@ -13,12 +13,9 @@ mod token_utils;
 
 extern crate tokio;
 
-use std::sync::{ Arc, Mutex };
+use std::sync::{ Arc };
 
-use modules::auth::{ Auth, LoginResponse };
-use serde::{ Serialize, Deserialize };
 use tauri::{ State };
-use tokio::sync::mpsc;
 
 use crate::{ main_app_state::MainState, manager::ThreadManager };
 
