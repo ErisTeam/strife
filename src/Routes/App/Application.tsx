@@ -16,9 +16,11 @@ import RelationshipList from '../../Components/RelationshipList/RelationshipList
 // Styles
 import style from './Application.module.css';
 
+import Anchor from '../../Anchor';
+
 const Application = () => {
 	const params = useParams();
-	const [shouldRedner, setShouldRender] = createSignal(false);
+	const [shouldRedner, setShouldRender] = createSignal(true);
 
 	onMount(async () => {
 		if (params.guildId == undefined) return;
@@ -44,6 +46,9 @@ const Application = () => {
 				<ChannelList />
 				<RelationshipList />
 			</Show>
+			<Anchor state={'LoginScreen'} href="/">
+				Prev
+			</Anchor>
 		</div>
 	);
 };

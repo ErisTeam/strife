@@ -21,9 +21,9 @@ import './style.css';
 const App: Component = () => {
 	const AppState: any = useAppState();
 
-	onMount(async () => {
-		AppState.setUserToken(localStorage.getItem('userToken'));
-	});
+	// onMount(async () => {
+	// 	AppState.setUserToken(localStorage.getItem('userToken'));
+	// });
 
 	return (
 		<Router>

@@ -9,12 +9,12 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { startListener } from './test';
+import { changeState, startListener } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
 // Components
-import A from './Anchor';
+import Anchor from './Anchor';
 
 // Style
 import './prev.css';
@@ -75,8 +75,6 @@ function Prev() {
 	}
 
 	const a = startListener('mobileAuth', (event) => {
-		/* console.log('js: rs2js: ', event); */
-
 		interface i {
 			type: string;
 		}
@@ -96,7 +94,7 @@ function Prev() {
 			| qrcode
 			| ticketData
 			| { type: 'loginSuccess' };
-		console.log(input);
+		console.log(input, event);
 		switch (input.type) {
 			case 'qrcode':
 				console.log(input.qrcode);
@@ -126,29 +124,25 @@ function Prev() {
 	});
 
 	onMount(async () => {
-		if (localStorage.getItem('userToken')) {
-			AppState.setUserToken(localStorage.getItem('userToken') as string);
-		}
-		//await invoke("set_state", { state: "test" });
+		//await invoke('set_state', { state: 'test' });
 		//let r: string = await invoke('get_qrcode', {});
+
 		await emit('requestQrcode', {});
-		// console.log(r);
-
-		// if (r) {
-		// 	qrcode.toDataURL(r, (err: any, url: any) => {
-		// 		setImage(url);
-		// 	});
-		// }
-
-		// let b = await invoke('test', {});
-		// console.log('b', b);
-		//let qrcode = await invoke("getQrcode");
-		//console.log(qrcode);
 	});
+
+	let r = setInterval(async () => {
+		if (image()) {
+			console.log('clearing interval', image());
+			clearInterval(r);
+		} else {
+			await emit('requestQrcode', {});
+			console.log('requesting qrcode');
+		}
+	}, 5000);
 
 	return (
 		<div class="container">
-			<h1>{AppState.userToken()}</h1>
+			<h1>{AppState.userID()}</h1>
 			<div class="row">
 				<div>
 					<input
@@ -179,11 +173,8 @@ function Prev() {
 									code: code(),
 									isSms: didSendSMS(),
 								});
-								AppState.setUserToken(res.token);
-								localStorage.setItem('userToken', res.token);
-								let resData = await API.getCurrentUser();
-								AppState.setUserID(resData.id);
-								console.log(AppState.userID());
+								AppState.setUserID(res.UserId);
+								//localStorage.setItem('userToken', res.token);
 							}}
 						>
 							<input
@@ -211,7 +202,7 @@ function Prev() {
 			<div>
 				<button
 					onClick={async () => {
-						await invoke('set_state', { state: 'main' });
+						changeState('Application');
 					}}
 				>
 					change state to main
@@ -224,23 +215,15 @@ function Prev() {
 				>
 					Start Gateway
 				</button>
-				<button
-					onClick={async (e) => {
-						API.updateCurrentUser();
-					}}
-				>
-					Update User
-				</button>
 			</div>
 			<p>{showMsg}</p>
 
-			<A href="/gamitofurras" state="LoginScreen">
+			<Anchor href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
-			</A>
-			<A href="/app" state="ApplicationScreen">
-				{' '}
-				Application{' '}
-			</A>
+			</Anchor>
+			<Anchor href="/app" state="Application">
+				Application
+			</Anchor>
 			<Link href="/gamitofurras">Gami to Furras2</Link>
 		</div>
 	);

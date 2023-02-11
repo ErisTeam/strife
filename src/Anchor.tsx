@@ -6,12 +6,12 @@ import { useNavigate } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api';
 
 interface Props {
-	state: 'LoginScreen' | String;
+	state: 'LoginScreen' | 'Application';
 	href: string;
 	children: JSX.Element;
 }
 
-const A = (props: Props) => {
+const Anchor = (props: Props) => {
 	const navigate = useNavigate();
 
 	return (
@@ -28,4 +28,4 @@ const A = (props: Props) => {
 	);
 };
 
-export default A;
+export default Anchor;

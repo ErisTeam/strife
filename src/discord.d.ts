@@ -18,6 +18,13 @@ type User = {
 	public_flags: number;
 };
 
+declare enum RelationshipType {
+	Friend = 1,
+	Block = 2,
+	IncomingFriendRequest = 3,
+	OutgoingFriendRequest = 4,
+}
+
 /**
  * Relationship is a collection of all your contacts with other
  * users. It's represented by the `type` property.
@@ -33,7 +40,7 @@ type User = {
 type Relationship = {
 	id: string;
 	nickname?: string;
-	type: 1 | 2 | 3 | 4;
+	type: RelationshipType;
 	user: User;
 };
 

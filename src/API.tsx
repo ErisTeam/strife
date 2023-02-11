@@ -22,7 +22,8 @@ export default {
 	 * Updates the AppState of `currentUser`
 	 */
 	async getCurrentUser() {
-		if (!AppState.userToken()) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
 			console.error("No user token found! Can't update current user!");
 			return;
 		}
@@ -31,7 +32,7 @@ export default {
 		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
-				Authorization: `${AppState.userToken()}`,
+				Authorization: token,
 			},
 		});
 
@@ -43,6 +44,8 @@ export default {
 	/**
 	 * Updates the AppState of `userId`
 	 */
+
+	//todo remove
 	async updateCurrentUser() {
 		const resData = await this.getCurrentUser();
 		AppState.setUserID(resData.id);
@@ -52,7 +55,8 @@ export default {
 	 * Updates the AppState of `currentChannels`
 	 */
 	async updateCurrentChannels(id: string) {
-		if (!AppState.userToken()) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
 			console.error("No user token found! Can't update current channels!");
 			return;
 		}
@@ -63,7 +67,7 @@ export default {
 		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
-				Authorization: `${AppState.userToken()}`,
+				Authorization: token,
 			},
 		});
 
@@ -87,7 +91,8 @@ export default {
 	 * Updates the AppState of `guilds`
 	 */
 	async updateGuilds() {
-		if (!AppState.userToken()) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
 			console.error("No user token found! Can't update guilds!");
 			return;
 		}
@@ -98,7 +103,7 @@ export default {
 		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
-				Authorization: `${AppState.userToken()}`,
+				Authorization: token,
 			},
 		});
 
@@ -115,7 +120,7 @@ export default {
 			const resDataponse = await fetch(url, {
 				method: 'GET',
 				headers: {
-					Authorization: `${AppState.userToken()}`,
+					Authorization: token as string,
 				},
 			});
 
@@ -144,7 +149,8 @@ export default {
 	 * Updates the AppState of `relationships`
 	 */
 	async updateRelationships() {
-		if (!AppState.userToken()) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
 			console.error("No user token found! Can't update relationships!");
 			return;
 		}
@@ -155,7 +161,7 @@ export default {
 		const resDataponse = await fetch(url, {
 			method: 'GET',
 			headers: {
-				Authorization: `${AppState.userToken()}`,
+				Authorization: token,
 			},
 		});
 

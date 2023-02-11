@@ -24,8 +24,11 @@ pub struct MainState {
 
 	pub thread_manager: Mutex<Option<ThreadManager>>,
 
+	pub last_id: Mutex<Option<String>>,
+
 	//todo pub system_info: Mutex<SystemInfo>
 }
+
 impl MainState {
 	pub fn new() -> Self {
 		Self {
@@ -39,11 +42,18 @@ impl MainState {
 
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
+
+			last_id: Mutex::new(None),
 		}
 	}
 
 	pub fn add_token(&self, token: String, id: String) {
-		self.tokens.lock().unwrap().insert(id, token);
+		self.tokens.lock().unwrap().insert(id.clone(), token);
+		self.last_id.lock().unwrap().replace(id);
+	}
+
+	pub fn remove_token(&self, id: String) {
+		self.tokens.lock().unwrap().remove(&id);
 	}
 
 	pub fn is_logged_in(&self) -> bool {
@@ -67,8 +77,8 @@ impl MainState {
 				self.start_mobile_auth(handle.clone());
 			}
 			State::MainApp {} => {
-				let a = self.thread_manager.lock().unwrap();
-				let thread_manager = a.as_ref().unwrap();
+				let mut a = self.thread_manager.lock().unwrap();
+				let mut thread_manager = a.as_mut().unwrap();
 				thread_manager.stop_mobile_auth();
 
 				self.event_manager

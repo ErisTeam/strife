@@ -56,7 +56,7 @@ impl ThreadManager {
 			loop {
 				if let Some(output) = async_proc_output_rx.recv().await {
 					println!("mobile auth event listener recived: {:?}", output);
-					handle.emit_all("mobileAuth", serde_json::to_string(&output).unwrap()).unwrap();
+					handle.emit_all("mobileAuth", output).unwrap();
 				} else {
 					println!("mobile auth event listener closing");
 					break;
@@ -71,8 +71,8 @@ impl ThreadManager {
 		Ok(())
 	}
 
-	pub fn stop_mobile_auth(&self) {
-		if let Some(sender) = self.mobile_auth_sender.as_ref() {
+	pub fn stop_mobile_auth(&mut self) {
+		if let Some(sender) = self.mobile_auth_sender.take() {
 			let sender = sender.lock().unwrap();
 			sender.blocking_send(OwnedMessage::Close(None)).unwrap();
 		}
@@ -93,7 +93,7 @@ impl ThreadManager {
 			loop {
 				if let Some(output) = async_proc_output_rx.recv().await {
 					println!("gateway event listener recived: {:?}", output);
-					handle.emit_all("gateway", serde_json::to_string(&output).unwrap()).unwrap();
+					handle.emit_all("gateway", output).unwrap();
 				} else {
 					println!("gateway event listener closing");
 					break;

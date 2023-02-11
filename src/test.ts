@@ -3,7 +3,7 @@
 import { onCleanup } from 'solid-js';
 
 // Tauri
-import { listen, Event, UnlistenFn } from '@tauri-apps/api/event';
+import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 
 async function startListener(
 	eventName: string,
@@ -21,4 +21,8 @@ async function useTaurListener(callback: (event: Event<string>) => void) {
 	});
 }
 
-export { startListener, useTaurListener };
+async function changeState(newState: 'LoginScreen' | 'Application') {
+	await emit('changeState', newState);
+}
+
+export { startListener, useTaurListener, changeState };
