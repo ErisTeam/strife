@@ -1,4 +1,4 @@
-use std::{ sync::{ Mutex }, collections::HashMap };
+use std::{ sync::{ Mutex, Arc }, collections::HashMap };
 
 use tauri::{ AppHandle };
 
@@ -7,18 +7,31 @@ use crate::{ manager::{ ThreadManager }, event_manager::EventManager };
 #[derive(Debug, PartialEq)]
 pub enum State {
 	LoginScreen {
-		qr_url: String, //todo change to Option<String>
+		qr_url: Option<String>,
 		captcha_token: Option<String>,
 		ticket: Option<String>,
 		use_mfa: bool,
 	},
 	MainApp {},
 }
+impl State {
+	pub fn variant_eq(a: &State, b: &State) -> bool {
+		std::mem::discriminant(a) == std::mem::discriminant(b)
+	}
+	pub fn default_login_screen() -> Self {
+		Self::LoginScreen {
+			qr_url: None,
+			captcha_token: None,
+			ticket: None,
+			use_mfa: false,
+		}
+	}
+}
 
 #[derive(Debug)]
 pub struct MainState {
 	pub tokens: Mutex<HashMap<String, String>>,
-	pub state: Mutex<State>,
+	pub state: Arc<Mutex<State>>,
 
 	pub event_manager: Mutex<Option<EventManager>>,
 
@@ -33,12 +46,14 @@ impl MainState {
 	pub fn new() -> Self {
 		Self {
 			tokens: Mutex::new(HashMap::new()),
-			state: Mutex::new(State::LoginScreen {
-				qr_url: String::new(),
-				captcha_token: None,
-				ticket: None,
-				use_mfa: false,
-			}),
+			state: Arc::new(
+				Mutex::new(State::LoginScreen {
+					qr_url: None,
+					captcha_token: None,
+					ticket: None,
+					use_mfa: false,
+				})
+			),
 
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
@@ -60,42 +75,54 @@ impl MainState {
 		self.tokens.lock().unwrap().len() > 0
 	}
 
-	pub fn change_state(&self, new_state: State, handle: AppHandle) {
-		*self.state.lock().unwrap() = new_state;
-		let state = self.state.lock().unwrap();
-
+	pub fn change_state(&self, new_state: State, handle: AppHandle, force: bool) {
+		if !force && !State::variant_eq(&*self.state.lock().unwrap(), &new_state) {
+			return;
+		}
+		println!("bbbbbbbbbbbbbbbbbbbbb");
+		let mut state = self.state.lock().unwrap();
+		let mut thread_manager = self.thread_manager.lock().unwrap();
+		let mut event_manager = self.event_manager.lock().unwrap();
 		match &*state {
-			State::LoginScreen { qr_url, .. } => {
-				println!("Registering event handler for g (global");
-
-				self.event_manager
-					.lock()
-					.unwrap()
-					.as_mut()
-					.unwrap()
-					.register_for_login_screen(handle.clone());
-				self.start_mobile_auth(handle.clone());
+			State::LoginScreen { .. } => {
+				thread_manager.as_mut().unwrap().stop_mobile_auth();
 			}
 			State::MainApp {} => {
-				let mut a = self.thread_manager.lock().unwrap();
-				let mut thread_manager = a.as_mut().unwrap();
-				thread_manager.stop_mobile_auth();
-
-				self.event_manager
-					.lock()
-					.unwrap()
+				thread_manager
 					.as_mut()
 					.unwrap()
-					.register_for_main_app(handle.clone());
+					.stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
 			}
-			_ => {}
+		}
+		println!("ccccccccccccccccc");
+
+		*state = new_state;
+
+		println!("cccccccccccccdddddddddddddddd");
+		event_manager.as_mut().unwrap().clear_listeners(handle.clone());
+
+		println!("dddddddddddddddddddd");
+
+		match &*state {
+			State::LoginScreen { .. } => {
+				println!("nnnnnnnnnn");
+				event_manager.as_mut().unwrap().register_for_login_screen(handle.clone());
+
+				thread_manager.as_mut().unwrap().start_mobile_auth(handle.clone());
+				println!("bbbbbbbbbbbbbbbb");
+				//self.start_mobile_auth(handle.clone());
+			}
+			State::MainApp {} => {
+				event_manager.as_mut().unwrap().register_for_main_app(handle.clone());
+			}
 		}
 	}
 
 	pub fn start_mobile_auth(&self, handle: AppHandle) {
 		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle);
 	}
-	pub fn start_gateway(&self, handle: AppHandle, token: String) {
-		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token);
+	pub fn start_gateway(&self, handle: AppHandle, user_id: String) {
+		let token = self.tokens.lock().unwrap().get(&user_id).unwrap().clone();
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token, user_id);
 	}
 }

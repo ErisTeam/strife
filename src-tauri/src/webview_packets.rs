@@ -5,7 +5,7 @@
 use serde::{ Deserialize, Serialize };
 
 use crate::modules::auth;
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum Auth {
@@ -27,7 +27,7 @@ pub enum Auth {
 		message: String,
 	},
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum MFA {
@@ -62,7 +62,7 @@ pub enum MobileAuth {
 	/// Contains a String with the QR code.
 	#[serde(rename = "qrcode")]
 	Qrcode {
-		qrcode: String,
+		qrcode: Option<String>,
 	},
 
 	/// # Information

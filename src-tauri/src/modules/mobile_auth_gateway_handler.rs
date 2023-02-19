@@ -2,7 +2,8 @@ use std::{ sync::{ Mutex, Arc }, net::TcpStream };
 
 use base64::{ engine::{ general_purpose }, Engine };
 use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, PaddingScheme };
-use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
+use tauri::{ AppHandle, Manager };
+use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream, WebSocketError };
 
 use crate::{
 	discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
@@ -34,6 +35,7 @@ use crate::{
 ///
 /// For more information on how all of this functions you <br>
 /// should visit the [Unofficial Discord API](https://luna.gitlab.io/discord-unofficial-docs/desktop_remote_auth_v2.html).
+#[derive(Debug)]
 pub struct MobileAuthHandler {
 	timeout_ms: u64,
 	heartbeat_interval: u64,
@@ -44,9 +46,17 @@ pub struct MobileAuthHandler {
 	private_key: Option<RsaPrivateKey>,
 
 	app_state: Arc<MainState>,
+
+	handle: AppHandle,
+
+	reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
 }
 impl MobileAuthHandler {
-	pub fn new(app_state: Arc<MainState>) -> Self {
+	pub fn new(
+		app_state: Arc<MainState>,
+		handle: AppHandle,
+		reciver: tokio::sync::mpsc::Receiver<OwnedMessage>
+	) -> Self {
 		Self {
 			timeout_ms: 0,
 			heartbeat_interval: 0,
@@ -54,6 +64,8 @@ impl MobileAuthHandler {
 			app_state,
 			public_key: None,
 			private_key: None,
+			handle,
+			reciver,
 		}
 	}
 	fn decrypt(&self, bytes: Vec<u8>) -> Vec<u8> {
@@ -69,6 +81,14 @@ impl MobileAuthHandler {
 		let public_key = RsaPublicKey::from(&private_key);
 		self.public_key = Some(public_key);
 		self.private_key = Some(private_key);
+		println!("Keys generated");
+	}
+
+	fn emit_event(&self, event: webview_packets::MobileAuth) -> Result<(), tauri::Error> {
+		println!("emiting {:?}", event.clone());
+		self.handle.emit_all("auth", event)?;
+
+		Ok(())
 	}
 
 	fn send_init(&self, client: &mut Client<TlsStream<TcpStream>>) {
@@ -142,17 +162,21 @@ impl MobileAuthHandler {
 			.unwrap();
 		println!("Sent proof");
 	}
-	fn conn(&self) -> Client<TlsStream<TcpStream>> {
+	fn conn(&self) -> Result<Client<TlsStream<TcpStream>>, WebSocketError> {
 		use websocket::ClientBuilder;
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
 		let client = ClientBuilder::new("wss://remote-auth-gateway.discord.gg/?v=2")
 			.unwrap()
 			.custom_headers(&headers)
-			.connect_secure(None)
-			.unwrap();
+			.connect_secure(None);
+		if client.is_err() {
+			return Err(client.err().unwrap());
+		}
+		let client = client.unwrap();
+
 		client.set_nonblocking(true).unwrap();
-		client
+		Ok(client)
 	}
 
 	async fn get_token(&self, ticket: String) -> Result<String, String> {
@@ -186,32 +210,26 @@ impl MobileAuthHandler {
 		}
 	}
 
-	pub async fn run(
-		&mut self,
-		reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
-		sender: tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
-	) {
-		let mut reciver = reciver;
-		let mut sender = sender;
-		while !self.connect(&mut reciver, &mut sender).await {
+	pub async fn run(&mut self) {
+		while !self.connect().await {
 			*self.connected.lock().unwrap() = false;
 			print!("Reconnecting");
 		}
 		println!("shutting down mobile auth")
 	}
 
-	pub async fn connect(
-		&mut self,
-		reciver: &mut tokio::sync::mpsc::Receiver<OwnedMessage>,
-		sender: &mut tokio::sync::mpsc::Sender<webview_packets::MobileAuth>
-	) -> bool {
+	pub async fn connect(&mut self) -> bool {
 		println!("Connecting");
 
 		*self.connected.lock().unwrap() = true;
 
-		let mut client = self.conn();
+		let client = self.conn();
+		if client.is_err() {
+			return true;
+		}
+		let mut client = client.unwrap();
 
-		let mut instant = std::time::Instant::now();
+		let mut time_since_last_heartbeat = std::time::Instant::now();
 
 		let mut ack_recived = true;
 
@@ -222,7 +240,7 @@ impl MobileAuthHandler {
 		loop {
 			let message = client.recv_message();
 
-			let m = reciver.try_recv();
+			let m = self.reciver.try_recv();
 			if m.is_ok() {
 				let m = m.unwrap();
 				if matches!(m, OwnedMessage::Close(_)) {
@@ -254,15 +272,13 @@ impl MobileAuthHandler {
 								println!("Fingerprint: {}", fingerprint);
 								let new_qr_url =
 									format!("https://discordapp.com/ra/{}", fingerprint);
-								sender
-									.send(webview_packets::MobileAuth::Qrcode {
-										qrcode: new_qr_url.clone(),
-									}).await
-									.unwrap();
+								self.emit_event(webview_packets::MobileAuth::Qrcode {
+									qrcode: Some(new_qr_url.clone()),
+								}).unwrap();
 								let mut state = self.app_state.state.lock().unwrap();
 								match *state {
 									State::LoginScreen { ref mut qr_url, .. } => {
-										*qr_url = new_qr_url;
+										*qr_url = Some(new_qr_url);
 									}
 									_ => {}
 								}
@@ -278,14 +294,12 @@ impl MobileAuthHandler {
 								let splited = string.split(':').collect::<Vec<&str>>();
 								println!("{:?}", string);
 								user_id = Some(splited[0].to_string());
-								sender
-									.send(webview_packets::MobileAuth::TicketData {
-										user_id: splited[0].to_string(),
-										discriminator: splited[1].to_string(),
-										avatar_hash: splited[2].to_string(),
-										username: splited[3].to_string(),
-									}).await
-									.unwrap();
+								self.emit_event(webview_packets::MobileAuth::TicketData {
+									user_id: splited[0].to_string(),
+									discriminator: splited[1].to_string(),
+									avatar_hash: splited[2].to_string(),
+									username: splited[3].to_string(),
+								}).unwrap();
 							}
 							MobileAuthGatewayPackets::PendingLogin { ticket } => {
 								client.shutdown().unwrap();
@@ -296,19 +310,15 @@ impl MobileAuthHandler {
 												.lock()
 												.unwrap()
 												.insert(user_id.unwrap(), token);
-											sender
-												.send(
-													webview_packets::MobileAuth::LoginSuccess {}
-												).await
-												.unwrap();
+											self.emit_event(
+												webview_packets::MobileAuth::LoginSuccess {}
+											).unwrap();
 										}
 									}
 									Err(message) => {
-										sender
-											.send(webview_packets::MobileAuth::LoginError {
-												error: message,
-											}).await
-											.unwrap();
+										self.emit_event(webview_packets::MobileAuth::LoginError {
+											error: message,
+										}).unwrap();
 									}
 								}
 								return true;
@@ -327,7 +337,7 @@ impl MobileAuthHandler {
 			}
 
 			send_heartbeat(
-				&mut instant,
+				&mut time_since_last_heartbeat,
 				started,
 				self.heartbeat_interval,
 				&mut ack_recived,

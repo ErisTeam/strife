@@ -1,6 +1,6 @@
 // SolidJS
 import { createSignal, onMount, Show } from 'solid-js';
-import { Link, useBeforeLeave } from '@solidjs/router';
+import { A, Link, useBeforeLeave } from '@solidjs/router';
 import HCaptcha from 'solid-hcaptcha';
 
 // Tauri
@@ -37,6 +37,13 @@ function Prev() {
 
 	async function login(captcha_token: string | null = null) {
 		console.log(`test`, captcha_token);
+
+		await emit('login', {
+			captchaToken: captcha_token,
+			login: name(),
+			password: password(),
+		});
+		return;
 		let res: any = await invoke('login', {
 			captchaToken: captcha_token,
 			login: name(),
@@ -74,7 +81,7 @@ function Prev() {
 		//https://discord.com/api/v9/auth/logout
 	}
 
-	const a = startListener('mobileAuth', (event) => {
+	const a = startListener('auth', (event) => {
 		interface i {
 			type: string;
 		}
@@ -89,10 +96,18 @@ function Prev() {
 			username: string;
 			avatarHash: string;
 		}
+		interface RequireAuth extends i {
+			type: 'RequireAuth';
+			captcha_key?: string[];
+			captcha_sitekey?: string;
+			mfa: boolean;
+			sms: boolean;
+		}
 
 		let input = event.payload as unknown as
 			| qrcode
 			| ticketData
+			| RequireAuth
 			| { type: 'loginSuccess' };
 		console.log(input, event);
 		switch (input.type) {
@@ -115,6 +130,21 @@ function Prev() {
 			case 'loginSuccess':
 				setshowMsg('login success');
 				break;
+			case 'RequireAuth':
+				if (input.captcha_key?.includes('captcha-required')) {
+					setCaptchaKey(input.captcha_sitekey as string);
+				}
+				if (input.mfa || input.sms) {
+					setRequireCode(true);
+
+					if (input.sms) {
+						emit('send_sms', {});
+					}
+				}
+				break;
+			//case "loginSuccess":
+			//AppState.setUserID(id);
+			//	break
 		}
 	});
 	useBeforeLeave(async () => {
@@ -124,10 +154,10 @@ function Prev() {
 	});
 
 	onMount(async () => {
-		//await invoke('set_state', { state: 'test' });
-		//let r: string = await invoke('get_qrcode', {});
-
 		await emit('requestQrcode', {});
+
+		let id: string = await invoke('get_last_user', {});
+		AppState.setUserID(id);
 	});
 
 	let r = setInterval(async () => {
@@ -169,11 +199,15 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								let res: any = await invoke('verify_login', {
+								await emit('verify_login', {
 									code: code(),
 									isSms: didSendSMS(),
 								});
-								AppState.setUserID(res.UserId);
+								// let res: any = await invoke('verify_login', {
+								// 	code: code(),
+								// 	isSms: didSendSMS(),
+								// });
+								// AppState.setUserID(res.UserId);
 								//localStorage.setItem('userToken', res.token);
 							}}
 						>
@@ -221,9 +255,7 @@ function Prev() {
 			<Anchor href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
 			</Anchor>
-			<Anchor href="/app" state="Application">
-				Application
-			</Anchor>
+			<A href="/app">Application</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>
 		</div>
 	);

@@ -1,4 +1,5 @@
 use serde::{ Deserialize, Serialize };
+use serde_repr::{ Deserialize_repr };
 
 /// # Information
 /// TODO
@@ -73,41 +74,133 @@ pub enum MobileAuthGatewayPackets {
 
 /// # Information
 /// TODO
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(tag = "op")]
+#[derive(Deserialize, Debug, Clone)]
+//#[serde(tag = "op", content = "d")]
+#[serde(untagged)]
 pub enum GatewayPackets {
 	/// # Information
 	/// TODO
-	#[serde(rename = "heartbeat")]
 	Heartbeat {
-		d: u64,
+		d: Option<u64>,
 	},
 
-	/// # Information
-	/// TODO
-	#[serde(rename = "heartbeat")]
-	HeartbeatNull {},
+	Identify {
+		token: String,
+		capabilities: u64,
+		properties: Properties,
+		presence: Presence,
+		compress: bool,
+		client_state: ClientState,
+	},
+}
 
-	/// # Information
-	/// TODO
-	#[serde(rename = "heartbeat_ack")]
+impl Serialize for GatewayPackets {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+		#[derive(Serialize)]
+		#[serde(untagged)]
+		enum GatewayPackets_ {
+			Identify {
+				token: String,
+				capabilities: u64,
+				properties: Properties,
+				presence: Presence,
+				compress: bool,
+				client_state: ClientState,
+			},
+			Heartbeat {
+				d: Option<u64>,
+			},
+		}
+		#[derive(Serialize)]
+		struct TypedGatewayPackets {
+			#[serde(rename = "op")]
+			t: u64,
+
+			d: GatewayPackets_,
+		}
+		let msg = match &self {
+			GatewayPackets::Heartbeat { d } =>
+				TypedGatewayPackets {
+					t: 1,
+					d: GatewayPackets_::Heartbeat {
+						d: *d,
+					},
+				},
+
+			GatewayPackets::Identify {
+				token,
+				capabilities,
+				properties,
+				presence,
+				compress,
+				client_state,
+			} =>
+				TypedGatewayPackets {
+					t: 2,
+					d: GatewayPackets_::Identify {
+						token: token.clone(),
+						capabilities: capabilities.clone(),
+						properties: properties.clone(),
+						presence: presence.clone(),
+						compress: compress.clone(),
+						client_state: client_state.clone(),
+					},
+				},
+		};
+
+		msg.serialize(serializer)
+	}
+}
+
+#[derive(Debug)]
+pub struct GatewayIncomingPacket {
+	pub s: Option<u64>,
+	pub op: DataType,
+	pub d: GatewayPacketsData,
+}
+impl<'de> Deserialize<'de> for GatewayIncomingPacket {
+	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+		#[derive(Deserialize)]
+		struct DataInner {
+			op: DataType,
+			s: Option<u64>,
+			d: serde_json::Value,
+		}
+		let data = DataInner::deserialize(deserializer)?;
+
+		let payload = GatewayPacketsData::deserialize(data.d);
+
+		Ok(GatewayIncomingPacket {
+			s: data.s,
+			op: data.op,
+			d: payload.unwrap(),
+		})
+	}
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize_repr)]
+#[repr(u8)]
+pub enum DataType {
+	Hello = 10,
+	HeartbeatAck = 11,
+	Ready = 0,
+}
+#[derive(Deserialize, Debug)]
+#[serde(untagged)]
+pub enum GatewayPacketsData {
+	Hello {
+		heartbeat_interval: u64,
+	},
+
+	Ready {
+		v: u64,
+		users: Vec<serde_json::Value>,
+		resume_gateway_url: String,
+	},
 	HeartbeatAck {},
+}
 
-	#[serde(rename = "2")] Identify {
-		d: InitData,
-	},
-}
-#[derive(Serialize, Deserialize, Debug)]
-pub struct InitData {
-	pub token: String,
-	pub capabilities: u64,
-	pub properties: Properties,
-	pub presence: Presence,
-	pub compress: bool,
-	pub client_state: ClientState,
-	//pub encoding: String,
-}
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Properties {
 	pub os: String,
 	pub browser: String,
@@ -132,7 +225,7 @@ impl Default for Properties {
 	}
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Presence {
 	pub status: String,
 	pub since: u64,
@@ -150,7 +243,7 @@ impl Default for Presence {
 	}
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub guild_versions: Option<serde_json::Value>,

@@ -42,16 +42,6 @@ export default {
 	},
 
 	/**
-	 * Updates the AppState of `userId`
-	 */
-
-	//todo remove
-	async updateCurrentUser() {
-		const resData = await this.getCurrentUser();
-		AppState.setUserID(resData.id);
-	},
-
-	/**
 	 * Updates the AppState of `currentChannels`
 	 */
 	async updateCurrentChannels(id: string) {

@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use serde::Deserialize;
 use tauri::{ AppHandle, Manager };
 
-use crate::{ main_app_state::{ MainState, State }, webview_packets };
+use crate::{ main_app_state::{ MainState }, events };
 
 #[derive(Debug, Deserialize)]
 struct StartGatewayPayload {
@@ -30,18 +30,7 @@ impl EventManager {
 	}
 	pub fn register_for_login_screen(&self, handle: AppHandle) {
 		let mut event_listeners = self.event_listeners.lock().unwrap();
-		let h = handle.clone();
-		let state = self.state.clone();
-		let h = handle.listen_global("requestQrcode", move |event| {
-			println!("got event-name with payload {:?}", event.payload());
-			if let State::LoginScreen { qr_url, .. } = &*state.state.lock().unwrap() {
-				h.emit_all("mobileAuth", webview_packets::MobileAuth::Qrcode {
-					qrcode: qr_url.clone(),
-				}).unwrap();
-				println!("emitted qrcode");
-			}
-		});
-		event_listeners.push(h);
+		event_listeners.extend(events::auth::get_all_events(self.state.clone(), handle.clone()));
 	}
 	pub fn register_for_main_app(&self, handle: AppHandle) {
 		let mut event_listeners = self.event_listeners.lock().unwrap();
@@ -52,8 +41,8 @@ impl EventManager {
 			let user_id = serde_json
 				::from_str::<StartGatewayPayload>(event.payload().unwrap())
 				.unwrap().user_id;
-			let token = state.tokens.lock().unwrap().get(&user_id).unwrap().clone();
-			state.start_gateway(h.clone(), token.to_string());
+
+			state.start_gateway(h.clone(), user_id);
 		});
 		event_listeners.push(h);
 	}

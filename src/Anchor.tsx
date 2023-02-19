@@ -19,7 +19,7 @@ const Anchor = (props: Props) => {
 			href={props.href}
 			onClick={async (e) => {
 				e.preventDefault();
-				await invoke('set_state', { state: props.state });
+				await invoke('set_state', { newState: props.state });
 				navigate(props.href);
 			}}
 		>
