@@ -26,6 +26,7 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
 	println!("change state {}", new_state);
 	match new_state.as_str() {
 		"Application" => {
+			println!("Application");
 			if matches!(*state.state.lock().unwrap(), main_app_state::State::MainApp { .. }) {
 				println!("Already in main app");
 				return;

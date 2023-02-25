@@ -24,8 +24,6 @@ pub enum Modules {
 pub struct ThreadManager {
 	state: Arc<MainState>,
 
-	//mobile_auth_sender: Option<Mutex<mpsc::Sender<OwnedMessage>>>,
-
 	senders: HashMap<String, Vec<Modules>>,
 }
 
@@ -33,7 +31,7 @@ impl ThreadManager {
 	pub fn new(state: Arc<MainState>) -> Self {
 		let mut s = Self {
 			state,
-			//mobile_auth_sender: None,
+
 			senders: HashMap::new(),
 		};
 		s.senders.insert("main".to_string(), Vec::new());
@@ -85,11 +83,15 @@ impl ThreadManager {
 	}
 
 	pub fn stop_mobile_auth(&mut self) {
+		println!("stop_mobile_auth");
 		if let Some(sender) = self.senders.get("main") {
+			println!("s");
 			if let Some(index) = sender.iter().position(|s| matches!(s, Modules::MobileAuth(_))) {
 				let r = self.senders.get_mut("main").unwrap().remove(index);
+				println!("{:?}", r);
 				if let Modules::MobileAuth(sender) = r {
 					sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					println!("Mobile auth stopped")
 				}
 			}
 		}

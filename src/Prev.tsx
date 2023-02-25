@@ -147,19 +147,6 @@ function Prev() {
 			//	break
 		}
 	});
-	useBeforeLeave(async () => {
-		console.log('cleanup');
-		(await a)();
-		console.log('cleanup done');
-	});
-
-	onMount(async () => {
-		await emit('requestQrcode', {});
-
-		let id: string = await invoke('get_last_user', {});
-		AppState.setUserID(id);
-	});
-
 	let r = setInterval(async () => {
 		if (image()) {
 			console.log('clearing interval', image());
@@ -169,6 +156,19 @@ function Prev() {
 			console.log('requesting qrcode');
 		}
 	}, 5000);
+	useBeforeLeave(async () => {
+		console.log('cleanup');
+		(await a)();
+		clearInterval(r);
+		console.log('cleanup done');
+	});
+
+	onMount(async () => {
+		await emit('requestQrcode', {});
+
+		let id: string = await invoke('get_last_user', {});
+		AppState.setUserID(id);
+	});
 
 	return (
 		<div class="container">
@@ -254,6 +254,9 @@ function Prev() {
 
 			<Anchor href="/gamitofurras" state="LoginScreen">
 				Gami to Furras
+			</Anchor>
+			<Anchor href="/messagetest" state="Application">
+				message test
 			</Anchor>
 			<A href="/app">Application</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>

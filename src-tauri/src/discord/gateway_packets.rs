@@ -1,6 +1,8 @@
 use serde::{ Deserialize, Serialize };
 use serde_repr::{ Deserialize_repr };
 
+use super::types::{ message::Message, guild::GuildMember, voice::VoiceState };
+
 /// # Information
 /// TODO
 #[derive(Serialize, Deserialize)]
@@ -155,6 +157,7 @@ impl Serialize for GatewayPackets {
 #[derive(Debug)]
 pub struct GatewayIncomingPacket {
 	pub s: Option<u64>,
+	pub t: Option<String>,
 	pub op: DataType,
 	pub d: GatewayPacketsData,
 }
@@ -163,17 +166,24 @@ impl<'de> Deserialize<'de> for GatewayIncomingPacket {
 		#[derive(Deserialize)]
 		struct DataInner {
 			op: DataType,
+			t: Option<String>,
 			s: Option<u64>,
 			d: serde_json::Value,
 		}
 		let data = DataInner::deserialize(deserializer)?;
-
-		let payload = GatewayPacketsData::deserialize(data.d);
+		let payload;
+		if data.op == DataType::HeartbeatAck {
+			payload = GatewayPacketsData::HeartbeatAck {};
+		} else {
+			println!("data.d: {}", data.d);
+			payload = GatewayPacketsData::deserialize(data.d).unwrap();
+		}
 
 		Ok(GatewayIncomingPacket {
 			s: data.s,
 			op: data.op,
-			d: payload.unwrap(),
+			t: data.t,
+			d: payload,
 		})
 	}
 }
@@ -183,7 +193,7 @@ impl<'de> Deserialize<'de> for GatewayIncomingPacket {
 pub enum DataType {
 	Hello = 10,
 	HeartbeatAck = 11,
-	Ready = 0,
+	Dispatch = 0,
 }
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
@@ -191,13 +201,58 @@ pub enum GatewayPacketsData {
 	Hello {
 		heartbeat_interval: u64,
 	},
+	HeartbeatAck,
 
 	Ready {
 		v: u64,
 		users: Vec<serde_json::Value>,
 		resume_gateway_url: String,
 	},
-	HeartbeatAck {},
+	ReadySupplemental {
+		merged_presences: serde_json::Value,
+		merged_members: serde_json::Value,
+		lazy_private_channels: serde_json::Value,
+		guilds: serde_json::Value,
+	},
+	///
+	/// # example
+	/// ```json
+	///[
+	///    {
+	///        "status": "online",
+	///        "session_id": "",
+	///        "client_info": {
+	///            "version": 0,
+	///            "os": "windows",
+	///            "client": "web"
+	///        },
+	///        "activities": []
+	///    }
+	///]
+	/// ```
+
+	SessionReplace(Vec<SessionReplaceData>),
+
+	MessageCreate {
+		#[serde(flatten)]
+		message: Message,
+		mentions: Vec<GuildMember>,
+
+		member: GuildMember,
+
+		guild_id: String,
+	},
+
+	VoiceStateUpdate(VoiceState),
+
+	Unknown {},
+}
+#[derive(Deserialize, Debug)]
+pub struct SessionReplaceData {
+	status: String,
+	session_id: String,
+	client_info: serde_json::Value,
+	activities: Vec<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

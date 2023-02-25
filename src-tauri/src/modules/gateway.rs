@@ -1,6 +1,6 @@
 use std::{ sync::Arc, net::TcpStream, io::Read };
 
-use flate2::bufread::ZlibDecoder;
+use flate2::{ bufread::ZlibDecoder, Decompress };
 use tauri::{ AppHandle, Manager };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
@@ -28,7 +28,7 @@ pub struct Gateway {
 
 	session_id: Option<String>,
 
-	//decoder: ZlibDecoder<>
+	decoder: Decompress,
 
 	token: String,
 
@@ -55,6 +55,7 @@ impl Gateway {
 			token,
 			resume_url: None,
 			session_id: None,
+			decoder: Decompress::new(true),
 		}
 	}
 	fn conn(&self) -> Client<TlsStream<TcpStream>> {
@@ -79,7 +80,7 @@ impl Gateway {
 		self.running = false;
 		println!("shutting down mobile auth")
 	}
-	fn emit_event(&self, event: webview_packets::MobileAuth) -> Result<(), tauri::Error> {
+	fn emit_event(&self, event: webview_packets::Gateway) -> Result<(), tauri::Error> {
 		self.handle.emit_all("gateway", event)?;
 		Ok(())
 	}
@@ -150,14 +151,13 @@ impl Gateway {
 						last_4.copy_from_slice(&bin[bin.len() - 4..]);
 						if last_4 == [0, 0, 255, 255] {
 							use flate2::read::ZlibDecoder;
+							let mut buf = Vec::with_capacity(20_971_520);
+							self.decoder
+								.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync)
+								.unwrap();
 
-							let mut decoder = ZlibDecoder::new(&buffer[..]);
-
-							let mut buf = Vec::new();
-
-							decoder.read_to_end(&mut buf).unwrap();
 							let out = String::from_utf8(buf).unwrap();
-							println!("Gateway Binary {:?}", out);
+							println!("Gateway Binary gateway {:?}", out);
 							let json: GatewayIncomingPacket = serde_json
 								::from_str(out.as_str())
 								.unwrap();
@@ -172,8 +172,30 @@ impl Gateway {
 									let a = serde_json::to_string(&users).unwrap();
 									println!("Ready {:?}", a);
 								}
-								_ => {}
+								GatewayPacketsData::ReadySupplemental {
+									merged_presences,
+									merged_members,
+									lazy_private_channels,
+									guilds,
+								} => {
+									println!("ReadySupplemental {:?}", guilds);
+								}
+								GatewayPacketsData::MessageCreate { message, member, guild_id } => {
+									println!("Message {:?}", message);
+									self.emit_event(webview_packets::Gateway::MessageCreate {
+										message: message,
+										member: member,
+										guild_id: guild_id,
+									}).unwrap();
+								}
+								GatewayPacketsData::HeartbeatAck => {
+									ack_recived = true;
+								}
+								_ => {
+									println!("Not handled {:?}", json);
+								}
 							}
+							buffer.clear();
 						}
 					}
 					m => {

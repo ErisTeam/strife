@@ -6,9 +6,9 @@ import { onCleanup } from 'solid-js';
 import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api';
 
-async function startListener(
+async function startListener<T = string>(
 	eventName: string,
-	on_event: (event: Event<string>) => void
+	on_event: (event: Event<T>) => void
 ): Promise<UnlistenFn> {
 	console.log('start');
 	return await listen(eventName, on_event);

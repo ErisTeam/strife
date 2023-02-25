@@ -25,8 +25,8 @@ use crate::{
 /// After that, when the user scans the QE code, we are going <br>
 /// to receive encrypted user data which contains:
 ///     - `user ID` (snowflake)
-///     - `user discriminator` (int)
-///     - `user avatar hash` (hex)
+///     - `user discriminator` (string)
+///     - `user avatar hash` (string)
 ///     - `username` (string) <br>
 ///
 /// On the users app there should appear a prompt to accept or <br>

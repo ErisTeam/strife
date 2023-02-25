@@ -6,11 +6,11 @@ import { GuildType, Relationship, ChannelType } from './discord';
 
 const [userID, setUserID] = createSignal('');
 
-const [userGuilds, setUserGuilds] = createSignal([] as GuildType[]);
-const [currentGuildChannels, setCurrentGuildChannels] = createSignal(
-	[] as ChannelType[]
-);
-const [relationships, setRelationshpis] = createSignal([] as Relationship[]);
+const [userGuilds, setUserGuilds] = createSignal<GuildType[]>([]);
+const [currentGuildChannels, setCurrentGuildChannels] = createSignal<
+	ChannelType[]
+>([]);
+const [relationships, setRelationshpis] = createSignal<Relationship[]>([]);
 
 const AppState = createContext({
 	userGuilds,

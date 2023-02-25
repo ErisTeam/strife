@@ -33,6 +33,8 @@ const App: Component = () => {
 						<Routes>
 							<Route path="/" component={Prev}></Route>
 
+							<Route path="/messagetest" component={MessageTest} />
+
 							<Route path="/test" component={Tests} />
 
 							<Route
@@ -65,5 +67,10 @@ const App: Component = () => {
 		</Router>
 	);
 };
+
+import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
+import MessageTest from './MessageTest';
+
+attachDevtoolsOverlay();
 
 render(() => <App />, document.getElementById('root') as HTMLElement);

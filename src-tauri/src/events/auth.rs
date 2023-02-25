@@ -10,6 +10,13 @@ use crate::{
 	webview_packets,
 };
 
+fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	move |event| {
+		let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
+		state.start_gateway(handle.clone(), id);
+	}
+}
+
 fn request_qrcode(
 	state: Arc<Mutex<crate::main_app_state::State>>,
 	handle: tauri::AppHandle
@@ -261,6 +268,7 @@ pub fn get_all_events(
 		h.listen_global("requestQrcode", request_qrcode(state.state.clone(), handle.clone())),
 		h.listen_global("sendSms", send_sms(state.state.clone(), handle.clone())),
 		h.listen_global("verifyLogin", verify_login(state.clone(), handle.clone())),
-		h.listen_global("login", login(state.clone(), handle.clone()))
+		h.listen_global("login", login(state.clone(), handle.clone())),
+		h.listen_global("startGateway", start_gateway(state.clone(), handle.clone())) // todo remove later
 	]
 }

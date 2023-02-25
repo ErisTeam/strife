@@ -1,4 +1,6 @@
-struct CurrentUser {
+use serde::{ Serialize, Deserialize };
+
+pub struct CurrentUser {
 	verified: bool,
 	username: String,
 	purchased_flags: u64,
@@ -11,7 +13,7 @@ struct CurrentUser {
 	id: String,
 	flags: u64,
 	email: Option<String>,
-	display_name: String,
+	display_name: Option<String>,
 	discriminator: String,
 	desktop: bool,
 	bio: Option<String>,
@@ -21,14 +23,14 @@ struct CurrentUser {
 	avatar: Option<String>,
 	accent_color: Option<u64>,
 }
-
-struct User {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PublicUser {
 	username: String,
 	public_flags: u64,
 	id: String,
-	display_name: String,
+	display_name: Option<String>,
 	discriminator: String,
-	bot: bool,
+	bot: Option<bool>,
 	avatar_decoration: Option<String>,
 	avatar: Option<String>,
 }

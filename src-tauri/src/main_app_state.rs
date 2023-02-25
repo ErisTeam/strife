@@ -6,6 +6,7 @@ use crate::{ manager::{ ThreadManager }, event_manager::EventManager };
 
 #[derive(Debug, PartialEq)]
 pub enum State {
+	None {},
 	LoginScreen {
 		qr_url: Option<String>,
 		captcha_token: Option<String>,
@@ -46,14 +47,7 @@ impl MainState {
 	pub fn new() -> Self {
 		Self {
 			tokens: Mutex::new(HashMap::new()),
-			state: Arc::new(
-				Mutex::new(State::LoginScreen {
-					qr_url: None,
-					captcha_token: None,
-					ticket: None,
-					use_mfa: false,
-				})
-			),
+			state: Arc::new(Mutex::new(State::None {})),
 
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
@@ -76,16 +70,20 @@ impl MainState {
 	}
 
 	pub fn change_state(&self, new_state: State, handle: AppHandle, force: bool) {
-		if !force && !State::variant_eq(&*self.state.lock().unwrap(), &new_state) {
+		if !force && State::variant_eq(&*self.state.lock().unwrap(), &new_state) {
+			println!("variant eq");
 			return;
 		}
 		println!("bbbbbbbbbbbbbbbbbbbbb");
 		let mut state = self.state.lock().unwrap();
 		let mut thread_manager = self.thread_manager.lock().unwrap();
 		let mut event_manager = self.event_manager.lock().unwrap();
+
+		println!("{:?}", state);
 		match &*state {
 			State::LoginScreen { .. } => {
 				thread_manager.as_mut().unwrap().stop_mobile_auth();
+				println!("Stoping mobile auth");
 			}
 			State::MainApp {} => {
 				thread_manager
@@ -93,6 +91,7 @@ impl MainState {
 					.unwrap()
 					.stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
 			}
+			State::None {} => {}
 		}
 		println!("ccccccccccccccccc");
 
@@ -115,6 +114,7 @@ impl MainState {
 			State::MainApp {} => {
 				event_manager.as_mut().unwrap().register_for_main_app(handle.clone());
 			}
+			State::None {} => { panic!("State::None") }
 		}
 	}
 

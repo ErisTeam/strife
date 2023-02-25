@@ -18,8 +18,8 @@ interface ChannelListProps {
 const ChannelList = (props: ChannelListProps) => {
 	const AppState: any = useAppState();
 
-	const [categories, setCategories] = createSignal([] as ChannelType[]);
-	const [channels, setChannels] = createSignal([] as ChannelType[]);
+	const [categories, setCategories] = createSignal<ChannelType[]>([]);
+	const [channels, setChannels] = createSignal<ChannelType[]>([]);
 
 	onMount(async () => {
 		setCategories(

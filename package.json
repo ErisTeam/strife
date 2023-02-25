@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@solid-devtools/overlay": "^0.6.0",
     "@tauri-apps/cli": "^1.2.3",
     "@types/node": "^18.7.10",
     "@types/qrcode": "^1.5.0",

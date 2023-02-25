@@ -74,13 +74,13 @@ const Main = () => {
 			>
 				<input
 					onChange={(e) => {
-						setEmail((e.target as HTMLTextAreaElement).value);
+						setEmail((e.target as HTMLInputElement).value);
 					}}
 				/>
 				<input
 					type="password"
 					onChange={(e) => {
-						setPassword((e.target as HTMLTextAreaElement).value);
+						setPassword((e.target as HTMLInputElement).value);
 					}}
 				/>
 				<input type="submit" />

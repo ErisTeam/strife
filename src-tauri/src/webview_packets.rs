@@ -94,4 +94,10 @@ pub enum MobileAuth {
 /// TODO
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
-pub enum Gateway {}
+pub enum Gateway {
+	MessageCreate {
+		message: crate::discord::types::message::Message,
+		member: crate::discord::types::guild::GuildMember,
+		guild_id: String,
+	},
+}

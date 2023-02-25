@@ -28,8 +28,10 @@ impl EventManager {
 		}
 		event_listeners.clear();
 	}
+
 	pub fn register_for_login_screen(&self, handle: AppHandle) {
 		let mut event_listeners = self.event_listeners.lock().unwrap();
+
 		event_listeners.extend(events::auth::get_all_events(self.state.clone(), handle.clone()));
 	}
 	pub fn register_for_main_app(&self, handle: AppHandle) {

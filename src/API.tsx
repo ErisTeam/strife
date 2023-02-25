@@ -10,11 +10,42 @@ import { GuildType, ChannelType, Relationship } from './discord';
 const AppState: any = useAppState();
 
 export default {
+	async sendMessage(channelId: string, content: string) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
+			console.error("No user token found! Can't send message!");
+			return;
+		}
+
+		const url = `https://discord.com/api/v9/channels/${channelId}/messages`;
+		const resDataponse = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: token,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				content: content,
+				flags: 0,
+				nonce: Date.now(),
+				tts: false,
+			}),
+		});
+
+		let resData = await resDataponse.json();
+
+		console.log(resData);
+		return resData;
+	},
+
 	/**
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(user_id: string) {
+	async getToken(user_id: string | null = null) {
+		if (!user_id) {
+			user_id = AppState.userID();
+		}
 		return (await invoke('get_token', { id: user_id })) as string | null;
 	},
 
@@ -51,7 +82,7 @@ export default {
 			return;
 		}
 
-		AppState.setCurrentGuildChannels([] as ChannelType[]);
+		AppState.setCurrentGuildChannels([]);
 
 		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
 		const resDataponse = await fetch(url, {
