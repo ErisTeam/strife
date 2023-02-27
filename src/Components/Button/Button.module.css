@@ -1,0 +1,5 @@
+.button {
+	padding: var(--default-padding);
+	background-color: var(--depth3);
+	border-radius: var(--round-medium);
+}

@@ -1,0 +1,36 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-evenly;
+	height: 100vh;
+}
+
+.login {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.login > *:not(:last-child) {
+	margin-right: 2rem;
+}
+
+.leftBottom1,
+.leftBottom2,
+.leftBottom3,
+.leftTop1,
+.leftTop2,
+.rightTop1,
+.rightTop2 {
+	position: relative;
+	--scale: 1;
+}
+
+.leftBottom1,
+.leftBottom2,
+.leftBottom3 {
+	top: 0;
+	left: 0;
+}

@@ -14,6 +14,7 @@ import Tests from './Tests';
 import Main from './Routes/Login/Main';
 import MFA from './Routes/Login/MFA';
 import Prev from './Prev';
+import LoginPage from './LoginPage';
 
 // Style
 import './style.css';
@@ -37,6 +38,8 @@ const App: Component = () => {
 							<Route path="/messagetest" component={MessageTest} />
 
 							<Route path="/test" component={Tests} />
+
+							<Route path={'/loginpage'} component={LoginPage}></Route>
 
 							<Route
 								path={'/gamitofurras'}

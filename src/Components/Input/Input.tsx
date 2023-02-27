@@ -1,12 +1,12 @@
 /** @format */
 
-import { InputType } from './../../types';
+import { InputType } from './../types';
 import style from './Input.module.css';
-import './Input.module.css';
 
 interface InputProps {
 	type: InputType;
 	placeholder?: string;
+	width?: number;
 
 	disabled?: boolean;
 	required?: boolean;
@@ -17,12 +17,15 @@ interface InputProps {
 
 	pattern?: string;
 
+	class?: string;
 	onChange?: (e: any) => void;
 }
 
 function Input(prop: InputProps) {
 	return (
 		<input
+			style={'width:' + (prop.width ? `${prop.width}rem` : '100%')}
+			class={[prop.class, style.input].join(' ')}
 			type={prop.type}
 			placeholder={prop.placeholder}
 			disabled={prop.disabled}

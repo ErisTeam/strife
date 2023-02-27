@@ -54,14 +54,14 @@ pre {
 }
 
 ::marker {
-	content: "";
+	content: '';
 }
 
 :where([hidden]) {
 	display: none;
 }
 
-:where([contenteditable]:not([contenteditable="false"])) {
+:where([contenteditable]:not([contenteditable='false'])) {
 	-moz-user-modify: read-write;
 	-webkit-user-modify: read-write;
 	overflow-wrap: break-word;
@@ -69,7 +69,7 @@ pre {
 	-webkit-user-select: auto;
 }
 
-:where([draggable="true"]) {
+:where([draggable='true']) {
 	-webkit-user-drag: element;
 }
 
@@ -81,21 +81,36 @@ pre {
    PANDACORD STYLES     |||||    ALL ABOVE IS NORMALIZATION
    ========================================================================== */
 
+:root {
+	--depth1: #2a2c2a;
+	--depth2: #323636;
+	--depth3: #3a4042;
+	--depth4: #434a4d;
+
+	--text: #e6e6e6;
+	--disabled-text: #a0a0a0;
+
+	--round-medium: 6px;
+	--round-large: 12px;
+
+	--default-padding: 0.5rem;
+	--default-font: 'Atkinson Hyperlegible', sans-serif;
+
+	--shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+* {
+	font-family: var(--default-font);
+	color: var(--text);
+}
+
 body {
 	min-height: 100vh;
 	width: 100%;
 	height: 100%;
+	background-color: var(--depth1);
 }
 
-:root {
-	--depth0: #0c0c0c;
-	--depth1: #0f0f0f;
-	--depth2: #171717;
-	--depth3: #1f1f1f;
-	--depth4: #272727;
-	--depth5: #2f2f2f;
-	--text: #e6e6e6;
-}
 /* TEMPORARY */
 
 #root {

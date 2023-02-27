@@ -17,7 +17,7 @@ import qrcode from 'qrcode';
 import Anchor from './Anchor';
 
 // Style
-import './prev.css';
+//import './prev.css';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -254,6 +254,9 @@ function Prev() {
 			</Anchor>
 			<Anchor href="/messagetest" state="Application">
 				message test
+			</Anchor>
+			<Anchor href="/loginpage" state="LoginScreen">
+				Better Login
 			</Anchor>
 			<A href="/app">Application</A>
 			<Link href="/gamitofurras">Gami to Furras2</Link>

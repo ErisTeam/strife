@@ -1,0 +1,18 @@
+/** @format */
+
+.checkbox {
+	display: inline-block;
+	position: relative;
+	width: 1.2rem;
+	height: 1.2rem;
+	margin: 0;
+	padding: 0;
+	border-radius: 2px;
+	background-color: var(--depth3);
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.checkbox:checked {
+	background-color: #dd5b5b;
+}
