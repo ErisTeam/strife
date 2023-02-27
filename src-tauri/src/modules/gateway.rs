@@ -76,6 +76,7 @@ impl Gateway {
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
 		let url;
+		println!("{}", self.use_resume_url);
 		if self.use_resume_url {
 			url = self.resume_url.as_ref().unwrap().clone();
 		} else {
@@ -89,7 +90,7 @@ impl Gateway {
 			.unwrap();
 		client.set_nonblocking(true).unwrap();
 		if self.use_resume_url {
-			client.send_message(&OwnedMessage::Text("TEST".to_string()));
+			//client.send_message(&OwnedMessage::Text("TEST".to_string()));
 		}
 		self.use_resume_url = false;
 		client
@@ -239,6 +240,7 @@ impl Gateway {
 										member: member,
 										guild_id: guild_id,
 									}).unwrap();
+									Notification;
 								}
 								GatewayPacketsData::HeartbeatAck => {
 									ack_recived = true;

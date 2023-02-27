@@ -9,7 +9,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { changeState, startListener } from './test';
+import { changeState, useTaurListener } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
@@ -81,7 +81,7 @@ function Prev() {
 		//https://discord.com/api/v9/auth/logout
 	}
 
-	const a = startListener('auth', (event) => {
+	useTaurListener('auth', (event) => {
 		interface i {
 			type: string;
 		}
@@ -158,7 +158,7 @@ function Prev() {
 	}, 5000);
 	useBeforeLeave(async () => {
 		console.log('cleanup');
-		(await a)();
+
 		clearInterval(r);
 		console.log('cleanup done');
 	});

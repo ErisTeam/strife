@@ -9,7 +9,7 @@ import {
 } from 'solid-js';
 import API from './API';
 import { useAppState } from './AppState';
-import { startGatewayListener, startListener } from './test';
+import { startGatewayListener } from './test';
 interface i {
 	type: string;
 }
