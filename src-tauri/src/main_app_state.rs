@@ -65,16 +65,12 @@ impl MainState {
 		self.tokens.lock().unwrap().remove(&id);
 	}
 
-	pub fn is_logged_in(&self) -> bool {
-		self.tokens.lock().unwrap().len() > 0
-	}
-
 	pub fn change_state(&self, new_state: State, handle: AppHandle, force: bool) {
 		if !force && State::variant_eq(&*self.state.lock().unwrap(), &new_state) {
 			println!("variant eq");
 			return;
 		}
-		println!("bbbbbbbbbbbbbbbbbbbbb");
+
 		let mut state = self.state.lock().unwrap();
 		let mut thread_manager = self.thread_manager.lock().unwrap();
 		let mut event_manager = self.event_manager.lock().unwrap();
@@ -93,22 +89,17 @@ impl MainState {
 			}
 			State::None {} => {}
 		}
-		println!("ccccccccccccccccc");
 
 		*state = new_state;
 
-		println!("cccccccccccccdddddddddddddddd");
 		event_manager.as_mut().unwrap().clear_listeners(handle.clone());
-
-		println!("dddddddddddddddddddd");
 
 		match &*state {
 			State::LoginScreen { .. } => {
-				println!("nnnnnnnnnn");
 				event_manager.as_mut().unwrap().register_for_login_screen(handle.clone());
 
 				thread_manager.as_mut().unwrap().start_mobile_auth(handle.clone());
-				println!("bbbbbbbbbbbbbbbb");
+
 				//self.start_mobile_auth(handle.clone());
 			}
 			State::MainApp {} => {

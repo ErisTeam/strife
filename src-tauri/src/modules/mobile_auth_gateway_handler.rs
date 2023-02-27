@@ -6,7 +6,11 @@ use tauri::{ AppHandle, Manager };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream, WebSocketError };
 
 use crate::{
-	discord::{ self, gateway_packets::{ self, MobileAuthGatewayPackets }, http_packets::Auth },
+	discord::{
+		mobile_auth_packets::{ MobileAuthGatewayPackets, self },
+		http_packets::{ Auth, self },
+		constants,
+	},
 	webview_packets,
 	main_app_state::{ MainState, State },
 	modules::gateway_utils::send_heartbeat,
@@ -97,7 +101,7 @@ impl MobileAuthHandler {
 		);
 		let t = serde_json
 			::to_string(
-				&(discord::gateway_packets::MobileAuthGatewayPackets::Init {
+				&(mobile_auth_packets::MobileAuthGatewayPackets::Init {
 					encoded_public_key: public_key_base64.clone(),
 				})
 			)
@@ -108,7 +112,7 @@ impl MobileAuthHandler {
 				&OwnedMessage::Text(
 					serde_json
 						::to_string(
-							&(discord::gateway_packets::MobileAuthGatewayPackets::Init {
+							&(mobile_auth_packets::MobileAuthGatewayPackets::Init {
 								encoded_public_key: public_key_base64.clone(),
 							})
 						)
@@ -152,7 +156,7 @@ impl MobileAuthHandler {
 				&OwnedMessage::Text(
 					serde_json
 						::to_string(
-							&(discord::gateway_packets::MobileAuthGatewayPackets::NonceProofClient {
+							&(mobile_auth_packets::MobileAuthGatewayPackets::NonceProofClient {
 								proof: base64.clone(),
 							})
 						)
@@ -166,7 +170,7 @@ impl MobileAuthHandler {
 		use websocket::ClientBuilder;
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
-		let client = ClientBuilder::new("wss://remote-auth-gateway.discord.gg/?v=2")
+		let client = ClientBuilder::new(constants::MOBILE_AUTH)
 			.unwrap()
 			.custom_headers(&headers)
 			.connect_secure(None);
@@ -182,19 +186,15 @@ impl MobileAuthHandler {
 	async fn get_token(&self, ticket: String) -> Result<String, String> {
 		let client = reqwest::Client::new();
 		let res = client
-			.post("https://discord.com/api/v9/users/@me/remote-auth/login")
+			.post(constants::MOBILE_AUTH_GET_TOKEN)
 			.header("Content-Type", "application/json")
-			.body(
-				serde_json
-					::to_string(&(discord::http_packets::Auth::Login { ticket: ticket }))
-					.unwrap()
-			)
+			.body(serde_json::to_string(&(http_packets::Auth::Login { ticket: ticket })).unwrap())
 			.send().await
 			.unwrap();
 
-		let json = res.json::<discord::http_packets::Auth>().await.unwrap();
+		let json = res.json::<http_packets::Auth>().await.unwrap();
 		match json {
-			discord::http_packets::Auth::LoginResponse { encrypted_token } => {
+			http_packets::Auth::LoginResponse { encrypted_token } => {
 				let bytes = general_purpose::STANDARD.decode(encrypted_token.as_bytes()).unwrap();
 				let token = String::from_utf8(self.decrypt(bytes)).unwrap();
 				Ok(token)
@@ -256,7 +256,7 @@ impl MobileAuthHandler {
 						println!("Text: {}", text);
 						match
 							serde_json
-								::from_str::<gateway_packets::MobileAuthGatewayPackets>(&text)
+								::from_str::<mobile_auth_packets::MobileAuthGatewayPackets>(&text)
 								.unwrap()
 						{
 							MobileAuthGatewayPackets::HeartbeatAck {} => {

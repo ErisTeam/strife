@@ -66,7 +66,6 @@ fn main() {
 
 	let event_manager = event_manager::EventManager::new(main_state.clone());
 
-	println!("aaaaaa");
 	*main_state.thread_manager.lock().unwrap() = Some(thread_manager);
 
 	*main_state.event_manager.lock().unwrap() = Some(event_manager);
@@ -78,7 +77,7 @@ fn main() {
 		.manage(main_state)
 		.setup(move |app| {
 			let app_handle = app.handle();
-			println!("vvvvvvvvvv");
+
 			m.change_state(
 				main_app_state::State::LoginScreen {
 					qr_url: None,
@@ -89,7 +88,7 @@ fn main() {
 				app_handle,
 				false
 			);
-			println!("MMMMMMMMMMMM");
+
 			Ok(())
 		})
 		.invoke_handler(

@@ -21,9 +21,10 @@ import './style.css';
 const App: Component = () => {
 	const AppState: any = useAppState();
 
-	// onMount(async () => {
-	// 	AppState.setUserToken(localStorage.getItem('userToken'));
-	// });
+	onMount(async () => {
+		let id: string = await invoke('get_last_user', {});
+		AppState.setUserID(id);
+	});
 
 	return (
 		<Router>
@@ -70,6 +71,7 @@ const App: Component = () => {
 
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
 import MessageTest from './MessageTest';
+import { invoke } from '@tauri-apps/api';
 
 attachDevtoolsOverlay();
 

@@ -15,3 +15,5 @@ pub mod thread;
 pub mod sticker;
 
 pub mod voice;
+
+pub mod gateway;

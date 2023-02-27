@@ -121,7 +121,13 @@ impl ThreadManager {
 		println!("Starting gateway");
 
 		let (sender, reciver) = mpsc::channel(32);
-		let mut gate = Gateway::new(self.state.clone(), handle.clone(), reciver, token.clone());
+		let mut gate = Gateway::new(
+			self.state.clone(),
+			handle.clone(),
+			reciver,
+			token.clone(),
+			user_id.clone()
+		);
 
 		if self.senders.get(user_id.as_str()).is_none() {
 			self.senders.insert(user_id.clone(), Vec::new());

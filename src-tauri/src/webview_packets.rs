@@ -93,11 +93,19 @@ pub enum MobileAuth {
 /// # Information
 /// TODO
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "data")]
 pub enum Gateway {
 	MessageCreate {
+		#[serde(flatten)]
 		message: crate::discord::types::message::Message,
 		member: crate::discord::types::guild::GuildMember,
 		guild_id: String,
+		mentions: Vec<crate::discord::types::guild::GuildMember>,
 	},
+}
+#[derive(Serialize, Debug, Clone)]
+pub struct GatewayEvent {
+	#[serde(flatten)]
+	pub event: Gateway,
+	pub user_id: String,
 }

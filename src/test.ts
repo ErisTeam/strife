@@ -1,6 +1,5 @@
-/*@once*/
 // SolidJS
-import { onCleanup } from 'solid-js';
+import { createEffect, onCleanup } from 'solid-js';
 
 // Tauri
 import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
@@ -22,8 +21,31 @@ async function useTaurListener(callback: (event: Event<string>) => void) {
 	});
 }
 
+interface GatewayEvent {
+	user_id: string;
+}
+
+function startGatewayListener<T extends GatewayEvent>(
+	user_id: string,
+	on_event: (event: Event<T>) => void
+) {
+	createEffect(() => {
+		console.log('start gateway');
+		let unlist = listen('gateway', (event: Event<T>) => {
+			//if (event.payload.user_id === user_id) {
+			on_event(event);
+			//}
+		});
+		onCleanup(async () => {
+			console.log('cleanup');
+			(await unlist)();
+		});
+		return;
+	});
+}
+
 async function changeState(newState: 'LoginScreen' | 'Application') {
 	await invoke('set_state', { newState });
 }
 
-export { startListener, useTaurListener, changeState };
+export { startListener, useTaurListener, changeState, startGatewayListener };

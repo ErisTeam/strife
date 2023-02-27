@@ -11,7 +11,7 @@ use crate::{
 };
 
 fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-	move |event| {
+	move |_event| {
 		let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
 		state.start_gateway(handle.clone(), id);
 	}

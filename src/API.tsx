@@ -10,6 +10,25 @@ import { GuildType, ChannelType, Relationship } from './discord';
 const AppState: any = useAppState();
 
 export default {
+	async getMessages(channelId: string) {
+		let token = await this.getToken(AppState.userID());
+		if (!token) {
+			console.error("No user token found! Can't get messages!");
+			return;
+		}
+
+		const url = `https://discord.com/api/v9/channels/${channelId}/messages?limit=50`;
+		const resDataponse = await fetch(url, {
+			method: 'GET',
+			headers: {
+				Authorization: token,
+			},
+		});
+
+		let resData = await resDataponse.json();
+
+		return resData;
+	},
 	async sendMessage(channelId: string, content: string) {
 		let token = await this.getToken(AppState.userID());
 		if (!token) {

@@ -1,22 +1,29 @@
-use std::{ sync::Arc, net::TcpStream, io::Read };
+use std::{ sync::Arc, net::TcpStream };
 
-use flate2::{ bufread::ZlibDecoder, Decompress };
+use flate2::Decompress;
 use tauri::{ AppHandle, Manager };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
 use crate::{
 	main_app_state::MainState,
-	webview_packets,
-	discord::gateway_packets::{
-		GatewayPackets,
-		Properties,
-		Presence,
-		ClientState,
-		GatewayIncomingPacket,
-		GatewayPacketsData,
+	webview_packets::{ self, GatewayEvent },
+	discord::{
+		gateway_packets::{ GatewayPackets, GatewayIncomingPacket, GatewayPacketsData },
+		types::gateway::{ Properties, Presence, ClientState },
 	},
 	modules::gateway_utils::send_heartbeat,
 };
+
+pub enum GatewayError {
+	InvalidApiVersion,
+	Other,
+}
+
+pub enum GatewayResult {
+	Close,
+	Reconnect,
+	RecconectUsingResumeUrl,
+}
 
 #[derive(Debug)]
 pub struct Gateway {
@@ -31,19 +38,23 @@ pub struct Gateway {
 	decoder: Decompress,
 
 	token: String,
+	user_id: String,
 
 	pub running: bool,
 
 	handle: AppHandle,
 
 	reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
+
+	use_resume_url: bool,
 }
 impl Gateway {
 	pub fn new(
 		state: Arc<MainState>,
 		handle: AppHandle,
 		reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
-		token: String
+		token: String,
+		user_id: String
 	) -> Self {
 		Self {
 			state,
@@ -53,35 +64,49 @@ impl Gateway {
 			handle,
 			reciver,
 			token,
+			user_id,
 			resume_url: None,
 			session_id: None,
 			decoder: Decompress::new(true),
+			use_resume_url: false,
 		}
 	}
-	fn conn(&self) -> Client<TlsStream<TcpStream>> {
+	fn conn(&mut self) -> Client<TlsStream<TcpStream>> {
 		use websocket::ClientBuilder;
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
-		let client = ClientBuilder::new(
-			"wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream"
-		)
+		let url;
+		if self.use_resume_url {
+			url = self.resume_url.as_ref().unwrap().clone();
+		} else {
+			url = "wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream".to_string();
+		}
+
+		let mut client = ClientBuilder::new(url.as_str())
 			.unwrap()
 			.custom_headers(&headers)
 			.connect_secure(None)
 			.unwrap();
 		client.set_nonblocking(true).unwrap();
+		if self.use_resume_url {
+			client.send_message(&OwnedMessage::Text("TEST".to_string()));
+		}
+		self.use_resume_url = false;
 		client
 	}
 	pub async fn run(&mut self) {
 		self.running = true;
-		while !self.connect().await {
+		while let Ok(result) = self.connect().await {
 			print!("Reconnecting");
+			if matches!(result, GatewayResult::RecconectUsingResumeUrl) {
+				self.use_resume_url = true;
+			}
 		}
 		self.running = false;
-		println!("shutting down mobile auth")
+		println!("shutting down gateway")
 	}
 	fn emit_event(&self, event: webview_packets::Gateway) -> Result<(), tauri::Error> {
-		self.handle.emit_all("gateway", event)?;
+		self.handle.emit_all("gateway", GatewayEvent { event, user_id: self.user_id.clone() })?;
 		Ok(())
 	}
 
@@ -89,7 +114,7 @@ impl Gateway {
 		let data = GatewayPackets::Identify {
 			token,
 			capabilities: 4093,
-			//encoding: "JSON".to_string(),
+
 			properties: Properties::default(),
 			presence: Presence::default(),
 			compress: false,
@@ -107,7 +132,7 @@ impl Gateway {
 		client.send_message(&OwnedMessage::Text(serde_json::to_string(&data).unwrap())).unwrap();
 	}
 
-	pub async fn connect(&mut self) -> bool {
+	pub async fn connect(&mut self) -> Result<GatewayResult, GatewayError> {
 		println!("Connecting");
 
 		let mut client = self.conn();
@@ -119,8 +144,6 @@ impl Gateway {
 		let mut authed = false;
 
 		let mut last_s: Option<u64> = None;
-
-		//let mut user_id = None;
 
 		let mut buffer = Vec::<u8>::new();
 
@@ -142,7 +165,30 @@ impl Gateway {
 
 					OwnedMessage::Close(reason) => {
 						println!("Close {:?}", reason);
-						return true;
+						if let Some(reason) = reason {
+							match reason.status_code {
+								4004 => {
+									println!("Invalid token");
+									return Err(GatewayError::Other);
+								}
+								4013 | 4014 => {
+									println!("Invalid intent");
+									return Err(GatewayError::Other);
+								}
+								4012 => {
+									println!("invalid api version");
+									return Err(GatewayError::InvalidApiVersion);
+								}
+								4010 | 4011 => {
+									println!("how? also gami is a furry");
+									return Ok(GatewayResult::Reconnect);
+								}
+								_ => {
+									return Ok(GatewayResult::RecconectUsingResumeUrl);
+								}
+							}
+						}
+						return Ok(GatewayResult::Reconnect);
 					}
 					OwnedMessage::Binary(bin) => {
 						buffer.extend(bin.clone());
@@ -150,7 +196,6 @@ impl Gateway {
 						let mut last_4 = [0u8; 4];
 						last_4.copy_from_slice(&bin[bin.len() - 4..]);
 						if last_4 == [0, 0, 255, 255] {
-							use flate2::read::ZlibDecoder;
 							let mut buf = Vec::with_capacity(20_971_520);
 							self.decoder
 								.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync)
@@ -168,9 +213,10 @@ impl Gateway {
 									self.init_message(&mut client, self.token.clone());
 									authed = true;
 								}
-								GatewayPacketsData::Ready { users, .. } => {
-									let a = serde_json::to_string(&users).unwrap();
-									println!("Ready {:?}", a);
+								GatewayPacketsData::Ready(data) => {
+									println!("Ready {:?}", data);
+									self.resume_url = Some(data.resume_gateway_url);
+									self.session_id = Some(data.session_id);
 								}
 								GatewayPacketsData::ReadySupplemental {
 									merged_presences,
@@ -180,10 +226,16 @@ impl Gateway {
 								} => {
 									println!("ReadySupplemental {:?}", guilds);
 								}
-								GatewayPacketsData::MessageCreate { message, member, guild_id } => {
+								GatewayPacketsData::MessageCreate {
+									message,
+									member,
+									guild_id,
+									mentions,
+								} => {
 									println!("Message {:?}", message);
 									self.emit_event(webview_packets::Gateway::MessageCreate {
 										message: message,
+										mentions,
 										member: member,
 										guild_id: guild_id,
 									}).unwrap();

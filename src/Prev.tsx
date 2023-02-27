@@ -165,9 +165,6 @@ function Prev() {
 
 	onMount(async () => {
 		await emit('requestQrcode', {});
-
-		let id: string = await invoke('get_last_user', {});
-		AppState.setUserID(id);
 	});
 
 	return (

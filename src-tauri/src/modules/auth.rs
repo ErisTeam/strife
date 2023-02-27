@@ -1,6 +1,8 @@
 use serde::{ Deserialize, Serialize };
 use serde_json::json;
 
+use crate::discord::constants;
+
 #[derive(Serialize, Deserialize, Debug)]
 struct LoginRequest {
 	captcha_key: Option<String>,
@@ -88,7 +90,7 @@ impl Auth {
 		};
 		let client = reqwest::Client::new();
 		let res = client
-			.post("https://discord.com/api/v9/auth/login")
+			.post(constants::LOGIN)
 			.header("credentials", "include")
 			.json(&body)
 			.send().await
@@ -101,7 +103,7 @@ impl Auth {
 	pub async fn send_sms(ticket: String) -> String {
 		let client = reqwest::Client::new();
 		let res = client
-			.post("https://discord.com/api/v9/auth/mfa/sms/send")
+			.post(constants::SMS_SEND)
 			.json(&json!({
 				"ticket":ticket
 			}))
@@ -114,7 +116,7 @@ impl Auth {
 	pub async fn verify_sms(ticket: String, code: String) {
 		let client = reqwest::Client::new();
 		let res = client
-			.post("https://discord.com/api/v9/auth/mfa/sms")
+			.post(constants::VERIFY_SMS)
 			.json(&json!({
 				"ticket":ticket,
 				"code":code
@@ -128,7 +130,7 @@ impl Auth {
 	pub async fn verify_totp(ticket: String, code: String) -> Result<MFAResponse, ()> {
 		let client = reqwest::Client::new();
 		let res = client
-			.post("https://discord.com/api/v9/auth/mfa/totp")
+			.post(constants::VERIFY_TOTP)
 			.json(&json!({
 				"ticket":ticket,
 				"code":code
