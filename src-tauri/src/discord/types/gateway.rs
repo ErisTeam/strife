@@ -1,6 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
-use crate::discord::user::PublicUser;
+use crate::discord::user::{ PublicUser, CurrentUser };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
@@ -67,8 +67,14 @@ pub struct SessionReplaceData {
 
 #[derive(Deserialize, Debug)]
 pub struct ReadyData {
-	v: u64,
+	pub v: u64,
+
 	pub users: Vec<PublicUser>,
+
+	pub user: CurrentUser,
+
+	pub guilds: Vec<serde_json::Value>,
+
 	pub resume_gateway_url: String,
 	pub session_id: String,
 }

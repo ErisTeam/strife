@@ -1,8 +1,16 @@
-use std::{ sync::{ Mutex, Arc }, collections::HashMap };
+use std::{ sync::{ Mutex, Arc }, collections::{ HashMap, HashSet } };
 
 use tauri::{ AppHandle };
 
-use crate::{ manager::{ ThreadManager }, event_manager::EventManager };
+use crate::{ manager::{ ThreadManager }, event_manager::EventManager, discord::user::CurrentUser };
+
+#[derive(Debug)]
+pub struct UserData {
+	pub user: CurrentUser,
+	//token: String,
+
+	pub guilds: Vec<serde_json::Value>,
+}
 
 #[derive(Debug, PartialEq)]
 pub enum State {
@@ -40,6 +48,8 @@ pub struct MainState {
 
 	pub last_id: Mutex<Option<String>>,
 
+	pub user_data: Mutex<HashMap<String, UserData>>,
+
 	//todo pub system_info: Mutex<SystemInfo>
 }
 
@@ -51,6 +61,8 @@ impl MainState {
 
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
+
+			user_data: Mutex::new(HashMap::new()),
 
 			last_id: Mutex::new(None),
 		}

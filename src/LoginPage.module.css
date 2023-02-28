@@ -29,26 +29,27 @@
 }
 
 .leftBottom {
-	top: 64%;
+	width: 20rem;
+	height: 20rem;
 	left: 0;
-	width: 400px;
-	height: 400px;
+	bottom: 0;
+	z-index: -1;
 }
 
 .leftBottom1 {
 	z-index: 3;
-	top: 55%;
+	bottom: 0;
 	left: 0;
 }
 
 .leftBottom2 {
 	z-index: 2;
-	top: 25%;
+	bottom: 0;
 	left: 0;
 }
 
 .leftBottom3 {
 	z-index: 1;
-	top: 0;
+	bottom: 0;
 	left: 0;
 }

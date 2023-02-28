@@ -135,7 +135,7 @@ function Prev() {
 
 	return (
 		<div class={style.container}>
-			<h1>{AppState.userID()}</h1>
+			{/* <h1>{AppState.userID()}</h1> */}
 			<div class={style.login}>
 				<LoginBox />
 				{/* <Button type="button" onClick={() => login()}>
@@ -154,14 +154,14 @@ function Prev() {
 				<img class={style.leftBottom2} src="LoginPageSVGS/LeftBottom2.svg" />
 				<img class={style.leftBottom3} src="LoginPageSVGS/LeftBottom3.svg" />
 			</div>
-			<div class={style.leftTop}>
+			{/* <div class={style.leftTop}>
 				<img class={style.leftTop1} src="LoginPageSVGS/LeftTop1.svg" />
 				<img class={style.leftTop2} src="LoginPageSVGS/LeftTop2.svg" />
 			</div>
 			<div class={style.rightTop}>
 				<img class={style.rightTop1} src="LoginPageSVGS/RightTop1.svg" />
 				<img class={style.rightTop2} src="LoginPageSVGS/RightTop2.svg" />
-			</div>
+			</div> */}
 		</div>
 	);
 }

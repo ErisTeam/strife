@@ -5,11 +5,6 @@ use tauri::{ AppHandle, Manager };
 
 use crate::{ main_app_state::{ MainState }, events };
 
-#[derive(Debug, Deserialize)]
-struct StartGatewayPayload {
-	user_id: String,
-}
-
 #[derive(Debug)]
 pub struct EventManager {
 	state: Arc<MainState>,
@@ -36,16 +31,8 @@ impl EventManager {
 	}
 	pub fn register_for_main_app(&self, handle: AppHandle) {
 		let mut event_listeners = self.event_listeners.lock().unwrap();
-		let h = handle.clone();
-		let state = self.state.clone();
-		let h = handle.listen_global("startGateway", move |event| {
-			println!("got event-name with payload {:?}", event.payload());
-			let user_id = serde_json
-				::from_str::<StartGatewayPayload>(event.payload().unwrap())
-				.unwrap().user_id;
-
-			state.start_gateway(h.clone(), user_id);
-		});
-		event_listeners.push(h);
+		event_listeners.extend(
+			events::main_app::get_all_events(self.state.clone(), handle.clone())
+		);
 	}
 }
