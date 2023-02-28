@@ -111,13 +111,28 @@ function MessageTest() {
 			<A href="/">back</A>
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>
 				<For each={messages()} fallback={<h1>loading</h1>}>
-					{(val, index) => (
-						<li>
-							{intl.format(val.timestamp)} <br /> {val.author.username}:{' '}
-							{val.content}
-							{val.author.id == AppState.userID() && <button>edit</button>}
-						</li>
-					)}
+					{(val, index) => {
+						let embed;
+						if (val.embeds && val.embeds[0]) {
+							embed = (
+								<video
+									src={val.embeds[0].video.proxy_url}
+									autoplay={true}
+									loop={true}
+									width={val.embeds[0].video.width}
+									height={val.embeds[0].video.height}
+								></video>
+							);
+						}
+						return (
+							<li>
+								{intl.format(val.timestamp)} <br /> {val.author.username}:{' '}
+								{!embed && val.content}
+								{val.author.id == AppState.userID() && <button>edit</button>}
+								{embed}
+							</li>
+						);
+					}}
 				</For>
 			</ol>
 			<div>

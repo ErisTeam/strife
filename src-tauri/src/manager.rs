@@ -103,7 +103,9 @@ impl ThreadManager {
 			if let Some(index) = sender.iter().position(|s| matches!(s, Modules::Gateway(_))) {
 				let r = self.senders.get_mut(user_id.as_str()).unwrap().remove(index);
 				if let Modules::Gateway(sender) = r {
-					sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					if !sender.is_closed() {
+						sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					}
 				}
 			}
 		}

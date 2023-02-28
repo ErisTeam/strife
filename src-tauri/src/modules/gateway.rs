@@ -266,7 +266,7 @@ impl Gateway {
 											self.handle.config().tauri.bundle.identifier.clone()
 										);
 										notification
-											.title("Gami to furras")
+											.title("New Message")
 											.body(
 												format!(
 													"{}: {}",

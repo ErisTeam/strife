@@ -155,13 +155,12 @@ function Prev() {
 					{/* <Button type="button" onClick={() => login()}>
 						Login
 					</Button> */}
-					<QRCode
-						class={style.qrcode}
-						qrcode_src={image()}
-						header="Log In With QR Code"
-						paragraph="Scan the code with our app or any other one to log in!"
-					></QRCode>
 				</div>
+				<QRCode
+					qrcode_src={image()}
+					header="Log In With QR Code"
+					paragraph="Scan the code with our app or any other one to log in!"
+				></QRCode>
 			</div>
 			{/* Corner SVGS */}
 			<div class={style.leftBottom}>

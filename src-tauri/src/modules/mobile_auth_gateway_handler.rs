@@ -283,6 +283,7 @@ impl MobileAuthHandler {
 									}
 									_ => {}
 								}
+								println!("Fingerprint: {:?}", state);
 							}
 							MobileAuthGatewayPackets::PendingTicket { encrypted_user_payload } => {
 								println!("Ticket: {}", encrypted_user_payload);

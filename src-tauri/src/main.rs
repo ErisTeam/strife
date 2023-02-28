@@ -61,7 +61,6 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
 	}
 }
 
-// TODO: Move this to cammands.rs
 #[tauri::command]
 fn get_token(id: String, state: State<Arc<MainState>>) -> Option<String> {
 	state.tokens.lock().unwrap().get(&id).cloned()
