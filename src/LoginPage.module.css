@@ -28,6 +28,42 @@
 	position: absolute;
 }
 
+.rightTop {
+	width: 20rem;
+	height: 20rem;
+	top: 0;
+	right: 0;
+	z-index: -1;
+}
+.rightTop1 {
+	z-index: 3;
+	top: 0;
+	right: 0;
+}
+.rightTop2 {
+	z-index: 2;
+	top: 0;
+	right: 0;
+}
+
+.leftTop {
+	width: 20rem;
+	height: 20rem;
+	top: 0;
+	bottom: 0;
+	z-index: -1;
+}
+.leftTop1 {
+	z-index: 3;
+	top: 0;
+	left: 0;
+}
+.leftTop2 {
+	z-index: 2;
+	top: 0;
+	left: 0;
+}
+
 .leftBottom {
 	width: 20rem;
 	height: 20rem;

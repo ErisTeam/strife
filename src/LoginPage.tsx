@@ -134,35 +134,36 @@ function Prev() {
 	});
 
 	return (
-		<div class={style.container}>
-			{/* <h1>{AppState.userID()}</h1> */}
-			<div class={style.login}>
-				<LoginBox />
-				{/* <Button type="button" onClick={() => login()}>
+		<>
+			<div class={style.container}>
+				{/* <h1>{AppState.userID()}</h1> */}
+				<div class={style.login}>
+					<LoginBox />
+					{/* <Button type="button" onClick={() => login()}>
 						Login
 					</Button> */}
-				<QRCode
-					qrcode_src={image()}
-					header="Log In With QR Code"
-					paragraph="Scan the code with our app or any other one to log in!"
-				></QRCode>
+					<QRCode
+						qrcode_src={image()}
+						header="Log In With QR Code"
+						paragraph="Scan the code with our app or any other one to log in!"
+					></QRCode>
+				</div>
 			</div>
-
 			{/* Corner SVGS */}
 			<div class={style.leftBottom}>
 				<img class={style.leftBottom1} src="LoginPageSVGS/LeftBottom1.svg" />
 				<img class={style.leftBottom2} src="LoginPageSVGS/LeftBottom2.svg" />
 				<img class={style.leftBottom3} src="LoginPageSVGS/LeftBottom3.svg" />
 			</div>
-			{/* <div class={style.leftTop}>
+			<div class={style.leftTop}>
 				<img class={style.leftTop1} src="LoginPageSVGS/LeftTop1.svg" />
 				<img class={style.leftTop2} src="LoginPageSVGS/LeftTop2.svg" />
 			</div>
 			<div class={style.rightTop}>
 				<img class={style.rightTop1} src="LoginPageSVGS/RightTop1.svg" />
 				<img class={style.rightTop2} src="LoginPageSVGS/RightTop2.svg" />
-			</div> */}
-		</div>
+			</div>
+		</>
 	);
 }
 
