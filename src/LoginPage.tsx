@@ -149,7 +149,7 @@ function Prev() {
 			</div>
 
 			{/* Corner SVGS */}
-			<div class={style.leftTop}>
+			<div class={style.leftBottom}>
 				<img class={style.leftBottom1} src="LoginPageSVGS/LeftBottom1.svg" />
 				<img class={style.leftBottom2} src="LoginPageSVGS/LeftBottom2.svg" />
 				<img class={style.leftBottom3} src="LoginPageSVGS/LeftBottom3.svg" />

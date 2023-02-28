@@ -17,6 +17,7 @@
 	margin-right: 2rem;
 }
 
+.leftBottom,
 .leftBottom1,
 .leftBottom2,
 .leftBottom3,
@@ -24,13 +25,30 @@
 .leftTop2,
 .rightTop1,
 .rightTop2 {
-	position: relative;
-	--scale: 1;
+	position: absolute;
 }
 
-.leftBottom1,
-.leftBottom2,
+.leftBottom {
+	top: 64%;
+	left: 0;
+	width: 400px;
+	height: 400px;
+}
+
+.leftBottom1 {
+	z-index: 3;
+	top: 55%;
+	left: 0;
+}
+
+.leftBottom2 {
+	z-index: 2;
+	top: 25%;
+	left: 0;
+}
+
 .leftBottom3 {
+	z-index: 1;
 	top: 0;
 	left: 0;
 }
