@@ -55,6 +55,9 @@ function MessageTest() {
 		switch (msg.payload.type) {
 			case 'MessageCreate':
 				console.log('message create');
+				if (messages().find((e) => e.id == msg.id)) {
+					return;
+				}
 				setMessages((a) => [
 					...a,
 					{
@@ -81,6 +84,25 @@ function MessageTest() {
 	// 		(await l)();
 	// 	});
 	// });
+	const [canSendTyping, setCanSendTyping] = createSignal(true);
+	async function sendTyping() {
+		console.log('i');
+		if (!canSendTyping()) {
+			return;
+		}
+		console.log('send');
+		setCanSendTyping(false);
+		fetch(`https://discord.com/api/v9/channels/${channelId}/typing`, {
+			method: 'POST',
+			headers: {
+				Authorization: (await API.getToken(AppState.userID())) as string,
+			},
+		});
+		setTimeout(async () => {
+			console.log('d');
+			setCanSendTyping(true);
+		}, 3000);
+	}
 
 	const [message, setMessage] = createSignal('');
 
@@ -102,8 +124,9 @@ function MessageTest() {
 				<input
 					style={{ width: '60rem' }}
 					type="text"
-					onChange={(e) => {
+					oninput={(e) => {
 						setMessage(e.currentTarget.value);
+						sendTyping();
 					}}
 					placeholder="message"
 					value={message()}
@@ -113,6 +136,9 @@ function MessageTest() {
 						let msg = message();
 						setMessage('');
 						let res = await API.sendMessage(channelId, msg);
+						if (messages().find((e) => e.id == res.id)) {
+							return;
+						}
 						setMessages((a) => [
 							...a,
 							{

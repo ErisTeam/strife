@@ -17,9 +17,24 @@ extern crate tokio;
 
 use std::sync::{ Arc };
 
-use tauri::{ State };
+use tauri::{ State, api::notification::Notification, Manager, Window };
+use windows::Win32::{ UI::WindowsAndMessaging::FlashWindow, Foundation::{ BOOLEAN, BOOL } };
 
 use crate::{ main_app_state::MainState, manager::ThreadManager };
+
+trait test {
+	fn set_flashing(&self, s: bool) -> Result<(), tauri::Error>;
+}
+impl test for tauri::Window {
+	fn set_flashing(&self, s: bool) -> Result<(), tauri::Error> {
+		let winit_hwnd = self.hwnd()?;
+		let h = windows::Win32::Foundation::HWND(winit_hwnd.0 as isize);
+		unsafe {
+			FlashWindow(h, BOOL(s as i32));
+		}
+		Ok(())
+	}
+}
 
 #[tauri::command]
 fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::AppHandle) {
@@ -55,6 +70,29 @@ fn get_token(id: String, state: State<Arc<MainState>>) -> Option<String> {
 #[tauri::command]
 fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
 	state.last_id.lock().unwrap().clone()
+}
+
+#[tauri::command]
+fn test(handle: tauri::AppHandle) {
+	println!("test");
+	Notification::new(&handle.config().tauri.bundle.identifier)
+		.title("??????")
+		.body("Gami to furras")
+		.icon(
+			format!(
+				"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
+				"362958640656941056",
+				"0ad17e3c13fd7de38cbdd82e34cac15d"
+			)
+		)
+		.show()
+		.unwrap();
+	let mut window = None;
+	for e in handle.windows() {
+		window = Some(e.1);
+		break;
+	}
+	window.unwrap().set_flashing(true).unwrap()
 }
 
 fn main() {
@@ -96,6 +134,8 @@ fn main() {
 				get_token,
 				set_state,
 				get_last_user,
+
+				test,
 
 				commands::auth::start_mobile_auth // todo remove
 			]

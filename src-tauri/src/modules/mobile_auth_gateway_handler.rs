@@ -1,4 +1,4 @@
-use std::{ sync::{ Mutex, Arc }, net::TcpStream };
+use std::{ sync::{ Mutex, Arc }, net::TcpStream, time::Duration };
 
 use base64::{ engine::{ general_purpose }, Engine };
 use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, PaddingScheme };
@@ -225,7 +225,8 @@ impl MobileAuthHandler {
 
 		let client = self.conn();
 		if client.is_err() {
-			return true;
+			tokio::time::sleep(Duration::from_millis(10000)).await;
+			return false;
 		}
 		let mut client = client.unwrap();
 

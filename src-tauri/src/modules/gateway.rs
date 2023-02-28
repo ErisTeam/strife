@@ -1,17 +1,18 @@
-use std::{net::TcpStream, sync::Arc};
+use std::{ sync::Arc, net::TcpStream, fmt::format };
 
 use flate2::Decompress;
-use tauri::{AppHandle, Manager};
-use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};
+use tauri::{ AppHandle, Manager, api::notification::Notification };
+use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
 use crate::{
-    discord::{
-        gateway_packets::{GatewayIncomingPacket, GatewayPackets, GatewayPacketsData},
-        types::gateway::{ClientState, Presence, Properties},
-    },
-    main_app_state::MainState,
-    modules::gateway_utils::send_heartbeat,
-    webview_packets::{self, GatewayEvent},
+	main_app_state::MainState,
+	webview_packets::{ self, GatewayEvent },
+	discord::{
+		gateway_packets::{ GatewayPackets, GatewayIncomingPacket, GatewayPacketsData },
+		types::gateway::{ Properties, Presence, ClientState },
+	},
+	modules::gateway_utils::send_heartbeat,
+	test,
 };
 
 pub enum GatewayError {
@@ -210,75 +211,102 @@ impl Gateway {
                                 .decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync)
                                 .unwrap();
 
-                            let out = String::from_utf8(buf).unwrap();
-                            println!("Gateway Binary gateway {:?}", out);
-                            let json: GatewayIncomingPacket =
-                                serde_json::from_str(out.as_str()).unwrap();
-                            last_s = json.s;
-                            match json.d {
-                                GatewayPacketsData::Hello { heartbeat_interval } => {
-                                    self.heartbeat_interval = heartbeat_interval;
-                                    self.init_message(&mut client, self.token.clone());
-                                    authed = true;
-                                }
-                                GatewayPacketsData::Ready(data) => {
-                                    println!("Ready {:?}", data);
-                                    self.resume_url = Some(data.resume_gateway_url);
-                                    self.session_id = Some(data.session_id);
-                                }
-                                GatewayPacketsData::ReadySupplemental {
-                                    merged_presences,
-                                    merged_members,
-                                    lazy_private_channels,
-                                    guilds,
-                                } => {
-                                    println!("ReadySupplemental {:?}", guilds);
-                                }
-                                GatewayPacketsData::MessageCreate {
-                                    message,
-                                    member,
-                                    guild_id,
-                                    mentions,
-                                } => {
-                                    println!("Message {:?}", message);
-                                    self.emit_event(webview_packets::Gateway::MessageCreate {
-                                        message: message,
-                                        mentions,
-                                        member: member,
-                                        guild_id: guild_id,
-                                    })
-                                    .unwrap();
-                                }
-                                GatewayPacketsData::HeartbeatAck => {
-                                    ack_recived = true;
-                                }
-                                _ => {
-                                    println!("Not handled {:?}", json);
-                                }
-                            }
-                            buffer.clear();
-                        }
-                    }
-                    m => {
-                        println!("Not text {:?}", m);
-                    }
-                }
-            }
-            let last_s = last_s.clone();
-            send_heartbeat(
-                &mut instant,
-                authed,
-                self.heartbeat_interval,
-                &mut ack_recived,
-                &mut client,
-                &(|| -> Option<String> {
-                    return Some(
-                        serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap(),
-                    );
-                }),
-            );
-            //tokio thread sleep
-            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-        }
-    }
+							let out = String::from_utf8(buf).unwrap();
+							println!("Gateway Binary gateway {:?}", out);
+							let json: GatewayIncomingPacket = serde_json
+								::from_str(out.as_str())
+								.unwrap();
+							last_s = json.s;
+							match json.d {
+								GatewayPacketsData::Hello { heartbeat_interval } => {
+									self.heartbeat_interval = heartbeat_interval;
+									self.init_message(&mut client, self.token.clone());
+									authed = true;
+								}
+								GatewayPacketsData::Ready(data) => {
+									println!("Ready {:?}", data);
+									self.resume_url = Some(data.resume_gateway_url);
+									self.session_id = Some(data.session_id);
+								}
+								GatewayPacketsData::ReadySupplemental {
+									merged_presences,
+									merged_members,
+									lazy_private_channels,
+									guilds,
+								} => {
+									println!("ReadySupplemental {:?}", guilds);
+								}
+								GatewayPacketsData::MessageCreate {
+									message,
+									member,
+									guild_id,
+									mentions,
+								} => {
+									println!("Message {:?}", message);
+									self.emit_event(webview_packets::Gateway::MessageCreate {
+										message: message.clone(),
+										mentions,
+										member: member,
+										guild_id: guild_id,
+									}).unwrap();
+									//todo repair for multi user
+									if message.author.id != self.user_id {
+										let notification = Notification::new(
+											self.handle.config().tauri.bundle.identifier.clone()
+										);
+										notification
+											.title("Gami to furras")
+											.body(
+												format!(
+													"{}: {}",
+													message.author.username,
+													message.content
+												)
+											)
+											.icon(
+												format!(
+													"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
+													message.author.id,
+													message.author.avatar.unwrap()
+												)
+											)
+											.show()
+											.unwrap();
+										let windows = self.handle.windows();
+										let window = windows.iter().next().unwrap().1;
+										window.set_flashing(true).unwrap();
+									}
+								}
+								GatewayPacketsData::HeartbeatAck => {
+									ack_recived = true;
+								}
+								_ => {
+									println!("Not handled {:?}", json);
+								}
+							}
+							buffer.clear();
+						}
+					}
+					m => {
+						println!("Not text {:?}", m);
+					}
+				}
+			}
+			let last_s = last_s.clone();
+			send_heartbeat(
+				&mut instant,
+				authed,
+				self.heartbeat_interval,
+				&mut ack_recived,
+				&mut client,
+				&(|| -> Option<String> {
+					return Some(
+						serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap()
+					);
+				})
+			);
+			//tokio thread sleep
+			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+		}
+	}
 }

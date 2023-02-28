@@ -11,6 +11,9 @@ rust-version = "1.57"
 [build-dependencies]
 tauri-build = { version = "1.2", features = [] }
 
+[target.'cfg(windows)'.dependencies]
+windows = {version = "0.44.0",features= ["Win32_UI_WindowsAndMessaging","Win32_Foundation"] }
+
 [dependencies]
 # Crypto 🐕‍🦺coin
 rsa = "*"
@@ -31,7 +34,7 @@ serde_json = "1.0.93"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_repr = "0.1.10"
 
-tauri = { version = "1.2", features = ["http-all", "shell-open"] }
+tauri = { version = "1.2", features = ["http-all", "notification", "notification-all", "shell-open"] }
 
 
 reqwest = {version = "0.11.13",features = ["json"] }

@@ -15,15 +15,15 @@ use super::{
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Message {
-	id: String,
-	channel_id: String,
-	author: user::PublicUser,
+	pub id: String,
+	pub channel_id: String,
+	pub author: user::PublicUser,
 
-	content: String,
-	timestamp: String,
-	edited_timestamp: Option<String>,
-	tts: bool,
-	mention_everyone: bool,
+	pub content: String,
+	pub timestamp: String,
+	pub edited_timestamp: Option<String>,
+	pub tts: bool,
+	pub mention_everyone: bool,
 
 	//mentions: Vec<user::PublicUser>,
 	mention_roles: Vec<Role>,

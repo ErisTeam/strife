@@ -25,12 +25,12 @@ pub struct CurrentUser {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PublicUser {
-	username: String,
-	public_flags: u64,
-	id: String,
-	display_name: Option<String>,
-	discriminator: String,
-	bot: Option<bool>,
-	avatar_decoration: Option<String>,
-	avatar: Option<String>,
+	pub username: String,
+	pub public_flags: u64,
+	pub id: String,
+	pub display_name: Option<String>,
+	pub discriminator: String,
+	pub bot: Option<bool>,
+	pub avatar_decoration: Option<String>,
+	pub avatar: Option<String>,
 }

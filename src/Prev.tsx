@@ -246,6 +246,13 @@ function Prev() {
 				>
 					Start Gateway
 				</button>
+				<button
+					onClick={async (e) => {
+						await invoke('test', {});
+					}}
+				>
+					Notification Test
+				</button>
 			</div>
 			<p>{showMsg}</p>
 

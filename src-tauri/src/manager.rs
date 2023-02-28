@@ -90,7 +90,9 @@ impl ThreadManager {
 				let r = self.senders.get_mut("main").unwrap().remove(index);
 				println!("{:?}", r);
 				if let Modules::MobileAuth(sender) = r {
-					sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					if !sender.is_closed() {
+						sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					}
 					println!("Mobile auth stopped")
 				}
 			}
