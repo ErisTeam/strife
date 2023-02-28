@@ -94,10 +94,12 @@ impl MainState {
 				println!("Stoping mobile auth");
 			}
 			State::MainApp {} => {
-				thread_manager
-					.as_mut()
-					.unwrap()
-					.stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
+				if !self.last_id.lock().unwrap().is_none() {
+					thread_manager
+						.as_mut()
+						.unwrap()
+						.stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
+				}
 			}
 			State::None {} => {}
 		}
