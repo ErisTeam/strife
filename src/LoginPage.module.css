@@ -2,29 +2,20 @@
 	width: 100vw;
 	height: 100vh;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-}
-
-.login {
-	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 }
 
-.login > *:not(:last-child) {
-	margin-right: 2rem;
-}
-
 .qrcode {
+	z-index: 4;
 	position: absolute;
-	transform: translateX(160%);
+	transform: translateX(150%);
 }
 
 .loginBox {
 	z-index: 4;
+	margin-right: 2rem;
 }
 
 .gradient {
@@ -39,11 +30,21 @@
 	opacity: 0.6;
 }
 
+.gradient > img {
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
 @media (max-width: 1099px) {
-	.qrcodeHidden {
-		display: none !important;
+	.qrcode {
+		position: inherit;
+		transform: translateX(0%);
 	}
 }
+
+/* Corner SVGs */
 
 .leftBottom .leftTop .rightTop {
 	width: 100vw;

@@ -7,24 +7,23 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { changeState, useTaurListener } from './test';
+import { useTaurListener } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
+import { UserData } from './Components/QRCode/QRCode';
 
 // Components
-import Anchor from './Anchor';
-import Button from './Components/Button/Button';
 import LoginBox from './Components/LoginBox/LoginBox';
+import QRCode from './Components/QRCode/QRCode';
 
 // Style
 import style from './LoginPage.module.css';
-import QRCode from './Components/QRCode/QRCode';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
 	const [showMsg, setshowMsg] = createSignal('');
-	const [name, setName] = createSignal('');
-	const [password, setPassword] = createSignal('');
+
+	const [userData, setUserData] = createSignal<UserData>();
 
 	const [requireCode, setRequireCode] = createSignal(false);
 	const [didSendSMS, setDidSendSMS] = createSignal(false);
@@ -33,16 +32,6 @@ function Prev() {
 	const [image, setImage] = createSignal('');
 
 	const AppState = useAppState();
-
-	async function login(captcha_token: string | null = null) {
-		console.log(`test`, captcha_token);
-
-		await emit('login', {
-			captchaToken: captcha_token,
-			login: name(),
-			password: password(),
-		});
-	}
 
 	async function logout() {
 		let token = await API.getToken(AppState.userID());
@@ -86,6 +75,7 @@ function Prev() {
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
 				});
+				setUserData(undefined);
 				break;
 
 			case 'ticketData':
@@ -93,6 +83,12 @@ function Prev() {
 				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
 				);
+				setUserData({
+					user_id: input.userId,
+					discriminator: input.discriminator,
+					username: input.username,
+					avatar_hash: input.avatarHash,
+				});
 				setImage(
 					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
 				);
@@ -135,41 +131,36 @@ function Prev() {
 
 	return (
 		<>
+			{/* Main Page */}
 			<div class={style.container}>
 				<div class={style.gradient}>
-					<img
-						style="object-fit:cover;width:100%;height:100%;z-index:6;position:absolute;"
-						src="LoginPageSVGS/BackgroundDoodle.png"
-					></img>
+					<img src="LoginPage/BackgroundDoodle.png"></img>
 				</div>
 
-				{/* <h1>{AppState.userID()}</h1> */}
-				<div class={style.login}>
-					<LoginBox class={style.loginBox} />
-					{/* <Button type="button" onClick={() => login()}>
-						Login
-					</Button> */}
-				</div>
+				<LoginBox class={style.loginBox} />
+
 				<QRCode
 					class={style.qrcode}
 					qrcode_src={image()}
 					header="Log In With QR Code"
 					paragraph="Scan the code with our app or any other one to log in!"
+					user_data={userData()}
 				></QRCode>
 			</div>
+
 			{/* Corner SVGS */}
 			<div class={style.leftBottom}>
-				<img class={style.leftBottom1} src="LoginPageSVGS/LeftBottom1.svg" />
-				<img class={style.leftBottom2} src="LoginPageSVGS/LeftBottom2.svg" />
-				<img class={style.leftBottom3} src="LoginPageSVGS/LeftBottom3.svg" />
+				<img class={style.leftBottom1} src="LoginPage/LeftBottom1.svg" />
+				<img class={style.leftBottom2} src="LoginPage/LeftBottom2.svg" />
+				<img class={style.leftBottom3} src="LoginPage/LeftBottom3.svg" />
 			</div>
 			<div class={style.leftTop}>
-				<img class={style.leftTop1} src="LoginPageSVGS/LeftTop1.svg" />
-				<img class={style.leftTop2} src="LoginPageSVGS/LeftTop2.svg" />
+				<img class={style.leftTop1} src="LoginPage/LeftTop1.svg" />
+				<img class={style.leftTop2} src="LoginPage/LeftTop2.svg" />
 			</div>
 			<div class={style.rightTop}>
-				<img class={style.rightTop1} src="LoginPageSVGS/RightTop1.svg" />
-				<img class={style.rightTop2} src="LoginPageSVGS/RightTop2.svg" />
+				<img class={style.rightTop1} src="LoginPage/RightTop1.svg" />
+				<img class={style.rightTop2} src="LoginPage/RightTop2.svg" />
 			</div>
 		</>
 	);

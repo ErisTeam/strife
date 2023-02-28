@@ -1,13 +1,13 @@
 .container {
-	width: fit-content;
-	height: fit-content;
+	width: min-content;
+	min-width: calc(12rem + 1.6rem * 2);
+	height: 20rem;
 	background-color: var(--depth2);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	padding: 1.6rem;
-	width: min-content;
 	border-radius: var(--round-large);
 	box-shadow: var(--shadow);
 }
@@ -21,6 +21,8 @@
 }
 
 .qrcode {
+	width: 10rem;
+	height: 10rem;
 	border-radius: var(--round-large);
 }
 
