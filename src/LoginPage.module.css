@@ -1,9 +1,10 @@
 .container {
+	width: 100vw;
+	height: 100vh;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-evenly;
-	height: 100vh;
 }
 
 .login {
@@ -17,58 +18,93 @@
 	margin-right: 2rem;
 }
 
-.leftBottom,
+.qrcodeHidden {
+	visibility: hidden;
+}
+
+.qrcode {
+	z-index: 4;
+}
+
+.loginBox {
+	z-index: 4;
+}
+
+.gradient {
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	background: linear-gradient(
+		107.57deg,
+		#f2003a 0%,
+		rgba(0, 178, 255, 0.63) 100.02%
+	);
+	opacity: 0.6;
+}
+
+@media (max-width: 1099px) {
+	.qrcodeHidden {
+		display: none !important;
+	}
+}
+
+.leftBottom .leftTop .rightTop {
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+}
+
 .leftBottom1,
 .leftBottom2,
 .leftBottom3,
 .leftTop1,
-.leftTop,
 .leftTop2,
-.rightTop,
 .rightTop1,
 .rightTop2 {
+	filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
 	position: absolute;
+	aspect-ratio: auto;
 }
 
 .rightTop {
-	width: 20rem;
-	height: 20rem;
 	top: 0;
 	right: 0;
 	z-index: -1;
 }
+
 .rightTop1 {
-	z-index: 3;
-	top: 0;
-	right: 0;
-}
-.rightTop2 {
 	z-index: 2;
 	top: 0;
 	right: 0;
+	width: 40%;
+}
+
+.rightTop2 {
+	z-index: 1;
+	top: 0;
+	right: 0;
+	width: 45%;
 }
 
 .leftTop {
-	width: 20rem;
-	height: 20rem;
 	top: 0;
 	bottom: 0;
 	z-index: -1;
 }
 .leftTop1 {
-	z-index: 3;
-	top: 0;
-	left: 0;
-}
-.leftTop2 {
 	z-index: 2;
 	top: 0;
 	left: 0;
+	width: 30%;
+}
+.leftTop2 {
+	z-index: 1;
+	top: 0;
+	left: 0;
+	width: 35%;
 }
 
 .leftBottom {
-	width: 20rem;
-	height: 20rem;
 	left: 0;
 	bottom: 0;
 	z-index: -1;
@@ -78,16 +114,19 @@
 	z-index: 3;
 	bottom: 0;
 	left: 0;
+	width: 18%;
 }
 
 .leftBottom2 {
 	z-index: 2;
 	bottom: 0;
 	left: 0;
+	width: 24%;
 }
 
 .leftBottom3 {
 	z-index: 1;
 	bottom: 0;
 	left: 0;
+	width: 30%;
 }

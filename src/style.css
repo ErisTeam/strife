@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 *:where(
 		:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)
 	) {
@@ -87,7 +89,7 @@ pre {
 	--depth3: #3a4042;
 	--depth4: #434a4d;
 
-	--text: #e6e6e6;
+	--text: #ffffff;
 	--disabled-text: #a0a0a0;
 
 	--round-medium: 6px;

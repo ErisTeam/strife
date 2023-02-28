@@ -136,13 +136,27 @@ function Prev() {
 	return (
 		<>
 			<div class={style.container}>
+				<div class={style.gradient}>
+					<img
+						style="object-fit:cover;width:100%;height:100%;z-index:6;position:absolute;"
+						src="LoginPageSVGS/BackgroundDoodle.png"
+					></img>
+				</div>
+
 				{/* <h1>{AppState.userID()}</h1> */}
 				<div class={style.login}>
-					<LoginBox />
+					<QRCode
+						class={style.qrcodeHidden}
+						qrcode_src={'.'}
+						header="Log In With QR Code"
+						paragraph="Scan the code with our app or any other one to log in!"
+					></QRCode>
+					<LoginBox class={style.loginBox} />
 					{/* <Button type="button" onClick={() => login()}>
 						Login
 					</Button> */}
 					<QRCode
+						class={style.qrcode}
 						qrcode_src={image()}
 						header="Log In With QR Code"
 						paragraph="Scan the code with our app or any other one to log in!"

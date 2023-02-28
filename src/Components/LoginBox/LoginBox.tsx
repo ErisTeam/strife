@@ -5,9 +5,13 @@ import Input from '../Input/Input';
 import Button from '../Button/Button';
 import CheckBox from '../CheckBox/CheckBox';
 
-function LoginBox() {
+interface LoginBoxProps {
+	class?: string;
+}
+
+function LoginBox(prop: LoginBoxProps) {
 	return (
-		<div class={style.container}>
+		<div class={[style.container, prop.class].join(' ')}>
 			<h1 class={style.header}>Log In</h1>
 			<div class={style.inputs}>
 				<Input
