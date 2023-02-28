@@ -145,18 +145,13 @@ function Prev() {
 
 				{/* <h1>{AppState.userID()}</h1> */}
 				<div class={style.login}>
-					<QRCode
-						class={style.qrcodeHidden}
-						qrcode_src={'.'}
-						header="Log In With QR Code"
-						paragraph="Scan the code with our app or any other one to log in!"
-					></QRCode>
 					<LoginBox class={style.loginBox} />
 					{/* <Button type="button" onClick={() => login()}>
 						Login
 					</Button> */}
 				</div>
 				<QRCode
+					class={style.qrcode}
 					qrcode_src={image()}
 					header="Log In With QR Code"
 					paragraph="Scan the code with our app or any other one to log in!"
