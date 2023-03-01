@@ -8,7 +8,7 @@
 	background-color: var(--depth2);
 	border-radius: var(--round-large);
 	padding: 1.6rem;
-	box-shadow: var(--shadow);
+	filter: var(--drop-shadow);
 }
 
 .container > *:not(:last-child) {
@@ -29,6 +29,7 @@
 
 .inputs > * {
 	font-size: 1.2rem;
+	width: 24rem;
 }
 
 .inputs > *:not(:last-child) {

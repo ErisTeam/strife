@@ -19,24 +19,24 @@ import QRCode from './Components/QRCode/QRCode';
 // Style
 import style from './LoginPage.module.css';
 
-// TODO: Clean up this mess, also, Gami to Furras
-function Prev() {
-	const [showMsg, setshowMsg] = createSignal('');
-
+function LoginPage() {
+	// Data of the user that scans the QR Code
+	// If set to undefined the component will go back to showing the QR Code
 	const [userData, setUserData] = createSignal<UserData>();
+
+	// QR Code image. Switches to a profile picture of the user after succesful code scan.
+	const [image, setImage] = createSignal('');
 
 	const [requireCode, setRequireCode] = createSignal(false);
 	const [didSendSMS, setDidSendSMS] = createSignal(false);
 	const [captcha_key, setCaptchaKey] = createSignal('');
-
-	const [image, setImage] = createSignal('');
 
 	const AppState = useAppState();
 
 	async function logout() {
 		let token = await API.getToken(AppState.userID());
 		if (!token) {
-			setshowMsg('No token');
+			console.log('No token');
 		}
 	}
 
@@ -44,10 +44,12 @@ function Prev() {
 		interface i {
 			type: string;
 		}
+
 		interface qrcode extends i {
 			type: 'qrcode';
 			qrcode: string;
 		}
+
 		interface ticketData extends i {
 			type: 'ticketData';
 			userId: string;
@@ -55,6 +57,7 @@ function Prev() {
 			username: string;
 			avatarHash: string;
 		}
+
 		interface RequireAuth extends i {
 			type: 'RequireAuth';
 			captcha_key?: string[];
@@ -70,35 +73,39 @@ function Prev() {
 			| { type: 'loginSuccess' };
 
 		switch (input.type) {
-			case 'qrcode':
-				console.log(input.qrcode);
+			case 'qrcode': {
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
 				});
-				setUserData(undefined);
-				break;
 
-			case 'ticketData':
+				setUserData(undefined);
+
+				break;
+			}
+
+			case 'ticketData': {
 				AppState.setUserID(input.userId);
-				setshowMsg(
-					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
+
+				setImage(
+					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
 				);
+
 				setUserData({
 					user_id: input.userId,
 					discriminator: input.discriminator,
 					username: input.username,
 					avatar_hash: input.avatarHash,
 				});
-				setImage(
-					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
-				);
-				break;
 
-			case 'loginSuccess':
-				setshowMsg('login success');
 				break;
+			}
 
-			case 'RequireAuth':
+			case 'loginSuccess': {
+				console.log('login success');
+				break;
+			}
+
+			case 'RequireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
 					setCaptchaKey(input.captcha_sitekey as string);
 				}
@@ -110,23 +117,24 @@ function Prev() {
 					}
 				}
 				break;
+			}
 		}
 	});
 
-	let r = setInterval(async () => {
+	let requestQrcode = setInterval(async () => {
 		if (image()) {
-			clearInterval(r);
+			clearInterval(requestQrcode);
 		} else {
 			await emit('requestQrcode', {});
 		}
 	}, 5000);
 
-	useBeforeLeave(async () => {
-		clearInterval(r);
-	});
-
 	onMount(async () => {
 		await emit('requestQrcode', {});
+	});
+
+	useBeforeLeave(async () => {
+		clearInterval(requestQrcode);
 	});
 
 	return (
@@ -144,6 +152,7 @@ function Prev() {
 					qrcode_src={image()}
 					header="Log In With QR Code"
 					paragraph="Scan the code with our app or any other one to log in!"
+					altParagraph="If you didn't mean to log in then just ignore the prompt on your discord app."
 					user_data={userData()}
 				></QRCode>
 			</div>
@@ -166,4 +175,4 @@ function Prev() {
 	);
 }
 
-export default Prev;
+export default LoginPage;

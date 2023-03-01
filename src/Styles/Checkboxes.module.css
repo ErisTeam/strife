@@ -1,6 +1,4 @@
-/** @format */
-
-.checkbox {
+.default {
 	display: inline-block;
 	position: relative;
 	width: 1.2rem;
@@ -13,6 +11,13 @@
 	cursor: pointer;
 }
 
-.checkbox:checked {
-	background-color: #dd5b5b;
+.default:hover,
+.default:focus,
+.default:active {
+	filter: var(--darken);
+}
+
+.default:checked {
+	background-color: var(--primary);
+	content: url(/ComponentSVGs/Checkmark.svg);
 }

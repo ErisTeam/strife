@@ -2,11 +2,9 @@
 
 /* Style */
 import style from './LoginBox.module.css';
-
-/* Components */
-import Input from '../Input/Input';
-import Button from '../Button/Button';
-import CheckBox from '../CheckBox/CheckBox';
+import inputs from './../../Styles/Inputs.module.css';
+import checkboxes from './../../Styles/Checkboxes.module.css';
+import buttons from './../../Styles/Buttons.module.css';
 
 /* Tauri */
 import { emit } from '@tauri-apps/api/event';
@@ -34,13 +32,15 @@ function LoginBox(prop: LoginBoxProps) {
 		<div class={[style.container, prop.class].join(' ')}>
 			<h1 class={style.header}>Log In</h1>
 			<div class={style.inputs}>
-				<Input
+				<input
+					class={inputs.default}
 					type="text"
 					placeholder="Login"
 					width={24}
 					onChange={(e) => setName(e.currentTarget.value)}
 				/>
-				<Input
+				<input
+					class={inputs.default}
 					type="password"
 					placeholder="Password"
 					width={24}
@@ -50,18 +50,18 @@ function LoginBox(prop: LoginBoxProps) {
 			<div class={style.bottomPart}>
 				<label class={style.rememberMe}>
 					<p>Remember me:</p>
-					<CheckBox />
+					<input type="checkbox" class={checkboxes.default} />
 				</label>
 				<div class={style.buttons}>
-					<Button
-						class={style.loginButton}
+					<button
+						class={[style.loginButton, buttons.default].join(' ')}
 						type="button"
 						onClick={(e) => {
 							login();
 						}}
 					>
 						Login
-					</Button>
+					</button>
 				</div>
 			</div>
 		</div>

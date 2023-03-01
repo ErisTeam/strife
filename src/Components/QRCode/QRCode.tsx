@@ -14,6 +14,7 @@ interface QRCodeProps {
 	qrcode_src: string;
 	header: string;
 	paragraph: string;
+	altParagraph: string;
 	class?: string;
 	user_data?: UserData;
 }
@@ -29,10 +30,7 @@ function QRCode(prop: QRCodeProps) {
 						<h1 class={style.header}>
 							{prop.user_data?.username + '#' + prop.user_data?.discriminator}
 						</h1>
-						<p class={style.paragraph}>
-							If you didn't mean to log in then just ignore the prompt on your
-							discord app.
-						</p>
+						<p class={style.paragraph}>{prop.altParagraph}</p>
 					</>
 				}
 			>

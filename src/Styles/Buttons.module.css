@@ -1,0 +1,14 @@
+.default {
+	padding: var(--default-padding);
+	background-color: var(--depth3);
+	border-radius: var(--round-medium);
+}
+
+.default:hover,
+.default:focus {
+	filter: var(--darken);
+}
+
+.default:active {
+	background-color: var(--primary);
+}
