@@ -18,6 +18,7 @@ import Anchor from './Anchor';
 
 // Style
 //import './prev.css';
+import style from './prev.module.css';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -168,20 +169,22 @@ function Prev() {
 	});
 
 	return (
-		<div class="container">
+		<div class={style.container}>
 			<h1>{AppState.userID()}</h1>
-			<div class="row">
+			<div class={style.row}>
 				<div>
 					<input
+						class={style.input}
 						onChange={(e) => setName(e.currentTarget.value)}
 						placeholder="Login"
 					/>
 					<input
+						class={style.input}
 						type="password"
 						placeholder="password"
 						onChange={(e) => setPassword(e.currentTarget.value)}
 					/>
-					<button type="button" onClick={() => login()}>
+					<button type="button" onClick={() => login()} class={style.button}>
 						Login
 					</button>
 					<Show when={captcha_key()}>
@@ -209,6 +212,7 @@ function Prev() {
 							}}
 						>
 							<input
+								class={style.input}
 								type="text"
 								name="code"
 								placeholder="Code"
@@ -217,6 +221,7 @@ function Prev() {
 								}}
 							/>
 							<button
+								class={style.button}
 								type="button"
 								onclick={() => {
 									setDidSendSMS(true);
@@ -224,7 +229,9 @@ function Prev() {
 							>
 								Send SMS
 							</button>
-							<button type="submit">submit</button>
+							<button type="submit" class={style.button}>
+								submit
+							</button>
 						</form>
 					</Show>
 					<img src={image()} alt="QR Code" />
@@ -232,6 +239,7 @@ function Prev() {
 			</div>
 			<div>
 				<button
+					class={style.button}
 					onClick={async () => {
 						changeState('Application');
 					}}
@@ -239,6 +247,7 @@ function Prev() {
 					change state to main
 				</button>
 				<button
+					class={style.button}
 					onClick={async (e) => {
 						console.log('start gateway');
 						await emit('startGateway', { user_id: AppState.userID() });
@@ -247,12 +256,14 @@ function Prev() {
 					Start Gateway
 				</button>
 				<button
+					class={style.button}
 					onClick={async (e) => {
 						await invoke('test', {});
 					}}
 				>
 					Notification Test
 				</button>
+				<input type="text" class={style.input} />
 			</div>
 			<p>{showMsg}</p>
 

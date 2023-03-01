@@ -1,4 +1,4 @@
-:root {
+/* :root {
 	font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 	font-size: 16px;
 	line-height: 24px;
@@ -9,7 +9,7 @@
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
-}
+} */
 
 .container {
 	margin: 0;
@@ -36,22 +36,22 @@
 	justify-content: center;
 }
 
-a {
+.a {
 	font-weight: 500;
 	color: #646cff;
 	text-decoration: inherit;
 }
 
-a:hover {
+.a:hover {
 	color: #535bf2;
 }
 
-h1 {
+.h1 {
 	text-align: center;
 }
 
-input,
-button {
+.input,
+.button {
 	border-radius: 8px;
 	border: 1px solid transparent;
 	padding: 0.6em 1.2em;
@@ -65,7 +65,7 @@ button {
 	cursor: pointer;
 }
 
-li {
+.li {
 	color: #0f0f0f;
 	background-color: #ffffff;
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
@@ -77,22 +77,22 @@ li {
 	font-family: inherit;
 }
 
-button {
+.button {
 	cursor: pointer;
 }
 
-button:hover {
+.button:hover {
 	border-color: #396cd8;
 }
 
 /* helps when using keyboard only */
-button:focus,
-input:focus {
+.button:focus,
+.input:focus {
 	border-color: #396cd8;
 }
 
-input,
-button {
+.input,
+.button {
 	outline: none;
 }
 
@@ -106,13 +106,13 @@ button {
 		background-color: #2f2f2f;
 	}
 
-	a:hover {
+	.a:hover {
 		color: #24c8db;
 	}
 
-	input,
-	button,
-	li {
+	.input,
+	.button,
+	.li {
 		color: #ffffff;
 		background-color: #0f0f0f98;
 	}

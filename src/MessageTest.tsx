@@ -27,6 +27,8 @@ interface messageCreate extends i {
 
 const channelId = '419544210027446276';
 
+import style from './prev.module.css';
+
 function MessageTest() {
 	const [messages, setMessages] = createSignal<any[]>([]);
 
@@ -105,6 +107,7 @@ function MessageTest() {
 	}
 
 	const [message, setMessage] = createSignal('');
+	const [reference, setReference] = createSignal<null | any>(null);
 
 	return (
 		<div>
@@ -130,13 +133,28 @@ function MessageTest() {
 								{!embed && val.content}
 								{val.author.id == AppState.userID() && <button>edit</button>}
 								{embed}
+								<button
+									class={style.button}
+									onClick={() => {
+										setReference({
+											channel_id: val.channel_id,
+											message_id: val.id,
+											guild_id: '419544210027446273',
+										});
+										console.log(reference());
+									}}
+								>
+									reply
+								</button>
 							</li>
 						);
 					}}
 				</For>
 			</ol>
+			<span>{JSON.stringify(reference())}</span>
 			<div>
 				<input
+					class={style.input}
 					style={{ width: '60rem' }}
 					type="text"
 					oninput={(e) => {
@@ -146,11 +164,13 @@ function MessageTest() {
 					placeholder="message"
 					value={message()}
 				/>
+
 				<button
+					class={style.button}
 					onClick={async () => {
 						let msg = message();
 						setMessage('');
-						let res = await API.sendMessage(channelId, msg);
+						let res = await API.sendMessage(channelId, msg, reference());
 						if (messages().find((e) => e.id == res.id)) {
 							return;
 						}

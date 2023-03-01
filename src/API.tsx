@@ -29,7 +29,7 @@ export default {
 
 		return resData;
 	},
-	async sendMessage(channelId: string, content: string) {
+	async sendMessage(channelId: string, content: string, reference: any) {
 		let token = await this.getToken(AppState.userID());
 		if (!token) {
 			console.error("No user token found! Can't send message!");
@@ -48,6 +48,7 @@ export default {
 				flags: 0,
 				nonce: Date.now(),
 				tts: false,
+				message_reference: reference,
 			}),
 		});
 

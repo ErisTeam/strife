@@ -95,6 +95,7 @@ impl MainState {
 			}
 			State::MainApp {} => {
 				if !self.last_id.lock().unwrap().is_none() {
+					//todo repair for multiple users
 					thread_manager
 						.as_mut()
 						.unwrap()
