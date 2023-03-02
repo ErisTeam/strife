@@ -5,6 +5,12 @@ import { useAppState } from './AppState';
 const subReddits = ['aww'];
 const time = 'month';
 
+const NitroUsers = [
+	'362958640656941056',
+	'349567275759828992',
+	'309689147855994880',
+];
+
 import style from './Err.module.css';
 export default () => {
 	const state = useAppState();
@@ -13,13 +19,7 @@ export default () => {
 		console.log('fetching');
 		let s = subReddits;
 
-		if (!state.userID()) {
-			let id: string = await invoke('get_last_user', {});
-			console.log('last id', id);
-			state.setUserID(id);
-		}
-		console.log('id', state.userID());
-		if (state.userID() == '362958640656941056') {
+		if (NitroUsers.includes(state.userID())) {
 			s.push('gfur');
 		}
 

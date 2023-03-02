@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, onMount, Show } from 'solid-js';
+import { createSignal, Match, onMount, Show } from 'solid-js';
 import { A, Link, useBeforeLeave } from '@solidjs/router';
 import HCaptcha from 'solid-hcaptcha';
 
@@ -19,9 +19,12 @@ import Anchor from './Anchor';
 // Style
 //import './prev.css';
 import style from './prev.module.css';
+import Switch from './Components/Switch/Switch';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
+	//window.location.replace('http://192.168.1.121:1420');
+
 	const [showMsg, setshowMsg] = createSignal('');
 	const [name, setName] = createSignal('');
 	const [password, setPassword] = createSignal('');
@@ -31,6 +34,8 @@ function Prev() {
 	const [requireCode, setRequireCode] = createSignal(false);
 	const [didSendSMS, setDidSendSMS] = createSignal(false);
 	const [captcha_key, setCaptchaKey] = createSignal('');
+
+	const [mobileAuthCaptcha, setMobileAuthCaptcha] = createSignal(false);
 
 	const [image, setImage] = createSignal('');
 
@@ -98,17 +103,23 @@ function Prev() {
 			avatarHash: string;
 		}
 		interface RequireAuth extends i {
-			type: 'RequireAuth';
+			type: 'requireAuth';
 			captcha_key?: string[];
 			captcha_sitekey?: string;
 			mfa: boolean;
 			sms: boolean;
+		}
+		interface RequireAuthMobile extends i {
+			type: 'requireAuthMobile';
+			captcha_key?: string[];
+			captcha_sitekey: string;
 		}
 
 		let input = event.payload as unknown as
 			| qrcode
 			| ticketData
 			| RequireAuth
+			| RequireAuthMobile
 			| { type: 'loginSuccess' };
 		console.log(input, event);
 		switch (input.type) {
@@ -131,9 +142,12 @@ function Prev() {
 			case 'loginSuccess':
 				setshowMsg('login success');
 				break;
-			case 'RequireAuth':
+			case 'requireAuth':
+				console.log(input);
 				if (input.captcha_key?.includes('captcha-required')) {
 					setCaptchaKey(input.captcha_sitekey as string);
+					setMobileAuthCaptcha(false);
+					console.log('captcha required');
 				}
 				if (input.mfa || input.sms) {
 					setRequireCode(true);
@@ -142,6 +156,10 @@ function Prev() {
 						emit('send_sms', {});
 					}
 				}
+				break;
+			case 'requireAuthMobile':
+				setCaptchaKey(input.captcha_sitekey as string);
+				setMobileAuthCaptcha(true);
 				break;
 			//case "loginSuccess":
 			//AppState.setUserID(id);
@@ -191,7 +209,13 @@ function Prev() {
 						<HCaptcha
 							sitekey={captcha_key()}
 							onVerify={(token) => {
-								login(token);
+								if (mobileAuthCaptcha()) {
+									login(token);
+								} else {
+									emit('loginMobileAuth', {
+										captchaToken: token,
+									});
+								}
 							}}
 						/>
 					</Show>

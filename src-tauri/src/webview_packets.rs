@@ -82,6 +82,12 @@ pub enum MobileAuth {
 	#[serde(rename = "loginSuccess")]
 	LoginSuccess {},
 
+	RequireAuthMobile {
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+	},
+
 	/// # Information
 	/// Contains an error message if anything went wrong.
 	#[serde(rename = "loginError")]

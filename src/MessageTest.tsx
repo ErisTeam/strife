@@ -108,6 +108,7 @@ function MessageTest() {
 
 	const [message, setMessage] = createSignal('');
 	const [reference, setReference] = createSignal<null | any>(null);
+	const [editing, setEditing] = createSignal<null | any>(null);
 
 	return (
 		<div>
@@ -131,7 +132,16 @@ function MessageTest() {
 							<li>
 								{intl.format(val.timestamp)} <br /> {val.author.username}:{' '}
 								{!embed && val.content}
-								{val.author.id == AppState.userID() && <button>edit</button>}
+								{val.author.id == AppState.userID() && (
+									<button
+										onClick={() => {
+											setEditing(val);
+											//setReference(val.)
+										}}
+									>
+										edit
+									</button>
+								)}
 								{embed}
 								<button
 									class={style.button}

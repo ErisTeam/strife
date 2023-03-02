@@ -226,12 +226,14 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 						main_app_state::State::LoginScreen {
 							ref mut ticket,
 							ref mut use_mfa,
+							captcha_sitekey: ref mut captcha_key,
 							..
 						} => {
 							*ticket = new_ticket.clone();
 							if mfa.is_some() {
 								*use_mfa = true;
 							}
+							*captcha_key = captcha_key.clone();
 						}
 						_ => {}
 					}
@@ -259,6 +261,38 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 	}
 }
 
+#[derive(Debug, Deserialize)]
+struct MobileAuthLoginPayload {
+	captcha_token: String,
+}
+fn login_mobile_auth(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	move |event| {
+		let payload: MobileAuthLoginPayload = serde_json
+			::from_str(event.payload().unwrap())
+			.unwrap();
+		let state = &*state.state.lock().unwrap();
+		if
+			let main_app_state::State::LoginScreen {
+				captcha_rqtoken,
+				captcha_sitekey: captcha_key,
+				..
+			} = state
+		{
+			let res = block_in_place(move || {
+				TokioHandle::current().block_on(async move {
+					let captcha_key = captcha_key.as_ref().unwrap().clone();
+					let captcha_rqtoken = captcha_rqtoken.as_ref().unwrap().clone();
+					Auth::login_mobile_auth(
+						payload.captcha_token.clone(),
+						captcha_key,
+						captcha_rqtoken
+					).await
+				})
+			});
+		}
+	}
+}
+
 pub fn get_all_events(
 	state: Arc<main_app_state::MainState>,
 	handle: tauri::AppHandle
@@ -269,6 +303,7 @@ pub fn get_all_events(
 		h.listen_global("sendSms", send_sms(state.state.clone(), handle.clone())),
 		h.listen_global("verifyLogin", verify_login(state.clone(), handle.clone())),
 		h.listen_global("login", login(state.clone(), handle.clone())),
-		h.listen_global("startGateway", start_gateway(state.clone(), handle.clone())) // todo remove later
+		h.listen_global("startGateway", start_gateway(state.clone(), handle.clone())),
+		h.listen_global("loginMobileAuth", login_mobile_auth(state.clone(), handle.clone()))
 	]
 }

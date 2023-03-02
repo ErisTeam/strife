@@ -100,6 +100,28 @@ impl Auth {
 		//res.json::<LoginResponse>().await.unwrap()
 		serde_json::from_str(&text).unwrap()
 	}
+
+	pub async fn login_mobile_auth(
+		captcha_token: String,
+		captcha_key: String,
+		captcha_rqtoken: String
+	) {
+		let client = reqwest::Client::new();
+		let res = client
+			.post("https://discord.com/api/v9/users/@me/remote-auth/login")
+			.json(
+				&json!({
+				"ticket":captcha_token,
+				"captcha_key": captcha_key,
+				"captcha_rqtoken":captcha_rqtoken
+			})
+			)
+			.send().await
+			.unwrap();
+		let text = res.text().await.unwrap();
+		println!("json: {}", text);
+	}
+
 	pub async fn send_sms(ticket: String) -> String {
 		let client = reqwest::Client::new();
 		let res = client
