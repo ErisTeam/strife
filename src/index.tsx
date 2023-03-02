@@ -64,6 +64,7 @@ const App: Component = () => {
 									<Route path="/mfa" component={MFA} />
 								</LoginStateProvider>
 							</Route>
+							<Route path="*" component={Err} />
 						</Routes>
 					</AppStateProvider>
 				</Match>
@@ -75,6 +76,7 @@ const App: Component = () => {
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
 import MessageTest from './MessageTest';
 import { invoke } from '@tauri-apps/api';
+import Err from './Err';
 
 attachDevtoolsOverlay();
 
