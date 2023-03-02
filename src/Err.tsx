@@ -1,3 +1,4 @@
+import { invoke } from '@tauri-apps/api';
 import { createResource } from 'solid-js';
 import { useAppState } from './AppState';
 
@@ -11,6 +12,13 @@ export default () => {
 	const [image] = createResource(async () => {
 		console.log('fetching');
 		let s = subReddits;
+
+		if (!state.userID()) {
+			let id: string = await invoke('get_last_user', {});
+			console.log('last id', id);
+			state.setUserID(id);
+		}
+		console.log('id', state.userID());
 		if (state.userID() == '362958640656941056') {
 			s.push('gfur');
 		}
