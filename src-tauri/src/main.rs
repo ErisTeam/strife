@@ -121,25 +121,9 @@ fn main() {
     let m = main_state.clone();
 
     tauri::Builder::default()
-        .manage(main_state)
-        .setup(move |app| {
-            let app_handle = app.handle();
 
-            m.change_state(
-                main_app_state::State::default_login_screen(),
-                app_handle,
-                false,
-            );
-
-            Ok(())
-        })
-        .invoke_handler(tauri::generate_handler![
-            get_token,
-            set_state,
-            get_last_user,
-            test,
-            commands::auth::start_mobile_auth // todo remove
-        ])
-        .run(tauri::generate_context!())
-        .expect("Error while running tauri application.");
-}
+	tauri::Builder
+		::default()
+		.manage(main_state)
+		.setup(move |app| {
+			let app_handle = app.handle();
