@@ -21,7 +21,7 @@ pub enum State {
 		use_mfa: bool,
 		captcha_rqdata: Option<String>,
 		captcha_rqtoken: Option<String>,
-		captcha_sitekey: Option<String>,
+		captcha_sitekey: Option<String>, //todo remove
 	},
 	MainApp {},
 }
@@ -102,10 +102,7 @@ impl MainState {
 			State::MainApp {} => {
 				if !self.last_id.lock().unwrap().is_none() {
 					//todo repair for multiple users
-					thread_manager
-						.as_mut()
-						.unwrap()
-						.stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
+					thread_manager.as_mut().unwrap().stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
 				}
 			}
 			State::None {} => {}

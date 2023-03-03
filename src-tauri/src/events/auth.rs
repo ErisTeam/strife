@@ -4,11 +4,7 @@ use serde::Deserialize;
 use tauri::{ Manager, async_runtime::TokioHandle, Event, EventHandler };
 use tokio::task::block_in_place;
 
-use crate::{
-	main_app_state::{ self, MainState },
-	modules::auth::{ Auth, MFAResponse },
-	webview_packets,
-};
+use crate::{ main_app_state::{ self, MainState }, modules::auth::{ Auth, MFAResponse }, webview_packets, token_utils };
 
 fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |_event| {
@@ -17,10 +13,7 @@ fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 	}
 }
 
-fn request_qrcode(
-	state: Arc<Mutex<crate::main_app_state::State>>,
-	handle: tauri::AppHandle
-) -> impl Fn(Event) -> () {
+fn request_qrcode(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
 		println!("got qrcode event with payload {:?}", event.payload());
 		if let main_app_state::State::LoginScreen { qr_url, .. } = &*state.lock().unwrap() {
@@ -34,10 +27,7 @@ fn request_qrcode(
 	}
 }
 
-fn send_sms(
-	state: Arc<Mutex<crate::main_app_state::State>>,
-	handle: tauri::AppHandle
-) -> impl Fn(Event) -> () {
+fn send_sms(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |_event: Event| {
 		let ticket;
 		let use_sms;
@@ -83,12 +73,12 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 		let c: VerifyLoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap();
 
 		let ticket;
-		let use_sms;
+		let use_mfa;
 		{
 			let app_state = state.state.lock().unwrap();
 			if let main_app_state::State::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
 				ticket = t.clone();
-				use_sms = *u;
+				use_mfa = *u;
 			} else {
 				handle
 					.emit_all("auth", webview_packets::MFA::SmsSendingResult {
@@ -110,32 +100,29 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 				.unwrap();
 		}
 		let ticket = ticket.clone().unwrap();
-		if use_sms {
+		if !use_mfa {
 			let res = block_in_place(move || {
-				TokioHandle::current().block_on(async move {
-					Auth::verify_sms(ticket, c.code).await
-				})
+				TokioHandle::current().block_on(async move { Auth::verify_sms(ticket, c.code).await })
 			});
 			todo!("return response to webview");
 		} else {
 			let res = block_in_place(move || {
-				TokioHandle::current().block_on(async move {
-					Auth::verify_totp(ticket, c.code).await
-				})
+				TokioHandle::current().block_on(async move { Auth::verify_totp(ticket, c.code).await })
 			});
 			if res.is_err() {
 				handle
-					.emit_all("gateway", webview_packets::MFA::VerifyError {
+					.emit_all("auth", webview_packets::MFA::VerifyError {
 						message: "unknown error".to_string(),
 					})
 					.unwrap();
 			}
 			let res = res.unwrap();
 			match res {
-				MFAResponse::Success { token, user_id, user_settings } => {
+				MFAResponse::Success { token, user_settings } => {
+					let user_id = token_utils::get_id(token.clone());
 					state.add_token(token, user_id.clone());
 					handle
-						.emit_all("gateway", webview_packets::MFA::VerifySuccess {
+						.emit_all("auth", webview_packets::MFA::VerifySuccess {
 							user_id: user_id,
 							user_settings: user_settings,
 						})
@@ -143,7 +130,7 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 				}
 				MFAResponse::Error { message, .. } => {
 					handle
-						.emit_all("gateway", webview_packets::MFA::VerifyError {
+						.emit_all("auth", webview_packets::MFA::VerifyError {
 							message,
 						})
 						.unwrap();
@@ -160,6 +147,7 @@ struct LoginPayload {
 	captcha_token: Option<String>,
 }
 fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	println!("Login");
 	use crate::modules::auth::LoginResponse;
 
 	move |event| {
@@ -170,10 +158,6 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 		{
 			let mut app_state = state.state.lock().unwrap();
 
-			if !matches!(*app_state, main_app_state::State::LoginScreen { .. }) {
-				//return Err(());
-				todo!("return error to webview");
-			}
 			if let Some(token) = captcha_token.clone() {
 				match *app_state {
 					main_app_state::State::LoginScreen { ref mut captcha_token, .. } => {
@@ -187,16 +171,13 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 			} else {
 				//set token to captcha_token from state
 				captcha_token = match &*app_state {
-					main_app_state::State::LoginScreen { captcha_token, .. } =>
-						captcha_token.clone(),
+					main_app_state::State::LoginScreen { captcha_token, .. } => captcha_token.clone(),
 					_ => None,
 				};
 			}
 		}
 		let res = block_in_place(move || {
-			TokioHandle::current().block_on(async move {
-				Auth::login(captcha_token, login, password).await
-			})
+			TokioHandle::current().block_on(async move { Auth::login(captcha_token, login, password).await })
 		});
 
 		println!("res: {:?}", res);
@@ -267,36 +248,23 @@ struct MobileAuthLoginPayload {
 }
 fn login_mobile_auth(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
-		let payload: MobileAuthLoginPayload = serde_json
-			::from_str(event.payload().unwrap())
-			.unwrap();
+		println!("login_mobile_auth");
+		let payload: MobileAuthLoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap();
 		let state = &*state.state.lock().unwrap();
-		if
-			let main_app_state::State::LoginScreen {
-				captcha_rqtoken,
-				captcha_sitekey: captcha_key,
-				..
-			} = state
-		{
+		if let main_app_state::State::LoginScreen { captcha_rqtoken, captcha_sitekey: captcha_key, ticket, .. } = state {
 			let res = block_in_place(move || {
 				TokioHandle::current().block_on(async move {
-					let captcha_key = captcha_key.as_ref().unwrap().clone();
+					//let captcha_key = captcha_key.as_ref().unwrap().clone();
 					let captcha_rqtoken = captcha_rqtoken.as_ref().unwrap().clone();
-					Auth::login_mobile_auth(
-						payload.captcha_token.clone(),
-						captcha_key,
-						captcha_rqtoken
-					).await
+					let ticket = ticket.as_ref().unwrap().clone();
+					Auth::login_mobile_auth(ticket, payload.captcha_token.clone(), captcha_rqtoken).await
 				})
 			});
 		}
 	}
 }
 
-pub fn get_all_events(
-	state: Arc<main_app_state::MainState>,
-	handle: tauri::AppHandle
-) -> Vec<EventHandler> {
+pub fn get_all_events(state: Arc<main_app_state::MainState>, handle: tauri::AppHandle) -> Vec<EventHandler> {
 	let h = handle.clone();
 	vec![
 		h.listen_global("requestQrcode", request_qrcode(state.state.clone(), handle.clone())),

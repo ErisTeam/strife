@@ -114,12 +114,17 @@ function Prev() {
 			captcha_key?: string[];
 			captcha_sitekey: string;
 		}
+		interface VerifyError extends i {
+			type: 'VerifyError';
+			message: string;
+		}
 
 		let input = event.payload as unknown as
 			| qrcode
 			| ticketData
 			| RequireAuth
 			| RequireAuthMobile
+			| VerifyError
 			| { type: 'loginSuccess' };
 		console.log(input, event);
 		switch (input.type) {
@@ -158,6 +163,9 @@ function Prev() {
 			case 'requireAuthMobile':
 				setCaptchaKey(input.captcha_sitekey as string);
 				setMobileAuthCaptcha(true);
+				break;
+			case 'VerifyError':
+				setshowMsg(input.message);
 				break;
 			//case "loginSuccess":
 			//AppState.setUserID(id);
@@ -203,11 +211,13 @@ function Prev() {
 						<HCaptcha
 							sitekey={captcha_key()}
 							onVerify={(token) => {
-								if (mobileAuthCaptcha()) {
+								console.log(mobileAuthCaptcha(), 'aaaaaaaaaa');
+								if (!mobileAuthCaptcha()) {
 									login(token);
 								} else {
+									console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 									emit('loginMobileAuth', {
-										captchaToken: token,
+										captcha_token: token,
 									});
 								}
 							}}

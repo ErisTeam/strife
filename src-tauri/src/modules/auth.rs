@@ -60,11 +60,12 @@ pub enum LoginResponse {
 }
 
 #[derive(Deserialize, Debug)]
+#[serde(untagged)]
 pub enum MFAResponse {
 	Success {
 		token: String,
 		user_settings: UserSettings,
-		user_id: String,
+		//	user_id: String,
 	},
 	Error {
 		code: u64,
@@ -75,11 +76,7 @@ pub enum MFAResponse {
 pub struct Auth {}
 
 impl Auth {
-	pub async fn login(
-		captcha_token: Option<String>,
-		login: String,
-		password: String
-	) -> LoginResponse {
+	pub async fn login(captcha_token: Option<String>, login: String, password: String) -> LoginResponse {
 		let body = LoginRequest {
 			captcha_key: captcha_token,
 			email: login,
@@ -89,37 +86,26 @@ impl Auth {
 			gift_code_sku_id: None,
 		};
 		let client = reqwest::Client::new();
-		let res = client
-			.post(constants::LOGIN)
-			.header("credentials", "include")
-			.json(&body)
-			.send().await
-			.unwrap();
+		let res = client.post(constants::LOGIN).header("credentials", "include").json(&body).send().await.unwrap();
 		let text = res.text().await.unwrap();
 		println!("json: {}", text);
 		//res.json::<LoginResponse>().await.unwrap()
 		serde_json::from_str(&text).unwrap()
 	}
 
-	pub async fn login_mobile_auth(
-		captcha_token: String,
-		captcha_key: String,
-		captcha_rqtoken: String
-	) {
+	pub async fn login_mobile_auth(ticket: String, captcha_key: String, captcha_rqtoken: String) {
 		let client = reqwest::Client::new();
 		let res = client
 			.post("https://discord.com/api/v9/users/@me/remote-auth/login")
-			.json(
-				&json!({
-				"ticket":captcha_token,
+			.json(&json!({
+				"ticket":ticket,
 				"captcha_key": captcha_key,
 				"captcha_rqtoken":captcha_rqtoken
-			})
-			)
+			}))
 			.send().await
 			.unwrap();
 		let text = res.text().await.unwrap();
-		println!("json: {}", text);
+		println!("json mobile auth: {}", text);
 	}
 
 	pub async fn send_sms(ticket: String) -> String {

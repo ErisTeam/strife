@@ -6,18 +6,14 @@ use tauri::{ AppHandle, Manager };
 use websocket::{ native_tls::TlsStream, sync::Client, OwnedMessage, WebSocketError };
 
 use crate::{
-	discord::{
-		constants,
-		http_packets::{ self, Auth },
-		mobile_auth_packets::{ self, MobileAuthGatewayPackets },
-	},
+	discord::{ constants, http_packets::{ self, Auth }, mobile_auth_packets::{ self, MobileAuthGatewayPackets } },
 	main_app_state::{ MainState, State },
 	modules::gateway_utils::send_heartbeat,
 	webview_packets,
 };
 
 enum GetTokenResponse {
-	Err(String),
+	Other(String),
 	RequireAuth {
 		captcha_key: Option<Vec<String>>,
 		captcha_sitekey: Option<String>,
@@ -133,23 +129,14 @@ impl MobileAuthHandler {
 			.unwrap();
 	}
 
-	fn handle_hello(
-		&mut self,
-		client: &mut Client<TlsStream<TcpStream>>,
-		heartbeat_interval: u64,
-		timeout_ms: u64
-	) {
+	fn handle_hello(&mut self, client: &mut Client<TlsStream<TcpStream>>, heartbeat_interval: u64, timeout_ms: u64) {
 		self.timeout_ms = timeout_ms;
 		self.heartbeat_interval = heartbeat_interval;
 		println!("hello {} {}", heartbeat_interval, timeout_ms);
 		self.send_init(client);
 	}
 
-	fn handle_once_proof(
-		&self,
-		client: &mut Client<TlsStream<TcpStream>>,
-		encrypted_nonce: String
-	) {
+	fn handle_once_proof(&self, client: &mut Client<TlsStream<TcpStream>>, encrypted_nonce: String) {
 		let bytes = general_purpose::STANDARD.decode(encrypted_nonce.as_bytes()).unwrap();
 
 		let data = self.decrypt(bytes);
@@ -181,10 +168,7 @@ impl MobileAuthHandler {
 		use websocket::ClientBuilder;
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
-		let client = ClientBuilder::new(constants::MOBILE_AUTH)
-			.unwrap()
-			.custom_headers(&headers)
-			.connect_secure(None);
+		let client = ClientBuilder::new(constants::MOBILE_AUTH).unwrap().custom_headers(&headers).connect_secure(None);
 		if client.is_err() {
 			return Err(client.err().unwrap());
 		}
@@ -215,15 +199,9 @@ impl MobileAuthHandler {
 			}
 			Auth::Error { code, errors, message } => {
 				println!("{} {} {}", code, errors, message);
-				Err(GetTokenResponse::Err(message))
+				Err(GetTokenResponse::Other(message))
 			}
-			Auth::RequireAuth {
-				captcha_key,
-				captcha_rqdata,
-				captcha_rqtoken,
-				captcha_service,
-				captcha_sitekey,
-			} => {
+			Auth::RequireAuth { captcha_key, captcha_rqdata, captcha_rqtoken, captcha_service, captcha_sitekey } => {
 				println!("MobileAuth RequireAuth");
 				Err(GetTokenResponse::RequireAuth {
 					captcha_key: captcha_key.clone(),
@@ -235,9 +213,49 @@ impl MobileAuthHandler {
 			}
 			_ => {
 				println!("Unknown");
-				Err(GetTokenResponse::Err("Unknown".to_string()))
+				Err(GetTokenResponse::Other("Unknown".to_string()))
 			}
 		}
+	}
+
+	fn on_token_error(&self, err: GetTokenResponse, ticket: String) -> bool {
+		match err {
+			GetTokenResponse::Other(m) => {
+				println!("Error: {}", m);
+				self.emit_event(webview_packets::MobileAuth::LoginError {
+					error: m,
+				}).unwrap();
+				return true;
+			}
+			GetTokenResponse::RequireAuth {
+				captcha_key,
+				captcha_sitekey,
+				captcha_service,
+				captcha_rqdata,
+				captcha_rqtoken,
+			} => {
+				let site_key = captcha_sitekey.clone();
+				if
+					let State::LoginScreen {
+						captcha_sitekey: ref mut captcha_key,
+						ticket: ref mut new_ticket,
+						captcha_rqtoken: ref mut new_captcha_rqtoken,
+						..
+					} = *self.app_state.state.lock().unwrap()
+				{
+					*captcha_key = site_key;
+					*new_ticket = Some(ticket);
+					*new_captcha_rqtoken = captcha_rqtoken;
+				}
+				println!("Captcha: {:?}", captcha_rqdata);
+				self.emit_event(webview_packets::MobileAuth::RequireAuthMobile {
+					captcha_key,
+					captcha_sitekey,
+					captcha_service,
+				}).unwrap();
+			}
+		}
+		false
 	}
 
 	pub async fn run(&mut self) {
@@ -285,11 +303,7 @@ impl MobileAuthHandler {
 				match message {
 					OwnedMessage::Text(text) => {
 						println!("Text: {}", text);
-						match
-							serde_json
-								::from_str::<mobile_auth_packets::MobileAuthGatewayPackets>(&text)
-								.unwrap()
-						{
+						match serde_json::from_str::<mobile_auth_packets::MobileAuthGatewayPackets>(&text).unwrap() {
 							MobileAuthGatewayPackets::HeartbeatAck {} => {
 								ack_recived = true;
 							}
@@ -301,8 +315,7 @@ impl MobileAuthHandler {
 								self.handle_once_proof(&mut client, encrypted_nonce),
 							MobileAuthGatewayPackets::PendingRemoteInit { fingerprint } => {
 								println!("Fingerprint: {}", fingerprint);
-								let new_qr_url =
-									format!("https://discordapp.com/ra/{}", fingerprint);
+								let new_qr_url = format!("https://discordapp.com/ra/{}", fingerprint);
 								self.emit_event(webview_packets::MobileAuth::Qrcode {
 									qrcode: Some(new_qr_url.clone()),
 								}).unwrap();
@@ -335,55 +348,17 @@ impl MobileAuthHandler {
 							}
 							MobileAuthGatewayPackets::PendingLogin { ticket } => {
 								client.shutdown().unwrap();
-								match self.get_token(ticket).await {
+								match self.get_token(ticket.clone()).await {
 									Ok(token) => {
 										if user_id.is_some() {
-											self.app_state.tokens
-												.lock()
-												.unwrap()
-												.insert(user_id.unwrap(), token);
-											self.emit_event(
-												webview_packets::MobileAuth::LoginSuccess {}
-											).unwrap();
+											self.app_state.tokens.lock().unwrap().insert(user_id.unwrap(), token);
+											self.emit_event(webview_packets::MobileAuth::LoginSuccess {}).unwrap();
 										}
 										return true;
 									}
 									Err(message) => {
-										match message {
-											GetTokenResponse::Err(m) => {
-												println!("Error: {}", m);
-												self.emit_event(
-													webview_packets::MobileAuth::LoginError {
-														error: m,
-													}
-												).unwrap();
-												return false;
-											}
-											GetTokenResponse::RequireAuth {
-												captcha_key,
-												captcha_sitekey,
-												captcha_service,
-												captcha_rqdata,
-												captcha_rqtoken,
-											} => {
-												let site_key = captcha_sitekey.clone();
-												if
-													let State::LoginScreen {
-														captcha_sitekey: ref mut captcha_key,
-														..
-													} = *self.app_state.state.lock().unwrap()
-												{
-													*captcha_key = Some(site_key.unwrap());
-												}
-												println!("Captcha: {:?}", captcha_rqdata);
-												self.emit_event(
-													webview_packets::MobileAuth::RequireAuthMobile {
-														captcha_key,
-														captcha_sitekey,
-														captcha_service,
-													}
-												).unwrap();
-											}
+										if self.on_token_error(message, ticket.clone()) {
+											return false;
 										}
 									}
 								}
@@ -408,9 +383,7 @@ impl MobileAuthHandler {
 				self.heartbeat_interval,
 				&mut ack_recived,
 				&mut client,
-				&(|| {
-					Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap())
-				})
+				&(|| { Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap()) })
 			);
 			//tokio thread sleep
 			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
