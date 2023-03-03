@@ -39,46 +39,44 @@ const App: Component = () => {
 	return (
 		<Router>
 			<Show fallback={<h1>Loading...</h1>} when={!id.loading}>
-				<Switch fallback={<h1>USE TAURI</h1>}>
-					<Match when={!!window.__TAURI_IPC__}>
-						<AppStateProvider>
-							<Routes>
-								<Route path="/" component={Prev}></Route>
+				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
+					<AppStateProvider>
+						<Routes>
+							<Route path="/" component={Prev}></Route>
 
-								<Route path="/messagetest" component={MessageTest} />
+							<Route path="/messagetest" component={MessageTest} />
 
-								<Route path="/test" component={Tests} />
+							<Route path="/test" component={Tests} />
 
-								<Route path={'/loginpage'} component={LoginPage}></Route>
+							<Route path={'/loginpage'} component={LoginPage}></Route>
 
-								<Route
-									path={'/gamitofurras'}
-									element={
-										<div>
-											<h1>gami to furras</h1>
-											<Link href="/">t</Link>
-										</div>
-									}
-								></Route>
+							<Route
+								path={'/gamitofurras'}
+								element={
+									<div>
+										<h1>gami to furras</h1>
+										<Link href="/">t</Link>
+									</div>
+								}
+							></Route>
 
-								<Route path="/app" component={ApplicationWrapper}>
-									<Route path="/" component={Application} />
-									<Route path="/:guildId" component={Application}>
-										<Route path="/:channelId" component={Application} />
-									</Route>
+							<Route path="/app" component={ApplicationWrapper}>
+								<Route path="/" component={Application} />
+								<Route path="/:guildId" component={Application}>
+									<Route path="/:channelId" component={Application} />
 								</Route>
+							</Route>
 
-								<Route path="/login">
-									<LoginStateProvider>
-										<Route path="/" component={Main} />
-										<Route path="/mfa" component={MFA} />
-									</LoginStateProvider>
-								</Route>
-								<Route path="*" component={Err} />
-							</Routes>
-						</AppStateProvider>
-					</Match>
-				</Switch>
+							<Route path="/login">
+								<LoginStateProvider>
+									<Route path="/" component={Main} />
+									<Route path="/mfa" component={MFA} />
+								</LoginStateProvider>
+							</Route>
+							<Route path="*" component={Err} />
+						</Routes>
+					</AppStateProvider>
+				</Show>
 			</Show>
 		</Router>
 	);
