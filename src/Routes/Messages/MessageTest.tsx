@@ -7,9 +7,9 @@ import {
 	Index,
 	onCleanup,
 } from 'solid-js';
-import API from './API';
-import { useAppState } from './AppState';
-import { startGatewayListener } from './test';
+import API from '../../API';
+import { useAppState } from '../../AppState';
+import { startGatewayListener } from '../../test';
 interface i {
 	type: string;
 }
@@ -27,7 +27,7 @@ interface messageCreate extends i {
 
 const channelId = '419544210027446276';
 
-import style from './prev.module.css';
+import style from './../../prev.module.css';
 
 function MessageTest() {
 	const [messages, setMessages] = createSignal<any[]>([]);

@@ -12,9 +12,16 @@
 }
 
 .default:hover,
-.default:focus,
+.default:focus-visible,
 .default:active {
 	filter: var(--darken);
+}
+
+.default:active:hover,
+.default:active:focus-visible,
+.default:checked:hover,
+.default:checked:focus-visible {
+	filter: var(--darken-for-active);
 }
 
 .default:checked {

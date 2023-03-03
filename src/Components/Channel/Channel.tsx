@@ -1,6 +1,3 @@
-// SolidJS
-import { A } from '@solidjs/router';
-
 // API
 import { ChannelType } from '../../discord';
 
@@ -14,7 +11,7 @@ interface ChannelProps {
 const Channel = (props: ChannelProps) => {
 	return (
 		<li class={style.channel}>
-			<A href={props.data.id}>{props.data.name}</A>
+			<a href={props.data.id}>{props.data.name}</a>
 		</li>
 	);
 };

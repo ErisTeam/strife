@@ -14,12 +14,12 @@ import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
 // Components
-import Anchor from './Anchor';
+import Anchor from './Components/Anchor/Anchor';
 
 // Style
-//import './prev.css';
 import style from './prev.module.css';
-import Switch from './Components/Switch/Switch';
+import buttons from './Styles/Buttons.module.css';
+import inputs from './Styles/Inputs.module.css';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -135,9 +135,7 @@ function Prev() {
 				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
 				);
-				setImage(
-					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
-				);
+				setImage(`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`);
 				break;
 			case 'loginSuccess':
 				setshowMsg('login success');
@@ -191,18 +189,14 @@ function Prev() {
 			<h1>{AppState.userID()}</h1>
 			<div class={style.row}>
 				<div>
+					<input class={inputs.default} onChange={(e) => setName(e.currentTarget.value)} placeholder="Login" />
 					<input
-						class={style.input}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder="Login"
-					/>
-					<input
-						class={style.input}
+						class={inputs.default}
 						type="password"
 						placeholder="password"
 						onChange={(e) => setPassword(e.currentTarget.value)}
 					/>
-					<button type="button" onClick={() => login()} class={style.button}>
+					<button type="button" onClick={() => login()} class={buttons.default}>
 						Login
 					</button>
 					<Show when={captcha_key()}>
@@ -236,7 +230,7 @@ function Prev() {
 							}}
 						>
 							<input
-								class={style.input}
+								class={inputs.defautl}
 								type="text"
 								name="code"
 								placeholder="Code"
@@ -245,7 +239,7 @@ function Prev() {
 								}}
 							/>
 							<button
-								class={style.button}
+								class={buttons.default}
 								type="button"
 								onclick={() => {
 									setDidSendSMS(true);
@@ -253,7 +247,7 @@ function Prev() {
 							>
 								Send SMS
 							</button>
-							<button type="submit" class={style.button}>
+							<button type="submit" class={buttons.default}>
 								submit
 							</button>
 						</form>
@@ -263,7 +257,7 @@ function Prev() {
 			</div>
 			<div>
 				<button
-					class={style.button}
+					class={buttons.default}
 					onClick={async () => {
 						changeState('Application');
 					}}
@@ -271,7 +265,7 @@ function Prev() {
 					change state to main
 				</button>
 				<button
-					class={style.button}
+					class={buttons.default}
 					onClick={async (e) => {
 						console.log('start gateway');
 						await emit('startGateway', { user_id: AppState.userID() });
@@ -280,29 +274,30 @@ function Prev() {
 					Start Gateway
 				</button>
 				<button
-					class={style.button}
+					class={buttons.default}
 					onClick={async (e) => {
 						await invoke('test', {});
 					}}
 				>
 					Notification Test
 				</button>
-				<input type="text" class={style.input} />
 			</div>
 			<p>{showMsg}</p>
+			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+				<Anchor class={[buttons.default].join(' ')} href="/login" state="LoginScreen">
+					Better Login
+				</Anchor>
+				<Anchor class={[buttons.default].join(' ')} href="/app" state="Application">
+					Application
+				</Anchor>
+				<Anchor class={[buttons.default].join(' ')} href="/messagetest" state="Application">
+					message test
+				</Anchor>
 
-			<Anchor href="/gamitofurras" state="LoginScreen">
-				Gami to Furras
-			</Anchor>
-			<Anchor href="/messagetest" state="Application">
-				message test
-			</Anchor>
-			<Anchor href="/loginpage" state="LoginScreen">
-				Better Login
-			</Anchor>
-			<A href="/app">Application</A>
-			<Link href="/gamitofurras">Gami to Furras2</Link>
-			<A href="/shugsgsrolfdghdflgddid">agslgshgsgl</A>
+				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
+					Error Page
+				</A>
+			</div>
 		</div>
 	);
 }

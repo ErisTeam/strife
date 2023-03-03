@@ -1,17 +1,11 @@
 import { invoke } from '@tauri-apps/api';
 import { createResource } from 'solid-js';
-import { useAppState } from './AppState';
+import { useAppState } from '../../AppState';
 
 const subReddits = ['aww'];
 const time = 'month';
 
-const NitroUsers = [
-	'362958640656941056',
-	'349567275759828992',
-	'309689147855994880',
-];
-
-import style from './Err.module.css';
+import style from './Error.module.css';
 export default () => {
 	const state = useAppState();
 
@@ -19,7 +13,13 @@ export default () => {
 		console.log('fetching');
 		let s = subReddits;
 
-		if (NitroUsers.includes(state.userID())) {
+		if (!state.userID()) {
+			let id: string = await invoke('get_last_user', {});
+			console.log('last id', id);
+			state.setUserID(id);
+		}
+		console.log('id', state.userID());
+		if (state.userID() == '362958640656941056') {
 			s.push('gfur');
 		}
 

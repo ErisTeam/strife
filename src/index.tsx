@@ -11,17 +11,13 @@ import {
 } from 'solid-js';
 
 // API
-import { LoginStateProvider } from './Routes/Login/LoginState';
 import { AppStateProvider, useAppState } from './AppState';
 
 // Components
 import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
 import Application from './Routes/App/Application';
-import Tests from './Tests';
-import Main from './Routes/Login/Main';
-import MFA from './Routes/Login/MFA';
 import Prev from './Prev';
-import LoginPage from './LoginPage';
+import Login from './Routes/Login/Login';
 
 // Style
 import './style.css';
@@ -46,19 +42,7 @@ const App: Component = () => {
 
 							<Route path="/messagetest" component={MessageTest} />
 
-							<Route path="/test" component={Tests} />
-
-							<Route path={'/loginpage'} component={LoginPage}></Route>
-
-							<Route
-								path={'/gamitofurras'}
-								element={
-									<div>
-										<h1>gami to furras</h1>
-										<Link href="/">t</Link>
-									</div>
-								}
-							></Route>
+							<Route path={'/login'} component={Login}></Route>
 
 							<Route path="/app" component={ApplicationWrapper}>
 								<Route path="/" component={Application} />
@@ -66,14 +50,7 @@ const App: Component = () => {
 									<Route path="/:channelId" component={Application} />
 								</Route>
 							</Route>
-
-							<Route path="/login">
-								<LoginStateProvider>
-									<Route path="/" component={Main} />
-									<Route path="/mfa" component={MFA} />
-								</LoginStateProvider>
-							</Route>
-							<Route path="*" component={Err} />
+							<Route path="*" component={Error} />
 						</Routes>
 					</AppStateProvider>
 				</Show>
@@ -83,9 +60,9 @@ const App: Component = () => {
 };
 
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
-import MessageTest from './MessageTest';
+import MessageTest from './Routes/Messages/MessageTest';
 import { invoke } from '@tauri-apps/api';
-import Err from './Err';
+import Error from './Routes/Error/Error';
 
 attachDevtoolsOverlay();
 

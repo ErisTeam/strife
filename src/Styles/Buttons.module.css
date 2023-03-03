@@ -5,8 +5,13 @@
 }
 
 .default:hover,
-.default:focus {
+.default:focus-visible {
 	filter: var(--darken);
+}
+
+.default:active:hover,
+.default:active:focus-visible {
+	filter: var(--darken-for-active);
 }
 
 .default:active {

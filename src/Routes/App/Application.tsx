@@ -16,7 +16,7 @@ import RelationshipList from '../../Components/RelationshipList/RelationshipList
 // Styles
 import style from './Application.module.css';
 
-import Anchor from '../../Anchor';
+import Anchor from '../../Components/Anchor/Anchor';
 
 const Application = () => {
 	const params = useParams();

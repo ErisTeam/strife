@@ -1,6 +1,5 @@
 // SolidJS
-import { A } from '@solidjs/router';
-import { createEffect, onMount } from 'solid-js';
+import { onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -38,12 +37,12 @@ const Guild = (props: GuildProps) => {
 	return (
 		<li ref={pos} class={style.guild}>
 			<div ref={before} class={style.before}></div>
-			<A href={`${props.id}/${guild.system_channel_id}`}>
+			<a href={`${props.id}/${guild.system_channel_id}`}>
 				<img
 					src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`}
 					alt={guild.name}
 				/>
-			</A>
+			</a>
 			<span ref={span}>{guild.name}</span>
 		</li>
 	);

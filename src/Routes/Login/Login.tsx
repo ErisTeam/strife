@@ -6,18 +6,18 @@ import { useBeforeLeave } from '@solidjs/router';
 import { emit } from '@tauri-apps/api/event';
 
 // API
-import API from './API';
-import { useTaurListener } from './test';
-import { useAppState } from './AppState';
+import API from './../../API';
+import { useTaurListener } from './../../test';
+import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
-import { UserData } from './Components/QRCode/QRCode';
+import { UserData } from './../../Components/QRCode/QRCode';
 
 // Components
-import LoginBox from './Components/LoginBox/LoginBox';
-import QRCode from './Components/QRCode/QRCode';
+import LoginBox from './../../Components/LoginBox/LoginBox';
+import QRCode from './../../Components/QRCode/QRCode';
 
 // Style
-import style from './LoginPage.module.css';
+import style from './Login.module.css';
 
 function LoginPage() {
 	// Data of the user that scans the QR Code
@@ -66,11 +66,7 @@ function LoginPage() {
 			sms: boolean;
 		}
 
-		let input = event.payload as unknown as
-			| qrcode
-			| ticketData
-			| RequireAuth
-			| { type: 'loginSuccess' };
+		let input = event.payload as unknown as qrcode | ticketData | RequireAuth | { type: 'loginSuccess' };
 
 		switch (input.type) {
 			case 'qrcode': {
@@ -86,9 +82,7 @@ function LoginPage() {
 			case 'ticketData': {
 				AppState.setUserID(input.userId);
 
-				setImage(
-					`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`
-				);
+				setImage(`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`);
 
 				setUserData({
 					user_id: input.userId,
@@ -142,7 +136,7 @@ function LoginPage() {
 			{/* Main Page */}
 			<div class={style.container}>
 				<div class={style.gradient}>
-					<img src="LoginPage/BackgroundDoodle.png"></img>
+					<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
 				</div>
 
 				<LoginBox class={style.loginBox} />
@@ -159,17 +153,17 @@ function LoginPage() {
 
 			{/* Corner SVGS */}
 			<div class={style.leftBottom}>
-				<img class={style.leftBottom1} src="LoginPage/LeftBottom1.svg" />
-				<img class={style.leftBottom2} src="LoginPage/LeftBottom2.svg" />
-				<img class={style.leftBottom3} src="LoginPage/LeftBottom3.svg" />
+				<img class={style.leftBottom1} alt="Decorative SVG" src="LoginPage/LeftBottom1.svg" />
+				<img class={style.leftBottom2} alt="Decorative SVG" src="LoginPage/LeftBottom2.svg" />
+				<img class={style.leftBottom3} alt="Decorative SVG" src="LoginPage/LeftBottom3.svg" />
 			</div>
 			<div class={style.leftTop}>
-				<img class={style.leftTop1} src="LoginPage/LeftTop1.svg" />
-				<img class={style.leftTop2} src="LoginPage/LeftTop2.svg" />
+				<img class={style.leftTop1} alt="Decorative SVG" src="LoginPage/LeftTop1.svg" />
+				<img class={style.leftTop2} alt="Decorative SVG" src="LoginPage/LeftTop2.svg" />
 			</div>
 			<div class={style.rightTop}>
-				<img class={style.rightTop1} src="LoginPage/RightTop1.svg" />
-				<img class={style.rightTop2} src="LoginPage/RightTop2.svg" />
+				<img class={style.rightTop1} alt="Decorative SVG" src="LoginPage/RightTop1.svg" />
+				<img class={style.rightTop2} alt="Decorative SVG" src="LoginPage/RightTop2.svg" />
 			</div>
 		</>
 	);

@@ -85,12 +85,6 @@
 	border-color: #396cd8;
 }
 
-/* helps when using keyboard only */
-.button:focus,
-.input:focus {
-	border-color: #396cd8;
-}
-
 .input,
 .button {
 	outline: none;

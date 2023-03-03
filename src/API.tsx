@@ -10,6 +10,11 @@ import { GuildType, ChannelType, Relationship } from './discord';
 const AppState: any = useAppState();
 
 export default {
+	/**
+	 * Get messages of the given channel.
+	 * @param channelId
+	 * @returns
+	 */
 	async getMessages(channelId: string) {
 		let token = await this.getToken(AppState.userID());
 		if (!token) {
@@ -29,6 +34,14 @@ export default {
 
 		return resData;
 	},
+
+	/**
+	 * Sends a message to the requested channel.
+	 * @param channelId
+	 * @param content
+	 * @param reference
+	 * @returns
+	 */
 	async sendMessage(channelId: string, content: string, reference: any) {
 		let token = await this.getToken(AppState.userID());
 		if (!token) {

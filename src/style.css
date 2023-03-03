@@ -84,13 +84,19 @@ pre {
    ========================================================================== */
 
 :root {
-	--depth1: #2a2c2a;
+	/* --depth1: #2a2c2a;
 	--depth2: #323636;
 	--depth3: #3a4042;
-	--depth4: #434a4d;
+	--depth4: #434a4d; */
+
+	--depth1: #1f1f20;
+	--depth2: #252628;
+	--depth3: #2d2f31;
+	--depth4: #343438;
 
 	--primary: #00b2ff;
 	--darken: brightness(93%);
+	--darken-for-active: brightness(80%);
 
 	--text: #ffffff;
 	--disabled-text: #a0a0a0;
@@ -110,7 +116,7 @@ pre {
 	color: var(--text);
 }
 
-*:focus {
+*:focus-visible {
 	outline-style: solid;
 	outline-offset: 2px;
 	outline-color: var(--primary);

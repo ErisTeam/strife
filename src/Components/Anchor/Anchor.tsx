@@ -5,17 +5,20 @@ import { useNavigate } from '@solidjs/router';
 // Tauri
 import { invoke } from '@tauri-apps/api';
 
-interface Props {
+interface AnchorProps {
 	state: 'LoginScreen' | 'Application';
 	href: string;
 	children: JSX.Element;
+
+	class?: string;
 }
 
-const Anchor = (props: Props) => {
+const Anchor = (props: AnchorProps) => {
 	const navigate = useNavigate();
 
 	return (
 		<a
+			class={props.class}
 			href={props.href}
 			onClick={async (e) => {
 				e.preventDefault();
