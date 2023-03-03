@@ -21,7 +21,7 @@ pub enum State {
 		use_mfa: bool,
 		captcha_rqdata: Option<String>,
 		captcha_rqtoken: Option<String>,
-		captcha_sitekey: Option<String>, //todo remove
+		captcha_sitekey: Option<String>, //todo remove or not idk
 	},
 	MainApp {},
 }
