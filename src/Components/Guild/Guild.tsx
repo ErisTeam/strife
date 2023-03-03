@@ -19,32 +19,24 @@ const Guild = (props: GuildProps) => {
 	const AppState: any = useAppState();
 
 	const guild = AppState.userGuilds().find((x: GuildType) => x.id === props.id);
-	onMount(() => {
-		const observer = new ResizeObserver(([e]) => {
-			/* set span position to pos position */
+	// onMount(() => {
+	// 	const observer = new ResizeObserver(([e]) => {
+	// 		/* set span position to pos position */
 
-			span.style.top = `${
-				pos.getBoundingClientRect().y + span.getBoundingClientRect().height / 6
-			}px`;
-			before.style.top = `${
-				pos.getBoundingClientRect().y +
-				before.getBoundingClientRect().height / 6
-			}px`;
-		});
-		observer.observe(pos);
-	});
+	// 		span.style.top = `${pos.getBoundingClientRect().y + span.getBoundingClientRect().height / 6}px`;
+	// 		before.style.top = `${pos.getBoundingClientRect().y + before.getBoundingClientRect().height / 6}px`;
+	// 	});
+	// 	observer.observe(pos);
+	// });
 
 	return (
-		<li ref={pos} class={style.guild}>
-			<div ref={before} class={style.before}></div>
-			<a href={`${props.id}/${guild.system_channel_id}`}>
-				<img
-					src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`}
-					alt={guild.name}
-				/>
+		<>
+			{/* <div ref={before} class={style.before}></div> */}
+			<a class={style.guild} href={`${props.id}/${guild.system_channel_id}`}>
+				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
 			</a>
-			<span ref={span}>{guild.name}</span>
-		</li>
+			{/* <span ref={span}>{guild.name}</span> */}
+		</>
 	);
 };
 

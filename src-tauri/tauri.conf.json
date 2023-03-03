@@ -2,7 +2,7 @@
 	"build": {
 		"beforeDevCommand": "pnpm dev",
 		"beforeBuildCommand": "pnpm build",
-		"devPath": "http://localhost:1420",
+		"devPath": "http://192.168.43.29:1420",
 		"distDir": "../dist",
 		"withGlobalTauri": false
 	},
@@ -33,13 +33,7 @@
 				"depends": []
 			},
 			"externalBin": [],
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
+			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
 			"identifier": "com.TNaDc",
 			"longDescription": "",
 			"macOS": {

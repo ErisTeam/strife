@@ -6,15 +6,15 @@
 	position: sticky;
 	top: 0;
 	left: 0;
+}
 
-	ul {
-		position: static;
-		overflow-x: hidden;
-		overflow-y: scroll;
-		max-height: 100vh;
-		/* change scrollbar */
-		&::-webkit-scrollbar {
-			width: 1px;
-		}
-	}
+.guildList > ul {
+	position: static;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	max-height: 100vh;
+}
+
+.guildList > ul::-webkit-scrollbar {
+	width: 1px;
 }

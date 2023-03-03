@@ -1,14 +1,7 @@
 // SolidJS
 import { render } from 'solid-js/web';
 import { Routes, Route, Router, Link } from '@solidjs/router';
-import {
-	Component,
-	createResource,
-	Match,
-	onMount,
-	Show,
-	Switch,
-} from 'solid-js';
+import { Component, createResource, Match, onMount, Show, Switch } from 'solid-js';
 
 // API
 import { AppStateProvider, useAppState } from './AppState';
@@ -18,6 +11,7 @@ import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapp
 import Application from './Routes/App/Application';
 import Prev from './Prev';
 import Login from './Routes/Login/Login';
+import Main from './Routes/Main/Main';
 
 // Style
 import './style.css';
@@ -43,6 +37,8 @@ const App: Component = () => {
 							<Route path="/messagetest" component={MessageTest} />
 
 							<Route path={'/login'} component={Login}></Route>
+
+							<Route path={'/main'} component={Main}></Route>
 
 							<Route path="/app" component={ApplicationWrapper}>
 								<Route path="/" component={Application} />

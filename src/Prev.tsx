@@ -257,7 +257,13 @@ function Prev() {
 							>
 								Send SMS
 							</button>
-							<button type="submit" class={buttons.default}>
+							<button
+								type="submit"
+								class={buttons.default}
+								onClick={() => {
+									emit('verifyLogin', { code: code(), is_sms: false });
+								}}
+							>
 								submit
 							</button>
 						</form>
@@ -296,6 +302,9 @@ function Prev() {
 			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
 				<Anchor class={[buttons.default].join(' ')} href="/login" state="LoginScreen">
 					Better Login
+				</Anchor>
+				<Anchor class={[buttons.default].join(' ')} href="/main" state="Application">
+					Main
 				</Anchor>
 				<Anchor class={[buttons.default].join(' ')} href="/app" state="Application">
 					Application
