@@ -92,7 +92,7 @@ function Prev() {
 			type: string;
 		}
 		interface qrcode extends i {
-			type: 'qrcode';
+			type: 'mobileQrcode';
 			qrcode: string;
 		}
 		interface ticketData extends i {
@@ -125,10 +125,10 @@ function Prev() {
 			| RequireAuth
 			| RequireAuthMobile
 			| VerifyError
-			| { type: 'loginSuccess' };
+			| { type: 'loginSuccess'; userId: string; userSettings?: any };
 		console.log(input, event);
 		switch (input.type) {
-			case 'qrcode':
+			case 'mobileQrcode':
 				console.log(input.qrcode);
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
@@ -190,6 +190,7 @@ function Prev() {
 
 	onMount(async () => {
 		await emit('requestQrcode', {});
+		await emit('startMobileGateway', {});
 	});
 
 	return (

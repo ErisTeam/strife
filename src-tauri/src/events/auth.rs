@@ -13,6 +13,12 @@ fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 	}
 }
 
+fn start_mobile_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	move |_event| {
+		state.start_mobile_auth(handle.clone());
+	}
+}
+
 fn request_qrcode(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
 		println!("got qrcode event with payload {:?}", event.payload());
@@ -151,10 +157,6 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 		{
 			let mut app_state = state.state.lock().unwrap();
 
-			if !matches!(*app_state, main_app_state::State::LoginScreen { .. }) {
-				//return Err(());
-				todo!("return error to webview");
-			}
 			if let Some(token) = captcha_token.clone() {
 				match *app_state {
 					main_app_state::State::LoginScreen { ref mut captcha_token, .. } => {
@@ -186,7 +188,7 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 				handle
 					.emit_all("auth", webview_packets::Auth::LoginSuccess {
 						user_id,
-						user_settings: user_settings,
+						user_settings: Some(user_settings),
 					})
 					.unwrap()
 			}
@@ -266,7 +268,8 @@ pub fn get_all_events(state: Arc<main_app_state::MainState>, handle: tauri::AppH
 		h.listen_global("sendSms", send_sms(state.state.clone(), handle.clone())),
 		h.listen_global("verifyLogin", verify_login(state.clone(), handle.clone())),
 		h.listen_global("login", login(state.clone(), handle.clone())),
-		h.listen_global("startGateway", start_gateway(state.clone(), handle.clone())),
+		h.listen_global("startGateway", start_gateway(state.clone(), handle.clone())), // TODO: remove
+		h.listen_global("startMobileGateway", start_mobile_gateway(state.clone(), handle.clone())),
 		h.listen_global("loginMobileAuth", login_mobile_auth(state.clone(), handle.clone()))
 	]
 }

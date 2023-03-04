@@ -11,7 +11,7 @@ use crate::modules::auth;
 pub enum Auth {
 	LoginSuccess {
 		user_id: String,
-		user_settings: auth::UserSettings,
+		user_settings: Option<auth::UserSettings>,
 	},
 	RequireAuth {
 		captcha_key: Option<Vec<String>>,
@@ -25,6 +25,24 @@ pub enum Auth {
 		code: u64,
 		errors: auth::err,
 		message: String,
+	},
+	MobileAuthError {
+		error: String,
+	},
+	MobileTicketData {
+		user_id: String,
+		discriminator: String,
+
+		avatar_hash: String,
+		username: String,
+	},
+	RequireAuthMobile {
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+	},
+	MobileQrcode {
+		qrcode: Option<String>,
 	},
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]

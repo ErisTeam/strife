@@ -1,6 +1,5 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
-mod commands;
 mod discord;
 mod events;
 
@@ -13,6 +12,8 @@ mod modules;
 mod token_utils;
 mod webview_packets;
 
+mod test;
+
 extern crate tokio;
 
 use std::sync::Arc;
@@ -22,10 +23,10 @@ use windows::Win32::{ Foundation::{ BOOL, BOOLEAN }, UI::WindowsAndMessaging::Fl
 
 use crate::{ main_app_state::MainState, manager::ThreadManager };
 
-trait test {
+trait Flashing {
 	fn set_flashing(&self, s: bool) -> Result<(), tauri::Error>;
 }
-impl test for tauri::Window {
+impl Flashing for tauri::Window {
 	fn set_flashing(&self, s: bool) -> Result<(), tauri::Error> {
 		let winit_hwnd = self.hwnd()?;
 		let h = windows::Win32::Foundation::HWND(winit_hwnd.0 as isize);
@@ -111,6 +112,8 @@ fn main() {
 
 	let m = main_state.clone();
 
+	test::add_token(&m);
+
 	tauri::Builder
 		::default()
 		.manage(main_state)
@@ -126,8 +129,7 @@ fn main() {
 				get_token,
 				set_state,
 				get_last_user,
-				test,
-				commands::auth::start_mobile_auth // todo remove
+				test //todo remove
 			]
 		)
 		.run(tauri::generate_context!())

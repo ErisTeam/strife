@@ -12,7 +12,7 @@ use crate::{
 		types::gateway::{ Properties, Presence, ClientState },
 	},
 	modules::gateway_utils::send_heartbeat,
-	test,
+	Flashing,
 };
 
 pub enum GatewayError {
@@ -202,15 +202,11 @@ impl Gateway {
 						last_4.copy_from_slice(&bin[bin.len() - 4..]);
 						if last_4 == [0, 0, 255, 255] {
 							let mut buf = Vec::with_capacity(20_971_520);
-							self.decoder
-								.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync)
-								.unwrap();
+							self.decoder.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync).unwrap();
 
 							let out = String::from_utf8(buf).unwrap();
 							println!("Gateway Binary gateway {:?}", out);
-							let json: GatewayIncomingPacket = serde_json
-								::from_str(out.as_str())
-								.unwrap();
+							let json: GatewayIncomingPacket = serde_json::from_str(out.as_str()).unwrap();
 							last_s = json.s;
 							match json.d {
 								GatewayPacketsData::Hello { heartbeat_interval } => {
@@ -223,11 +219,7 @@ impl Gateway {
 									self.resume_url = Some(data.resume_gateway_url);
 									self.session_id = Some(data.session_id);
 									if self.user_id != data.user.id {
-										println!(
-											"Wrong user id {} != {}",
-											self.user_id,
-											data.user.id
-										);
+										println!("Wrong user id {} != {}", self.user_id, data.user.id);
 										return Err(GatewayError::Other);
 									}
 									let user = UserData {
@@ -247,12 +239,7 @@ impl Gateway {
 								} => {
 									println!("ReadySupplemental {:?}", guilds);
 								}
-								GatewayPacketsData::MessageCreate {
-									message,
-									member,
-									guild_id,
-									mentions,
-								} => {
+								GatewayPacketsData::MessageCreate { message, member, guild_id, mentions } => {
 									println!("Message {:?}", message);
 									self.emit_event(webview_packets::Gateway::MessageCreate {
 										message: message.clone(),
@@ -267,13 +254,7 @@ impl Gateway {
 										);
 										notification
 											.title("New Message")
-											.body(
-												format!(
-													"{}: {}",
-													message.author.username,
-													message.content
-												)
-											)
+											.body(format!("{}: {}", message.author.username, message.content))
 											.icon(
 												format!(
 													"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
@@ -311,9 +292,7 @@ impl Gateway {
 				&mut ack_recived,
 				&mut client,
 				&(|| -> Option<String> {
-					return Some(
-						serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap()
-					);
+					return Some(serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap());
 				})
 			);
 			//tokio thread sleep

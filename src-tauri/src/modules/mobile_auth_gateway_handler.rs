@@ -95,7 +95,7 @@ impl MobileAuthHandler {
 		println!("Keys generated");
 	}
 
-	fn emit_event(&self, event: webview_packets::MobileAuth) -> Result<(), tauri::Error> {
+	fn emit_event(&self, event: webview_packets::Auth) -> Result<(), tauri::Error> {
 		println!("emiting {:?}", event.clone());
 		self.handle.emit_all("auth", event)?;
 
@@ -222,7 +222,7 @@ impl MobileAuthHandler {
 		match err {
 			GetTokenResponse::Other(m) => {
 				println!("Error: {}", m);
-				self.emit_event(webview_packets::MobileAuth::LoginError {
+				self.emit_event(webview_packets::Auth::MobileAuthError {
 					error: m,
 				}).unwrap();
 				return true;
@@ -248,7 +248,7 @@ impl MobileAuthHandler {
 					*new_captcha_rqtoken = captcha_rqtoken;
 				}
 				println!("Captcha: {:?}", captcha_rqdata);
-				self.emit_event(webview_packets::MobileAuth::RequireAuthMobile {
+				self.emit_event(webview_packets::Auth::RequireAuthMobile {
 					captcha_key,
 					captcha_sitekey,
 					captcha_service,
@@ -316,7 +316,7 @@ impl MobileAuthHandler {
 							MobileAuthGatewayPackets::PendingRemoteInit { fingerprint } => {
 								println!("Fingerprint: {}", fingerprint);
 								let new_qr_url = format!("https://discordapp.com/ra/{}", fingerprint);
-								self.emit_event(webview_packets::MobileAuth::Qrcode {
+								self.emit_event(webview_packets::Auth::MobileQrcode {
 									qrcode: Some(new_qr_url.clone()),
 								}).unwrap();
 								let mut state = self.app_state.state.lock().unwrap();
@@ -339,7 +339,7 @@ impl MobileAuthHandler {
 								let splited = string.split(':').collect::<Vec<&str>>();
 								println!("{:?}", string);
 								user_id = Some(splited[0].to_string());
-								self.emit_event(webview_packets::MobileAuth::TicketData {
+								self.emit_event(webview_packets::Auth::MobileTicketData {
 									user_id: splited[0].to_string(),
 									discriminator: splited[1].to_string(),
 									avatar_hash: splited[2].to_string(),
@@ -350,9 +350,12 @@ impl MobileAuthHandler {
 								client.shutdown().unwrap();
 								match self.get_token(ticket.clone()).await {
 									Ok(token) => {
-										if user_id.is_some() {
-											self.app_state.tokens.lock().unwrap().insert(user_id.unwrap(), token);
-											self.emit_event(webview_packets::MobileAuth::LoginSuccess {}).unwrap();
+										if let Some(user_id) = user_id {
+											self.app_state.tokens.lock().unwrap().insert(user_id.clone(), token);
+											self.emit_event(webview_packets::Auth::LoginSuccess {
+												user_id: user_id.clone(),
+												user_settings: None,
+											}).unwrap();
 										}
 										return true;
 									}

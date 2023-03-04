@@ -5,10 +5,7 @@ use tauri::{ AppHandle, Manager };
 use tokio::sync::mpsc;
 use websocket::OwnedMessage;
 
-use crate::{
-	main_app_state::MainState,
-	modules::{ mobile_auth_gateway_handler::MobileAuthHandler, gateway::Gateway },
-};
+use crate::{ main_app_state::MainState, modules::{ mobile_auth_gateway_handler::MobileAuthHandler, gateway::Gateway } };
 
 /// # Information
 /// TODO
@@ -68,11 +65,7 @@ impl ThreadManager {
 
 		let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
 
-		let mut gate = MobileAuthHandler::new(
-			self.state.clone(),
-			handle.clone(),
-			async_proc_input_rx
-		);
+		let mut gate = MobileAuthHandler::new(self.state.clone(), handle.clone(), async_proc_input_rx);
 
 		self.senders.get_mut("main").unwrap().push(Modules::MobileAuth(async_proc_input_tx));
 		tauri::async_runtime::spawn(async move {
@@ -110,12 +103,7 @@ impl ThreadManager {
 			}
 		}
 	}
-	pub fn start_gateway(
-		&mut self,
-		handle: AppHandle,
-		token: String,
-		user_id: String
-	) -> Result<(), String> {
+	pub fn start_gateway(&mut self, handle: AppHandle, token: String, user_id: String) -> Result<(), String> {
 		if let Some(sender) = self.senders.get(user_id.as_str()) {
 			if sender.iter().any(|s| matches!(s, Modules::Gateway(_))) {
 				println!("Gateway already running");
@@ -125,13 +113,7 @@ impl ThreadManager {
 		println!("Starting gateway");
 
 		let (sender, reciver) = mpsc::channel(32);
-		let mut gate = Gateway::new(
-			self.state.clone(),
-			handle.clone(),
-			reciver,
-			token.clone(),
-			user_id.clone()
-		);
+		let mut gate = Gateway::new(self.state.clone(), handle.clone(), reciver, token.clone(), user_id.clone());
 
 		if self.senders.get(user_id.as_str()).is_none() {
 			self.senders.insert(user_id.clone(), Vec::new());
