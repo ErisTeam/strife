@@ -1,14 +1,47 @@
 use std::{ collections::{ HashMap, HashSet }, sync::{ Arc, Mutex } };
 
+use serde_json::json;
 use tauri::AppHandle;
 
 use crate::{ discord::user::CurrentUser, event_manager::EventManager, manager::ThreadManager };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UserData {
 	pub user: CurrentUser,
-	//token: String,
+	token: String,
 	pub guilds: Vec<serde_json::Value>,
+	pub relationships: Vec<serde_json::Value>,
+}
+impl UserData {
+	pub fn new(
+		user: CurrentUser,
+		token: String,
+		guilds: Vec<serde_json::Value>,
+		relationships: Vec<serde_json::Value>
+	) -> Self {
+		Self {
+			user,
+			token,
+			guilds,
+			relationships,
+		}
+	}
+	pub fn get_token(&self) -> &str {
+		&self.token
+	}
+}
+
+#[derive(Debug, Clone)]
+pub enum User {
+	LoggedOut {
+		discriminator: String,
+		display_name: String,
+		image: Option<String>,
+	},
+	ActiveUser(UserData),
+	InactiveUser {
+		token: String,
+	},
 }
 
 #[derive(Debug, PartialEq)]
@@ -53,7 +86,7 @@ pub struct MainState {
 
 	pub last_id: Mutex<Option<String>>,
 
-	pub user_data: Mutex<HashMap<String, UserData>>,
+	pub user_data: Mutex<HashMap<String, User>>,
 	//todo pub system_info: Mutex<SystemInfo>
 }
 
@@ -70,6 +103,32 @@ impl MainState {
 
 			last_id: Mutex::new(None),
 		}
+	}
+	pub fn get_all_Users(&self) -> Vec<(String, User)> {
+		let user_data = self.user_data.lock().unwrap();
+		let mut users = Vec::new();
+		for (id, user) in user_data.iter() {
+			users.push((id.clone(), user.clone()));
+		}
+		users
+	}
+
+	pub fn get_user_data(&self, id: String) -> Option<UserData> {
+		let user_data = self.user_data.lock().unwrap();
+		if let Some(user) = user_data.get(&id).cloned() {
+			if let User::ActiveUser(UserData) = user {
+				let mut u = UserData.clone();
+				u.token = "Acces Denied".to_string();
+				return Some(u);
+			}
+		}
+		None
+	}
+
+	/// adds a new **InactiveUser** to the user_data
+	pub fn add_new_user(&self, user_id: String, token: String) {
+		let mut user_data = self.user_data.lock().unwrap();
+		user_data.insert(user_id.clone(), User::InactiveUser { token });
 	}
 
 	pub fn add_token(&self, token: String, id: String) {

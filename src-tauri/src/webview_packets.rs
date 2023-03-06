@@ -63,61 +63,10 @@ pub enum MFA {
 }
 
 /// # Information
-/// `MobileAuth` is used for sending data associated with <br>
-/// QR code authentication between Rust and React.
-///
-/// # More Information
-/// `MobileAuth` may be of type: <br>
-/// - `Qrcode` <br>
-/// - `TicketData` <br>
-/// - `LoginSuccess` <br>
-/// - `LoginError` <br>
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type")]
-#[serde(rename_all = "camelCase")]
-pub enum MobileAuth {
-	/// # Information
-	/// Contains a String with the QR code.
-	#[serde(rename = "qrcode")]
-	Qrcode {
-		qrcode: Option<String>,
-	},
-
-	/// # Information
-	/// Used for sending user login data .
-	#[serde(rename = "ticketData")]
-	TicketData {
-		#[serde(rename = "userId")]
-		user_id: String,
-		discriminator: String,
-		#[serde(rename = "avatarHash")]
-		avatar_hash: String,
-		username: String,
-	},
-
-	/// # Information
-	/// TODO
-	#[serde(rename = "loginSuccess")]
-	LoginSuccess {},
-
-	RequireAuthMobile {
-		captcha_key: Option<Vec<String>>,
-		captcha_sitekey: Option<String>,
-		captcha_service: Option<String>,
-	},
-
-	/// # Information
-	/// Contains an error message if anything went wrong.
-	#[serde(rename = "loginError")]
-	LoginError {
-		error: String,
-	},
-}
-
-/// # Information
 /// TODO
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type", content = "data")]
+#[serde(rename_all = "camelCase")]
 pub enum Gateway {
 	MessageCreate {
 		#[serde(flatten)]
@@ -125,6 +74,16 @@ pub enum Gateway {
 		member: crate::discord::types::guild::GuildMember,
 		guild_id: String,
 		mentions: Vec<crate::discord::types::guild::GuildMember>,
+	},
+	MessageUpdate {
+		#[serde(flatten)]
+		message: crate::discord::types::message::Message,
+		member: crate::discord::types::guild::GuildMember,
+		guild_id: String,
+		mentions: Vec<crate::discord::types::guild::GuildMember>,
+	},
+	Error {
+		message: String,
 	},
 }
 #[derive(Serialize, Debug, Clone)]

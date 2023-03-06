@@ -24,7 +24,7 @@ fn request_qrcode(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri
 		println!("got qrcode event with payload {:?}", event.payload());
 		if let main_app_state::State::LoginScreen { qr_url, .. } = &*state.lock().unwrap() {
 			handle
-				.emit_all("auth", webview_packets::MobileAuth::Qrcode {
+				.emit_all("auth", webview_packets::Auth::MobileQrcode {
 					qrcode: qr_url.clone(),
 				})
 				.unwrap();
@@ -124,7 +124,11 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 					user_settings,
 				} => {
 					let user_id = token_utils::get_id(token.clone());
-					state.add_token(token, user_id.clone());
+
+					state.add_token(token.clone(), user_id.clone());
+
+					state.add_new_user(user_id.clone(), token.clone());
+
 					handle
 						.emit_all("gateway", webview_packets::MFA::VerifySuccess {
 							user_id: user_id,

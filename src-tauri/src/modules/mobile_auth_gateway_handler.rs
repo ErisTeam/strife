@@ -8,9 +8,11 @@ use websocket::{ native_tls::TlsStream, sync::Client, OwnedMessage, WebSocketErr
 use crate::{
 	discord::{ constants, http_packets::{ self, Auth }, mobile_auth_packets::{ self, MobileAuthGatewayPackets } },
 	main_app_state::{ MainState, State },
-	modules::gateway_utils::send_heartbeat,
+	modules::gateway_utils::{ send_heartbeat_old, send_heartbeat },
 	webview_packets,
 };
+
+use super::gateway::ConnectionInfo;
 
 enum GetTokenResponse {
 	Other(String),
@@ -61,6 +63,8 @@ pub struct MobileAuthHandler {
 	handle: AppHandle,
 
 	reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
+
+	connection_info: ConnectionInfo,
 }
 impl MobileAuthHandler {
 	pub fn new(
@@ -77,6 +81,7 @@ impl MobileAuthHandler {
 			private_key: None,
 			handle,
 			reciver,
+			connection_info: ConnectionInfo::default(),
 		}
 	}
 	fn decrypt(&self, bytes: Vec<u8>) -> Vec<u8> {
@@ -278,11 +283,7 @@ impl MobileAuthHandler {
 		}
 		let mut client = client.unwrap();
 
-		let mut time_since_last_heartbeat = std::time::Instant::now();
-
-		let mut ack_recived = true;
-
-		let mut started = false;
+		self.connection_info.reset();
 
 		let mut user_id = None;
 
@@ -305,10 +306,12 @@ impl MobileAuthHandler {
 						println!("Text: {}", text);
 						match serde_json::from_str::<mobile_auth_packets::MobileAuthGatewayPackets>(&text).unwrap() {
 							MobileAuthGatewayPackets::HeartbeatAck {} => {
-								ack_recived = true;
+								//ack_recived = true;
+								self.connection_info.ack_recived = true;
 							}
 							MobileAuthGatewayPackets::Hello { heartbeat_interval, timeout_ms } => {
-								started = true;
+								//started = true;
+								self.connection_info.authed = true;
 								self.handle_hello(&mut client, heartbeat_interval, timeout_ms);
 							}
 							MobileAuthGatewayPackets::NonceProofServer { encrypted_nonce } =>
@@ -380,14 +383,16 @@ impl MobileAuthHandler {
 				}
 			}
 
-			send_heartbeat(
-				&mut time_since_last_heartbeat,
-				started,
-				self.heartbeat_interval,
-				&mut ack_recived,
-				&mut client,
-				&(|| { Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap()) })
-			);
+			// send_heartbeat_old(
+			// 	&mut time_since_last_heartbeat,
+			// 	started,
+			// 	self.heartbeat_interval,
+			// 	&mut ack_recived,
+			// 	&mut client,
+			// 	&(|| { Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap()) })
+			// );
+			send_heartbeat(&mut self.connection_info, &mut client, Some(MobileAuthGatewayPackets::Heartbeat {}));
+			//send_heartbeat(&mut self.connection_info, &mut client, data)
 			//tokio thread sleep
 			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
 		}

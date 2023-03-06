@@ -63,14 +63,7 @@ impl Serialize for GatewayPackets {
 					},
 				},
 
-			GatewayPackets::Identify {
-				token,
-				capabilities,
-				properties,
-				presence,
-				compress,
-				client_state,
-			} =>
+			GatewayPackets::Identify { token, capabilities, properties, presence, compress, client_state } =>
 				TypedGatewayPackets {
 					t: 2,
 					d: GatewayPackets_::Identify {
@@ -169,6 +162,11 @@ pub enum GatewayPacketsData {
 		member: GuildMember,
 
 		guild_id: String,
+	},
+	MessageDelete {
+		id: String,
+		channel_id: String,
+		guild_id: Option<String>,
 	},
 
 	TypingStart {

@@ -74,6 +74,7 @@ pub struct ReadyData {
 	pub user: CurrentUser,
 
 	pub guilds: Vec<serde_json::Value>,
+	pub relationships: Vec<serde_json::Value>,
 
 	pub resume_gateway_url: String,
 	pub session_id: String,

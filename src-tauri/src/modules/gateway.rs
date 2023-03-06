@@ -1,17 +1,17 @@
-use std::{ sync::Arc, net::TcpStream, fmt::format };
+use std::{ sync::Arc, net::TcpStream, time::Instant };
 
 use flate2::Decompress;
 use tauri::{ AppHandle, Manager, api::notification::Notification };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
 
 use crate::{
-	main_app_state::{ MainState, UserData },
+	main_app_state::{ MainState, UserData, self },
 	webview_packets::{ self, GatewayEvent },
 	discord::{
 		gateway_packets::{ GatewayPackets, GatewayIncomingPacket, GatewayPacketsData },
 		types::gateway::{ Properties, Presence, ClientState },
 	},
-	modules::gateway_utils::send_heartbeat,
+	modules::gateway_utils::{ send_heartbeat_old, send_heartbeat },
 	Flashing,
 };
 
@@ -24,6 +24,34 @@ pub enum GatewayResult {
 	Close,
 	Reconnect,
 	RecconectUsingResumeUrl,
+}
+
+#[derive(Debug)]
+pub struct ConnectionInfo {
+	pub authed: bool,
+	pub ack_recived: bool,
+	pub since_last_hearbeat: Instant,
+	pub heartbeat_interval: u64,
+}
+impl Default for ConnectionInfo {
+	fn default() -> Self {
+		Self {
+			authed: false,
+			ack_recived: false,
+			since_last_hearbeat: Instant::now(),
+			heartbeat_interval: 0,
+		}
+	}
+}
+impl ConnectionInfo {
+	pub fn reset(&mut self) {
+		self.authed = false;
+		self.ack_recived = false;
+		self.since_last_hearbeat = Instant::now();
+	}
+	pub fn reset_since_last_hearbeat(&mut self) {
+		self.since_last_hearbeat = Instant::now();
+	}
 }
 
 #[derive(Debug)]
@@ -47,6 +75,8 @@ pub struct Gateway {
 
 	reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
 
+	connection_info: ConnectionInfo,
+
 	use_resume_url: bool,
 }
 impl Gateway {
@@ -66,12 +96,108 @@ impl Gateway {
 			reciver,
 			token,
 			user_id,
+			connection_info: ConnectionInfo::default(),
 			resume_url: None,
 			session_id: None,
 			decoder: Decompress::new(true),
 			use_resume_url: false,
 		}
 	}
+
+	fn handle_events(
+		&mut self,
+		client: &mut Client<TlsStream<TcpStream>>,
+		event: GatewayIncomingPacket
+	) -> Result<(), GatewayError> {
+		match event.d {
+			GatewayPacketsData::Hello { heartbeat_interval } => {
+				self.heartbeat_interval = heartbeat_interval;
+				self.init_message(client, self.token.clone());
+				self.connection_info.authed = true;
+			}
+			GatewayPacketsData::Ready(data) => {
+				println!("Ready {:?}", data);
+				self.resume_url = Some(data.resume_gateway_url);
+				self.session_id = Some(data.session_id);
+				if self.user_id != data.user.id {
+					println!("Wrong user id {} != {}", self.user_id, data.user.id);
+					return Err(GatewayError::Other);
+				}
+				let user = UserData::new(data.user.clone(), self.token.clone(), data.guilds, data.relationships);
+
+				let mut user_data = self.state.user_data.lock().unwrap();
+
+				if user_data.contains_key(&self.user_id) {
+					user_data.remove(&self.user_id);
+				}
+				user_data.insert(self.user_id.clone(), main_app_state::User::ActiveUser(user));
+			}
+			GatewayPacketsData::ReadySupplemental {
+				merged_presences,
+				merged_members,
+				lazy_private_channels,
+				guilds,
+			} => {
+				println!("ReadySupplemental {:?}", guilds);
+			}
+			GatewayPacketsData::MessageCreate { message, member, guild_id, mentions } => {
+				println!("Message {:?}", message);
+				let package;
+				match event.t.clone().unwrap().as_str() {
+					"MESSAGE_CREATE" => {
+						package = webview_packets::Gateway::MessageCreate {
+							message: message.clone(),
+							mentions,
+							member: member,
+							guild_id: guild_id,
+						};
+					}
+					"MESSAGE_UPDATE" => {
+						package = webview_packets::Gateway::MessageUpdate {
+							message: message.clone(),
+							mentions,
+							member: member,
+							guild_id: guild_id,
+						};
+					}
+					_ => {
+						println!("Unknown message event {:?}", event.t);
+						package = webview_packets::Gateway::Error {
+							message: "Unknown message event".to_string(),
+						};
+					}
+				}
+				self.emit_event(package).unwrap();
+				//todo repair for multi user
+				if message.author.id != self.user_id {
+					let notification = Notification::new(self.handle.config().tauri.bundle.identifier.clone());
+					notification
+						.title("New Message")
+						.body(format!("{}: {}", message.author.username, message.content))
+						.icon(
+							format!(
+								"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
+								message.author.id,
+								message.author.avatar.unwrap()
+							)
+						)
+						.show()
+						.unwrap();
+					let windows = self.handle.windows();
+					let window = windows.iter().next().unwrap().1;
+					window.set_flashing(true).unwrap();
+				}
+			}
+			GatewayPacketsData::HeartbeatAck => {
+				self.connection_info.ack_recived = true;
+			}
+			_ => {
+				println!("Not handled {:?}", event);
+			}
+		}
+		Ok(())
+	}
+
 	fn conn(&mut self) -> Client<TlsStream<TcpStream>> {
 		use websocket::ClientBuilder;
 		let mut headers = websocket::header::Headers::new();
@@ -142,11 +268,7 @@ impl Gateway {
 
 		let mut client = self.conn();
 
-		let mut instant = std::time::Instant::now();
-
-		let mut ack_recived = true;
-
-		let mut authed = false;
+		self.connection_info.reset();
 
 		let mut last_s: Option<u64> = None;
 
@@ -207,75 +329,9 @@ impl Gateway {
 							let out = String::from_utf8(buf).unwrap();
 							println!("Gateway Binary gateway {:?}", out);
 							let json: GatewayIncomingPacket = serde_json::from_str(out.as_str()).unwrap();
-							last_s = json.s;
-							match json.d {
-								GatewayPacketsData::Hello { heartbeat_interval } => {
-									self.heartbeat_interval = heartbeat_interval;
-									self.init_message(&mut client, self.token.clone());
-									authed = true;
-								}
-								GatewayPacketsData::Ready(data) => {
-									println!("Ready {:?}", data);
-									self.resume_url = Some(data.resume_gateway_url);
-									self.session_id = Some(data.session_id);
-									if self.user_id != data.user.id {
-										println!("Wrong user id {} != {}", self.user_id, data.user.id);
-										return Err(GatewayError::Other);
-									}
-									let user = UserData {
-										user: data.user,
-										guilds: data.guilds,
-									};
+							last_s = json.s.clone();
 
-									let mut user_data = self.state.user_data.lock().unwrap();
-
-									user_data.insert(self.user_id.clone(), user);
-								}
-								GatewayPacketsData::ReadySupplemental {
-									merged_presences,
-									merged_members,
-									lazy_private_channels,
-									guilds,
-								} => {
-									println!("ReadySupplemental {:?}", guilds);
-								}
-								GatewayPacketsData::MessageCreate { message, member, guild_id, mentions } => {
-									println!("Message {:?}", message);
-									self.emit_event(webview_packets::Gateway::MessageCreate {
-										message: message.clone(),
-										mentions,
-										member: member,
-										guild_id: guild_id,
-									}).unwrap();
-									//todo repair for multi user
-									if message.author.id != self.user_id {
-										let notification = Notification::new(
-											self.handle.config().tauri.bundle.identifier.clone()
-										);
-										notification
-											.title("New Message")
-											.body(format!("{}: {}", message.author.username, message.content))
-											.icon(
-												format!(
-													"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
-													message.author.id,
-													message.author.avatar.unwrap()
-												)
-											)
-											.show()
-											.unwrap();
-										let windows = self.handle.windows();
-										let window = windows.iter().next().unwrap().1;
-										window.set_flashing(true).unwrap();
-									}
-								}
-								GatewayPacketsData::HeartbeatAck => {
-									ack_recived = true;
-								}
-								_ => {
-									println!("Not handled {:?}", json);
-								}
-							}
+							self.handle_events(&mut client, json);
 							buffer.clear();
 						}
 					}
@@ -285,16 +341,17 @@ impl Gateway {
 				}
 			}
 			let last_s = last_s.clone();
-			send_heartbeat(
-				&mut instant,
-				authed,
-				self.heartbeat_interval,
-				&mut ack_recived,
-				&mut client,
-				&(|| -> Option<String> {
-					return Some(serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap());
-				})
-			);
+			// send_heartbeat_old(
+			// 	&mut self.connection_info.since_last_hearbeat,
+			// 	self.connection_info.authed,
+			// 	self.heartbeat_interval,
+			// 	&mut self.connection_info.ack_recived,
+			// 	&mut client,
+			// 	&(|| -> Option<String> {
+			// 		return Some(serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap());
+			// 	})
+			// );
+			send_heartbeat(&mut self.connection_info, &mut client, Some(GatewayPackets::Heartbeat { d: last_s }));
 			//tokio thread sleep
 			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
 		}

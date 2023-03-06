@@ -1,26 +1,20 @@
 import { A } from '@solidjs/router';
-import {
-	createEffect,
-	createResource,
-	createSignal,
-	For,
-	Index,
-	onCleanup,
-} from 'solid-js';
+import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { startGatewayListener } from '../../test';
+import { startGatewayListener, startGatewayListenerOld } from '../../test';
 interface i {
 	type: string;
 }
 interface messageCreate extends i {
-	type: 'MessageCreate';
+	type: 'messageCreate';
 	user_id: string;
 	data: {
 		content: string;
 		author: {
 			username: string;
 		};
+		id: string;
 		timestamp: string;
 	};
 }
@@ -52,32 +46,49 @@ function MessageTest() {
 				.reverse(),
 		]);
 	})();
-	startGatewayListener<messageCreate>(AppState.userID(), (msg) => {
-		console.log('gateway', msg, msg.payload, msg.payload.type);
-		switch (msg.payload.type) {
-			case 'MessageCreate':
-				console.log('message create');
-				if (messages().find((e) => e.id == msg.id)) {
-					return;
-				}
-				setMessages((a) => [
-					...a,
-					{
-						...msg.payload.data,
-						timestamp: new Date(msg.payload.data.timestamp),
-					},
-				]);
-				console.log('message create');
-				console.log(messages());
-				break;
 
-			default:
-				console.log('default');
-				break;
+	const listener = startGatewayListener(AppState.userID());
+
+	listener.on<messageCreate>('messageCreate', (msg) => {
+		console.log('Listener gateway', msg, msg, msg.type);
+		if (messages().find((e) => e.id == msg.data.id)) {
+			return;
 		}
-
-		console.log(msg.payload);
+		setMessages((a) => [
+			...a,
+			{
+				...msg.data,
+				timestamp: new Date(msg.data.timestamp),
+			},
+		]);
 	});
+
+	// startGatewayListenerOld<messageCreate>(AppState.userID(), (msg) => {
+	// 	console.log('gateway', msg, msg.payload, msg.payload.type);
+	// 	switch (msg.payload.type) {
+	// 		case 'messageCreate':
+	// 			console.log('message create');
+	// 			if (messages().find((e) => e.id == msg.id)) {
+	// 				return;
+	// 			}
+	// 			setMessages((a) => [
+	// 				...a,
+	// 				{
+	// 					...msg.payload.data,
+	// 					timestamp: new Date(msg.payload.data.timestamp),
+	// 				},
+	// 			]);
+	// 			console.log('message create');
+	// 			console.log(messages());
+	// 			break;
+
+	// 		default:
+	// 			console.log('default');
+	// 			break;
+	// 	}
+
+	// 	console.log(msg.payload);
+	// });
 
 	// createEffect(async () => {
 	// 	const l = startListener<messageCreate>('gateway',
@@ -130,12 +141,17 @@ function MessageTest() {
 						}
 						return (
 							<li>
-								{intl.format(val.timestamp)} <br /> {val.author.username}:{' '}
-								{!embed && val.content}
+								{intl.format(val.timestamp)} <br /> {val.author.username}: {!embed && val.content}
 								{val.author.id == AppState.userID() && (
 									<button
+										class={style.button}
 										onClick={() => {
+											if (editing()?.id == val.id) {
+												setEditing(null);
+												return;
+											}
 											setEditing(val);
+											setMessage(val.content);
 											//setReference(val.)
 										}}
 									>
@@ -146,12 +162,15 @@ function MessageTest() {
 								<button
 									class={style.button}
 									onClick={() => {
+										if (reference()?.message_id == val.id) {
+											setReference(null);
+											return;
+										}
 										setReference({
 											channel_id: val.channel_id,
 											message_id: val.id,
 											guild_id: '419544210027446273',
 										});
-										console.log(reference());
 									}}
 								>
 									reply
@@ -161,7 +180,8 @@ function MessageTest() {
 					}}
 				</For>
 			</ol>
-			<span>{JSON.stringify(reference())}</span>
+			<p>reply: {JSON.stringify(reference())}</p>
+			<p>editing: {JSON.stringify(editing())}</p>
 			<div>
 				<input
 					class={style.input}
@@ -193,7 +213,7 @@ function MessageTest() {
 						]);
 					}}
 				>
-					send
+					{editing() ? 'edit' : 'send'}
 				</button>
 			</div>
 		</div>
