@@ -1,34 +1,31 @@
 {
-  "name": "cord-clone",
-  "version": "0.0.0",
-  "description": "",
-  "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "tauri": "tauri",
-    "format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@solid-devtools/overlay": "^0.6.0",
-    "@tauri-apps/cli": "^1.2.3",
-    "@types/node": "^18.7.10",
-    "@types/qrcode": "^1.5.0",
-    "autoprefixer": "^10.4.13",
-    "postcss": "^8.4.21",
-    "typescript": "^4.7.4",
-    "vite": "^4.0.0",
-    "vite-plugin-solid": "^2.3.0"
-  },
-  "dependencies": {
-    "@solidjs/router": "^0.5.1",
-    "@tauri-apps/api": "^1.2.0",
-    "postcss-nested": "^6.0.0",
-    "prettier": "^2.8.1",
-    "qrcode": "^1.5.1",
-    "solid-hcaptcha": "^0.2.6",
-    "solid-js": "^1.4.7"
-  }
+	"name": "cord-clone",
+	"version": "0.0.0",
+	"description": "",
+	"scripts": {
+		"dev": "tauri dev",
+		"tauri": "tauri",
+		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@solid-devtools/overlay": "^0.6.0",
+		"@tauri-apps/cli": "^1.2.3",
+		"@types/node": "^18.7.10",
+		"@types/qrcode": "^1.5.0",
+		"autoprefixer": "^10.4.13",
+		"postcss": "^8.4.21",
+		"typescript": "^4.7.4",
+		"vite": "^4.0.0",
+		"vite-plugin-solid": "^2.3.0"
+	},
+	"dependencies": {
+		"@solidjs/router": "^0.5.1",
+		"@tauri-apps/api": "^1.2.0",
+		"postcss-nested": "^6.0.0",
+		"prettier": "^2.8.1",
+		"qrcode": "^1.5.1",
+		"solid-hcaptcha": "^0.2.6",
+		"solid-js": "^1.4.7"
+	}
 }

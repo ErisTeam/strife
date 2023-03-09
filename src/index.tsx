@@ -16,6 +16,7 @@ import Main from './Routes/Main/Main';
 // Style
 import './style.css';
 
+import Redirect from './Redirect';
 const App: Component = () => {
 	const AppState: any = useAppState();
 
@@ -32,6 +33,7 @@ const App: Component = () => {
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
 						<Routes>
+							<Redirect />
 							<Route path="/" component={Prev}></Route>
 
 							<Route path="/messagetest" component={MessageTest} />

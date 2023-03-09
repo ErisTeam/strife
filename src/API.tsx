@@ -76,9 +76,6 @@ export default {
 	 * @param user_id
 	 */
 	async getToken(user_id: string | null = null) {
-		if (!user_id) {
-			user_id = AppState.userID();
-		}
 		return (await invoke('get_token', { id: user_id })) as string | null;
 	},
 

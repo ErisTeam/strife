@@ -5,6 +5,7 @@ import { createSignal, createContext, useContext } from 'solid-js';
 import { GuildType, Relationship, ChannelType } from './discord';
 
 const [userID, setUserID] = createSignal('');
+const [userToken, setUserToken] = createSignal('');
 
 const [userGuilds, setUserGuilds] = createSignal<GuildType[]>([]);
 const [currentGuildChannels, setCurrentGuildChannels] = createSignal<
@@ -13,6 +14,8 @@ const [currentGuildChannels, setCurrentGuildChannels] = createSignal<
 const [relationships, setRelationshpis] = createSignal<Relationship[]>([]);
 
 const AppState = createContext({
+	userToken,
+	setUserToken,
 	userGuilds,
 	setUserGuilds,
 	currentGuildChannels,
@@ -27,6 +30,8 @@ export function AppStateProvider(props: any) {
 	return (
 		<AppState.Provider
 			value={{
+				userToken,
+				setUserToken,
 				userGuilds,
 				setUserGuilds,
 				currentGuildChannels,

@@ -228,10 +228,12 @@ function Prev() {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
-								await emit('verify_login', {
+								let test = await emit('verify_login', {
 									code: code(),
 									isSms: didSendSMS(),
 								});
+
+								console.log(test);
 								// let res: any = await invoke('verify_login', {
 								// 	code: code(),
 								// 	isSms: didSendSMS(),
