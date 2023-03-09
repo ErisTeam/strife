@@ -123,7 +123,7 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 				state.add_new_user(user_id.clone(), token.clone());
 			}
 
-			todo!("return response to webview");
+			//todo!("return response to webview");
 		} else {
 			let res = block_in_place(move || {
 				TokioHandle::current().block_on(async move { Auth::verify_totp(ticket, c.code).await })
