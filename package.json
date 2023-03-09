@@ -3,7 +3,8 @@
 	"version": "0.0.0",
 	"description": "",
 	"scripts": {
-		"dev": "tauri dev",
+		"dev": "vite",
+		"devv": "tauri dev",
 		"tauri": "tauri",
 		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
 	},
