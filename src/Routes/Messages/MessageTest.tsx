@@ -2,7 +2,7 @@ import { A } from '@solidjs/router';
 import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { startGatewayListener, startGatewayListenerOld } from '../../test';
+import { startGateway, startGatewayListener, startGatewayListenerOld } from '../../test';
 interface i {
 	type: string;
 }
@@ -27,6 +27,8 @@ function MessageTest() {
 	const [messages, setMessages] = createSignal<any[]>([]);
 
 	const AppState = useAppState();
+
+	startGateway(AppState.userID());
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -63,48 +65,14 @@ function MessageTest() {
 		]);
 	});
 
-	// startGatewayListenerOld<messageCreate>(AppState.userID(), (msg) => {
-	// 	console.log('gateway', msg, msg.payload, msg.payload.type);
-	// 	switch (msg.payload.type) {
-	// 		case 'messageCreate':
-	// 			console.log('message create');
-	// 			if (messages().find((e) => e.id == msg.id)) {
-	// 				return;
-	// 			}
-	// 			setMessages((a) => [
-	// 				...a,
-	// 				{
-	// 					...msg.payload.data,
-	// 					timestamp: new Date(msg.payload.data.timestamp),
-	// 				},
-	// 			]);
-	// 			console.log('message create');
-	// 			console.log(messages());
-	// 			break;
-
-	// 		default:
-	// 			console.log('default');
-	// 			break;
-	// 	}
-
-	// 	console.log(msg.payload);
-	// });
-
-	// createEffect(async () => {
-	// 	const l = startListener<messageCreate>('gateway',
-	// 	onCleanup(async () => {
-	// 		console.log('cleanup');
-	// 		(await l)();
-	// 	});
-	// });
-	const [canSendTyping, setCanSendTyping] = createSignal(true);
+	const [shouldSendTyping, setShouldSendTyping] = createSignal(true);
 	async function sendTyping() {
 		console.log('i');
-		if (!canSendTyping()) {
+		if (!shouldSendTyping()) {
 			return;
 		}
 		console.log('send');
-		setCanSendTyping(false);
+		setShouldSendTyping(false);
 		fetch(`https://discord.com/api/v9/channels/${channelId}/typing`, {
 			method: 'POST',
 			headers: {
@@ -113,7 +81,7 @@ function MessageTest() {
 		});
 		setTimeout(async () => {
 			console.log('d');
-			setCanSendTyping(true);
+			setShouldSendTyping(true);
 		}, 3000);
 	}
 
