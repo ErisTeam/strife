@@ -264,7 +264,7 @@ function Prev() {
 								type="submit"
 								class={buttons.default}
 								onClick={() => {
-									emit('verifyLogin', { code: code(), is_sms: false });
+									emit('verifyLogin', { code: code() });
 								}}
 							>
 								submit
