@@ -125,4 +125,22 @@ impl ThreadManager {
 		});
 		Ok(())
 	}
+	pub async fn send_to_gateway(&mut self, user_id: String, message: OwnedMessage) {
+		println!("send_to_gateway: {}", user_id);
+		if let Some(modules) = self.senders.get_mut(&user_id) {
+			println!("a");
+			if let Some(gateway) = modules.iter().find(|a| matches!(a, Modules::Gateway(_))) {
+				println!("b");
+				if let Modules::Gateway(sender) = gateway {
+					println!("c");
+					if !sender.is_closed() {
+						println!("send_to_gateway: {} {:?}", user_id, message);
+						let r = sender.send(message).await;
+						println!("result: {} {:?}", user_id, r);
+					}
+				}
+			}
+		}
+		println!("send_to_gateway: {}", user_id);
+	}
 }

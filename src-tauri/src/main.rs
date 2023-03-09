@@ -112,6 +112,7 @@ fn main() {
 
 	let m = main_state.clone();
 
+	#[cfg(debug_assertions)]
 	test::add_token(&m);
 
 	tauri::Builder

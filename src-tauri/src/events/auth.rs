@@ -23,61 +23,58 @@ fn start_mobile_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl
     }
 }
 
-fn request_qrcode(
-    state: Arc<Mutex<crate::main_app_state::State>>,
-    handle: tauri::AppHandle,
-) -> impl Fn(Event) -> () {
-    move |event| {
-        println!("got qrcode event with payload {:?}", event.payload());
-        if let main_app_state::State::LoginScreen { qr_url, .. } = &*state.lock().unwrap() {
-            handle
-                .emit_all(
-                    "auth",
-                    webview_packets::Auth::MobileQrcode {
-                        qrcode: qr_url.clone(),
-                    },
-                )
-                .unwrap();
-            println!("emitted qrcode");
-        }
-    }
+fn request_qrcode(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	move |_| {
+		if let main_app_state::State::LoginScreen { qr_url, .. } = &*state.lock().unwrap() {
+			handle
+				.emit_all("auth", webview_packets::Auth::MobileQrcode {
+					qrcode: qr_url.clone(),
+				})
+				.unwrap();
+			println!("emitted qrcode");
+		}
+	}
 }
 
-fn send_sms(
-    state: Arc<Mutex<crate::main_app_state::State>>,
-    handle: tauri::AppHandle,
-) -> impl Fn(Event) -> () {
-    move |_event: Event| {
-        let ticket;
-        let use_sms;
-        {
-            let app_state = state.lock().unwrap();
-            if let main_app_state::State::LoginScreen {
-                use_mfa: u,
-                ticket: t,
-                ..
-            } = &*app_state
-            {
-                ticket = t.clone();
-                use_sms = *u;
-            } else {
-                return;
-            }
-        }
-        if ticket.is_none() {
-            println!("Ticket is not set");
-            todo!("return error to webview");
-        }
-        if use_sms {
-            let ticket = ticket.clone().unwrap();
-            let r = block_in_place(move || {
-                TokioHandle::current().block_on(async move { Auth::send_sms(ticket).await });
-            });
-            todo!("return response to webview");
-        } else {
-            todo!("return error to webview");
-        }
-    }
+fn send_sms(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+	move |_event: Event| {
+		let ticket;
+		let use_sms;
+		{
+			let app_state = state.lock().unwrap();
+			if let main_app_state::State::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
+				ticket = t.clone();
+				use_sms = *u;
+			} else {
+				println!("How? gami to furras");
+				return;
+			}
+		}
+		if ticket.is_none() {
+			println!("Ticket is not set");
+			handle
+				.emit_all("gateway", webview_packets::MFA::SmsSendingResult {
+					success: false,
+					message: "Ticket is not set".to_string(),
+				})
+				.unwrap();
+			return;
+		}
+		if use_sms {
+			let ticket = ticket.clone().unwrap();
+			let r = block_in_place(move || {
+				TokioHandle::current().block_on(async move { Auth::send_sms(ticket).await });
+			});
+			todo!("return response to webview");
+		} else {
+			handle
+				.emit_all("gateway", webview_packets::MFA::SmsSendingResult {
+					success: false,
+					message: "Not using sms".to_string(),
+				})
+				.unwrap();
+		}
+	}
 }
 
 //todo repair
@@ -90,31 +87,23 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
     move |event| {
         let c: VerifyLoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap();
 
-        let ticket;
-        let mut use_mfa;
-        {
-            let app_state = state.state.lock().unwrap();
-            if let main_app_state::State::LoginScreen {
-                use_mfa: u,
-                ticket: t,
-                ..
-            } = &*app_state
-            {
-                ticket = t.clone();
-                use_mfa = *u;
-            } else {
-                handle
-                    .emit_all(
-                        "auth",
-                        webview_packets::MFA::SmsSendingResult {
-                            success: false,
-                            message: "Not in login screen".to_string(),
-                        },
-                    )
-                    .unwrap();
-                return;
-            }
-        }
+		let ticket;
+		let use_mfa;
+		{
+			let app_state = state.state.lock().unwrap();
+			if let main_app_state::State::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
+				ticket = t.clone();
+				use_mfa = *u;
+			} else {
+				handle
+					.emit_all("auth", webview_packets::MFA::SmsSendingResult {
+						success: false,
+						message: "Not in login screen".to_string(),
+					})
+					.unwrap();
+				return;
+			}
+		}
 
         if ticket.is_none() {
             println!("Ticket is not set");

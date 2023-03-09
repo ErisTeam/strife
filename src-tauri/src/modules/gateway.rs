@@ -2,7 +2,7 @@ use std::{ sync::Arc, net::TcpStream, time::Instant };
 
 use flate2::Decompress;
 use tauri::{ AppHandle, Manager, api::notification::Notification };
-use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream };
+use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream, CloseData };
 
 use crate::{
 	main_app_state::{ MainState, UserData, self },
@@ -11,7 +11,7 @@ use crate::{
 		gateway_packets::{ GatewayPackets, GatewayIncomingPacket, GatewayPacketsData },
 		types::gateway::{ Properties, Presence, ClientState },
 	},
-	modules::gateway_utils::{ send_heartbeat_old, send_heartbeat },
+	modules::gateway_utils::{ send_heartbeat },
 	Flashing,
 };
 
@@ -23,7 +23,7 @@ pub enum GatewayError {
 pub enum GatewayResult {
 	Close,
 	Reconnect,
-	RecconectUsingResumeUrl,
+	ReconnectUsingResumeUrl,
 }
 
 #[derive(Debug)]
@@ -64,6 +64,8 @@ pub struct Gateway {
 
 	session_id: Option<String>,
 
+	seq: Option<u64>,
+
 	decoder: Decompress,
 
 	token: String,
@@ -99,6 +101,7 @@ impl Gateway {
 			connection_info: ConnectionInfo::default(),
 			resume_url: None,
 			session_id: None,
+			seq: None,
 			decoder: Decompress::new(true),
 			use_resume_url: false,
 		}
@@ -203,7 +206,7 @@ impl Gateway {
 		let mut headers = websocket::header::Headers::new();
 		headers.set(websocket::header::Origin("https://discord.com".to_string()));
 		let url;
-		println!("{}", self.use_resume_url);
+		println!("use {}", self.use_resume_url);
 		if self.use_resume_url {
 			url = self.resume_url.as_ref().unwrap().clone();
 		} else {
@@ -217,7 +220,22 @@ impl Gateway {
 			.unwrap();
 		client.set_nonblocking(true).unwrap();
 		if self.use_resume_url {
-			//client.send_message(&OwnedMessage::Text("TEST".to_string()));
+			client
+				.send_message(
+					&OwnedMessage::Text(
+						serde_json
+							::to_string(
+								&(GatewayPackets::Resume {
+									token: self.token.clone(),
+									session_id: self.session_id.as_ref().unwrap().clone(),
+									seq: self.seq.unwrap().clone(),
+								})
+							)
+							.unwrap()
+					)
+				)
+				.unwrap();
+			println!("resuming");
 		}
 		self.use_resume_url = false;
 		client
@@ -226,7 +244,7 @@ impl Gateway {
 		self.running = true;
 		while let Ok(result) = self.connect().await {
 			print!("Reconnecting");
-			if matches!(result, GatewayResult::RecconectUsingResumeUrl) {
+			if matches!(result, GatewayResult::ReconnectUsingResumeUrl) {
 				self.use_resume_url = true;
 			}
 		}
@@ -263,6 +281,37 @@ impl Gateway {
 		client.send_message(&OwnedMessage::Text(serde_json::to_string(&data).unwrap())).unwrap();
 	}
 
+	fn on_close(&self, reason: Option<CloseData>) -> Result<GatewayResult, GatewayError> {
+		if let Some(reason) = reason {
+			match reason.status_code {
+				4004 => {
+					println!("Invalid token");
+					return Err(GatewayError::Other);
+				}
+				4013 | 4014 => {
+					println!("Invalid intent");
+					return Err(GatewayError::Other);
+				}
+				4012 => {
+					println!("invalid api version");
+					return Err(GatewayError::InvalidApiVersion);
+				}
+				4010 | 4011 => {
+					println!("how? also gami is a furry");
+					return Ok(GatewayResult::Reconnect);
+				}
+				1000 | 1001 => {
+					println!("normal close?");
+					return Ok(GatewayResult::Reconnect);
+				}
+				_ => {
+					return Ok(GatewayResult::Reconnect);
+				}
+			}
+		}
+		return Ok(GatewayResult::Reconnect);
+	}
+
 	pub async fn connect(&mut self) -> Result<GatewayResult, GatewayError> {
 		println!("Connecting");
 
@@ -270,52 +319,24 @@ impl Gateway {
 
 		self.connection_info.reset();
 
-		let mut last_s: Option<u64> = None;
-
 		let mut buffer = Vec::<u8>::new();
 
 		loop {
 			let message = client.recv_message();
 
 			let m = self.reciver.try_recv();
-			if m.is_ok() {
-				let m = m.unwrap();
-				client.send_message(&m).unwrap();
+			if let Ok(m) = m {
+				println!("recived {:?}", m);
+				return Ok(GatewayResult::ReconnectUsingResumeUrl);
+				//client.send_message(&m).unwrap();
 			}
 
 			if message.is_ok() {
 				let message = message.unwrap();
 				match message {
-					OwnedMessage::Text(text) => {
-						println!("Gateway Text {:?}", text);
-					}
-
 					OwnedMessage::Close(reason) => {
 						println!("Close {:?}", reason);
-						if let Some(reason) = reason {
-							match reason.status_code {
-								4004 => {
-									println!("Invalid token");
-									return Err(GatewayError::Other);
-								}
-								4013 | 4014 => {
-									println!("Invalid intent");
-									return Err(GatewayError::Other);
-								}
-								4012 => {
-									println!("invalid api version");
-									return Err(GatewayError::InvalidApiVersion);
-								}
-								4010 | 4011 => {
-									println!("how? also gami is a furry");
-									return Ok(GatewayResult::Reconnect);
-								}
-								_ => {
-									return Ok(GatewayResult::RecconectUsingResumeUrl);
-								}
-							}
-						}
-						return Ok(GatewayResult::Reconnect);
+						return self.on_close(reason);
 					}
 					OwnedMessage::Binary(bin) => {
 						buffer.extend(bin.clone());
@@ -329,9 +350,11 @@ impl Gateway {
 							let out = String::from_utf8(buf).unwrap();
 							println!("Gateway Binary gateway {:?}", out);
 							let json: GatewayIncomingPacket = serde_json::from_str(out.as_str()).unwrap();
-							last_s = json.s.clone();
+							self.seq = json.s.clone();
 
-							self.handle_events(&mut client, json);
+							if let Err(err) = self.handle_events(&mut client, json) {
+								return Err(err);
+							}
 							buffer.clear();
 						}
 					}
@@ -340,18 +363,12 @@ impl Gateway {
 					}
 				}
 			}
-			let last_s = last_s.clone();
-			// send_heartbeat_old(
-			// 	&mut self.connection_info.since_last_hearbeat,
-			// 	self.connection_info.authed,
-			// 	self.heartbeat_interval,
-			// 	&mut self.connection_info.ack_recived,
-			// 	&mut client,
-			// 	&(|| -> Option<String> {
-			// 		return Some(serde_json::to_string(&(GatewayPackets::Heartbeat { d: last_s })).unwrap());
-			// 	})
-			// );
-			send_heartbeat(&mut self.connection_info, &mut client, Some(GatewayPackets::Heartbeat { d: last_s }));
+
+			send_heartbeat(
+				&mut self.connection_info,
+				&mut client,
+				Some(GatewayPackets::Heartbeat { d: self.seq.clone() })
+			);
 			//tokio thread sleep
 			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
 		}

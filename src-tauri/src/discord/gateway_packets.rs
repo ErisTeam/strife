@@ -28,6 +28,12 @@ pub enum GatewayPackets {
 		compress: bool,
 		client_state: ClientState,
 	},
+
+	Resume {
+		token: String,
+		session_id: String,
+		seq: u64,
+	},
 }
 
 impl Serialize for GatewayPackets {
@@ -46,6 +52,11 @@ impl Serialize for GatewayPackets {
 			Heartbeat {
 				d: Option<u64>,
 			},
+			Resume {
+				token: String,
+				session_id: String,
+				seq: u64,
+			},
 		}
 		#[derive(Serialize)]
 		struct TypedGatewayPackets {
@@ -62,7 +73,6 @@ impl Serialize for GatewayPackets {
 						d: *d,
 					},
 				},
-
 			GatewayPackets::Identify { token, capabilities, properties, presence, compress, client_state } =>
 				TypedGatewayPackets {
 					t: 2,
@@ -74,6 +84,11 @@ impl Serialize for GatewayPackets {
 						compress: compress.clone(),
 						client_state: client_state.clone(),
 					},
+				},
+			GatewayPackets::Resume { token, session_id, seq } =>
+				TypedGatewayPackets {
+					t: 7,
+					d: GatewayPackets_::Resume { token: token.clone(), session_id: session_id.clone(), seq: *seq },
 				},
 		};
 

@@ -3,7 +3,7 @@ use std::fs;
 use crate::main_app_state::MainState;
 
 pub fn add_token(m: &MainState) {
-    /* 	let file = fs::File::open("C:\\Users\\Piotr\\Desktop\\test\\token.json").unwrap();
+	/* 	let file = fs::File::open("").unwrap();
     #[derive(serde::Deserialize)]
     struct Token {
         token: String,

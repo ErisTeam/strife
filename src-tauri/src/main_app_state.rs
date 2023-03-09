@@ -43,6 +43,9 @@ pub enum User {
 		token: String,
 	},
 }
+impl User {
+	//pub fn
+}
 
 #[derive(Debug, PartialEq)]
 pub enum State {
@@ -104,6 +107,7 @@ impl MainState {
 			last_id: Mutex::new(None),
 		}
 	}
+
 	pub fn get_all_Users(&self) -> Vec<(String, User)> {
 		let user_data = self.user_data.lock().unwrap();
 		let mut users = Vec::new();
@@ -170,6 +174,8 @@ impl MainState {
 		*state = new_state;
 
 		event_manager.as_mut().unwrap().clear_listeners(handle.clone());
+
+		event_manager.as_mut().unwrap().register_debug(handle.clone());
 
 		match &*state {
 			State::LoginScreen { .. } => {

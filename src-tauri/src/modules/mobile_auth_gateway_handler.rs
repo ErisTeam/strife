@@ -8,7 +8,7 @@ use websocket::{ native_tls::TlsStream, sync::Client, OwnedMessage, WebSocketErr
 use crate::{
 	discord::{ constants, http_packets::{ self, Auth }, mobile_auth_packets::{ self, MobileAuthGatewayPackets } },
 	main_app_state::{ MainState, State },
-	modules::gateway_utils::{ send_heartbeat_old, send_heartbeat },
+	modules::gateway_utils::{ send_heartbeat },
 	webview_packets,
 };
 
@@ -383,16 +383,7 @@ impl MobileAuthHandler {
 				}
 			}
 
-			// send_heartbeat_old(
-			// 	&mut time_since_last_heartbeat,
-			// 	started,
-			// 	self.heartbeat_interval,
-			// 	&mut ack_recived,
-			// 	&mut client,
-			// 	&(|| { Some(serde_json::to_string(&(MobileAuthGatewayPackets::Heartbeat {})).unwrap()) })
-			// );
 			send_heartbeat(&mut self.connection_info, &mut client, Some(MobileAuthGatewayPackets::Heartbeat {}));
-			//send_heartbeat(&mut self.connection_info, &mut client, data)
 			//tokio thread sleep
 			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
 		}
