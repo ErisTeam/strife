@@ -130,16 +130,27 @@ function LoginPage() {
 	useBeforeLeave(async () => {
 		clearInterval(requestQrcode);
 	});
+	const leftClass = [style.container, style.toLeft].join(' ');
+	const rightClass = [style.container, style.toRight].join(' ');
+	const centerClass = [style.container].join(' ');
+	const [firstStep, setFirstStep] = createSignal(centerClass);
+
+	async function login(name: string, password: string, captcha_token: string | null = null) {
+		await emit('login', {
+			captchaToken: captcha_token,
+			login: name,
+			password: password,
+		});
+	}
 
 	return (
-		<>
+		<div class={style.wrapper}>
+			<div class={style.gradient}>
+				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
+			</div>
 			{/* Main Page */}
-			<div class={style.container}>
-				<div class={style.gradient}>
-					<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
-				</div>
-
-				<LoginBox class={style.loginBox} />
+			<div class={firstStep()}>
+				<LoginBox class={style.loginBox} login={login} />
 
 				<QRCode
 					class={style.qrcode}
@@ -165,7 +176,7 @@ function LoginPage() {
 				<img class={style.rightTop1} alt="Decorative SVG" src="LoginPage/RightTop1.svg" />
 				<img class={style.rightTop2} alt="Decorative SVG" src="LoginPage/RightTop2.svg" />
 			</div>
-		</>
+		</div>
 	);
 }
 
