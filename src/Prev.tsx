@@ -76,7 +76,7 @@ function Prev() {
 		setshowMsg(JSON.stringify(res));
 	}
 	async function logout() {
-		let token = await API.getToken(AppState.userID());
+		let token = await API.getToken();
 		if (!token) {
 			setshowMsg('No token');
 			return;
@@ -230,7 +230,6 @@ function Prev() {
 								e.preventDefault();
 								await emit('verify_login', {
 									code: code(),
-									isSms: didSendSMS(),
 								});
 
 								console.log(await API.getToken());

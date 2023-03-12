@@ -1,10 +1,6 @@
 // SolidJS
 import { createSignal, Show, onMount } from 'solid-js';
-import {
-	useParams,
-	useBeforeLeave,
-	BeforeLeaveEventArgs,
-} from '@solidjs/router';
+import { useParams, useBeforeLeave, BeforeLeaveEventArgs } from '@solidjs/router';
 
 // API
 import API from '../../API';
@@ -49,6 +45,13 @@ const Application = () => {
 			<Anchor state={'LoginScreen'} href="/">
 				Prev
 			</Anchor>
+			<button
+				onClick={async () => {
+					API.updateGuilds();
+				}}
+			>
+				Test
+			</button>
 		</div>
 	);
 };

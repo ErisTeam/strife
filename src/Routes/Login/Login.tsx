@@ -55,7 +55,7 @@ const LoginPage = () => {
 	const [captchaClass, setCaptchaClass] = createSignal([style.container, style.toRight].join(' '));
 
 	async function logout() {
-		let token = await API.getToken(AppState.userID());
+		let token = await API.getToken();
 		if (!token) {
 			console.log('No token');
 		}
@@ -116,6 +116,10 @@ const LoginPage = () => {
 			}
 
 			case 'loginSuccess': {
+				async () => {
+					await API.updateCurrentUserID();
+					console.log(AppState.userID());
+				};
 				console.log('login success');
 				break;
 			}
@@ -164,6 +168,11 @@ const LoginPage = () => {
 			password: password,
 		});
 	}
+	async function verifyLogin(code: string) {
+		await emit('verify_login', {
+			code: code,
+		});
+	}
 
 	return (
 		<div class={style.wrapper}>
@@ -184,7 +193,7 @@ const LoginPage = () => {
 				></QRCode>
 			</div>
 			<div class={MFAClass()}>
-				<MFABox />
+				<MFABox verify={verifyLogin} />
 			</div>
 			<div class={captchaClass()}>
 				<h1>Captcha</h1>

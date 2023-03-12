@@ -16,7 +16,7 @@ export default {
 	 * @returns
 	 */
 	async getMessages(channelId: string) {
-		let token = await this.getToken(AppState.userID());
+		let token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't get messages!");
 			return;
@@ -43,7 +43,7 @@ export default {
 	 * @returns
 	 */
 	async sendMessage(channelId: string, content: string, reference: any) {
-		let token = await this.getToken(AppState.userID());
+		let token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't send message!");
 			return;
@@ -75,38 +75,24 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(user_id: string | null = null) {
-		return (await invoke('get_token', { id: user_id })) as string | null;
+	async getToken() {
+		return (await invoke('get_token', { id: AppState.userID() })) as string | null;
 	},
 
 	/**
 	 * Updates the AppState of `currentUser`
 	 */
-	async getCurrentUser() {
-		let token = await this.getToken(AppState.userID());
-		if (!token) {
-			console.error("No user token found! Can't update current user!");
-			return;
-		}
-
-		const url = 'https://discord.com/api/v9/users/@me';
-		const resDataponse = await fetch(url, {
-			method: 'GET',
-			headers: {
-				Authorization: token,
-			},
-		});
-
-		let resData = await resDataponse.json();
-
-		return resData;
+	async updateCurrentUserID() {
+		let response = await invoke('get_last_user');
+		AppState.setUserID(response);
+		return;
 	},
 
 	/**
 	 * Updates the AppState of `currentChannels`
 	 */
 	async updateCurrentChannels(id: string) {
-		let token = await this.getToken(AppState.userID());
+		let token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't update current channels!");
 			return;
@@ -142,7 +128,9 @@ export default {
 	 * Updates the AppState of `guilds`
 	 */
 	async updateGuilds() {
-		let token = await this.getToken(AppState.userID());
+		/* 		let userData = await invoke('get_user_data', { id: AppState.userID() });
+		console.log(userData); */
+		let token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't update guilds!");
 			return;
@@ -200,7 +188,7 @@ export default {
 	 * Updates the AppState of `relationships`
 	 */
 	async updateRelationships() {
-		let token = await this.getToken(AppState.userID());
+		let token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't update relationships!");
 			return;

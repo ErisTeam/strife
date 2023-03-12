@@ -9,11 +9,11 @@ import { emit } from '@tauri-apps/api/event';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-const [didSendSMS, setDidSendSMS] = createSignal(false);
 const [code, setCode] = createSignal('');
 
 interface MFABoxProps {
 	class?: string;
+	verify: any;
 }
 
 function MFABox(prop: MFABoxProps) {
@@ -21,12 +21,7 @@ function MFABox(prop: MFABoxProps) {
 		<form
 			class={[style.container, prop.class].join(' ')}
 			onsubmit={async (e) => {
-				e.preventDefault();
-				await emit('verify_login', {
-					code: code(),
-					isSms: didSendSMS(),
-				});
-				console.log(await API.getCurrentUser());
+				await prop.verify(code());
 			}}
 		>
 			<h1 class={style.header}>Enter your MFA Code</h1>
@@ -42,7 +37,6 @@ function MFABox(prop: MFABoxProps) {
 				<button
 					type="button"
 					onclick={() => {
-						setDidSendSMS(true);
 						emit('send_sms', {});
 					}}
 				>
