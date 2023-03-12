@@ -15,11 +15,11 @@ import { UserData } from './../../Components/QRCode/QRCode';
 // Components
 import LoginBox from './../../Components/LoginBox/LoginBox';
 import QRCode from './../../Components/QRCode/QRCode';
-
+import MFABox from '../../Components/MFABox/MFABox';
 // Style
 import style from './Login.module.css';
 
-function LoginPage() {
+const LoginPage = () => {
 	// Data of the user that scans the QR Code
 	// If set to undefined the component will go back to showing the QR Code
 	const [userData, setUserData] = createSignal<UserData>();
@@ -32,6 +32,27 @@ function LoginPage() {
 	const [captcha_key, setCaptchaKey] = createSignal('');
 
 	const AppState = useAppState();
+	function showCaptha() {
+		if (!MFAClass().includes(style.toRight) && !MFAClass().includes(style.toLeft)) {
+			setMFAClass([style.container, style.toLeft].join(' '));
+		}
+		if (!loginClass().includes(style.toLeft) && !loginClass().includes(style.toRight)) {
+			setLoginClass([style.container, style.Left].join(' '));
+		}
+		setCaptchaClass([style.container].join(' '));
+	}
+	function showMFA() {
+		if (!captchaClass().includes(style.toRight) && !captchaClass().includes(style.toLeft)) {
+			setCaptchaClass([style.container, style.toLeft].join(' '));
+		}
+		if (!loginClass().includes(style.toLeft) && !loginClass().includes(style.toRight)) {
+			setLoginClass([style.container, style.toLeft].join(' '));
+		}
+		setMFAClass([style.container].join(' '));
+	}
+	const [loginClass, setLoginClass] = createSignal([style.container].join(' '));
+	const [MFAClass, setMFAClass] = createSignal([style.container, style.toRight].join(' '));
+	const [captchaClass, setCaptchaClass] = createSignal([style.container, style.toRight].join(' '));
 
 	async function logout() {
 		let token = await API.getToken(AppState.userID());
@@ -58,15 +79,15 @@ function LoginPage() {
 			avatarHash: string;
 		}
 
-		interface RequireAuth extends i {
-			type: 'RequireAuth';
+		interface requireAuth extends i {
+			type: 'requireAuth';
 			captcha_key?: string[];
 			captcha_sitekey?: string;
 			mfa: boolean;
 			sms: boolean;
 		}
 
-		let input = event.payload as unknown as qrcode | ticketData | RequireAuth | { type: 'loginSuccess' };
+		let input = event.payload as unknown as qrcode | ticketData | requireAuth | { type: 'loginSuccess' };
 
 		switch (input.type) {
 			case 'qrcode': {
@@ -99,12 +120,17 @@ function LoginPage() {
 				break;
 			}
 
-			case 'RequireAuth': {
+			case 'requireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
 					setCaptchaKey(input.captcha_sitekey as string);
+					showCaptha();
+					console.log('captcha required');
 				}
 				if (input.mfa || input.sms) {
+					console.log('mfa required');
+
 					setRequireCode(true);
+					showMFA();
 
 					if (input.sms) {
 						emit('send_sms', {});
@@ -130,10 +156,6 @@ function LoginPage() {
 	useBeforeLeave(async () => {
 		clearInterval(requestQrcode);
 	});
-	const leftClass = [style.container, style.toLeft].join(' ');
-	const rightClass = [style.container, style.toRight].join(' ');
-	const centerClass = [style.container].join(' ');
-	const [firstStep, setFirstStep] = createSignal(centerClass);
 
 	async function login(name: string, password: string, captcha_token: string | null = null) {
 		await emit('login', {
@@ -149,7 +171,7 @@ function LoginPage() {
 				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
 			</div>
 			{/* Main Page */}
-			<div class={firstStep()}>
+			<div class={loginClass()}>
 				<LoginBox class={style.loginBox} login={login} />
 
 				<QRCode
@@ -160,6 +182,12 @@ function LoginPage() {
 					altParagraph="If you didn't mean to log in then just ignore the prompt on your discord app."
 					user_data={userData()}
 				></QRCode>
+			</div>
+			<div class={MFAClass()}>
+				<MFABox />
+			</div>
+			<div class={captchaClass()}>
+				<h1>Captcha</h1>
 			</div>
 
 			{/* Corner SVGS */}
@@ -178,6 +206,5 @@ function LoginPage() {
 			</div>
 		</div>
 	);
-}
-
+};
 export default LoginPage;
