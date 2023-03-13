@@ -33,7 +33,7 @@ const App: Component = () => {
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
 						<Routes>
-							<Redirect />
+							{/* <Redirect /> */}
 							<Route path="/" component={Prev}></Route>
 
 							<Route path="/messagetest" component={MessageTest} />

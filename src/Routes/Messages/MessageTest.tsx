@@ -20,6 +20,7 @@ interface messageCreate extends i {
 }
 
 const channelId = '419544210027446276';
+const guildId = '419544209923522560';
 
 import style from './../../prev.module.css';
 
@@ -97,15 +98,31 @@ function MessageTest() {
 					{(val, index) => {
 						let embed;
 						if (val.embeds && val.embeds[0]) {
-							embed = (
-								<video
-									src={val.embeds[0].video.proxy_url}
-									autoplay={true}
-									loop={true}
-									width={val.embeds[0].video.width}
-									height={val.embeds[0].video.height}
-								></video>
-							);
+							switch (val.embeds[0].type) {
+								case 'gifv':
+									embed = (
+										<video
+											src={val.embeds[0].video.proxy_url}
+											autoplay={true}
+											loop={true}
+											width={val.embeds[0].video.width}
+											height={val.embeds[0].video.height}
+										></video>
+									);
+									break;
+								case 'video':
+									embed = (
+										<img
+											src={val.embeds[0].thumbnail.proxy_url}
+											width={val.embeds[0].thumbnail.width}
+											height={val.embeds[0].thumbnail.height}
+										></img>
+									);
+									break;
+								default:
+									embed = <h2>{JSON.stringify(val.embeds[0])}</h2>;
+									break;
+							}
 						}
 						return (
 							<li>
@@ -137,7 +154,7 @@ function MessageTest() {
 										setReference({
 											channel_id: val.channel_id,
 											message_id: val.id,
-											guild_id: '419544210027446273',
+											guild_id: guildId,
 										});
 									}}
 								>
