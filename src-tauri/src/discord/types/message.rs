@@ -14,6 +14,8 @@ use super::{
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+///
+/// https://discord.com/developers/docs/resources/channel#message-object
 pub struct Message {
 	pub id: String,
 	pub channel_id: String,
@@ -38,7 +40,7 @@ pub struct Message {
 	pinned: bool,
 	webhook_id: Option<serde_json::Value>,
 
-	r#type: u64,
+	r#type: u64, //todo enum
 	activity: Option<MessageActivity>,
 	application: Option<serde_json::Value>,
 	application_id: Option<u64>,
@@ -47,7 +49,7 @@ pub struct Message {
 
 	flags: Option<u64>, //todo custom deserializer
 
-	referenced_message: Option<Box<Message>>,
+	referenced_message: Option<Box<Message>>, //todo differentiate between null and not existing
 
 	interaction: Option<MessageInteraction>,
 
@@ -63,6 +65,54 @@ pub struct Message {
 
 	role_subscribtion_date: Option<RoleSubscriptionData>,
 }
+
+#[cfg(debug_assertions)]
+impl Default for Message {
+	fn default() -> Self {
+		Self {
+			id: "12345".to_string(),
+			channel_id: "12345".to_string(),
+			author: user::PublicUser {
+				username: "?".to_string(),
+				public_flags: 0,
+				id: "362958640656941056".to_string(),
+				display_name: None,
+				discriminator: "1234".to_string(),
+				bot: None,
+				avatar_decoration: None,
+				avatar: Some("0ad17e3c13fd7de38cbdd82e34cac15d".to_string()),
+			},
+			content: "Gami to Furras".to_string(),
+			timestamp: "1234".to_string(),
+			edited_timestamp: None,
+			tts: false,
+			mention_everyone: false,
+			mention_roles: Vec::new(),
+			mention_channels: None,
+			attachments: Vec::new(),
+			embeds: Vec::new(),
+			reactions: None,
+			nonce: None,
+			pinned: false,
+			webhook_id: None,
+			r#type: 0,
+			activity: None,
+			application: None,
+			application_id: None,
+			message_reference: None,
+			flags: None,
+			referenced_message: None,
+			interaction: None,
+			thread: None,
+			components: None,
+			sticker_items: None,
+			stickers: None,
+			position: None,
+			role_subscribtion_date: None,
+		}
+	}
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoleSubscriptionData {
 	role_subscription_listing_id: String,

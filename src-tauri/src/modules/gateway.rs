@@ -1,4 +1,4 @@
-use std::{ sync::Arc, net::TcpStream, time::Instant };
+use std::{ sync::Arc, net::TcpStream, time::Instant, fs::File, io::prelude::* };
 
 use flate2::Decompress;
 use tauri::{ AppHandle, Manager, api::notification::Notification };
@@ -12,7 +12,7 @@ use crate::{
 		types::gateway::{ Properties, Presence, ClientState },
 	},
 	modules::gateway_utils::{ send_heartbeat },
-	Flashing,
+	notifications,
 };
 
 pub enum GatewayError {
@@ -30,23 +30,28 @@ pub enum GatewayResult {
 pub struct ConnectionInfo {
 	pub authed: bool,
 	pub ack_recived: bool,
+
 	pub since_last_hearbeat: Instant,
+
 	pub heartbeat_interval: u64,
+
+	pub timeout_ms: u64,
 }
 impl Default for ConnectionInfo {
 	fn default() -> Self {
 		Self {
 			authed: false,
-			ack_recived: false,
+			ack_recived: true,
 			since_last_hearbeat: Instant::now(),
 			heartbeat_interval: 0,
+			timeout_ms: 0,
 		}
 	}
 }
 impl ConnectionInfo {
 	pub fn reset(&mut self) {
 		self.authed = false;
-		self.ack_recived = false;
+		self.ack_recived = true;
 		self.since_last_hearbeat = Instant::now();
 	}
 	pub fn reset_since_last_hearbeat(&mut self) {
@@ -57,7 +62,6 @@ impl ConnectionInfo {
 #[derive(Debug)]
 pub struct Gateway {
 	pub timeout_ms: u64,
-	pub heartbeat_interval: u64,
 	pub state: Arc<MainState>,
 
 	resume_url: Option<String>,
@@ -92,7 +96,6 @@ impl Gateway {
 		Self {
 			state,
 			timeout_ms: 0,
-			heartbeat_interval: 0,
 			running: false,
 			handle,
 			reciver,
@@ -114,9 +117,10 @@ impl Gateway {
 	) -> Result<(), GatewayError> {
 		match event.d {
 			GatewayPacketsData::Hello { heartbeat_interval } => {
-				self.heartbeat_interval = heartbeat_interval;
+				self.connection_info.heartbeat_interval = heartbeat_interval;
 				self.init_message(client, self.token.clone());
 				self.connection_info.authed = true;
+				println!("Hello {:?}", self.connection_info);
 			}
 			GatewayPacketsData::Ready(data) => {
 				println!("Ready {:?}", data);
@@ -173,22 +177,11 @@ impl Gateway {
 				self.emit_event(package).unwrap();
 				//todo repair for multi user
 				if message.author.id != self.user_id {
-					let notification = Notification::new(self.handle.config().tauri.bundle.identifier.clone());
-					notification
-						.title("New Message")
-						.body(format!("{}: {}", message.author.username, message.content))
-						.icon(
-							format!(
-								"https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
-								message.author.id,
-								message.author.avatar.unwrap()
-							)
-						)
-						.show()
-						.unwrap();
-					let windows = self.handle.windows();
-					let window = windows.iter().next().unwrap().1;
-					window.set_flashing(true).unwrap();
+					let handle = self.handle.clone();
+					tauri::async_runtime::spawn(async move {
+						println!("notification");
+						notifications::new_message(message, &handle).await;
+					});
 				}
 			}
 			GatewayPacketsData::HeartbeatAck => {
@@ -251,6 +244,7 @@ impl Gateway {
 		self.running = false;
 		println!("shutting down gateway")
 	}
+
 	fn emit_event(&self, event: webview_packets::Gateway) -> Result<(), tauri::Error> {
 		self.handle.emit_all("gateway", GatewayEvent {
 			event,
@@ -318,6 +312,7 @@ impl Gateway {
 		let mut client = self.conn();
 
 		self.connection_info.reset();
+		self.decoder.reset(true);
 
 		let mut buffer = Vec::<u8>::new();
 
@@ -358,19 +353,27 @@ impl Gateway {
 							buffer.clear();
 						}
 					}
+					OwnedMessage::Pong(d) => {
+						println!("{}", String::from_utf8(d).unwrap());
+					}
 					m => {
 						println!("Not text {:?}", m);
 					}
 				}
 			}
 
-			send_heartbeat(
+			let res = send_heartbeat(
 				&mut self.connection_info,
 				&mut client,
 				Some(GatewayPackets::Heartbeat { d: self.seq.clone() })
 			);
+			if let Some(res) = res {
+				if !res {
+					return Ok(GatewayResult::Reconnect);
+				}
+			}
 			//tokio thread sleep
-			tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+			tokio::time::sleep(std::time::Duration::from_millis(5)).await;
 		}
 	}
 }

@@ -4,9 +4,20 @@ use crate::discord::user;
 
 use super::thread::{ ThreadMetadata, ThreadMember };
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Channel {
+	Normal(ChannelBase),
+	Thread {
+		#[serde(flatten)]
+		channel: ChannelBase,
+		member: ThreadMember,
+	},
+}
+
 /// TODO split into channel and thread
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Channel {
+pub struct ChannelBase {
 	pub id: String,
 
 	pub r#type: ChannelType,

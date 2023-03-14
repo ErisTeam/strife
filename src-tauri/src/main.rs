@@ -5,6 +5,7 @@
 
 mod discord;
 mod events;
+mod notifications;
 
 mod main_app_state;
 
@@ -21,13 +22,11 @@ extern crate tokio;
 
 use std::sync::Arc;
 
-use tauri::{api::notification::Notification, Manager, State, Window};
-use windows::Win32::{
-    Foundation::{BOOL, BOOLEAN},
-    UI::WindowsAndMessaging::FlashWindow,
-};
+use serde::Deserialize;
+use tauri::{ Manager, State };
+use windows::Win32::{ Foundation::{ BOOL }, UI::WindowsAndMessaging::FlashWindow };
 
-use crate::{main_app_state::MainState, manager::ThreadManager};
+use crate::{ main_app_state::MainState, manager::ThreadManager, discord::types::message::Message };
 
 trait Flashing {
     fn set_flashing(&self, s: bool) -> Result<(), tauri::Error>;
@@ -41,6 +40,13 @@ impl Flashing for tauri::Window {
         }
         Ok(())
     }
+}
+/// Flashes **First** found window
+pub fn flash_window(handle: &tauri::AppHandle) -> Result<(), tauri::Error> {
+	use crate::Flashing;
+	let windows = handle.windows();
+	let window = windows.iter().next().unwrap().1;
+	Ok(window.set_flashing(true)?)
 }
 
 #[tauri::command]
@@ -86,24 +92,25 @@ fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
     state.last_id.lock().unwrap().clone()
 }
 
+#[derive(Debug, Deserialize)]
+struct TestData {}
+
+#[cfg(debug_assertions)]
 #[tauri::command]
-fn test(handle: tauri::AppHandle) {
-    println!("test");
-    Notification::new(&handle.config().tauri.bundle.identifier)
-        .title("??????")
-        .body("Frytas i Piotras to furrasy <3")
-        .icon(format!(
-            "https://cdn.discordapp.com/avatars/${}/${}.webp?size=128",
-            "362958640656941056", "0ad17e3c13fd7de38cbdd82e34cac15d"
-        ))
-        .show()
-        .unwrap();
-    let mut window = None;
-    for e in handle.windows() {
-        window = Some(e.1);
-        break;
-    }
-    window.unwrap().set_flashing(true).unwrap()
+async fn test(handle: tauri::AppHandle) {
+	println!("test");
+
+	let mut path = handle.path_resolver().app_cache_dir().unwrap();
+	path.push("413428675866787863");
+	path.set_extension("webp");
+	println!("{:?}", path);
+
+	//use notify_rust::Notification;
+
+	use winrt_notification::Toast;
+
+	let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
+	notifications::new_message(Message::default(), &handle).await;
 }
 
 fn main() {
@@ -140,14 +147,9 @@ fn main() {
             main_window.show().unwrap();
             println!("Closing Loading Screen");
 
-            Ok(())
-        })
-        .invoke_handler(tauri::generate_handler![
-            get_token,
-            set_state,
-            get_last_user,
-            test //todo remove
-        ])
-        .run(tauri::generate_context!())
-        .expect("Error while running tauri application.");
+			Ok(())
+		})
+		.invoke_handler(tauri::generate_handler![get_token, set_state, get_last_user, test])
+		.run(tauri::generate_context!())
+		.expect("Error while running tauri application.");
 }

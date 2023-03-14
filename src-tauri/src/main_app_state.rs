@@ -1,6 +1,5 @@
-use std::{ collections::{ HashMap, HashSet }, sync::{ Arc, Mutex } };
+use std::{ collections::{ HashMap }, sync::{ Arc, Mutex } };
 
-use serde_json::json;
 use tauri::AppHandle;
 
 use crate::{ discord::user::CurrentUser, event_manager::EventManager, manager::ThreadManager };
@@ -192,11 +191,11 @@ impl MainState {
 		}
 	}
 
-	pub fn start_mobile_auth(&self, handle: AppHandle) {
-		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle);
+	pub fn start_mobile_auth(&self, handle: AppHandle) -> Result<(), String> {
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle)
 	}
-	pub fn start_gateway(&self, handle: AppHandle, user_id: String) {
+	pub fn start_gateway(&self, handle: AppHandle, user_id: String) -> Result<(), String> {
 		let token = self.tokens.lock().unwrap().get(&user_id).unwrap().clone();
-		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token, user_id);
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token, user_id)
 	}
 }
