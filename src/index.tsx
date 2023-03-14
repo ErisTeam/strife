@@ -12,12 +12,15 @@ import Application from './Routes/App/Application';
 import Prev from './Prev';
 import Login from './Routes/Login/Login';
 import Main from './Routes/Main/Main';
+import Loading from './Routes/Loading/Loading';
 
 // Style
 import './style.css';
 
 import Redirect from './Redirect';
+
 const App: Component = () => {
+	
 	const AppState: any = useAppState();
 
 	const [id] = createResource(async () => {
@@ -29,7 +32,7 @@ const App: Component = () => {
 
 	return (
 		<Router>
-			<Show fallback={<h1>Loading...</h1>} when={!id.loading}>
+			<Show fallback={Loading} when={!id.loading}>
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
 						<Routes>
@@ -37,6 +40,8 @@ const App: Component = () => {
 							<Route path="/" component={Prev}></Route>
 
 							<Route path="/messagetest" component={MessageTest} />
+
+							<Route path={'/loading'} component={Loading}/>
 
 							<Route path={'/login'} component={Login}></Route>
 

@@ -129,11 +129,16 @@ fn main() {
         .setup(move |app| {
             let app_handle = app.handle();
 
+            let splashscreen_window = app.get_window("splashscreen").unwrap();
+            let main_window = app.get_window("main").unwrap();
             m.change_state(
                 main_app_state::State::default_login_screen(),
                 app_handle,
                 false,
             );
+            splashscreen_window.close().unwrap();
+            main_window.show().unwrap();
+            println!("Closing Loading Screen");
 
             Ok(())
         })

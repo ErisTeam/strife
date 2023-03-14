@@ -208,6 +208,7 @@ function Prev() {
 					<button type="button" onClick={() => login()} class={buttons.default}>
 						Login
 					</button>
+					
 					<Show when={captcha_key()}>
 						<HCaptcha
 							sitekey={captcha_key()}
@@ -307,6 +308,7 @@ function Prev() {
 				>
 					Test Reconnecting
 				</button>
+				
 			</div>
 			<p>{showMsg}</p>
 			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
@@ -322,7 +324,9 @@ function Prev() {
 				<Anchor class={[buttons.default].join(' ')} href="/messagetest" state="Application">
 					message test
 				</Anchor>
-
+				<Anchor class={[buttons.default].join(' ')} href="/loading" state="Application">
+					Loading Test
+				</Anchor>
 				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
 					Error Page
 				</A>

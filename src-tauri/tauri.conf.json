@@ -7,7 +7,7 @@
 		"withGlobalTauri": false
 	},
 	"package": {
-		"productName": "cord-clone",
+		"productName": "PandaCord",
 		"version": "0.0.0"
 	},
 	"tauri": {
@@ -33,13 +33,7 @@
 				"depends": []
 			},
 			"externalBin": [],
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
+			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
 			"identifier": "com.TNaDc",
 			"longDescription": "",
 			"macOS": {
@@ -64,13 +58,23 @@
 		"updater": {
 			"active": false
 		},
+
 		"windows": [
 			{
 				"fullscreen": false,
+				"width": 800,
 				"height": 600,
 				"resizable": true,
-				"title": "cord-clone",
-				"width": 800
+				"title": "PandaCord",
+				"visible": false
+			},
+
+			{
+				"width": 800,
+				"height": 600,
+				"decorations": false,
+				"url": "splashscreen.html",
+				"label": "splashscreen"
 			}
 		]
 	}
