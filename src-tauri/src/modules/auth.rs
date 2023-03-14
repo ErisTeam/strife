@@ -143,19 +143,18 @@ impl Auth {
                 "ticket":ticket,
                 "code":code
             }))
-            .send()
-            .await
-            .unwrap();
-        let text = res.text().await.unwrap();
-        println!("verify sms res: {}", text);
-        // todo!("verify_sms")
-        serde_json::from_str::<MFAResponse>(&text).unwrap()
-    }
-    pub async fn verify_totp(ticket: String, code: String) -> Result<MFAResponse, ()> {
-        let client = reqwest::Client::new();
-        let res = client
-            .post(constants::VERIFY_TOTP)
-            .json(&json!({
+			.send().await
+			.unwrap();
+		let text = res.text().await.unwrap();
+		println!("verify sms res: {}", text);
+		// todo!("verify_sms")
+		serde_json::from_str::<MFAResponse>(&text).unwrap()
+	}
+	pub async fn verify_totp(ticket: String, code: String) -> Result<MFAResponse, ()> {
+		let client = reqwest::Client::new();
+		let res = client
+			.post(constants::VERIFY_TOTP)
+			.json(&json!({
                 "ticket":ticket,
                 "code":code
             }))

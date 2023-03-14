@@ -136,7 +136,9 @@ impl MobileAuthHandler {
 
 	fn handle_hello(&mut self, client: &mut Client<TlsStream<TcpStream>>, heartbeat_interval: u64, timeout_ms: u64) {
 		self.timeout_ms = timeout_ms;
-		self.heartbeat_interval = heartbeat_interval;
+		//self.heartbeat_interval = heartbeat_interval;
+		self.connection_info.heartbeat_interval = heartbeat_interval;
+
 		println!("hello {} {}", heartbeat_interval, timeout_ms);
 		self.send_init(client);
 	}

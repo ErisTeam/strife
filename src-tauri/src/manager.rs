@@ -105,9 +105,13 @@ impl ThreadManager {
 	}
 	pub fn start_gateway(&mut self, handle: AppHandle, token: String, user_id: String) -> Result<(), String> {
 		if let Some(sender) = self.senders.get(user_id.as_str()) {
-			if sender.iter().any(|s| matches!(s, Modules::Gateway(_))) {
-				println!("Gateway already running");
-				return Err("Gateway already running".to_string());
+			if let Some(sender) = sender.iter().find(|s| matches!(s, Modules::Gateway(_))) {
+				if let Modules::Gateway(sender) = sender {
+					if !sender.is_closed() {
+						println!("Gateway already running");
+						return Err("Gateway already running".to_string());
+					}
+				}
 			}
 		}
 		println!("Starting gateway");

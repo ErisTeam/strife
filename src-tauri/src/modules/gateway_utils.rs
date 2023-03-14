@@ -14,8 +14,10 @@ pub fn send_heartbeat<T: Serialize>(
 	let since_last_hearbeat = &mut connection_info.since_last_hearbeat;
 	let heartbeat_interval = connection_info.heartbeat_interval;
 	let ack_recived = &mut connection_info.ack_recived;
+	//println!("{} {} {}", authed, since_last_hearbeat.elapsed().as_millis(), heartbeat_interval);
 	if authed && since_last_hearbeat.elapsed().as_millis() > (heartbeat_interval as u128) {
 		if !*ack_recived {
+			println!("not ack_recived");
 			return Some(false);
 		}
 		*ack_recived = false;

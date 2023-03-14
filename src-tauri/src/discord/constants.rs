@@ -8,3 +8,5 @@ pub static SMS_SEND: &str = "https://discord.com/api/v9/auth/mfa/sms/send";
 pub static VERIFY_SMS: &str = "https://discord.com/api/v9/auth/mfa/sms";
 
 pub static VERIFY_TOTP: &str = "https://discord.com/api/v9/auth/mfa/totp";
+
+pub static GET_CHANNEL: &str = "https://discord.com/api/v9/channels/";
