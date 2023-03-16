@@ -2,7 +2,7 @@ import { A } from '@solidjs/router';
 import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { startGateway, startGatewayListener, startGatewayListenerOld } from '../../test';
+import { startGateway, startGatewayListener } from '../../test';
 interface i {
 	type: string;
 }

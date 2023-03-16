@@ -75,8 +75,8 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken() {
-		return (await invoke('get_token', { id: AppState.userID() })) as string | null;
+	async getToken(userId: string = AppState.userID()) {
+		return (await invoke('get_token', { id: userId })) as string | null;
 	},
 
 	/**

@@ -19,15 +19,6 @@ interface GatewayEvent {
 	user_id: string;
 	type: string;
 }
-
-function startGatewayListenerOld<T extends GatewayEvent>(user_id: string, on_event: (event: Event<T>) => void) {
-	useTaurListener<T>('gateway', (event: Event<T>) => {
-		if (event.payload.user_id === user_id) {
-			on_event(event);
-		}
-	});
-	console.log('start gateway');
-}
 interface a<T> {
 	eventName: string;
 	listener: (event: T) => void;
@@ -72,4 +63,4 @@ async function startGateway(userId: string) {
 	await emit('startGateway', { user_id: userId });
 }
 
-export { useTaurListener, changeState, startGatewayListenerOld, startGatewayListener, startGateway };
+export { useTaurListener, changeState, startGatewayListener, startGateway };
