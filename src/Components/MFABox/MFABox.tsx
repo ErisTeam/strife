@@ -3,7 +3,7 @@ import style from './MFABox.module.css';
 import inputs from './../../Styles/Inputs.module.css';
 import checkboxes from './../../Styles/Checkboxes.module.css';
 import buttons from './../../Styles/Buttons.module.css';
-import API from '../../API'; //THIS IS TEMPORARY FOR TESTING
+
 /* Tauri */
 import { emit } from '@tauri-apps/api/event';
 
@@ -22,10 +22,7 @@ function MFABox(prop: MFABoxProps) {
 			class={[style.container, prop.class].join(' ')}
 			onsubmit={async (e) => {
 				e.preventDefault();
-				console.log('Code: ' + code());
-				await emit('verifyLogin', {
-					code: code(),
-				});
+				prop.verify(code());
 			}}
 		>
 			<h1 class={style.header}>Enter your MFA Code</h1>

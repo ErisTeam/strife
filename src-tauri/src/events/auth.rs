@@ -11,13 +11,18 @@ use crate::{
 };
 
 fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-	move |_event| {
-		let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
-		let result = state.start_gateway(handle.clone(), id);
-		if let Err(result) = result {
-			handle.emit_all("gateway", webview_packets::Gateway::Error { message: result }).unwrap();
-		}
-	}
+    move |_event| {
+        let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
+        let result = state.start_gateway(handle.clone(), id);
+        if let Err(result) = result {
+            handle
+                .emit_all(
+                    "gateway",
+                    webview_packets::Gateway::Error { message: result },
+                )
+                .unwrap();
+        }
+    }
 }
 
 fn start_mobile_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {

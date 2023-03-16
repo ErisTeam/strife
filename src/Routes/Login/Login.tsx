@@ -1,6 +1,6 @@
 // SolidJS
 import { createSignal, onMount } from 'solid-js';
-import { useBeforeLeave } from '@solidjs/router';
+import { useBeforeLeave, useNavigate } from '@solidjs/router';
 
 // Tauri
 import { emit } from '@tauri-apps/api/event';
@@ -60,7 +60,7 @@ const LoginPage = () => {
 			console.log('No token');
 		}
 	}
-
+	const navigate = useNavigate();
 	useTaurListener('auth', (event) => {
 		interface i {
 			type: string;
@@ -88,6 +88,7 @@ const LoginPage = () => {
 		}
 
 		let input = event.payload as unknown as qrcode | ticketData | requireAuth | { type: 'loginSuccess' };
+		console.log('input', input);
 
 		switch (input.type) {
 			case 'qrcode': {
@@ -121,6 +122,7 @@ const LoginPage = () => {
 					console.log(AppState.userID());
 				};
 				console.log('login success');
+				navigate('/');
 				break;
 			}
 
@@ -169,9 +171,13 @@ const LoginPage = () => {
 		});
 	}
 	async function verifyLogin(code: string) {
-		await emit('verify_login', {
-			code: code,
-		});
+		console.log('Code: ' + code);
+		console.log(
+			await emit('verifyLogin', {
+				code: code,
+			})
+		);
+		API.updateCurrentUserID();
 	}
 
 	return (
