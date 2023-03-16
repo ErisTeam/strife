@@ -21,7 +21,11 @@ function MFABox(prop: MFABoxProps) {
 		<form
 			class={[style.container, prop.class].join(' ')}
 			onsubmit={async (e) => {
-				await prop.verify(code());
+				e.preventDefault();
+				console.log('Code: ' + code());
+				await emit('verifyLogin', {
+					code: code(),
+				});
 			}}
 		>
 			<h1 class={style.header}>Enter your MFA Code</h1>
