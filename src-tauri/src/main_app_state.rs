@@ -121,7 +121,7 @@ impl MainState {
 		if let Some(user) = user_data.get(&id).cloned() {
 			if let User::ActiveUser(UserData) = user {
 				let mut u = UserData.clone();
-				u.token = "Acces Denied".to_string();
+				u.token = "Access Denied".to_string();
 				return Some(u);
 			}
 		}
@@ -134,6 +134,7 @@ impl MainState {
 		user_data.insert(user_id.clone(), User::InactiveUser { token });
 	}
 
+	#[deprecated]
 	pub fn add_token(&self, token: String, id: String) {
 		self.tokens.lock().unwrap().insert(id.clone(), token);
 		let mut nie = self.last_id.lock().unwrap();

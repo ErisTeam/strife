@@ -55,6 +55,15 @@ function startGatewayListener(user_id: string) {
 	};
 }
 
+async function one_time_listener<T>(userId: string, eventName: string): Promise<T> {
+	return new Promise((resolve) => {
+		let a = startGatewayListener(userId).on(eventName, (event: T) => {
+			a();
+			resolve(event);
+		});
+	});
+}
+
 async function changeState(newState: 'LoginScreen' | 'Application') {
 	await invoke('set_state', { newState });
 }

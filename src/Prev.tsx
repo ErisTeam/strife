@@ -118,6 +118,12 @@ function Prev() {
 			type: 'VerifyError';
 			message: string;
 		}
+		interface Error extends i {
+			type: 'error';
+			message: string;
+			code: number;
+			errors: any;
+		}
 
 		let input = event.payload as unknown as
 			| qrcode
@@ -125,6 +131,7 @@ function Prev() {
 			| RequireAuth
 			| RequireAuthMobile
 			| VerifyError
+			| Error
 			| { type: 'loginSuccess'; userId: string; userSettings?: any };
 		console.log(input, event);
 		switch (input.type) {
@@ -167,6 +174,10 @@ function Prev() {
 			case 'VerifyError':
 				setshowMsg(input.message);
 				break;
+			case 'error':
+				setshowMsg(JSON.stringify(input));
+				break;
+
 			//case "loginSuccess":
 			//AppState.setUserID(id);
 			//	break
