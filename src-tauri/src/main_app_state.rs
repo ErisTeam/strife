@@ -2,31 +2,23 @@ use std::{ collections::{ HashMap }, sync::{ Arc, Mutex } };
 
 use tauri::AppHandle;
 
-use crate::{ discord::user::CurrentUser, event_manager::EventManager, manager::ThreadManager };
+use crate::{ discord::{ user::CurrentUser, types::guild::Guild }, event_manager::EventManager, manager::ThreadManager };
 
 #[derive(Debug, Clone)]
 pub struct UserData {
 	pub user: CurrentUser,
 	token: String,
-	pub guilds: Vec<serde_json::Value>,
+	pub guilds: Vec<Guild>,
 	pub relationships: Vec<serde_json::Value>,
 }
 impl UserData {
-	pub fn new(
-		user: CurrentUser,
-		token: String,
-		guilds: Vec<serde_json::Value>,
-		relationships: Vec<serde_json::Value>
-	) -> Self {
+	pub fn new(user: CurrentUser, token: String, guilds: Vec<Guild>, relationships: Vec<serde_json::Value>) -> Self {
 		Self {
 			user,
 			token,
 			guilds,
 			relationships,
 		}
-	}
-	pub fn get_token(&self) -> &str {
-		&self.token
 	}
 }
 
@@ -43,7 +35,13 @@ pub enum User {
 	},
 }
 impl User {
-	//pub fn
+	pub fn get_token(&self) -> Option<&str> {
+		match self {
+			Self::LoggedOut { .. } => None,
+			Self::ActiveUser(UserData { token, .. }) => Some(token),
+			Self::InactiveUser { token } => Some(token),
+		}
+	}
 }
 
 #[derive(Debug, PartialEq)]

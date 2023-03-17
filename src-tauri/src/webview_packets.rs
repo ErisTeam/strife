@@ -4,7 +4,7 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::modules::auth;
+use crate::{ modules::auth, discord::types::guild::Guild };
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
@@ -87,8 +87,17 @@ pub enum Gateway {
 	},
 }
 #[derive(Serialize, Debug, Clone)]
-pub struct GatewayEvent {
+pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
 	#[serde(flatten)]
-	pub event: Gateway,
+	pub event: T,
 	pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "type", content = "data")]
+#[serde(rename_all = "camelCase")]
+pub enum General {
+	UserData {
+		guilds: Vec<Guild>,
+	},
 }

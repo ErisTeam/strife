@@ -1,17 +1,26 @@
 // SolidJS
-import { createEffect, onCleanup } from 'solid-js';
+import { createEffect, getOwner, onCleanup } from 'solid-js';
 
 // Tauri
 import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api';
 
-function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => void) {
+const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
+
+function useTaurListenerOld<T>(eventName: string, on_event: (event: Event<T>) => void) {
 	createEffect(() => {
 		const unlist = listen(eventName, on_event);
 		onCleanup(async () => {
 			console.log('cleanup');
 			(await unlist)();
 		});
+	});
+}
+function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => void) {
+	const unlist = listen(eventName, on_event);
+	return tryOnCleanup(async () => {
+		console.log('cleanup', eventName);
+		(await unlist)();
 	});
 }
 
@@ -23,14 +32,22 @@ interface a<T> {
 	eventName: string;
 	listener: (event: T) => void;
 }
-function startGatewayListener(user_id: string) {
+function startListener<T extends { type: string }>(
+	eventName: string,
+	condition: ((event: T) => boolean) | null = null
+) {
 	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
-	console.log('start gateway NEW');
-	useTaurListener<GatewayEvent>('gateway', (event: Event<GatewayEvent>) => {
-		if (event.payload.user_id === user_id) {
-			console.log('gateway event', event.payload.type);
+	console.log('start gateway NEW', eventName);
+
+	useTaurListener<T>(eventName, (event: Event<T>) => {
+		let run = true;
+		console.log('event', event.payload);
+		if (condition && !condition(event.payload)) {
+			run = false;
+		}
+		if (run) {
 			listeners.forEach((l) => {
-				console.log('gateway event', event.payload.type, l.eventName);
+				console.log(' event', event.payload.type, l.eventName);
 				if (l.eventName === event.payload.type) {
 					l.listener(event.payload);
 				}
@@ -41,14 +58,18 @@ function startGatewayListener(user_id: string) {
 		on: <T>(eventName: string, listener: (event: T) => void) => {
 			listeners.add({ eventName, listener });
 			console.log('add listener', eventName);
-			return onCleanup(listeners.delete.bind(listeners, { eventName, listener }));
+			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
 		},
 	};
 }
 
-async function one_time_listener<T>(userId: string, eventName: string): Promise<T> {
+function startGatewayListener(userId: string) {
+	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
+}
+
+async function oneTimeListener<T>(event: string, eventName: string): Promise<T> {
 	return new Promise((resolve) => {
-		let a = startGatewayListener(userId).on(eventName, (event: T) => {
+		let a = startListener(event).on(eventName, (event: T) => {
 			a();
 			resolve(event);
 		});
@@ -63,4 +84,32 @@ async function startGateway(userId: string) {
 	await emit('startGateway', { user_id: userId });
 }
 
-export { useTaurListener, changeState, startGatewayListener, startGateway };
+async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
+	return new Promise((resolve: (value: T) => void) => {
+		let a = startGatewayListener(userId).on(eventName, (event: T) => {
+			a();
+			console.log(a);
+			resolve(event);
+		});
+	});
+}
+
+async function getUserData(userId: string) {
+	let res = oneTimeListener<{ user_id: string; user_data: string }>('general', 'userData');
+	await emit('getUserData', { user_id: userId });
+	return await res;
+}
+
+type GatewayEvents = 'messageCreate' | 'userData';
+
+export {
+	useTaurListenerOld,
+	useTaurListener,
+	oneTimeListener,
+	startListener,
+	changeState,
+	startGatewayListener,
+	startGateway,
+	gatewayOneTimeListener,
+	getUserData,
+};

@@ -29,8 +29,7 @@ export default () => {
 		console.log(res);
 		let count = 0;
 		while (count < 100) {
-			let child =
-				res.data.children[Math.floor(Math.random() * res.data.children.length)];
+			let child = res.data.children[Math.floor(Math.random() * res.data.children.length)];
 			console.log(child.data.post_hint, child.data.is_gallery);
 			if (child.data.post_hint === 'image' && !child.data.is_gallery) {
 				return { type: 'image', src: child.data.url };

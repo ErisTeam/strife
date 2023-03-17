@@ -169,7 +169,8 @@ pub enum GatewayPacketsData {
 	/// ```
 	SessionReplace(Vec<SessionReplaceData>),
 
-	MessageCreate {
+	//MessageCreate/MessageUpdate
+	MessageEvent {
 		#[serde(flatten)]
 		message: Message,
 		mentions: Vec<GuildMember>,

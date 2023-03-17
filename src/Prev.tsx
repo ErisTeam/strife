@@ -9,7 +9,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { changeState, useTaurListener } from './test';
+import { changeState, getUserData, useTaurListener, useTaurListenerOld } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
@@ -23,8 +23,6 @@ import inputs from './Styles/Inputs.module.css';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
-	//window.location.replace('http://192.168.1.121:1420');
-
 	const [showMsg, setshowMsg] = createSignal('');
 	const [name, setName] = createSignal('');
 	const [password, setPassword] = createSignal('');
@@ -49,31 +47,6 @@ function Prev() {
 			login: name(),
 			password: password(),
 		});
-		return;
-		let res: any = await invoke('login', {
-			captchaToken: captcha_token,
-			login: name(),
-			password: password(),
-		});
-
-		console.log(res);
-		if (res.captcha_key?.includes('captcha-required')) {
-			setCaptchaKey(res.captcha_sitekey);
-		}
-		if (res.type == 'RequireAuth') {
-			if (res.mfa || res.sms) {
-				setRequireCode(true);
-
-				if (res.sms) {
-					await invoke('send_sm', {});
-				}
-			}
-		}
-
-		if (res.type == 'loginSuccess') {
-			AppState.setUserID(res.user_id);
-		}
-		setshowMsg(JSON.stringify(res));
 	}
 	async function logout() {
 		let token = await API.getToken();
@@ -141,9 +114,7 @@ function Prev() {
 					setImage(url);
 				});
 				break;
-
 			case 'ticketData':
-				AppState.setUserID(input.userId);
 				setshowMsg(
 					`userId: ${input.userId}, discriminator: ${input.discriminator}, username: ${input.username}, avatarHash: ${input.avatarHash}`
 				);
@@ -317,16 +288,13 @@ function Prev() {
 						await emit('testReconnecting', { user_id: AppState.userID() });
 					}}
 				>
-					Test Reconnecting
+					Test Reconnecting (Broken)
 				</button>
 				<button
+					class={buttons.default}
 					onclick={async (e) => {
 						console.log(AppState.userID());
-						console.log(
-							await invoke('get_user_data', {
-								id: AppState.userID(),
-							})
-						);
+						console.log(await getUserData(AppState.userID()));
 					}}
 				>
 					Get User Data

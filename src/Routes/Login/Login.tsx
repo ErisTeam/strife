@@ -7,7 +7,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './../../API';
-import { useTaurListener } from './../../test';
+import { useTaurListenerOld } from './../../test';
 import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
 import { UserData } from './../../Components/QRCode/QRCode';
@@ -61,7 +61,7 @@ const LoginPage = () => {
 		}
 	}
 	const navigate = useNavigate();
-	useTaurListener('auth', (event) => {
+	useTaurListenerOld('auth', (event) => {
 		interface i {
 			type: string;
 		}
@@ -102,8 +102,6 @@ const LoginPage = () => {
 			}
 
 			case 'ticketData': {
-				AppState.setUserID(input.userId);
-
 				setImage(`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`);
 
 				setUserData({

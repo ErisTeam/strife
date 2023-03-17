@@ -2,6 +2,8 @@ use serde::{ Serialize, Deserialize };
 
 use crate::discord::user::{ PublicUser, CurrentUser };
 
+use super::guild::Guild;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
 	#[serde(skip_serializing_if = "Option::is_none")]
@@ -73,7 +75,7 @@ pub struct ReadyData {
 
 	pub user: CurrentUser,
 
-	pub guilds: Vec<serde_json::Value>,
+	pub guilds: Vec<Guild>,
 	pub relationships: Vec<serde_json::Value>,
 
 	pub resume_gateway_url: String,

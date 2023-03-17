@@ -10,6 +10,7 @@ use crate::{
 	discord::{
 		gateway_packets::{ GatewayPackets, GatewayIncomingPacket, GatewayPacketsData },
 		types::gateway::{ Properties, Presence, ClientState },
+		constants::GATEWAY_CONNECT,
 	},
 	modules::gateway_utils::{ send_heartbeat },
 	notifications,
@@ -147,7 +148,7 @@ impl Gateway {
 			} => {
 				println!("ReadySupplemental {:?}", guilds);
 			}
-			GatewayPacketsData::MessageCreate { message, member, guild_id, mentions } => {
+			GatewayPacketsData::MessageEvent { message, member, guild_id, mentions } => {
 				println!("Message {:?}", message);
 				let package;
 				match event.t.clone().unwrap().as_str() {
@@ -203,7 +204,7 @@ impl Gateway {
 		if self.use_resume_url {
 			url = self.resume_url.as_ref().unwrap().clone();
 		} else {
-			url = "wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream".to_string();
+			url = GATEWAY_CONNECT.to_string();
 		}
 
 		let mut client = ClientBuilder::new(url.as_str())
@@ -339,7 +340,7 @@ impl Gateway {
 						let mut last_4 = [0u8; 4];
 						last_4.copy_from_slice(&bin[bin.len() - 4..]);
 						if last_4 == [0, 0, 255, 255] {
-							let mut buf = Vec::with_capacity(20_971_520);
+							let mut buf = Vec::with_capacity(20_971_520); // 20mb
 							self.decoder.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync).unwrap();
 
 							let out = String::from_utf8(buf).unwrap();
