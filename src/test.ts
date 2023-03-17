@@ -67,9 +67,13 @@ function startGatewayListener(userId: string) {
 	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
 }
 
-async function oneTimeListener<T>(event: string, eventName: string): Promise<T> {
+async function oneTimeListener<T extends { type: string }>(
+	event: string,
+	eventName: string,
+	condition: ((event: T) => boolean) | null = null
+): Promise<T> {
 	return new Promise((resolve) => {
-		let a = startListener(event).on(eventName, (event: T) => {
+		let a = startListener<T>(event, condition).on(eventName, (event: T) => {
 			a();
 			resolve(event);
 		});
@@ -95,7 +99,7 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 }
 
 async function getUserData(userId: string) {
-	let res = oneTimeListener<{ user_id: string; user_data: string }>('general', 'userData');
+	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
 	await emit('getUserData', { user_id: userId });
 	return await res;
 }
