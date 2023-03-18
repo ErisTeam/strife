@@ -5,6 +5,10 @@ import { createEffect, getOwner, onCleanup } from 'solid-js';
 import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api';
 
+type Listener = {
+	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
+};
+
 const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
 
 function useTaurListenerOld<T>(eventName: string, on_event: (event: Event<T>) => void) {
@@ -60,7 +64,7 @@ function startListener<T extends { type: string }>(
 			console.log('add listener', eventName);
 			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
 		},
-	};
+	} as Listener;
 }
 
 function startGatewayListener(userId: string) {
@@ -85,7 +89,7 @@ async function changeState(newState: 'LoginScreen' | 'Application') {
 }
 
 async function startGateway(userId: string) {
-	await emit('startGateway', { user_id: userId });
+	await emit('startGateway', { userId });
 }
 
 async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
@@ -100,7 +104,7 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 
 async function getUserData(userId: string) {
 	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
-	await emit('getUserData', { user_id: userId });
+	await emit('getUserData', { userId });
 	return await res;
 }
 
@@ -117,3 +121,5 @@ export {
 	gatewayOneTimeListener,
 	getUserData,
 };
+
+export type { Listener };

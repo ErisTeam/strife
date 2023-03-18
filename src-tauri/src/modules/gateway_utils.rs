@@ -1,4 +1,4 @@
-use std::{ time::Instant, net::TcpStream };
+use std::{ net::TcpStream };
 
 use serde::Serialize;
 use websocket::{ native_tls::TlsStream, sync::Client, OwnedMessage };
@@ -21,11 +21,11 @@ pub fn send_heartbeat<T: Serialize>(
 			return Some(false);
 		}
 		*ack_recived = false;
-		*since_last_hearbeat = std::time::Instant::now();
+		connection_info.reset_since_last_hearbeat();
 		if let Some(data) = data {
 			let heartbeat = OwnedMessage::Text(serde_json::to_string(&data).unwrap());
 			client.send_message(&heartbeat).unwrap();
-			println!("Heartbeat");
+			println!("Heartbeat sent");
 		}
 	}
 	None

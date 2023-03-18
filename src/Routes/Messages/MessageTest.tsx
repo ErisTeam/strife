@@ -2,7 +2,7 @@ import { A } from '@solidjs/router';
 import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { startGateway, startGatewayListener } from '../../test';
+import { Listener, startGateway, startGatewayListener } from '../../test';
 interface i {
 	type: string;
 }
@@ -24,8 +24,15 @@ const guildId = '419544209923522560';
 
 import style from './../../prev.module.css';
 
+// function test(props: {listener: Listener }){
+// 	return (
+// 		<p>
+// 		</p>
+// 	)
+// }
+
 function MessageTest() {
-	const [messages, setMessages] = createSignal<any[]>([]);
+	const [messages, setMessages] = createSignal<any[]>([], { equals: false });
 
 	const AppState = useAppState();
 
@@ -64,6 +71,30 @@ function MessageTest() {
 				timestamp: new Date(msg.data.timestamp),
 			},
 		]);
+	});
+	listener.on<messageCreate>('messageUpdate', (msg) => {
+		console.log('Listener gateway', msg, msg, msg.type);
+		setMessages((clone) => {
+			//let clone = [...a];
+			let index = clone.findIndex((e) => e.id == msg.data.id);
+
+			if (index == -1) {
+				return clone;
+			}
+			console.log('first', clone[index]);
+			//clone array
+			clone[index] = {
+				...msg.data,
+				timestamp: new Date(msg.data.timestamp),
+			};
+			console.log(clone[index]);
+
+			return clone;
+		});
+	});
+
+	listener.on('typing', (msg) => {
+		console.log('typing', msg);
 	});
 
 	const [shouldSendTyping, setShouldSendTyping] = createSignal(true);
@@ -133,6 +164,7 @@ function MessageTest() {
 										onClick={() => {
 											if (editing()?.id == val.id) {
 												setEditing(null);
+												setMessage('');
 												return;
 											}
 											setEditing(val);
@@ -185,17 +217,33 @@ function MessageTest() {
 					onClick={async () => {
 						let msg = message();
 						setMessage('');
-						let res = await API.sendMessage(channelId, msg, reference());
-						if (messages().find((e) => e.id == res.id)) {
-							return;
+						if (editing()) {
+							let res = await API.editMessage(channelId, editing().id, msg);
+							setEditing(null);
+							setMessages((a) => {
+								let index = a.findIndex((e) => e.id == res.id);
+								if (index == -1) {
+									return a;
+								}
+								a[index] = {
+									...res,
+									timestamp: new Date(res.timestamp),
+								};
+								return a;
+							});
+						} else {
+							let res = await API.sendMessage(channelId, msg, reference());
+							if (messages().find((e) => e.id == res.id)) {
+								return;
+							}
+							setMessages((a) => [
+								...a,
+								{
+									...res,
+									timestamp: new Date(res.timestamp),
+								},
+							]);
 						}
-						setMessages((a) => [
-							...a,
-							{
-								...res,
-								timestamp: new Date(res.timestamp),
-							},
-						]);
 					}}
 				>
 					{editing() ? 'edit' : 'send'}

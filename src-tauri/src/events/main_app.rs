@@ -1,11 +1,12 @@
 use std::{ sync::Arc, fmt::Debug };
 
-use serde::{ Deserialize, Serialize };
+use serde::{ Deserialize };
 use tauri::{ EventHandler, Event, Manager };
 
-use crate::{ main_app_state::{ self, MainState, User }, discord::user, webview_packets::General };
+use crate::{ main_app_state::{ self, MainState, User }, webview_packets::General };
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct StartGatewayPayload {
 	user_id: String,
 }
@@ -14,32 +15,17 @@ fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 		println!("got start_gateway with payload {:?}", event.payload());
 		let user_id = serde_json::from_str::<StartGatewayPayload>(event.payload().unwrap()).unwrap().user_id;
 
-		state.start_gateway(handle.clone(), user_id);
+		let _ = state.start_gateway(handle.clone(), user_id);
 	}
 }
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct GetUserDataPayload {
-	user_id: String,
-}
-pub fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-	move |event| {
-		let data = serde_json::from_str::<GetUserDataPayload>(event.payload().unwrap()).unwrap();
-		data.user_id;
-		//...
-		//handle.emit_all("userData", General::UserData {}).unwrap();
-		//...
-	}
-}
-
-#[derive(Debug, Deserialize)]
 struct GetUserData {
 	user_id: String,
 }
 impl event<General> for GetUserData {
-	fn execute(&self, state: Arc<MainState>, handle: tauri::AppHandle) -> Option<(&str, General)> {
-		let user_data = state.user_data.lock().unwrap();
+	fn execute(&self, state: Arc<MainState>, _handle: tauri::AppHandle) -> Option<(&str, General)> {
+		let user_data = state.users.lock().unwrap();
 
 		let data = user_data.get(&self.user_id);
 		if let Some(data) = data {

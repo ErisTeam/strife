@@ -1,7 +1,7 @@
-use std::{ sync::Arc, net::TcpStream, time::Instant, fs::File, io::prelude::* };
+use std::{ sync::Arc, net::TcpStream, time::Instant };
 
 use flate2::Decompress;
-use tauri::{ AppHandle, Manager, api::notification::Notification };
+use tauri::{ AppHandle, Manager };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream, CloseData };
 
 use crate::{
@@ -133,12 +133,14 @@ impl Gateway {
 				}
 				let user = UserData::new(data.user.clone(), self.token.clone(), data.guilds, data.relationships);
 
-				let mut user_data = self.state.user_data.lock().unwrap();
+				let mut user_data = self.state.users.lock().unwrap();
 
 				if user_data.contains_key(&self.user_id) {
+					println!("Removing old user data");
 					user_data.remove(&self.user_id);
 				}
 				user_data.insert(self.user_id.clone(), main_app_state::User::ActiveUser(user));
+				println!("Ready {:?} {:?}", user_data, user_data.get(&self.user_id));
 			}
 			GatewayPacketsData::ReadySupplemental {
 				merged_presences,
@@ -176,12 +178,14 @@ impl Gateway {
 					}
 				}
 				self.emit_event(package).unwrap();
-				//todo repair for multi user
-				if message.author.id != self.user_id {
+
+				if !self.state.get_users_ids().contains(&message.author.id) {
 					let handle = self.handle.clone();
+					let user_data = self.state.get_user_data(self.user_id.clone());
+					println!("{:?}", user_data);
 					tauri::async_runtime::spawn(async move {
 						println!("notification");
-						notifications::new_message(message, &handle).await;
+						notifications::new_message(message, &handle, user_data).await;
 					});
 				}
 			}
@@ -323,6 +327,9 @@ impl Gateway {
 			let m = self.reciver.try_recv();
 			if let Ok(m) = m {
 				println!("recived {:?}", m);
+				if matches!(m, OwnedMessage::Close(_)) {
+					return Ok(GatewayResult::Close);
+				}
 				return Ok(GatewayResult::ReconnectUsingResumeUrl);
 				//client.send_message(&m).unwrap();
 			}
@@ -344,7 +351,7 @@ impl Gateway {
 							self.decoder.decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync).unwrap();
 
 							let out = String::from_utf8(buf).unwrap();
-							println!("Gateway Binary gateway {:?}", out);
+							println!("Gateway recived: {:?}", out);
 							let json: GatewayIncomingPacket = serde_json::from_str(out.as_str()).unwrap();
 							self.seq = json.s.clone();
 

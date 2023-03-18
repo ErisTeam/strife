@@ -51,7 +51,6 @@ enum GetTokenResponse {
 #[derive(Debug)]
 pub struct MobileAuthHandler {
 	timeout_ms: u64,
-	heartbeat_interval: u64,
 
 	pub connected: Mutex<bool>,
 
@@ -74,7 +73,6 @@ impl MobileAuthHandler {
 	) -> Self {
 		Self {
 			timeout_ms: 0,
-			heartbeat_interval: 0,
 			connected: Mutex::new(false),
 			app_state,
 			public_key: None,
@@ -356,7 +354,8 @@ impl MobileAuthHandler {
 								match self.get_token(ticket.clone()).await {
 									Ok(token) => {
 										if let Some(user_id) = user_id {
-											self.app_state.tokens.lock().unwrap().insert(user_id.clone(), token);
+											self.app_state.add_new_user(user_id.clone(), token);
+
 											self.emit_event(webview_packets::Auth::LoginSuccess {
 												user_id: user_id.clone(),
 												user_settings: None,

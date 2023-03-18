@@ -7,23 +7,18 @@ use tokio::task::block_in_place;
 use crate::{ main_app_state::{ self, MainState }, modules::auth::{ Auth, MFAResponse }, token_utils, webview_packets };
 
 fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-    move |_event| {
-        let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
-        let result = state.start_gateway(handle.clone(), id);
-        if let Err(result) = result {
-            handle
-                .emit_all(
-                    "gateway",
-                    webview_packets::Gateway::Error { message: result },
-                )
-                .unwrap();
-        }
-    }
+	move |_event| {
+		let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
+		let result = state.start_gateway(handle.clone(), id);
+		if let Err(result) = result {
+			handle.emit_all("gateway", webview_packets::Gateway::Error { message: result }).unwrap();
+		}
+	}
 }
 
 fn start_mobile_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |_event| {
-		state.start_mobile_auth(handle.clone());
+		let _ = state.start_mobile_auth(handle.clone());
 	}
 }
 
@@ -66,6 +61,7 @@ fn send_sms(state: Arc<Mutex<crate::main_app_state::State>>, handle: tauri::AppH
 		}
 		if use_sms {
 			let ticket = ticket.clone().unwrap();
+			//todo make it work
 			let r = block_in_place(move || {
 				TokioHandle::current().block_on(async move { Auth::send_sms(ticket).await });
 			});
@@ -125,9 +121,15 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 
 			if let MFAResponse::Success { token, user_settings } = res {
 				let user_id = token_utils::get_id(token.clone());
-				state.add_token(token.clone(), user_id.clone());
 
-				state.add_new_user(user_id.clone(), token.clone())
+				state.add_new_user(user_id.clone(), token.clone());
+
+				handle
+					.emit_all("auth", webview_packets::MFA::VerifySuccess {
+						user_id: user_id,
+						user_settings: user_settings,
+					})
+					.unwrap();
 			}
 
 			//todo!("return response to webview");
@@ -151,19 +153,17 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 				} => {
 					let user_id = token_utils::get_id(token.clone());
 
-					state.add_token(token.clone(), user_id.clone());
-
 					state.add_new_user(user_id.clone(), token.clone());
 
 					handle
-						.emit_all("gateway", webview_packets::MFA::VerifySuccess {
+						.emit_all("auth", webview_packets::MFA::VerifySuccess {
 							user_id: user_id,
 							user_settings: user_settings,
 						})
 						.unwrap();
 				}
 				MFAResponse::Error { message, .. } => {
-					handle.emit_all("gateway", webview_packets::MFA::VerifyError { message }).unwrap();
+					handle.emit_all("auth", webview_packets::MFA::VerifyError { message }).unwrap();
 				}
 			}
 		}
@@ -216,7 +216,8 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 			LoginResponse::Success { token, user_id, user_settings } => {
 				println!("login Stucces id: {}", user_id);
 
-				state.tokens.lock().unwrap().insert(user_id.clone(), token.clone());
+				state.add_new_user(user_id.clone(), token.clone());
+
 				handle
 					.emit_all("auth", webview_packets::Auth::LoginSuccess {
 						user_id,

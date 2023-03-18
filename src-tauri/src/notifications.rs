@@ -1,13 +1,29 @@
-use tauri::{ AppHandle, Manager };
+use tauri::{ AppHandle };
 
-pub async fn new_message(message: crate::discord::types::message::Message, handle: &AppHandle) {
+pub async fn new_message(
+	message: crate::discord::types::message::Message,
+	handle: &AppHandle,
+	user_data: Option<crate::main_app_state::UserData>
+) {
 	use std::{ fs::File, io::prelude::* };
 	use tauri::api::notification::Notification;
 	use crate::flash_window;
 	use crate::discord::idk::get_avatar;
 
 	let config = handle.config();
-	//let notification = Notification::new(config.tauri.bundle.identifier.clone());
+
+	let channel_id = message.channel_id;
+	let channel_name;
+	if let Some(user_data) = user_data {
+		channel_name = user_data
+			.get_guild_by_channel(&channel_id)
+			.unwrap()
+			.get_channel(&channel_id)
+			.unwrap()
+			.name.clone();
+	} else {
+		channel_name = "unknown".to_string();
+	}
 
 	let path = handle.path_resolver().app_cache_dir();
 	let icon;
@@ -30,6 +46,10 @@ pub async fn new_message(message: crate::discord::types::message::Message, handl
 	// 	.icon(icon)
 	// 	.show()
 	// 	.unwrap();
+
+	let title = format!("{}: {}", channel_name, message.author.username);
+	let body = format!("{}", message.content);
+
 	if cfg!(windows) {
 		println!("windows");
 		use winrt_notification::Toast;
@@ -37,9 +57,7 @@ pub async fn new_message(message: crate::discord::types::message::Message, handl
 		let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
 		let id = config.tauri.bundle.identifier.clone();
 		println!("{} {}", powershell_app_id, id);
-		let mut toast = Toast::new(powershell_app_id)
-			.title(message.author.username.as_str())
-			.text1(message.content.as_str());
+		let mut toast = Toast::new(powershell_app_id).title(title.as_str()).text1(body.as_str());
 		println!("{:?}", icon);
 		if let Some(icon) = icon {
 			toast = toast.icon(icon.as_path(), winrt_notification::IconCrop::Circular, "");
@@ -50,8 +68,8 @@ pub async fn new_message(message: crate::discord::types::message::Message, handl
 		});
 	} else {
 		let mut notification = Notification::new(config.tauri.bundle.identifier.clone())
-			.title(message.author.username.as_str())
-			.body(message.content.as_str());
+			.title(title.as_str())
+			.body(body.as_str());
 
 		if let Some(icon) = icon {
 			notification = notification.icon(icon.to_str().unwrap());

@@ -93,6 +93,7 @@ impl Auth {
 		serde_json::from_str(&text).unwrap()
 	}
 
+	//todo Make it work
 	pub async fn login_mobile_auth(captcha_token: String, captcha_key: String, captcha_rqtoken: String) {
 		let client = reqwest::Client::new();
 		let res = client

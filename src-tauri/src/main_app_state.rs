@@ -2,23 +2,43 @@ use std::{ collections::{ HashMap }, sync::{ Arc, Mutex } };
 
 use tauri::AppHandle;
 
-use crate::{ discord::{ user::CurrentUser, types::guild::Guild }, event_manager::EventManager, manager::ThreadManager };
+use crate::{
+	discord::{ user::CurrentUser, types::guild::PartialGuild },
+	event_manager::EventManager,
+	manager::ThreadManager,
+};
 
 #[derive(Debug, Clone)]
 pub struct UserData {
 	pub user: CurrentUser,
 	token: String,
-	pub guilds: Vec<Guild>,
+	pub guilds: Vec<PartialGuild>,
 	pub relationships: Vec<serde_json::Value>,
 }
 impl UserData {
-	pub fn new(user: CurrentUser, token: String, guilds: Vec<Guild>, relationships: Vec<serde_json::Value>) -> Self {
+	pub fn new(
+		user: CurrentUser,
+		token: String,
+		guilds: Vec<PartialGuild>,
+		relationships: Vec<serde_json::Value>
+	) -> Self {
 		Self {
 			user,
 			token,
 			guilds,
 			relationships,
 		}
+	}
+
+	pub fn get_guild_by_channel(&self, channel_id: &str) -> Option<&PartialGuild> {
+		for guild in &self.guilds {
+			for channel in &guild.channels {
+				if channel.id == channel_id {
+					return Some(guild);
+				}
+			}
+		}
+		None
 	}
 }
 
@@ -86,7 +106,7 @@ pub struct MainState {
 
 	pub last_id: Mutex<Option<String>>,
 
-	pub user_data: Mutex<HashMap<String, User>>,
+	pub users: Mutex<HashMap<String, User>>,
 	//todo pub system_info: Mutex<SystemInfo>
 }
 
@@ -99,26 +119,35 @@ impl MainState {
 			thread_manager: Mutex::new(None),
 			event_manager: Mutex::new(None),
 
-			user_data: Mutex::new(HashMap::new()),
+			users: Mutex::new(HashMap::new()),
 
 			last_id: Mutex::new(None),
 		}
 	}
 
-	pub fn get_all_Users(&self) -> Vec<(String, User)> {
-		let user_data = self.user_data.lock().unwrap();
+	pub fn get_users(&self) -> Vec<(String, User)> {
+		let user_data = self.users.lock().unwrap();
 		let mut users = Vec::new();
 		for (id, user) in user_data.iter() {
 			users.push((id.clone(), user.clone()));
 		}
 		users
 	}
+	pub fn get_users_ids(&self) -> Vec<String> {
+		let user_data = self.users.lock().unwrap();
+		let mut users = Vec::new();
+		for (id, _) in user_data.iter() {
+			users.push(id.clone());
+		}
+		users
+	}
 
-	pub fn get_user_data(&self, id: String) -> Option<UserData> {
-		let user_data = self.user_data.lock().unwrap();
-		if let Some(user) = user_data.get(&id).cloned() {
-			if let User::ActiveUser(UserData) = user {
-				let mut u = UserData.clone();
+	pub fn get_user_data(&self, user_id: String) -> Option<UserData> {
+		let user_data = self.users.lock().unwrap();
+		if let Some(user) = user_data.get(&user_id).cloned() {
+			println!("user: {:?}", user);
+			if let User::ActiveUser(user_data) = user {
+				let mut u = user_data.clone();
 				u.token = "Access Denied".to_string();
 				return Some(u);
 			}
@@ -128,20 +157,36 @@ impl MainState {
 
 	/// adds a new **InactiveUser** to the user_data
 	pub fn add_new_user(&self, user_id: String, token: String) {
-		let mut user_data = self.user_data.lock().unwrap();
+		let mut user_data = self.users.lock().unwrap();
 		user_data.insert(user_id.clone(), User::InactiveUser { token });
+		let mut last_id = self.last_id.lock().unwrap();
+		*last_id = Some(user_id.clone());
+	}
+	pub fn remove_user(&self, user_id: String) {
+		let mut user_data = self.users.lock().unwrap();
+		user_data.remove(&user_id);
 	}
 
 	#[deprecated]
 	pub fn add_token(&self, token: String, id: String) {
 		self.tokens.lock().unwrap().insert(id.clone(), token);
-		let mut nie = self.last_id.lock().unwrap();
-		*nie = Some(id.clone());
-		println!("last_id: {:?} {:?}", id.clone(), nie.clone());
+		let mut last_id = self.last_id.lock().unwrap();
+		*last_id = Some(id.clone());
+		println!("last_id: {:?} {:?}", id.clone(), last_id.clone());
 	}
-
+	#[deprecated]
 	pub fn remove_token(&self, id: String) {
 		self.tokens.lock().unwrap().remove(&id);
+	}
+
+	pub fn get_token(&self, user_id: String) -> Option<String> {
+		let users = self.users.lock().unwrap();
+		if let Some(user) = users.get(&user_id) {
+			if let Some(token) = user.get_token().clone() {
+				return Some(token.to_string());
+			}
+		}
+		None
 	}
 
 	pub fn change_state(&self, new_state: State, handle: AppHandle, force: bool) {
@@ -179,7 +224,7 @@ impl MainState {
 			State::LoginScreen { .. } => {
 				event_manager.as_mut().unwrap().register_for_login_screen(handle.clone());
 
-				thread_manager.as_mut().unwrap().start_mobile_auth(handle.clone());
+				thread_manager.as_mut().unwrap().start_mobile_auth(handle.clone()); //todo remove
 
 				//self.start_mobile_auth(handle.clone());
 			}
@@ -194,7 +239,7 @@ impl MainState {
 		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle)
 	}
 	pub fn start_gateway(&self, handle: AppHandle, user_id: String) -> Result<(), String> {
-		let token = self.tokens.lock().unwrap().get(&user_id).unwrap().clone();
-		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token, user_id)
+		let token = self.get_token(user_id.clone()).ok_or("No token found".to_string())?;
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_gateway(handle, token.to_string(), user_id)
 	}
 }

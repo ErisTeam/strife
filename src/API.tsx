@@ -72,11 +72,38 @@ export default {
 	},
 
 	/**
+	 * Edits a message in the requested channel.
+	 * @param channelId
+	 * @param messageId
+	 * @param content
+	 * @returns edited message
+	 */
+	async editMessage(channelId: string, messageId: string, content: string) {
+		let token = await this.getToken();
+		if (!token) {
+			console.error("No user token found! Can't edit message!");
+			return;
+		}
+		let res = await fetch('https://discord.com/api/v9/channels/' + channelId + '/messages/' + messageId, {
+			method: 'PATCH',
+			headers: {
+				Authorization: token,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				content: content,
+			}),
+		});
+		let resData = await res.json();
+		return resData;
+	},
+
+	/**
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
 	async getToken(userId: string = AppState.userID()) {
-		return (await invoke('get_token', { id: userId })) as string | null;
+		return (await invoke('get_token', { userId })) as string | null;
 	},
 
 	/**

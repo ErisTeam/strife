@@ -2,7 +2,7 @@ use serde::{ Serialize, Deserialize };
 
 use crate::discord::user::{ PublicUser, CurrentUser };
 
-use super::guild::Guild;
+use super::guild::PartialGuild;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
@@ -49,7 +49,7 @@ impl Default for Properties {
 	fn default() -> Self {
 		Self {
 			os: "Windows".to_string(),
-			browser: "Chrome".to_string(),
+			browser: "Discord Client".to_string(),
 			device: String::new(),
 			system_locale: "?".to_string(),
 			browser_user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".to_string(),
@@ -74,10 +74,38 @@ pub struct ReadyData {
 	pub users: Vec<PublicUser>,
 
 	pub user: CurrentUser,
+	pub user_settings_proto: String, //todo decode using protobuf
 
-	pub guilds: Vec<Guild>,
+	pub guilds: Vec<PartialGuild>,
 	pub relationships: Vec<serde_json::Value>,
 
 	pub resume_gateway_url: String,
+	pub session_type: String,
 	pub session_id: String,
+
+	pub guild_join_requests: Vec<serde_json::Value>,
+
+	//guild_experiments: Vec<serde_json::Value>,
+
+	pub geo_ordered_rtc_regions: Vec<String>,
+
+	pub friend_suggestion_count: u64,
+
+	//experiments: Vec<serde_json::Value>,
+
+	pub country_code: String,
+
+	pub consents: serde_json::Value,
+
+	pub connected_accounts: Vec<serde_json::Value>,
+
+	pub auth_session_id_hash: String,
+
+	pub api_code_version: u64,
+
+	pub analytics_token: String,
+
+	pub tutorial: Option<serde_json::Value>,
+
+	pub private_channels: Vec<serde_json::Value>,
 }

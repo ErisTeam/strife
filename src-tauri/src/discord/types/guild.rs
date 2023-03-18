@@ -2,16 +2,25 @@ use serde::{ Deserialize, Serialize };
 
 use crate::discord::user::PublicUser;
 
-use super::{ sticker::Sticker, role::Role };
+use super::{ sticker::Sticker, role::Role, channel::partial_channels::{ GuildChannel, self } };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Guild {
-	version: u64,
-	threads: Vec<serde_json::Value>,
-	stickers: Vec<Sticker>,
-	stage_instances: Vec<serde_json::Value>,
-	roles: Vec<Role>,
-	properties: GuildProperties,
+pub struct PartialGuild {
+	pub version: u64,
+	pub threads: Vec<serde_json::Value>,
+	pub stickers: Vec<Sticker>,
+	pub stage_instances: Vec<serde_json::Value>,
+	pub channels: Vec<partial_channels::GuildChannel>,
+	pub roles: Vec<Role>,
+	pub properties: GuildProperties,
+}
+impl PartialGuild {
+	pub fn get_channel(&self, id: &str) -> Option<GuildChannel> {
+		self.channels
+			.iter()
+			.find(|c| c.id == id)
+			.cloned()
+	}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

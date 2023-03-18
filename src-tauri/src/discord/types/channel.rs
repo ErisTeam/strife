@@ -1,8 +1,33 @@
 use serde::{ Deserialize, Serialize };
+use serde_repr::{ Deserialize_repr, Serialize_repr };
 
 use crate::discord::user;
 
 use super::thread::{ ThreadMetadata, ThreadMember };
+
+pub mod partial_channels {
+	use super::*;
+	#[derive(Debug, Clone, Serialize, Deserialize)]
+	pub struct GuildChannel {
+		pub r#type: ChannelType,
+		pub id: String,
+		pub name: String,
+
+		pub position: Option<u64>,
+	}
+	#[derive(Debug, Clone, Serialize, Deserialize)]
+	pub struct PrivateChannel {
+		pub r#type: ChannelType,
+		pub id: String,
+		pub name: Option<String>,
+
+		pub recipient_ids: Vec<String>,
+		pub is_spam: bool,
+		pub last_message_id: Option<String>,
+		pub flags: u64,
+		pub owner_id: Option<String>,
+	}
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -65,7 +90,7 @@ pub struct ChannelMentionObject {
 	pub name: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum ChannelType {
 	GuildText,

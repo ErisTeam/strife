@@ -40,7 +40,6 @@ impl Flashing for tauri::Window {
 }
 /// Flashes **First** found window
 pub fn flash_window(handle: &tauri::AppHandle) -> Result<(), tauri::Error> {
-	use crate::Flashing;
 	let windows = handle.windows();
 	let window = windows.iter().next().unwrap().1;
 	Ok(window.set_flashing(true)?)
@@ -72,8 +71,8 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
 }
 
 #[tauri::command]
-fn get_token(id: String, state: State<Arc<MainState>>) -> Option<String> {
-	state.tokens.lock().unwrap().get(&id).cloned()
+fn get_token(user_id: String, state: State<Arc<MainState>>) -> Option<String> {
+	state.get_token(user_id)
 }
 
 #[tauri::command]
@@ -100,8 +99,7 @@ async fn test(handle: tauri::AppHandle) {
 
 	use winrt_notification::Toast;
 
-	let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
-	notifications::new_message(Message::default(), &handle).await;
+	notifications::new_message(Message::default(), &handle, None).await;
 }
 
 fn main() {
