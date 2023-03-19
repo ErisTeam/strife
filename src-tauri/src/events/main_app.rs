@@ -3,7 +3,11 @@ use std::{ sync::Arc, fmt::Debug };
 use serde::{ Deserialize };
 use tauri::{ EventHandler, Event, Manager };
 
-use crate::{ main_app_state::{ self, MainState, User }, webview_packets::General };
+use crate::{
+	main_app_state::{ self, MainState, User },
+	webview_packets::General,
+	discord::types::relation_ship::Relationship,
+};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -30,7 +34,7 @@ impl event<General> for GetUserData {
 		let data = user_data.get(&self.user_id);
 		if let Some(data) = data {
 			if let User::ActiveUser(data) = data {
-				return Some(("general", General::UserData { guilds: data.guilds.clone() }));
+				return Some(("general", General::UserData { user: data.user.clone(), users: data.users.clone() }));
 			}
 		} else {
 			println!("No user data for {}", self.user_id);
@@ -40,6 +44,63 @@ impl event<General> for GetUserData {
 
 	fn get_name() -> String {
 		"getUserData".to_string()
+	}
+}
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct GetRelationships {
+	user_id: String,
+}
+impl event<General> for GetRelationships {
+	fn execute(&self, state: Arc<MainState>, _handle: tauri::AppHandle) -> Option<(&str, General)> {
+		let user_data = state.users.lock().unwrap();
+
+		let data = user_data.get(&self.user_id);
+		if let Some(data) = data {
+			if let User::ActiveUser(data) = data {
+				let mut relationships = Vec::new();
+				for relationship in data.relationships.clone() {
+					let user = data.get_user(&relationship.user_id);
+					if let Some(user) = user {
+						relationships.push(Relationship::from_GatewayRelationship(relationship, user.clone()));
+					}
+				}
+
+				return Some(("general", General::Relationships { relationships: relationships }));
+			}
+		} else {
+			println!("No user data for {}", self.user_id);
+		}
+		None
+	}
+
+	fn get_name() -> String {
+		"getRelationships".to_string()
+	}
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct GetGuilds {
+	user_id: String,
+}
+impl event<General> for GetGuilds {
+	fn execute(&self, state: Arc<MainState>, _handle: tauri::AppHandle) -> Option<(&str, General)> {
+		let user_data = state.users.lock().unwrap();
+
+		let data = user_data.get(&self.user_id);
+		if let Some(data) = data {
+			if let User::ActiveUser(data) = data {
+				return Some(("general", General::Guilds { guilds: data.guilds.clone() }));
+			}
+		} else {
+			println!("No user data for {}", self.user_id);
+		}
+		None
+	}
+
+	fn get_name() -> String {
+		"getGuilds".to_string()
 	}
 }
 
@@ -66,6 +127,8 @@ pub fn get_all_events(state: Arc<main_app_state::MainState>, handle: tauri::AppH
 	let h = handle.clone();
 	vec![
 		handle.listen_global("startGateway", start_gateway(state.clone(), h.clone())),
-		GetUserData::register(&state, &handle)
+		GetUserData::register(&state, &handle),
+		GetRelationships::register(&state, &handle),
+		GetGuilds::register(&state, &handle)
 	]
 }

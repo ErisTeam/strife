@@ -17,3 +17,5 @@ pub mod sticker;
 pub mod voice;
 
 pub mod gateway;
+
+pub mod relation_ship;

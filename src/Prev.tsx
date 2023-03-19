@@ -9,7 +9,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { changeState, getUserData, useTaurListener, useTaurListenerOld } from './test';
+import { changeState, getGuilds, getRelationships, getUserData, useTaurListener, useTaurListenerOld } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
@@ -269,7 +269,7 @@ function Prev() {
 					class={buttons.default}
 					onClick={async (e) => {
 						console.log('start gateway');
-						await emit('startGateway', { user_id: AppState.userID() });
+						await emit('startGateway', { userId: AppState.userID() });
 					}}
 				>
 					Start Gateway
@@ -290,15 +290,33 @@ function Prev() {
 				>
 					Test Reconnecting (Broken)
 				</button>
-				<button
-					class={buttons.default}
-					onclick={async (e) => {
-						console.log(AppState.userID());
-						console.log(await getUserData(AppState.userID()));
-					}}
-				>
-					Get User Data
-				</button>
+				<div>
+					<button
+						class={buttons.default}
+						onclick={async (e) => {
+							console.log(AppState.userID());
+							console.log(await getUserData(AppState.userID()));
+						}}
+					>
+						Get User Data
+					</button>
+					<button
+						class={buttons.default}
+						onclick={async (e) => {
+							console.log(await getRelationships(AppState.userID()));
+						}}
+					>
+						Get Relationships
+					</button>
+					<button
+						class={buttons.default}
+						onclick={async (e) => {
+							console.log(await getGuilds(AppState.userID()));
+						}}
+					>
+						Get Guilds
+					</button>
+				</div>
 			</div>
 			<p>{showMsg}</p>
 			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">

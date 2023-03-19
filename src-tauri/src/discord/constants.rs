@@ -12,3 +12,5 @@ pub const VERIFY_TOTP: &str = "https://discord.com/api/v9/auth/mfa/totp";
 pub const GATEWAY_CONNECT: &str = "wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream";
 
 pub const GET_CHANNEL: &str = "https://discord.com/api/v9/channels/";
+
+pub const GET_RELATIONSHIPS: &str = "https://discord.com/api/v9/users/@me/relationships";

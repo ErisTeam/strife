@@ -131,7 +131,14 @@ impl Gateway {
 					println!("Wrong user id {} != {}", self.user_id, data.user.id);
 					return Err(GatewayError::Other);
 				}
-				let user = UserData::new(data.user.clone(), self.token.clone(), data.guilds, data.relationships);
+				let user = UserData::new(
+					data.user.clone(),
+					self.token.clone(),
+					data.users,
+					data.guilds,
+					data.private_channels,
+					data.relationships
+				);
 
 				let mut user_data = self.state.users.lock().unwrap();
 

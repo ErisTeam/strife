@@ -98,6 +98,13 @@ pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
 #[serde(rename_all = "camelCase")]
 pub enum General {
 	UserData {
+		user: crate::discord::user::CurrentUser,
+		users: Vec<crate::discord::user::PublicUser>,
+	},
+	Relationships {
+		relationships: Vec<crate::discord::types::relation_ship::Relationship>,
+	},
+	Guilds {
 		guilds: Vec<PartialGuild>,
 	},
 }

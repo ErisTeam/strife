@@ -3,7 +3,7 @@ use std::{ collections::{ HashMap }, sync::{ Arc, Mutex } };
 use tauri::AppHandle;
 
 use crate::{
-	discord::{ user::CurrentUser, types::guild::PartialGuild },
+	discord::{ user::{ CurrentUser, PublicUser }, types::{ guild::PartialGuild, relation_ship::GatewayRelationship } },
 	event_manager::EventManager,
 	manager::ThreadManager,
 };
@@ -12,20 +12,32 @@ use crate::{
 pub struct UserData {
 	pub user: CurrentUser,
 	token: String,
+
+	pub users: Vec<PublicUser>,
+
 	pub guilds: Vec<PartialGuild>,
-	pub relationships: Vec<serde_json::Value>,
+	pub private_channels: Vec<serde_json::Value>,
+
+	pub relationships: Vec<GatewayRelationship>,
 }
 impl UserData {
 	pub fn new(
 		user: CurrentUser,
 		token: String,
+
+		users: Vec<PublicUser>,
+
 		guilds: Vec<PartialGuild>,
-		relationships: Vec<serde_json::Value>
+		private_channels: Vec<serde_json::Value>,
+
+		relationships: Vec<GatewayRelationship>
 	) -> Self {
 		Self {
 			user,
 			token,
+			users,
 			guilds,
+			private_channels,
 			relationships,
 		}
 	}
@@ -36,6 +48,14 @@ impl UserData {
 				if channel.id == channel_id {
 					return Some(guild);
 				}
+			}
+		}
+		None
+	}
+	pub fn get_user(&self, id: &str) -> Option<&PublicUser> {
+		for user in &self.users {
+			if user.id == id {
+				return Some(user);
 			}
 		}
 		None

@@ -2,7 +2,7 @@ use serde::{ Serialize, Deserialize };
 
 use crate::discord::user::{ PublicUser, CurrentUser };
 
-use super::guild::PartialGuild;
+use super::{ guild::PartialGuild, relation_ship::GatewayRelationship };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
@@ -49,7 +49,7 @@ impl Default for Properties {
 	fn default() -> Self {
 		Self {
 			os: "Windows".to_string(),
-			browser: "Discord Client".to_string(),
+			browser: "Chrome".to_string(), //or Discord Client
 			device: String::new(),
 			system_locale: "?".to_string(),
 			browser_user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".to_string(),
@@ -77,7 +77,7 @@ pub struct ReadyData {
 	pub user_settings_proto: String, //todo decode using protobuf
 
 	pub guilds: Vec<PartialGuild>,
-	pub relationships: Vec<serde_json::Value>,
+	pub relationships: Vec<GatewayRelationship>,
 
 	pub resume_gateway_url: String,
 	pub session_type: String,

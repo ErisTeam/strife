@@ -7,6 +7,7 @@ import { invoke } from '@tauri-apps/api';
 
 type Listener = {
 	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
+	cleanup: () => void;
 };
 
 const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
@@ -43,7 +44,7 @@ function startListener<T extends { type: string }>(
 	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
 	console.log('start gateway NEW', eventName);
 
-	useTaurListener<T>(eventName, (event: Event<T>) => {
+	let clean_up = useTaurListener<T>(eventName, (event: Event<T>) => {
 		let run = true;
 		console.log('event', event.payload);
 		if (condition && !condition(event.payload)) {
@@ -64,6 +65,10 @@ function startListener<T extends { type: string }>(
 			console.log('add listener', eventName);
 			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
 		},
+		cleanup: () => {
+			console.log('a', clean_up);
+			clean_up();
+		},
 	} as Listener;
 }
 
@@ -77,8 +82,11 @@ async function oneTimeListener<T extends { type: string }>(
 	condition: ((event: T) => boolean) | null = null
 ): Promise<T> {
 	return new Promise((resolve) => {
-		let a = startListener<T>(event, condition).on(eventName, (event: T) => {
-			a();
+		let a = startListener<T>(event, condition);
+		a.on(eventName, (event: T) => {
+			console.log('a', a.cleanup, a);
+			a.cleanup();
+
 			resolve(event);
 		});
 	});
@@ -94,9 +102,9 @@ async function startGateway(userId: string) {
 
 async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 	return new Promise((resolve: (value: T) => void) => {
-		let a = startGatewayListener(userId).on(eventName, (event: T) => {
-			a();
-			console.log(a);
+		let a = startGatewayListener(userId);
+		a.on(eventName, (event: T) => {
+			a.cleanup();
 			resolve(event);
 		});
 	});
@@ -105,6 +113,16 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 async function getUserData(userId: string) {
 	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
 	await emit('getUserData', { userId });
+	return await res;
+}
+async function getRelationships(userId: string) {
+	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'relationships');
+	await emit('getRelationships', { userId });
+	return await res;
+}
+async function getGuilds(userId: string) {
+	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'guilds');
+	await emit('getGuilds', { userId });
 	return await res;
 }
 
@@ -120,6 +138,8 @@ export {
 	startGateway,
 	gatewayOneTimeListener,
 	getUserData,
+	getRelationships,
+	getGuilds,
 };
 
 export type { Listener };

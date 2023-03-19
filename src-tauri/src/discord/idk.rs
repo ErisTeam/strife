@@ -1,4 +1,4 @@
-use crate::discord::{ types::channel::Channel };
+use crate::discord::{ types::{ channel::Channel, relation_ship::Relationship } };
 pub async fn get_channel(id: String, token: String) -> Result<Channel, reqwest::Error> {
 	use reqwest::Client;
 	use crate::discord::constants::GET_CHANNEL;
@@ -14,4 +14,14 @@ pub async fn get_avatar(id: String, hash: String) -> Result<Vec<u8>, reqwest::Er
 	} else {
 		Err(resp.err().unwrap())
 	}
+}
+
+pub async fn get_relationships(token: String) -> Result<Vec<Relationship>, reqwest::Error> {
+	use reqwest::Client;
+	use crate::discord::constants::GET_RELATIONSHIPS;
+	let client = Client::new();
+	let res = client.get(GET_RELATIONSHIPS).header("Authorization", token).send().await?;
+	let relationships = res.json::<Vec<Relationship>>().await?;
+	println!("{:?}", relationships);
+	Ok(relationships)
 }

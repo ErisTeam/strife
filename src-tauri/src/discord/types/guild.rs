@@ -23,6 +23,10 @@ impl PartialGuild {
 	}
 }
 
+///todo <br>
+/// https://discord.com/developers/docs/resources/guild#guild-object
+pub struct Guild {}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuildMember {
 	pub user: Option<PublicUser>,
