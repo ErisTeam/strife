@@ -10,7 +10,7 @@ function Redirect() {
 			navigate('/login');
 			console.log('navigated to login');
 		} else {
-			const token = await API.getToken(AppState.userID());
+			const token = await API.getToken();
 			if (token == null) {
 				navigate('/login');
 				console.log('navigated to login');

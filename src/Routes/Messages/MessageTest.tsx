@@ -19,8 +19,8 @@ interface messageCreate extends i {
 	};
 }
 
-const channelId = '419544210027446276';
-const guildId = '419544209923522560';
+const channelId = '909523980640215060';
+const guildId = '@me';
 
 import style from './../../prev.module.css';
 

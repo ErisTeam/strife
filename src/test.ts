@@ -110,21 +110,6 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 	});
 }
 
-async function getUserData(userId: string) {
-	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
-	await emit('getUserData', { userId });
-	return await res;
-}
-async function getRelationships(userId: string) {
-	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'relationships');
-	await emit('getRelationships', { userId });
-	return await res;
-}
-async function getGuilds(userId: string) {
-	let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'guilds');
-	await emit('getGuilds', { userId });
-	return await res;
-}
 
 type GatewayEvents = 'messageCreate' | 'userData';
 
@@ -137,9 +122,7 @@ export {
 	startGatewayListener,
 	startGateway,
 	gatewayOneTimeListener,
-	getUserData,
-	getRelationships,
-	getGuilds,
+
 };
 
 export type { Listener };

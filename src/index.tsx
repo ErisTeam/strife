@@ -18,9 +18,9 @@ import Loading from './Routes/Loading/Loading';
 import './style.css';
 
 import Redirect from './Redirect';
+import API from './API';
 
 const App: Component = () => {
-	
 	const AppState: any = useAppState();
 
 	const [id] = createResource(async () => {
@@ -35,13 +35,22 @@ const App: Component = () => {
 			<Show fallback={Loading} when={!id.loading}>
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
+						<div class="dev">
+							<button
+								onclick={async (e) => {
+									console.log(await API.updateGuilds());
+								}}
+							>
+								Update Guilds
+							</button>
+						</div>
 						<Routes>
 							{/* <Redirect /> */}
 							<Route path="/" component={Prev}></Route>
 
 							<Route path="/messagetest" component={MessageTest} />
 
-							<Route path={'/loading'} component={Loading}/>
+							<Route path={'/loading'} component={Loading} />
 
 							<Route path={'/login'} component={Login}></Route>
 

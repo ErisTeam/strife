@@ -9,7 +9,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './API';
-import { changeState, getGuilds, getRelationships, getUserData, useTaurListener, useTaurListenerOld } from './test';
+import { changeState, useTaurListener, useTaurListenerOld } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
@@ -295,7 +295,7 @@ function Prev() {
 						class={buttons.default}
 						onclick={async (e) => {
 							console.log(AppState.userID());
-							console.log(await getUserData(AppState.userID()));
+							console.log(await API.getUserData(AppState.userID()));
 						}}
 					>
 						Get User Data
@@ -303,18 +303,10 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await getRelationships(AppState.userID()));
+							console.log(await API.getRelationships(AppState.userID()));
 						}}
 					>
 						Get Relationships
-					</button>
-					<button
-						class={buttons.default}
-						onclick={async (e) => {
-							console.log(await getGuilds(AppState.userID()));
-						}}
-					>
-						Get Guilds
 					</button>
 				</div>
 			</div>

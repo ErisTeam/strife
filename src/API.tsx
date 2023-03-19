@@ -1,15 +1,113 @@
 // SolidJS
 import { useAppState } from './AppState';
-
+import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 // Tauri
 import { invoke } from '@tauri-apps/api/tauri';
-
+import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
 import { GuildType, ChannelType, Relationship } from './discord';
+interface GatewayEvent {
+	user_id: string;
+	type: string;
+}
+interface a<T> {
+	eventName: string;
+	listener: (event: T) => void;
+}
 
 const AppState: any = useAppState();
+type Listener = {
+	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
+	cleanup: () => void;
+};
+const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
+function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => void) {
+	const unlist = listen(eventName, on_event);
+	return tryOnCleanup(async () => {
+		console.log('cleanup', eventName);
+		(await unlist)();
+	});
+}
+function startListener<T extends { type: string }>(
+	eventName: string,
+	condition: ((event: T) => boolean) | null = null
+) {
+	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
+	console.log('start gateway NEW', eventName);
+
+	let clean_up = useTaurListener<T>(eventName, (event: Event<T>) => {
+		let run = true;
+		console.log('event', event.payload);
+		if (condition && !condition(event.payload)) {
+			run = false;
+		}
+		if (run) {
+			listeners.forEach((l) => {
+				console.log(' event', event.payload.type, l.eventName);
+				if (l.eventName === event.payload.type) {
+					l.listener(event.payload);
+				}
+			});
+		}
+	});
+	return {
+		on: <T,>(eventName: string, listener: (event: T) => void) => {
+			listeners.add({ eventName, listener });
+			console.log('add listener', eventName);
+			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
+		},
+		cleanup: () => {
+			console.log('a', clean_up);
+			clean_up();
+		},
+	} as Listener;
+}
+function startGatewayListener(userId: string) {
+	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
+}
+async function oneTimeListener<T extends { type: string }>(
+	event: string,
+	eventName: string,
+	condition: ((event: T) => boolean) | null = null
+): Promise<T> {
+	return new Promise((resolve) => {
+		let a = startListener<T>(event, condition);
+		a.on(eventName, (event: T) => {
+			console.log('a', a.cleanup, a);
+			a.cleanup();
+
+			resolve(event);
+		});
+	});
+}
+async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
+	return new Promise((resolve: (value: T) => void) => {
+		let a = startGatewayListener(userId);
+		a.on(eventName, (event: T) => {
+			a.cleanup();
+			resolve(event);
+		});
+	});
+}
 
 export default {
+	async getUserData(userId: string) {
+		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
+		await emit('getUserData', { userId });
+		return await res;
+	},
+	async getRelationships(userId: string) {
+		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'relationships');
+		await emit('getRelationships', { userId });
+		return await res;
+	},
+	async getGuilds(userId: string) {
+		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'guilds');
+		await emit('getGuilds', { userId });
+		console.log('getGuilds', await res);
+		return await res;
+	},
+
 	/**
 	 * Get messages of the given channel.
 	 * @param channelId
@@ -106,18 +204,12 @@ export default {
 		return (await invoke('get_token', { userId })) as string | null;
 	},
 
-	/**
-	 * Updates the AppState of `currentUser`
-	 */
 	async updateCurrentUserID() {
 		let response = await invoke('get_last_user');
 		AppState.setUserID(response);
 		return;
 	},
 
-	/**
-	 * Updates the AppState of `currentChannels`
-	 */
 	async updateCurrentChannels(id: string) {
 		let token = await this.getToken();
 		if (!token) {
@@ -151,104 +243,40 @@ export default {
 		});
 	},
 
-	/**
-	 * Updates the AppState of `guilds`
-	 */
 	async updateGuilds() {
-		/* 		let userData = await invoke('get_user_data', { id: AppState.userID() });
-		console.log(userData); */
-		let token = await this.getToken();
-		if (!token) {
-			console.error("No user token found! Can't update guilds!");
-			return;
-		}
+		console.log(await this.getGuilds(AppState.userID()));
+		// let guild: GuildType = {
+		// 	id: res.id,
+		// 	name: res.name,
+		// 	icon: res.icon,
+		// 	description: res.description,
+		// 	splash: res.splash,
+		// 	member_count: res.approximate_member_count,
+		// 	presence_count: res.approximate_presence_count,
+		// 	features: res.features,
+		// 	banner: res.banner,
+		// 	ownerId: res.owner_id,
+		// 	roles: res.roles,
+		// 	system_channel_id: res.system_channel_id,
+		// };
 
-		AppState.setUserGuilds([]);
-
-		const url = 'https://discord.com/api/v9/users/@me/affinities/guilds';
-		const resDataponse = await fetch(url, {
-			method: 'GET',
-			headers: {
-				Authorization: token,
-			},
-		});
-
-		let resData = await resDataponse.json();
-
-		let guildIds: string[] = [];
-
-		resData.guild_affinities.forEach((e: any) => {
-			guildIds.push(e.guild_id);
-		});
-
-		guildIds.forEach(async (id) => {
-			const url = `https://discord.com/api/v9/guilds/${id}?with_counts=true`;
-			const resDataponse = await fetch(url, {
-				method: 'GET',
-				headers: {
-					Authorization: token as string,
-				},
-			});
-
-			let resData = await resDataponse.json();
-
-			let guild: GuildType = {
-				id: resData.id,
-				name: resData.name,
-				icon: resData.icon,
-				description: resData.description,
-				splash: resData.splash,
-				member_count: resData.approximate_member_count,
-				presence_count: resData.approximate_presence_count,
-				features: resData.features,
-				banner: resData.banner,
-				ownerId: resData.owner_id,
-				roles: resData.roles,
-				system_channel_id: resData.system_channel_id,
-			};
-
-			AppState.setUserGuilds((prev: any) => [...prev, guild]);
-		});
+		// AppState.setUserGuilds((prev: any) => [...prev, guild]);
 	},
 
-	/**
-	 * Updates the AppState of `relationships`
-	 */
 	async updateRelationships() {
-		let token = await this.getToken();
-		if (!token) {
-			console.error("No user token found! Can't update relationships!");
-			return;
-		}
-
-		AppState.setRelationshpis([]);
-
-		const url = 'https://discord.com/api/v9//users/@me/relationships';
-		const resDataponse = await fetch(url, {
-			method: 'GET',
-			headers: {
-				Authorization: token,
-			},
-		});
-
-		const resData = await resDataponse.json();
-
-		resData.forEach((e: any) => {
-			const relationship: Relationship = {
-				id: e.id,
-				type: e.type,
-				user: {
-					avatar: e.user.avatar,
-					avatar_decoration: e.user.avatar_decoration,
-					discriminator: e.user.discriminator,
-					display_name: e.user.display_name,
-					id: e.user.id,
-					public_flags: e.user.public_flags,
-					username: e.user.username,
-				},
-			};
-
-			AppState.setRelationshpis((prev: any) => [...prev, relationship]);
-		});
+		// const relationship: Relationship = {
+		// 	id: e.id,
+		// 	type: e.type,
+		// 	user: {
+		// 		avatar: e.user.avatar,
+		// 		avatar_decoration: e.user.avatar_decoration,
+		// 		discriminator: e.user.discriminator,
+		// 		display_name: e.user.display_name,
+		// 		id: e.user.id,
+		// 		public_flags: e.user.public_flags,
+		// 		username: e.user.username,
+		// 	},
+		// };
+		// AppState.setRelationshpis((prev: any) => [...prev, relationship]);
 	},
 };
