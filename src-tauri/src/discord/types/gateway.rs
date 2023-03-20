@@ -1,3 +1,5 @@
+use std::{iter::Map, collections::HashMap};
+
 use serde::{ Serialize, Deserialize };
 
 use crate::discord::user::{ PublicUser, CurrentUser };
@@ -6,8 +8,8 @@ use super::{ guild::PartialGuild, relation_ship::GatewayRelationship };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub guild_versions: Option<serde_json::Value>,
+
+	pub guild_versions: HashMap<String,serde_json::Value>,
 	pub highest_last_message_id: String,
 	pub read_state_version: i64,
 	pub user_guild_settings_version: i64,
@@ -51,7 +53,7 @@ impl Default for Properties {
 			os: "Windows".to_string(),
 			browser: "Chrome".to_string(), //or Discord Client
 			device: String::new(),
-			system_locale: "?".to_string(),
+			system_locale: "en-US".to_string(),
 			browser_user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".to_string(),
 			browser_version: "91.0.4472.124".to_string(),
 			os_version: "10".to_string(),

@@ -1,6 +1,7 @@
-use std::{ sync::Arc, net::TcpStream, time::Instant };
+use std::{ sync::Arc, net::TcpStream, time::Instant, iter::Map, collections::HashMap };
 
 use flate2::Decompress;
+use serde_json::json;
 use tauri::{ AppHandle, Manager };
 use websocket::{ OwnedMessage, sync::Client, native_tls::TlsStream, CloseData };
 
@@ -266,25 +267,70 @@ impl Gateway {
 	}
 
 	fn init_message(&self, client: &mut Client<TlsStream<TcpStream>>, token: String) {
-		let data = GatewayPackets::Identify {
-			token,
-			capabilities: 4093,
+		// let data = GatewayPackets::Identify {
+		// 	token,
+		// 	capabilities: 4093,
 
-			properties: Properties::default(),
-			presence: Presence::default(),
-			compress: false,
-			client_state: ClientState {
-				guild_versions: None,
-				highest_last_message_id: "0".to_string(),
-				read_state_version: 0,
-				user_guild_settings_version: -1,
-				user_settings_version: -1,
-				private_channels_version: "0".to_string(),
-				api_code_version: 0,
-			},
-		};
-		println!("{:?}", serde_json::to_string(&data).unwrap());
-		client.send_message(&OwnedMessage::Text(serde_json::to_string(&data).unwrap())).unwrap();
+		// 	properties: Properties::default(),
+		// 	presence: Presence::default(),
+		// 	compress: false,
+		// 	client_state: ClientState {
+		// 		guild_versions: HashMap::new(),
+		// 		highest_last_message_id: "0".to_string(),
+		// 		read_state_version: 0,
+		// 		user_guild_settings_version: -1,
+		// 		user_settings_version: -1,
+		// 		private_channels_version: "0".to_string(),
+		// 		api_code_version: 0
+		// 	},
+		// };
+		//println!("{:?}", serde_json::to_string(&data).unwrap());
+		let json = json!(
+			{
+				"op": 2,
+				"d": {
+					"token": token,
+					"capabilities": 4093,
+					"properties": {
+						"os": "Windows",
+						"browser": "Chrome",
+						"device": "",
+						"system_locale": "pl-PL",
+						"browser_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+						"browser_version": "111.0.0.0",
+						"os_version": "10",
+						"referrer": "https://www.google.com/",
+						"referring_domain": "www.google.com",
+						"search_engine": "google",
+						"referrer_current": "https://www.google.com/",
+						"referring_domain_current": "www.google.com",
+						"search_engine_current": "google",
+						"release_channel": "stable",
+						"client_build_number": 181832,
+						"client_event_source": null,
+						"design_id": 0
+					},
+					"presence": {
+						"status": "unknown",
+						"since": 0,
+						"activities": [],
+						"afk": false
+					},
+					"compress": false,
+					"client_state": {
+						"guild_versions": {},
+						"highest_last_message_id": "0",
+						"read_state_version": 0,
+						"user_guild_settings_version": -1,
+						"user_settings_version": -1,
+						"private_channels_version": "0",
+						"api_code_version": 0
+					}
+				}
+			}
+		);
+		
+		client.send_message(&OwnedMessage::Text(serde_json::to_string(&json).unwrap())).unwrap();
 	}
 
 	fn on_close(&self, reason: Option<CloseData>) -> Result<GatewayResult, GatewayError> {
@@ -328,6 +374,8 @@ impl Gateway {
 
 		let mut buffer = Vec::<u8>::new();
 
+		//self.init_message(&mut client, self.token.clone());
+
 		loop {
 			let message = client.recv_message();
 
@@ -343,6 +391,7 @@ impl Gateway {
 
 			if message.is_ok() {
 				let message = message.unwrap();
+				println!("control {:?}",message.is_control());
 				match message {
 					OwnedMessage::Close(reason) => {
 						println!("Close {:?}", reason);
@@ -368,8 +417,16 @@ impl Gateway {
 							buffer.clear();
 						}
 					}
-					OwnedMessage::Pong(d) => {
-						println!("{}", String::from_utf8(d).unwrap());
+					OwnedMessage::Ping(bin) => {
+						println!("ping {:?}",bin);
+						client.send_message(&OwnedMessage::Pong(bin));
+					}
+					OwnedMessage::Pong(bin) => {
+						println!("pong {:?}",bin);
+						client.send_message(&OwnedMessage::Ping(bin));
+						
+						// println!("{:?}",d);
+						// println!("pong {}", String::from_utf8(d).unwrap());
 					}
 					m => {
 						println!("Not text {:?}", m);
