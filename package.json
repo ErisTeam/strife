@@ -4,7 +4,8 @@
 	"description": "",
 	"scripts": {
 		"dev": "vite",
-		"devv": "tauri dev",
+		"tdev": "tauri dev",
+		"devv": " echo gami to furras",
 		"tauri": "tauri",
 		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
 	},

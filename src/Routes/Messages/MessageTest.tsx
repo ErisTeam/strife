@@ -19,8 +19,8 @@ interface messageCreate extends i {
 	};
 }
 
-const channelId = '909523980640215060';
-const guildId = '@me';
+const channelId = '419544210027446276';
+const guildId = '419544210027446273';
 
 import style from './../../prev.module.css';
 
@@ -43,19 +43,19 @@ function MessageTest() {
 		timeStyle: 'medium',
 	});
 
-	(async () => {
-		let res = await API.getMessages(channelId);
-		console.log(res);
-		setMessages((a) => [
-			...a,
-			...res
-				.map((message: any) => ({
-					...message,
-					timestamp: new Date(message.timestamp),
-				}))
-				.reverse(),
-		]);
-	})();
+	// (async () => {
+	// 	let res = await API.getMessages(channelId);
+	// 	console.log(res);
+	// 	setMessages((a) => [
+	// 		...a,
+	// 		...res
+	// 			.map((message: any) => ({
+	// 				...message,
+	// 				timestamp: new Date(message.timestamp),
+	// 			}))
+	// 			.reverse(),
+	// 	]);
+	// })();
 
 	const listener = startGatewayListener(AppState.userID());
 

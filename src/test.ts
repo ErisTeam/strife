@@ -75,6 +75,29 @@ function startListener<T extends { type: string }>(
 function startGatewayListener(userId: string) {
 	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
 }
+interface i {
+	type: string;
+}
+interface messageCreate extends i {
+	type: 'messageCreate';
+	user_id: string;
+	data: {
+		content: string;
+		author: {
+			username: string;
+		};
+		id: string;
+		timestamp: string;
+		channel_id: string;
+	};
+}
+function onMessageCreate(listener: Listener, channelId: string) {
+	return listener.on<messageCreate>('messageCreate', (event) => {
+		if (event.data.channel_id === channelId) {
+			console.log('message', event);
+		}
+	});
+}
 
 async function oneTimeListener<T extends { type: string }>(
 	event: string,

@@ -26,6 +26,7 @@ base64 = "0.21.0"
 
 # Async functionality 🗼
 tokio = { version = "1", features = ["full"] }
+futures-util = "0.3.27"
 
 # idk idc
 flate2 = { version = "1.0.25" }
@@ -45,7 +46,11 @@ winrt-notification = "0.5.1"
 
 
 reqwest = {version = "0.11.13",features = ["json"] }
+
+#🕸socket
 websocket = "0.26.5"
+tokio-tungstenite = {version= "0.18.0",features= ["rustls-tls-webpki-roots"] }
+
 
 [features]
 # by default Tauri runs in production mode
