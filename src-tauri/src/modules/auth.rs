@@ -146,7 +146,11 @@ impl Auth {
                 "code":code
             }))
 			.send().await
-			.unwrap();
+			;
+		if let Err(err) = res{
+			return Err(());
+		}
+		let res = res.unwrap();
 		let text = res.text().await.unwrap();
 		println!("json: {}", text);
 		let res = serde_json::from_str::<MFAResponse>(&text);

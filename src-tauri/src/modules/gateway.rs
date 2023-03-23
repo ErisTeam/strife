@@ -4,14 +4,16 @@ use std::{
     iter::Map,
     net::TcpStream,
     sync::Arc,
-    time::{Duration, Instant},
+    time::{Duration, Instant}, io::Write,
 };
 
+use base64::Engine;
 use flate2::Decompress;
 use futures_util::{future::select, stream::SplitStream, Future, FutureExt, SinkExt};
 use serde_json::json;
+use sha2::Digest;
 use tauri::{AppHandle, Manager};
-use tokio::sync::oneshot;
+use tokio::{sync::oneshot, fs::File};
 use tokio_tungstenite::{
     connect_async_tls_with_config, tungstenite::Message, MaybeTlsStream, WebSocketStream,
 };
@@ -96,7 +98,6 @@ impl Gateway {
             use_resume_url: false,
         }
     }
-
     async fn handle_events(
         &mut self,
         client: &mut futures_util::stream::SplitSink<
@@ -452,7 +453,26 @@ impl Gateway {
                                     )
                                     .unwrap();
 
-                                let out = String::from_utf8(buf).unwrap();
+                                let out = String::from_utf8(buf.clone()).unwrap();
+
+
+                                use::sha2::Sha256;
+
+                                let mut hasher = Sha256::new();
+                                let a;
+                                if buf.len() < 256*2{
+                                    a = 0..buf.len();
+                                }else{
+                                    a = buf.len() - 256..buf.len();
+                                }
+                                hasher.update(&buf[a]);
+                                let a = hasher.finalize();
+                                let name = base64::engine::general_purpose::URL_SAFE.encode(a);
+                                println!("{:?}",name);
+                                let p = self.handle.path_resolver().app_cache_dir().unwrap();
+                                let mut file = std::fs::File::create(p.join(format!("d/{}.json",name))).unwrap();
+                                file.write_all(out.as_bytes());
+
                                 // println!("Gateway recived: {:?}", out);
                                 let json: GatewayIncomingPacket =
                                     serde_json::from_str(out.as_str()).unwrap();

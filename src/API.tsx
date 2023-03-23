@@ -94,6 +94,7 @@ export default {
 	async getUserData(userId: string) {
 		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
 		await emit('getUserData', { userId });
+		
 		return await res;
 	},
 	async getRelationships(userId: string) {

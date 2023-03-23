@@ -37,7 +37,7 @@ pub async fn new_message(
         if let Ok(resp) = resp {
             file.write_all(&resp).unwrap();
         }
-        icon = Some(path.join(format!("{}.webp", message.author.id)));
+        icon = Some(path.join(format!("avatars/{}.webp", message.author.id)));
     } else {
         icon = None;
     }

@@ -22,6 +22,7 @@ extern crate tokio;
 
 use std::sync::Arc;
 
+use log::info;
 use serde::Deserialize;
 use tauri::{Manager, State, UserAttentionType};
 use windows::Win32::{Foundation::BOOL, UI::WindowsAndMessaging::FlashWindow};
@@ -122,7 +123,40 @@ async fn test(handle: tauri::AppHandle) {
 }
 
 fn main() {
+    fern::Dispatch::new()
+    .format(|out, message, record| {
+
+        let level = record.level().to_string() + match record.level() {
+            log::Level::Info => {
+                return "";
+            }
+            log::Level::Warn =>{
+                return "⚠";
+            }
+
+            level=>{
+                return "";
+            }
+        };
+
+        out.finish(format_args!(
+            "Gami to furras: {}[{}][{}] {}",
+            chrono::Local::now().format("[%y-%b-%d %H:%M:%S]"),
+            record.target(),
+            
+            record.level(),
+            message
+        ))
+    })
+    .level(log::LevelFilter::Debug)
+    .chain(std::io::stdout())
+    .chain(fern::log_file("output.log").unwrap())
+    .apply().unwrap();
+
     println!("Starting");
+
+
+    info!("test");
 
     let main_state = Arc::new(MainState::new());
 
