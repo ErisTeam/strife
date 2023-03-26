@@ -47,6 +47,7 @@ const App: Component = () => {
 							>
 								Update Guilds
 							</button>
+							<Anchor state="LoginScreen" href='/'>Prev</Anchor>
 						</div>
 						<Routes>
 							{/* <Redirect /> */}
@@ -79,6 +80,7 @@ import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
 import MessageTest from './Routes/Messages/MessageTest';
 import { invoke } from '@tauri-apps/api';
 import Error from './Routes/Error/Error';
+import Anchor from './Components/Anchor/Anchor';
 
 attachDevtoolsOverlay();
 

@@ -8,7 +8,7 @@ use websocket::OwnedMessage;
 
 use crate::{
     main_app_state::MainState,
-    modules::{gateway::Gateway, mobile_auth_gateway_handler::MobileAuthHandler},
+    modules::{gateway::Gateway, mobile_auth_gateway::MobileAuthHandler},
 };
 
 /// # Information
@@ -84,20 +84,19 @@ impl ThreadManager {
     }
 
     pub fn stop_mobile_auth(&mut self) {
-        println!("stop_mobile_auth");
+        debug!("stop_mobile_auth");
         if let Some(sender) = self.senders.get("main") {
-            println!("s");
             if let Some(index) = sender
                 .iter()
                 .position(|s| matches!(s, Modules::MobileAuth(_)))
             {
                 let r = self.senders.get_mut("main").unwrap().remove(index);
-                println!("{:?}", r);
+                debug!("recived: {:?}", r);
                 if let Modules::MobileAuth(sender) = r {
                     if !sender.is_closed() {
                         sender.blocking_send(OwnedMessage::Close(None)).unwrap();
                     }
-                    println!("Mobile auth stopped")
+                    info!("Mobile auth stopped")
                 }
             }
         }
@@ -128,13 +127,13 @@ impl ThreadManager {
             if let Some(sender) = sender.iter().find(|s| matches!(s, Modules::Gateway(_))) {
                 if let Modules::Gateway(sender) = sender {
                     if !sender.is_closed() {
-                        println!("Gateway already running");
+                        warn!("Gateway already running");
                         return Err("Gateway already running".to_string());
                     }
                 }
             }
         }
-        println!("Starting gateway");
+        info!("Starting gateway");
 
         let (sender, reciver) = mpsc::channel(32);
         let mut gate = Gateway::new(

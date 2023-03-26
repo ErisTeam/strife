@@ -1,4 +1,4 @@
-pub mod mobile_auth_gateway_handler;
+pub mod mobile_auth_gateway;
 pub mod gateway;
 pub mod auth;
 

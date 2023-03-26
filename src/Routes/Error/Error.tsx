@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api';
-import { createResource } from 'solid-js';
+import { createResource, Match, Show, Switch } from 'solid-js';
 import { useAppState } from '../../AppState';
 
 const subReddits = ['aww'];
@@ -50,11 +50,32 @@ export default () => {
 	});
 	return (
 		<div class={style.container}>
-			{() => {
+			<Show
+				when={!image.loading}
+				fallback={
+					<div class={style.fallback}>
+						<h1 class={style.loading}>Loading</h1>
+					</div>
+				}
+			>
+				<Switch>
+					<Match when={image()?.type == 'image'}>
+						<div>
+							<img class={style.media} src={image()?.src} />
+						</div>
+					</Match>
+					<Match when={image()?.type == 'video'}>
+						<div class={style.media}>
+							<video src={image()?.src} autoplay loop muted />
+						</div>
+					</Match>
+				</Switch>
+			</Show>
+			{/* {() => {
 				if (image.loading)
 					return (
 						<div class={style.fallback}>
-							<h1>Loading...</h1>
+							<h1 class={style.loading}>Loading</h1>
 						</div>
 					);
 				else if (image()?.type == 'image')
@@ -69,7 +90,7 @@ export default () => {
 							<video src={image()?.src} autoplay loop muted />
 						</div>
 					);
-			}}
+			}} */}
 			<h1 class={style.message}>UwU, somethin went wong</h1>
 		</div>
 	);

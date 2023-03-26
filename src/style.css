@@ -142,4 +142,7 @@ body {
 	top: 30px;
 	width: fit-content;
 	height: fit-content;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
 }

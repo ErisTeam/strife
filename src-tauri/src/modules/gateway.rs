@@ -1,18 +1,16 @@
 use std::{collections::HashMap, io::Write, net::TcpStream, sync::Arc, time::Duration};
 
-use base64::Engine;
 use flate2::Decompress;
 use futures_util::SinkExt;
 
-use log::{debug, error, info, warn};
-use sha2::Digest;
+use log::{error, info, warn};
 use tauri::{AppHandle, Manager};
 use tokio_tungstenite::{
     connect_async_tls_with_config,
     tungstenite::{protocol::CloseFrame, Message},
     WebSocketStream,
 };
-use websocket::{native_tls::TlsStream, sync::Client, CloseData, OwnedMessage};
+use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};
 
 use crate::{
     discord::{
@@ -40,6 +38,7 @@ pub enum GatewayResult {
     Close,
     Reconnect,
     ReconnectUsingResumeUrl,
+    Continue,
 }
 
 #[derive(Debug)]
@@ -57,8 +56,6 @@ pub struct Gateway {
 
     token: String,
     user_id: String,
-
-    pub running: bool,
 
     handle: AppHandle,
 
@@ -79,7 +76,7 @@ impl Gateway {
         Self {
             state,
             timeout_ms: 0,
-            running: false,
+
             handle,
             reciver,
             token,
@@ -233,15 +230,13 @@ impl Gateway {
         client
     }
     pub async fn run(&mut self) {
-        self.running = true;
-
         while let Ok(result) = self.connect().await {
-            print!("Reconnecting");
+            info!("Reconnecting");
             if matches!(result, GatewayResult::ReconnectUsingResumeUrl) {
                 self.use_resume_url = true;
             }
         }
-        self.running = false;
+
         println!("shutting down gateway")
     }
 
@@ -479,7 +474,7 @@ impl Gateway {
                         }
 
                         tokio_tungstenite::tungstenite::Message::Close(frame) => {
-                            info!(target: "Gateway","Close {:?}", frame);
+                            info!("Close {:?}", frame);
                             return self.on_close(frame);
 
                             // return self.on_close(reason);
@@ -490,7 +485,7 @@ impl Gateway {
                 }
 
                 if let Ok(message) = self.reciver.try_recv() {
-                    info!(target: "Gateway","recived {:?}", message);
+                    info!("recived {:?}", message);
                     if matches!(message, OwnedMessage::Close(_)) {
                         return Ok(GatewayResult::Close);
                     }
@@ -520,11 +515,11 @@ impl Gateway {
         use tokio::select;
         let res = select! {
             res = recive_loop => {
-                error!(target: "Gateway","error while Sending {:?}",res);
+                error!("error while Sending {:?}",res);
                 Err(GatewayError::Other)
             },
             res = main_loop =>{
-                info!(target: "Gateway","recive_loop ended {:?}",res);
+                info!("recive_loop ended {:?}",res);
                 res
             }
         };

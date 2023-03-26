@@ -4,11 +4,17 @@ import logo from '../../../src-tauri/icons/128x128.png';
 // Style
 import style from './Loading.module.css';
 
+import buttons from "../../Styles/Buttons.module.css";
+
 const Loading = () => {
 	return (
 		<div class={style.main}>
-			<img class={style.logo} src="/src-tauri/icons/128x128.png" alt="" />
-			<h3 class={style.loading}>Loading</h3>
+		<iframe id='frame' src="/splashscreen.html" style={{"width":"200px","height":"400px"}}></iframe>
+		<button class={buttons.default} onClick={()=>{
+			let frame:HTMLIFrameElement = document.getElementById('frame') as HTMLIFrameElement;
+			frame.src += "";
+		}}>Reload</button>
+		</div>
 
 		</div>
 	);

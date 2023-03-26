@@ -1,14 +1,13 @@
 use std::{
     net::TcpStream,
-    sync::Arc,
     time::{Duration, Instant},
 };
 
-use futures_util::{stream::SplitSink, SinkExt, StreamExt};
+use futures_util::SinkExt;
+use log::{debug, warn};
 use serde::Serialize;
 use tokio_tungstenite::{
-    connect_async_tls_with_config,
-    tungstenite::{client::IntoClientRequest, stream::MaybeTlsStream, Error, Message},
+    tungstenite::{Error, Message},
     WebSocketStream,
 };
 use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};
@@ -54,7 +53,7 @@ pub async fn send_heartbeat<T: Serialize>(
     //println!("{} {} {}", authed, since_last_hearbeat.elapsed().as_millis(), heartbeat_interval);
     if authed && since_last_hearbeat.elapsed() > heartbeat_interval {
         if !*ack_recived {
-            println!("not ack_recived");
+            warn!("not ack_recived");
             return Ok(false);
         }
         *ack_recived = false;
@@ -62,7 +61,7 @@ pub async fn send_heartbeat<T: Serialize>(
         if let Some(data) = data {
             let heartbeat = Message::Text(serde_json::to_string(&data).unwrap());
             write.send(heartbeat).await?;
-            println!("Heartbeat sent");
+            debug!("Heartbeat sent");
         }
     }
     Ok(true)
