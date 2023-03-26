@@ -7,11 +7,10 @@ import style from './Loading.module.css';
 const Loading = () => {
 	return (
 		<div class={style.main}>
-			<div class={style.logo}>
-				<img src={logo} alt="" />
-			</div>
-		</div>
+			<img class={style.logo} src="/src-tauri/icons/128x128.png" alt="" />
+			<h3 class={style.loading}>Loading</h3>
 
+		</div>
 	);
 };
 

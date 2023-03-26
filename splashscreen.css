@@ -2,8 +2,10 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	background-color: #1f1f20;
+
+	font-family: monospace;
 }
+
 .main {
 	position: relative;
 	width: 100%;
@@ -12,22 +14,132 @@
 	justify-content: center;
 	align-items: center;
 }
-.logo {
-	animation: spin 3.5s ease-in-out infinite;
-	/* background-color: #3c0f0f;
-	border-radius: 50%;
-	padding: 20px; */
+h3 {
+	color: #fff;
+	font-size: 2.5rem;
+	text-align: center;
 }
-@keyframes spin {
+.loading::after {
+	content: '...';
+	animation: Loading 2s ease-in-out infinite;
+}
+@keyframes Loading {
 	0% {
-		transform: rotate(-360deg);
+		content: '';
 	}
-
+	25% {
+		content: '.';
+	}
 	50% {
-		transform: rotate(0);
+		content: '..';
 	}
-
 	100% {
-		transform: rotate(-360deg);
+		content: '...';
 	}
 }
+.furras::after {
+	content: 'Gami to furras';
+	animation: furras 5s ease-in-out infinite;
+}
+@keyframes furras {
+	0% {
+		content: '';
+	}
+	7% {
+		content: 'G';
+	}
+	14% {
+		content: 'Ga';
+	}
+	21% {
+		content: 'Gam';
+	}
+	28% {
+		content: 'Gami';
+	}
+	35% {
+		content: 'Gami t';
+	}
+	42% {
+		content: 'Gami to';
+	}
+	49% {
+		content: 'Gami to f';
+	}
+	56% {
+		content: 'Gami to fu';
+	}
+	63% {
+		content: 'Gami to fur';
+	}
+	70% {
+		content: 'Gami to furr';
+	}
+	77% {
+		content: 'Gami to furra';
+	}
+	84% {
+		content: 'Gami to furras';
+	}
+}
+
+.logo {
+animation: jello 5s infinite;
+}
+
+@keyframes jello {
+	0% {
+		-webkit-transform: scale3d(1, 1, 1);
+		transform: scale3d(1, 1, 1);
+	}
+	15% {
+		-webkit-transform: scale3d(1.25, 0.75, 1);
+		transform: scale3d(1.25, 0.75, 1);
+	}
+	20% {
+		-webkit-transform: scale3d(0.75, 1.25, 1);
+		transform: scale3d(0.75, 1.25, 1);
+	}
+	24% {
+		-webkit-transform: scale3d(1.15, 0.85, 1);
+		transform: scale3d(1.15, 0.85, 1);
+	}
+	33% {
+		-webkit-transform: scale3d(0.95, 1.05, 1);
+		transform: scale3d(0.95, 1.05, 1);
+	}
+	38% {
+		-webkit-transform: scale3d(1.05, 0.95, 1);
+		transform: scale3d(1.05, 0.95, 1);
+	}
+	50% {
+		-webkit-transform: scale3d(1, 1, 1);
+		transform: scale3d(1, 1, 1);
+	}
+	
+	65% {
+		-webkit-transform: scale3d(0.75, 1.25, 1);
+		transform: scale3d(0.75, 1.25, 1);
+	}
+	70% {
+		-webkit-transform: scale3d(1.25, 0.75, 1);
+		transform: scale3d(1.25, 0.75, 1);
+	}
+	75% {
+		-webkit-transform: scale3d(0.85, 1.15, 1);
+		transform: scale3d(0.85, 1.15, 1);
+	}
+	83% {
+		-webkit-transform: scale3d(1.05, 0.95, 1);
+		transform: scale3d(1.05, 0.95, 1);
+	}
+	88% {
+		-webkit-transform: scale3d(0.95, 1.05, 1);
+		transform: scale3d(0.95, 1.05, 1);
+	}
+	100% {
+		-webkit-transform: scale3d(1, 1, 1);
+		transform: scale3d(1, 1, 1);
+	}
+}
+

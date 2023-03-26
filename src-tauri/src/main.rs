@@ -60,7 +60,7 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
             println!("Application");
             if matches!(
                 *state.state.lock().unwrap(),
-                main_app_state::State::MainApp { .. }
+                main_app_state::State::MainApp { .. },
             ) {
                 println!("Already in main app");
                 return;
