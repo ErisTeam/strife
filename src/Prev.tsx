@@ -20,6 +20,7 @@ import Anchor from './Components/Anchor/Anchor';
 import style from './prev.module.css';
 import buttons from './Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
+import { info } from 'tauri-plugin-log-api';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -154,7 +155,7 @@ function Prev() {
 			//	break
 		}
 	});
-	let r = setInterval(async () => {
+	const r = setInterval(async () => {
 		if (image()) {
 			console.log('clearing interval', image());
 			clearInterval(r);
@@ -172,6 +173,7 @@ function Prev() {
 
 	onMount(async () => {
 		await emit('requestQrcode', {});
+		info("test webview")
 		await emit('startMobileGateway', {});
 	});
 

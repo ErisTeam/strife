@@ -65,12 +65,10 @@ const LoginPage = () => {
 		interface i {
 			type: string;
 		}
-
 		interface qrcode extends i {
-			type: 'qrcode';
+			type: 'mobileQrcode';
 			qrcode: string;
 		}
-
 		interface ticketData extends i {
 			type: 'ticketData';
 			userId: string;
@@ -78,20 +76,43 @@ const LoginPage = () => {
 			username: string;
 			avatarHash: string;
 		}
-
-		interface requireAuth extends i {
+		interface RequireAuth extends i {
 			type: 'requireAuth';
 			captcha_key?: string[];
 			captcha_sitekey?: string;
 			mfa: boolean;
 			sms: boolean;
 		}
+		interface RequireAuthMobile extends i {
+			type: 'requireAuthMobile';
+			captcha_key?: string[];
+			captcha_sitekey: string;
+		}
+		interface VerifyError extends i {
+			type: 'VerifyError';
+			message: string;
+		}
+		interface Error extends i {
+			type: 'error';
+			message: string;
+			code: number;
+			errors: any;
+		}
 
-		let input = event.payload as unknown as qrcode | ticketData | requireAuth | { type: 'loginSuccess' };
+		let input = event.payload as unknown as
+			| qrcode
+			| ticketData
+			| RequireAuth
+			| RequireAuthMobile
+			| VerifyError
+			| Error
+			| { type: 'loginSuccess'; userId: string; userSettings?: any };
+
+
 		console.log('input', input);
 
 		switch (input.type) {
-			case 'qrcode': {
+			case 'mobileQrcode': {
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
 				});
@@ -190,6 +211,7 @@ const LoginPage = () => {
 				<QRCode
 					class={style.qrcode}
 					qrcode_src={image()}
+					fallback_src="/test.gif"
 					header="Log In With QR Code"
 					paragraph="Scan the code with our app or any other one to log in!"
 					altParagraph="If you didn't mean to log in then just ignore the prompt on your discord app."

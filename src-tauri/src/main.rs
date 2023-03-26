@@ -3,6 +3,8 @@
     windows_subsystem = "windows"
 )]
 
+mod tests;
+
 mod discord;
 mod events;
 mod notifications;
@@ -20,37 +22,17 @@ mod test;
 
 extern crate tokio;
 
-use std::sync::Arc;
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
-use log::info;
+use log::{debug, error, info, warn};
 use serde::Deserialize;
 use tauri::{Manager, State, UserAttentionType};
-use windows::Win32::{Foundation::BOOL, UI::WindowsAndMessaging::FlashWindow};
+use tauri_plugin_log::LogTarget;
 
-use crate::{discord::types::message::Message, main_app_state::MainState, manager::ThreadManager};
-
-#[deprecated(note = "use widnow request_user_attention")]
-trait Flashing {
-    fn set_flashing(&self, s: bool) -> Result<(), tauri::Error>;
-}
-
-impl Flashing for tauri::Window {
-    fn set_flashing(&self, s: bool) -> Result<(), tauri::Error> {
-        let winit_hwnd = self.hwnd()?;
-        let h = windows::Win32::Foundation::HWND(winit_hwnd.0 as isize);
-        unsafe {
-            FlashWindow(h, BOOL(s as i32));
-        }
-        Ok(())
-    }
-}
-/// Flashes **First** found window
-#[deprecated(note = "use widnow request_user_attention")]
-pub fn flash_window(handle: &tauri::AppHandle) -> Result<(), tauri::Error> {
-    let windows = handle.windows();
-    let window = windows.iter().next().unwrap().1;
-    Ok(window.set_flashing(true)?)
-}
+use crate::{main_app_state::MainState, manager::ThreadManager};
 
 #[tauri::command]
 fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::AppHandle) {
@@ -94,6 +76,15 @@ fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
     println!("{:?}", state.last_id.lock().unwrap());
     state.last_id.lock().unwrap().clone()
 }
+#[tauri::command]
+async fn close_splashscreen(window: tauri::Window) {
+    // Close splashscreen
+    if let Some(splashscreen) = window.get_window("splashscreen") {
+        splashscreen.close().unwrap();
+    }
+    // Show main window
+    window.get_window("main").unwrap().show().unwrap();
+}
 
 #[derive(Debug, Deserialize)]
 struct TestData {}
@@ -110,7 +101,9 @@ async fn test(handle: tauri::AppHandle) {
     let windows = handle.windows();
     let window = windows.iter().next().unwrap().1;
     tokio::time::sleep(Duration::from_millis(1000)).await;
-    window.request_user_attention(Some(UserAttentionType::Informational));
+    window
+        .request_user_attention(Some(UserAttentionType::Informational))
+        .unwrap();
     println!("test");
 
     //use notify_rust::Notification;
@@ -122,41 +115,41 @@ async fn test(handle: tauri::AppHandle) {
     //notifications::new_message(Message::default(), &handle, None).await;
 }
 
-fn main() {
+fn create_log_formater(path: PathBuf) {
+    //use owo_colors::{OwoColorize, Stream::Stdout};
+    //create path if it doesn't exist
+    let path = Path::new(&path).join("latest.log");
+    if !path.exists() {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    }
+    println!("{:?}", path);
+
     fern::Dispatch::new()
-    .format(|out, message, record| {
-
-        let level = record.level().to_string() + match record.level() {
-            log::Level::Info => {
-                return "";
-            }
-            log::Level::Warn =>{
-                return "⚠";
-            }
-
-            level=>{
-                return "";
-            }
-        };
-
-        out.finish(format_args!(
-            "Gami to furras: {}[{}][{}] {}",
-            chrono::Local::now().format("[%y-%b-%d %H:%M:%S]"),
-            record.target(),
-            
-            record.level(),
-            message
-        ))
-    })
-    .level(log::LevelFilter::Debug)
-    .chain(std::io::stdout())
-    .chain(fern::log_file("output.log").unwrap())
-    .apply().unwrap();
-
-    println!("Starting");
-
-
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%y-%b-%d %H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Debug)
+        .chain(std::io::stdout())
+        .chain(fern::log_file(path).unwrap())
+        .apply()
+        .unwrap();
+}
+fn test_logs() {
     info!("test");
+    warn!("test");
+    error!("test");
+    log::trace!("test");
+    debug!("test");
+}
+
+fn main() {
+    println!("Starting");
 
     let main_state = Arc::new(MainState::new());
 
@@ -174,19 +167,31 @@ fn main() {
     test::add_token(&m);
 
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .build(),
+        )
         .manage(main_state)
         .setup(move |app| {
+            // let log_dir = app.path_resolver().app_log_dir();
+            // if let Some(log_dir) = log_dir {
+            //     println!("{:?}", log_dir);
+            //     create_log_formater(log_dir);
+            test_logs();
+            //}
+
             let app_handle = app.handle();
 
-            let splashscreen_window = app.get_window("splashscreen").unwrap();
-            let main_window = app.get_window("main").unwrap();
+            // let splashscreen_window = app.get_window("splashscreen").unwrap();
+            // let main_window = app.get_window("main").unwrap();
             m.change_state(
                 main_app_state::State::default_login_screen(),
                 app_handle,
                 false,
             );
-            splashscreen_window.close().unwrap();
-            main_window.show().unwrap();
+            // splashscreen_window.close().unwrap();
+            // main_window.show().unwrap();
             println!("Closing Loading Screen");
 
             Ok(())
@@ -195,6 +200,7 @@ fn main() {
             get_token,
             set_state,
             get_last_user,
+            close_splashscreen,
             test
         ])
         .run(tauri::generate_context!())

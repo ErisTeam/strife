@@ -11,6 +11,9 @@ interface AnchorProps {
 	children: JSX.Element;
 
 	class?: string;
+	classList?: {
+		[k: string]: boolean | undefined;
+	  }
 }
 
 const Anchor = (props: AnchorProps) => {
@@ -18,6 +21,7 @@ const Anchor = (props: AnchorProps) => {
 
 	return (
 		<a
+			classList={props.classList}
 			class={props.class}
 			href={props.href}
 			onClick={async (e) => {

@@ -6,7 +6,6 @@ pub async fn new_message(
     user_data: Option<crate::main_app_state::UserData>,
 ) {
     use crate::discord::idk::get_avatar;
-    use crate::flash_window;
     use std::{fs::File, io::prelude::*};
     use tauri::api::notification::Notification;
 
@@ -30,8 +29,13 @@ pub async fn new_message(
     let icon;
     if let Some(path) = path {
         println!("path: {:?}", path);
-        let mut file =
-            File::create(path.join(format!("avatars/{}.webp", message.author.id))).unwrap();
+
+        let path = path.join("avatars");
+        if !path.exists() {
+            std::fs::create_dir(&path).unwrap();
+        }
+
+        let mut file = File::create(path.join(format!("{}.webp", message.author.id))).unwrap();
         let resp = get_avatar(message.author.id.clone(), message.author.avatar.unwrap()).await;
 
         if let Ok(resp) = resp {
@@ -58,6 +62,7 @@ pub async fn new_message(
 
         let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
         let id = config.tauri.bundle.identifier.clone();
+        //todo clean
         println!("{} {}", powershell_app_id, id);
         let mut toast = Toast::new(powershell_app_id)
             .title(title.as_str())
@@ -82,6 +87,5 @@ pub async fn new_message(
     }
     let windows = handle.windows();
     let window = windows.iter().next().unwrap().1;
-    window.request_user_attention(Some(UserAttentionType::Informational));
-    //flash_window(&handle).unwrap();
+    let _ = window.request_user_attention(Some(UserAttentionType::Informational));
 }

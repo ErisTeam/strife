@@ -28,6 +28,7 @@
 		"prettier": "^2.8.1",
 		"qrcode": "^1.5.1",
 		"solid-hcaptcha": "^0.2.6",
-		"solid-js": "^1.4.7"
+		"solid-js": "^1.4.7",
+		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log"
 	}
 }

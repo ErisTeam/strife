@@ -1,150 +1,174 @@
-use std::{ sync::{ Arc }, collections::HashMap };
+use std::{collections::HashMap, sync::Arc};
 
+use log::{debug, info, warn};
 use serde::Serialize;
-use tauri::{ AppHandle, Manager };
+use tauri::{AppHandle, Manager};
 use tokio::sync::mpsc;
 use websocket::OwnedMessage;
 
-use crate::{ main_app_state::MainState, modules::{ mobile_auth_gateway_handler::MobileAuthHandler, gateway::Gateway } };
+use crate::{
+    main_app_state::MainState,
+    modules::{gateway::Gateway, mobile_auth_gateway_handler::MobileAuthHandler},
+};
 
 /// # Information
 /// TODO
 #[derive(Debug)]
 pub enum Modules {
-	MobileAuth(mpsc::Sender<OwnedMessage>),
-	Gateway(mpsc::Sender<OwnedMessage>),
+    MobileAuth(mpsc::Sender<OwnedMessage>),
+    Gateway(mpsc::Sender<OwnedMessage>),
 }
 
 /// # Information
 /// TODO
 #[derive(Debug)]
 pub struct ThreadManager {
-	state: Arc<MainState>,
+    state: Arc<MainState>,
 
-	senders: HashMap<String, Vec<Modules>>,
+    senders: HashMap<String, Vec<Modules>>,
 }
 
 impl ThreadManager {
-	pub fn new(state: Arc<MainState>) -> Self {
-		let mut s = Self {
-			state,
+    pub fn new(state: Arc<MainState>) -> Self {
+        let mut s = Self {
+            state,
 
-			senders: HashMap::new(),
-		};
-		s.senders.insert("main".to_string(), Vec::new());
-		s
-	}
+            senders: HashMap::new(),
+        };
+        s.senders.insert("main".to_string(), Vec::new());
+        s
+    }
 
-	async fn event_listener<T: Clone + std::fmt::Debug + Serialize>(
-		event: &str,
-		async_proc_output_rx: mpsc::Receiver<T>,
-		handle: AppHandle
-	) {
-		let mut async_proc_output_rx = async_proc_output_rx;
-		println!("mobile auth event listener started");
-		loop {
-			if let Some(output) = async_proc_output_rx.recv().await {
-				println!("mobile auth event listener recived: {:?}", output);
-				handle.emit_all(event, output).unwrap();
-			} else {
-				println!("mobile auth event listener closing");
-				break;
-			}
-		}
-	}
+    async fn event_listener<T: Clone + std::fmt::Debug + Serialize>(
+        event: &str,
+        async_proc_output_rx: mpsc::Receiver<T>,
+        handle: AppHandle,
+    ) {
+        let mut async_proc_output_rx = async_proc_output_rx;
+        debug!("mobile auth event listener started");
+        loop {
+            if let Some(output) = async_proc_output_rx.recv().await {
+                debug!("mobile auth event listener recived: {:?}", output);
+                handle.emit_all(event, output).unwrap();
+            } else {
+                info!("mobile auth event listener closing");
+                break;
+            }
+        }
+    }
 
-	pub fn start_mobile_auth(&mut self, handle: AppHandle) -> Result<(), String> {
-		if let Some(sender) = self.senders.get("main") {
-			if sender.iter().any(|s| matches!(s, Modules::MobileAuth(_))) {
-				println!("Mobile auth already running");
-				return Err("Mobile auth already running".to_string());
-			}
-		}
+    pub fn start_mobile_auth(&mut self, handle: AppHandle) -> Result<(), String> {
+        if let Some(sender) = self.senders.get("main") {
+            if sender.iter().any(|s| matches!(s, Modules::MobileAuth(_))) {
+                warn!("Mobile auth already running");
+                return Err("Mobile auth already running".to_string());
+            }
+        }
 
-		println!("Starting mobile auth");
+        info!("Starting mobile auth");
 
-		let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
+        let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(32);
 
-		let mut gate = MobileAuthHandler::new(self.state.clone(), handle.clone(), async_proc_input_rx);
+        let mut gate =
+            MobileAuthHandler::new(self.state.clone(), handle.clone(), async_proc_input_rx);
 
-		self.senders.get_mut("main").unwrap().push(Modules::MobileAuth(async_proc_input_tx));
-		tauri::async_runtime::spawn(async move {
-			gate.generate_keys();
-			gate.run().await;
-		});
-		Ok(())
-	}
+        self.senders
+            .get_mut("main")
+            .unwrap()
+            .push(Modules::MobileAuth(async_proc_input_tx));
+        tauri::async_runtime::spawn(async move {
+            gate.generate_keys();
+            gate.run().await;
+        });
+        Ok(())
+    }
 
-	pub fn stop_mobile_auth(&mut self) {
-		println!("stop_mobile_auth");
-		if let Some(sender) = self.senders.get("main") {
-			println!("s");
-			if let Some(index) = sender.iter().position(|s| matches!(s, Modules::MobileAuth(_))) {
-				let r = self.senders.get_mut("main").unwrap().remove(index);
-				println!("{:?}", r);
-				if let Modules::MobileAuth(sender) = r {
-					if !sender.is_closed() {
-						sender.blocking_send(OwnedMessage::Close(None)).unwrap();
-					}
-					println!("Mobile auth stopped")
-				}
-			}
-		}
-	}
-	pub fn stop_gateway(&mut self, user_id: String) {
-		if let Some(sender) = self.senders.get(user_id.as_str()) {
-			if let Some(index) = sender.iter().position(|s| matches!(s, Modules::Gateway(_))) {
-				let r = self.senders.get_mut(user_id.as_str()).unwrap().remove(index);
-				if let Modules::Gateway(sender) = r {
-					if !sender.is_closed() {
-						sender.blocking_send(OwnedMessage::Close(None)).unwrap();
-					}
-				}
-			}
-		}
-	}
-	pub fn start_gateway(&mut self, handle: AppHandle, token: String, user_id: String) -> Result<(), String> {
-		if let Some(sender) = self.senders.get(user_id.as_str()) {
-			if let Some(sender) = sender.iter().find(|s| matches!(s, Modules::Gateway(_))) {
-				if let Modules::Gateway(sender) = sender {
-					if !sender.is_closed() {
-						println!("Gateway already running");
-						return Err("Gateway already running".to_string());
-					}
-				}
-			}
-		}
-		println!("Starting gateway");
+    pub fn stop_mobile_auth(&mut self) {
+        println!("stop_mobile_auth");
+        if let Some(sender) = self.senders.get("main") {
+            println!("s");
+            if let Some(index) = sender
+                .iter()
+                .position(|s| matches!(s, Modules::MobileAuth(_)))
+            {
+                let r = self.senders.get_mut("main").unwrap().remove(index);
+                println!("{:?}", r);
+                if let Modules::MobileAuth(sender) = r {
+                    if !sender.is_closed() {
+                        sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+                    }
+                    println!("Mobile auth stopped")
+                }
+            }
+        }
+    }
+    pub fn stop_gateway(&mut self, user_id: String) {
+        if let Some(sender) = self.senders.get(user_id.as_str()) {
+            if let Some(index) = sender.iter().position(|s| matches!(s, Modules::Gateway(_))) {
+                let r = self
+                    .senders
+                    .get_mut(user_id.as_str())
+                    .unwrap()
+                    .remove(index);
+                if let Modules::Gateway(sender) = r {
+                    if !sender.is_closed() {
+                        sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+                    }
+                }
+            }
+        }
+    }
+    pub fn start_gateway(
+        &mut self,
+        handle: AppHandle,
+        token: String,
+        user_id: String,
+    ) -> Result<(), String> {
+        if let Some(sender) = self.senders.get(user_id.as_str()) {
+            if let Some(sender) = sender.iter().find(|s| matches!(s, Modules::Gateway(_))) {
+                if let Modules::Gateway(sender) = sender {
+                    if !sender.is_closed() {
+                        println!("Gateway already running");
+                        return Err("Gateway already running".to_string());
+                    }
+                }
+            }
+        }
+        println!("Starting gateway");
 
-		let (sender, reciver) = mpsc::channel(32);
-		let mut gate = Gateway::new(self.state.clone(), handle.clone(), reciver, token.clone(), user_id.clone());
+        let (sender, reciver) = mpsc::channel(32);
+        let mut gate = Gateway::new(
+            self.state.clone(),
+            handle.clone(),
+            reciver,
+            token.clone(),
+            user_id.clone(),
+        );
 
-		if self.senders.get(user_id.as_str()).is_none() {
-			self.senders.insert(user_id.clone(), Vec::new());
-		}
-		self.senders.get_mut(user_id.as_str()).unwrap().push(Modules::Gateway(sender));
+        if self.senders.get(user_id.as_str()).is_none() {
+            self.senders.insert(user_id.clone(), Vec::new());
+        }
+        self.senders
+            .get_mut(user_id.as_str())
+            .unwrap()
+            .push(Modules::Gateway(sender));
 
-		tauri::async_runtime::spawn(async move {
-			gate.run().await;
-		});
-		Ok(())
-	}
-	pub async fn send_to_gateway(&mut self, user_id: String, message: OwnedMessage) {
-		println!("send_to_gateway: {}", user_id);
-		if let Some(modules) = self.senders.get_mut(&user_id) {
-			println!("a");
-			if let Some(gateway) = modules.iter().find(|a| matches!(a, Modules::Gateway(_))) {
-				println!("b");
-				if let Modules::Gateway(sender) = gateway {
-					println!("c");
-					if !sender.is_closed() {
-						println!("send_to_gateway: {} {:?}", user_id, message);
-						let r = sender.send(message).await;
-						println!("result: {} {:?}", user_id, r);
-					}
-				}
-			}
-		}
-		println!("send_to_gateway: {}", user_id);
-	}
+        tauri::async_runtime::spawn(async move {
+            gate.run().await;
+        });
+        Ok(())
+    }
+    pub async fn send_to_gateway(&mut self, user_id: String, message: OwnedMessage) {
+        if let Some(modules) = self.senders.get_mut(&user_id) {
+            if let Some(gateway) = modules.iter().find(|a| matches!(a, Modules::Gateway(_))) {
+                if let Modules::Gateway(sender) = gateway {
+                    if !sender.is_closed() {
+                        info!("send_to_gateway: {} {:?}", user_id, message);
+                        let r = sender.send(message).await;
+                        debug!("result: {} {:?}", user_id, r);
+                    }
+                }
+            }
+        }
+    }
 }

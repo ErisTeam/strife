@@ -1,25 +1,18 @@
-use std::{
-    collections::HashMap,
-    future,
-    iter::Map,
-    net::TcpStream,
-    sync::Arc,
-    time::{Duration, Instant}, io::Write,
-};
+use std::{collections::HashMap, io::Write, net::TcpStream, sync::Arc, time::Duration};
 
 use base64::Engine;
 use flate2::Decompress;
-use futures_util::{future::select, stream::SplitStream, Future, FutureExt, SinkExt};
-use serde_json::json;
+use futures_util::SinkExt;
+
+use log::{debug, error, info, warn};
 use sha2::Digest;
 use tauri::{AppHandle, Manager};
-use tokio::{sync::oneshot, fs::File};
 use tokio_tungstenite::{
-    connect_async_tls_with_config, tungstenite::Message, MaybeTlsStream, WebSocketStream,
+    connect_async_tls_with_config,
+    tungstenite::{protocol::CloseFrame, Message},
+    WebSocketStream,
 };
 use websocket::{native_tls::TlsStream, sync::Client, CloseData, OwnedMessage};
-
-use tokio::sync::RwLock;
 
 use crate::{
     discord::{
@@ -28,7 +21,7 @@ use crate::{
         types::gateway::{ClientState, Presence, Properties},
     },
     main_app_state::{self, MainState, UserData},
-    modules::gateway_utils::{send_heartbeat, send_heartbeat_websocket},
+    modules::gateway_utils::send_heartbeat,
     notifications,
     webview_packets::{self, GatewayEvent},
 };
@@ -38,6 +31,7 @@ use super::gateway_utils::ConnectionInfo;
 #[derive(Debug)]
 pub enum GatewayError {
     InvalidApiVersion,
+    WrongStatus,
     Other,
 }
 
@@ -185,6 +179,7 @@ impl Gateway {
                     let handle = self.handle.clone();
                     let user_data = self.state.get_user_data(self.user_id.clone());
                     println!("{:?}", user_data);
+
                     tauri::async_runtime::spawn(async move {
                         println!("notification");
                         notifications::new_message(message, &handle, user_data).await;
@@ -195,7 +190,7 @@ impl Gateway {
                 self.connection_info.ack_recived = true;
             }
             _ => {
-                println!("Not handled {:?}", event);
+                error!("Not handled {:?}", event);
             }
         }
         Ok(())
@@ -261,6 +256,27 @@ impl Gateway {
         Ok(())
     }
 
+    async fn send_resume(
+        &self,
+        client: &mut futures_util::stream::SplitSink<
+            WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
+            tokio_tungstenite::tungstenite::Message,
+        >,
+    ) -> Result<(), tokio_tungstenite::tungstenite::Error> {
+        client
+            .send(tokio_tungstenite::tungstenite::Message::Text(
+                serde_json::to_string(
+                    &(GatewayPackets::Resume {
+                        token: self.token.clone(),
+                        session_id: self.session_id.as_ref().unwrap().clone(),
+                        seq: self.seq.unwrap().clone(),
+                    }),
+                )
+                .unwrap(),
+            ))
+            .await
+    }
+
     async fn init_message(
         &self,
         client: &mut futures_util::stream::SplitSink<
@@ -294,30 +310,40 @@ impl Gateway {
             .unwrap();
     }
 
-    fn on_close(&self, reason: Option<CloseData>) -> Result<GatewayResult, GatewayError> {
-        if let Some(reason) = reason {
-            match reason.status_code {
-                4004 => {
-                    println!("Invalid token");
+    fn on_close(&self, frame: Option<CloseFrame>) -> Result<GatewayResult, GatewayError> {
+        if let Some(frame) = frame {
+            match frame.code {
+                tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Normal => {
+                    warn!("Normal close");
+                    return Ok(GatewayResult::ReconnectUsingResumeUrl);
+                }
+                tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Library(
+                    4004,
+                ) => {
+                    warn!("Invalid token");
                     return Err(GatewayError::Other);
                 }
-                4013 | 4014 => {
-                    println!("Invalid intent");
-                    return Err(GatewayError::Other);
+                tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Library(
+                    4010 | 4011,
+                ) => {
+                    error!("how? also gami is a furry");
+                    return Ok(GatewayResult::Reconnect);
                 }
-                4012 => {
-                    println!("invalid api version");
+                tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Library(
+                    4012,
+                ) => {
+                    error!("invalid api version");
                     return Err(GatewayError::InvalidApiVersion);
                 }
-                4010 | 4011 => {
-                    println!("how? also gami is a furry");
-                    return Ok(GatewayResult::Reconnect);
+                tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Library(
+                    4013 | 4014,
+                ) => {
+                    error!("Invalid intent");
+                    return Err(GatewayError::Other);
                 }
-                1000 | 1001 => {
-                    println!("normal close?");
-                    return Ok(GatewayResult::Reconnect);
-                }
-                _ => {
+
+                r => {
+                    warn!("Unknown close code {:?}", r);
                     return Ok(GatewayResult::Reconnect);
                 }
             }
@@ -325,93 +351,27 @@ impl Gateway {
         return Ok(GatewayResult::Reconnect);
     }
 
-    pub async fn connect_old(&mut self) -> Result<GatewayResult, GatewayError> {
-        println!("Connecting");
-
-        let mut client = self.conn();
-
-        self.connection_info.reset();
-        self.decoder.reset(true);
-
-        let mut buffer = Vec::<u8>::new();
-
-        //self.init_message(&mut client, self.token.clone());
-
-        loop {
-            let message = client.recv_message();
-
-            let m = self.reciver.try_recv();
-            if let Ok(m) = m {
-                println!("recived {:?}", m);
-                if matches!(m, OwnedMessage::Close(_)) {
-                    return Ok(GatewayResult::Close);
-                }
-                return Ok(GatewayResult::ReconnectUsingResumeUrl);
-                //client.send_message(&m).unwrap();
-            }
-
-            if message.is_ok() {
-                let message = message.unwrap();
-                println!("control {:?}", message.is_control());
-                match message {
-                    OwnedMessage::Close(reason) => {
-                        println!("Close {:?}", reason);
-                        return Err(GatewayError::Other);
-                        //self.on_close(reason);
-                    }
-                    OwnedMessage::Binary(bin) => {
-                        buffer.extend(bin.clone());
-
-                        let mut last_4 = [0u8; 4];
-                        last_4.copy_from_slice(&bin[bin.len() - 4..]);
-                        if last_4 == [0, 0, 255, 255] {
-                            let mut buf = Vec::with_capacity(20_971_520); // 20mb
-                            self.decoder
-                                .decompress_vec(&buffer, &mut buf, flate2::FlushDecompress::Sync)
-                                .unwrap();
-
-                            let out = String::from_utf8(buf).unwrap();
-                            println!("Gateway recived: {:?}", out);
-                            let json: GatewayIncomingPacket =
-                                serde_json::from_str(out.as_str()).unwrap();
-                            self.seq = json.s.clone();
-
-                            panic!("Deprecated");
-                            // if let Err(err) = self.handle_events(&mut client, json).await {
-                            //     return Err(err);
-                            // }
-                            buffer.clear();
-                        }
-                    }
-                    m => {
-                        println!("Not text {:?}", m);
-                    }
-                }
-            }
-            panic!("Deprecated");
-            // let res = send_heartbeat(
-            //     &mut self.connection_info,
-            //     &mut client,
-            //     Some(GatewayPackets::Heartbeat {
-            //         d: self.seq.clone(),
-            //     }),
-            // );
-            // if let Some(res) = res {
-            //     if !res {
-            //         return Ok(GatewayResult::Reconnect);
-            //     }
-            // }
-            //tokio thread sleep
-            tokio::time::sleep(std::time::Duration::from_millis(5)).await;
-        }
-    }
-
     pub async fn connect(&mut self) -> Result<GatewayResult, GatewayError> {
         use futures_util::{pin_mut, stream::StreamExt};
 
-        let (stream, response) = connect_async_tls_with_config(GATEWAY_CONNECT, None, None)
-            .await
-            .unwrap(); //todo use result
+        let url;
+        if self.use_resume_url && self.resume_url.is_some() {
+            url = self.resume_url.clone().unwrap();
+        } else {
+            url = GATEWAY_CONNECT.to_string();
+        }
+
+        let result = connect_async_tls_with_config(url.clone(), None, None).await;
+        if let Err(err) = result {
+            error!("Failed to connect to gateway: {}", err);
+            return Err(GatewayError::Other);
+        }
+
+        let (stream, response) = result.unwrap();
+        if response.status() != 101 {
+            error!("Invalid status code: {}", response.status());
+            return Err(GatewayError::WrongStatus);
+        }
 
         self.connection_info.reset();
         self.decoder.reset(true);
@@ -420,13 +380,28 @@ impl Gateway {
 
         let (s, mut r) = tokio::sync::mpsc::channel(5);
 
+        #[derive(Debug)]
+        enum ReciveLoopError {
+            ReciveError(tokio_tungstenite::tungstenite::Error),
+            SendError(tokio::sync::mpsc::error::SendError<Message>),
+        }
+
         let recive_loop = async move {
             loop {
-                let rec = read.next().await.unwrap();
-                if let Ok(msg) = rec {
-                    if let Err(err) = s.send(msg).await {
-                        return err;
+                let rec = read.next().await;
+
+                if let Some(rec) = rec {
+                    if let Ok(msg) = rec {
+                        if let Err(err) = s.send(msg).await {
+                            return ReciveLoopError::SendError(err);
+                        }
+                    } else {
+                        return ReciveLoopError::ReciveError(rec.err().unwrap());
                     }
+                } else {
+                    return ReciveLoopError::ReciveError(
+                        tokio_tungstenite::tungstenite::Error::ConnectionClosed,
+                    );
                 }
             }
         };
@@ -434,7 +409,22 @@ impl Gateway {
         let mut buffer = Vec::<u8>::new();
 
         let main_loop = async move {
+            if self.use_resume_url && self.resume_url.is_some() {
+                if let Err(err) = self.send_resume(&mut write).await {
+                    error!("Failed to send resume: {}", err);
+                    return Err(GatewayError::Other);
+                }
+            }
+
             loop {
+                if let Ok(m) = self.reciver.try_recv() {
+                    println!("recived {:?}", m);
+                    if matches!(m, OwnedMessage::Close(_)) {
+                        return Ok(GatewayResult::Close);
+                    }
+                    return Ok(GatewayResult::ReconnectUsingResumeUrl);
+                    //client.send_message(&m).unwrap();
+                }
                 if let Ok(message) = r.try_recv() {
                     //println!("{:?}", message);
                     match message {
@@ -455,23 +445,26 @@ impl Gateway {
 
                                 let out = String::from_utf8(buf.clone()).unwrap();
 
+                                //For debugging purposes
+                                if cfg!(debug_assertions) {
+                                    let time = chrono::Local::now().format("%y-%b-%d %H.%M.%S.%f");
 
-                                use::sha2::Sha256;
+                                    let packet =
+                                        serde_json::from_str::<GatewayIncomingPacket>(out.as_str());
+                                    let r#type;
+                                    if let Ok(packet) = packet {
+                                        r#type = packet.d.get_name();
+                                    } else {
+                                        r#type = "Failed to parse";
+                                    }
 
-                                let mut hasher = Sha256::new();
-                                let a;
-                                if buf.len() < 256*2{
-                                    a = 0..buf.len();
-                                }else{
-                                    a = buf.len() - 256..buf.len();
+                                    let p = self.handle.path_resolver().app_data_dir().unwrap();
+                                    let mut file = std::fs::File::create(
+                                        p.join(format!("gateway logs/{} {}.json", r#type, time)),
+                                    )
+                                    .unwrap();
+                                    file.write_all(out.as_bytes()).unwrap();
                                 }
-                                hasher.update(&buf[a]);
-                                let a = hasher.finalize();
-                                let name = base64::engine::general_purpose::URL_SAFE.encode(a);
-                                println!("{:?}",name);
-                                let p = self.handle.path_resolver().app_cache_dir().unwrap();
-                                let mut file = std::fs::File::create(p.join(format!("d/{}.json",name))).unwrap();
-                                file.write_all(out.as_bytes());
 
                                 // println!("Gateway recived: {:?}", out);
                                 let json: GatewayIncomingPacket =
@@ -486,8 +479,9 @@ impl Gateway {
                         }
 
                         tokio_tungstenite::tungstenite::Message::Close(frame) => {
-                            println!("Close {:?}", frame);
-                            return Err(GatewayError::Other);
+                            info!(target: "Gateway","Close {:?}", frame);
+                            return self.on_close(frame);
+
                             // return self.on_close(reason);
                         }
 
@@ -496,7 +490,7 @@ impl Gateway {
                 }
 
                 if let Ok(message) = self.reciver.try_recv() {
-                    println!("recived {:?}", message);
+                    info!(target: "Gateway","recived {:?}", message);
                     if matches!(message, OwnedMessage::Close(_)) {
                         return Ok(GatewayResult::Close);
                     }
@@ -526,11 +520,11 @@ impl Gateway {
         use tokio::select;
         let res = select! {
             res = recive_loop => {
-                println!("error while Sending {:?}",res);
+                error!(target: "Gateway","error while Sending {:?}",res);
                 Err(GatewayError::Other)
             },
             res = main_loop =>{
-                println!("recive_loop ended {:?}",res);
+                info!(target: "Gateway","recive_loop ended {:?}",res);
                 res
             }
         };

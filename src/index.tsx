@@ -30,6 +30,10 @@ const App: Component = () => {
 		return id;
 	});
 
+
+		invoke('close_splashscreen')
+
+
 	return (
 		<Router>
 			<Show fallback={Loading} when={!id.loading}>

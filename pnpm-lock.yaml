@@ -14,6 +14,7 @@ specifiers:
   qrcode: ^1.5.1
   solid-hcaptcha: ^0.2.6
   solid-js: ^1.4.7
+  tauri-plugin-log-api: github:tauri-apps/tauri-plugin-log
   typescript: ^4.7.4
   vite: ^4.0.0
   vite-plugin-solid: ^2.3.0
@@ -26,6 +27,7 @@ dependencies:
   qrcode: 1.5.1
   solid-hcaptcha: 0.2.6_solid-js@1.6.9
   solid-js: 1.6.9
+  tauri-plugin-log-api: github.com/tauri-apps/tauri-plugin-log/05a9bfd9edb9b5f4ab95412bb607691708b65a25
 
 devDependencies:
   '@solid-devtools/overlay': 0.6.0_solid-js@1.6.9
@@ -1788,4 +1790,12 @@ packages:
       which-module: 2.0.0
       y18n: 4.0.3
       yargs-parser: 18.1.3
+    dev: false
+
+  github.com/tauri-apps/tauri-plugin-log/05a9bfd9edb9b5f4ab95412bb607691708b65a25:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/05a9bfd9edb9b5f4ab95412bb607691708b65a25}
+    name: tauri-plugin-log-api
+    version: 0.0.0
+    dependencies:
+      '@tauri-apps/api': 1.2.0
     dev: false

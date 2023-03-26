@@ -300,14 +300,14 @@ impl MobileAuthHandler {
     }
 
     pub async fn run(&mut self) {
-        while !self.connect().await {
+        while !self.connect_old().await {
             *self.connected.lock().unwrap() = false;
             print!("Reconnecting");
         }
         println!("shutting down mobile auth")
     }
 
-    pub async fn connect(&mut self) -> bool {
+    pub async fn connect_old(&mut self) -> bool {
         println!("Connecting");
 
         *self.connected.lock().unwrap() = true;

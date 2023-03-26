@@ -17,12 +17,14 @@ interface QRCodeProps {
 	altParagraph: string;
 	class?: string;
 	user_data?: UserData;
+
+	fallback_src?: string;
 }
 
 function QRCode(prop: QRCodeProps) {
 	return (
 		<div class={[style.container, prop.class].join(' ')}>
-			<img class={style.qrcode} src={prop.qrcode_src} alt="QR Code" />
+			<img class={style.qrcode} src={prop.qrcode_src ? prop.qrcode_src : prop.fallback_src } alt="QR Code" />
 			<Show
 				when={prop.user_data === undefined}
 				fallback={

@@ -1,0 +1,306 @@
+{
+	"t": "READY",
+	"s": 1,
+	"op": 0,
+	"d": {
+		"v": 9,
+		"users": [
+			{
+				"username": "TestUser1",
+				"public_flags": 0,
+				"id": "1",
+				"global_name": null,
+				"display_name": null,
+				"discriminator": "00001",
+				"bot": false,
+				"avatar_decoration": null,
+				"avatar": "47616d6920746f20667572726173"
+			},
+			{
+				"username": "TestUser2",
+				"public_flags": 0,
+				"id": "2",
+				"global_name": null,
+				"display_name": null,
+				"discriminator": "00002",
+				"bot": false,
+				"avatar_decoration": null,
+				"avatar": "47616d6920746f20667572726173"
+			},
+			{
+				"username": "TestUser0",
+				"public_flags": 0,
+				"id": "0",
+				"display_name": null,
+				"discriminator": "00000",
+				"bot": false,
+				"avatar_decoration": null,
+				"avatar": "5472616e7320726967687473"
+			}
+		],
+		"user_settings_proto": "R2FtaSB0byBmdXJyYXM=",
+		"user_guild_settings": {
+			"version": 305,
+			"partial": false,
+			"entries": [
+				{
+					"version": 190,
+					"suppress_roles": false,
+					"suppress_everyone": false,
+					"notify_highlights": 0,
+					"muted": false,
+					"mute_scheduled_events": false,
+					"mute_config": null,
+					"mobile_push": true,
+					"message_notifications": 0,
+					"hide_muted_channels": false,
+					"guild_id": null,
+					"flags": 0,
+					"channel_overrides": [
+						{
+							"muted": true,
+							"mute_config": {
+								"selected_time_window": 86400,
+								"end_time": "2023-03-25T17:55:05.361000+00:00"
+							},
+							"message_notifications": 3,
+							"collapsed": false,
+							"channel_id": "0000000000000"
+						}
+					]
+				},
+				{
+					"version": 0,
+					"suppress_roles": false,
+					"suppress_everyone": false,
+					"notify_highlights": 0,
+					"muted": true,
+					"mute_scheduled_events": false,
+					"mute_config": null,
+					"mobile_push": true,
+					"message_notifications": 0,
+					"hide_muted_channels": false,
+					"guild_id": "00000000000000",
+					"flags": 0,
+					"channel_overrides": []
+				},
+				{
+					"version": 83,
+					"suppress_roles": false,
+					"suppress_everyone": false,
+					"notify_highlights": 0,
+					"muted": true,
+					"mute_scheduled_events": false,
+					"mute_config": { "selected_time_window": -1, "end_time": null },
+					"mobile_push": true,
+					"message_notifications": 1,
+					"hide_muted_channels": false,
+					"guild_id": "000000000000000",
+					"flags": 0,
+					"channel_overrides": []
+				}
+			]
+		},
+		"user": {
+			"verified": true,
+			"username": "TestUser0",
+			"purchased_flags": 0,
+			"premium_type": 0,
+			"premium": false,
+			"phone": null,
+			"nsfw_allowed": false,
+			"mobile": true,
+			"mfa_enabled": true,
+			"id": "0",
+			"global_name": null,
+			"flags": 32,
+			"email": "backdoor@",
+			"display_name": null,
+			"discriminator": "0000",
+			"desktop": true,
+			"bio": "Gami is a Furry",
+			"banner_color": null,
+			"banner": null,
+			"avatar_decoration": null,
+			"avatar": "5472616e7320726967687473",
+			"accent_color": null
+		},
+		"tutorial": null,
+		"sessions": [
+			{
+				"status": "online",
+				"session_id": "TODO",
+				"client_info": { "version": 0, "os": "windows", "client": "web" },
+				"activities": []
+			},
+			{
+				"status": "online",
+				"session_id": "TODO",
+				"client_info": { "version": 0, "os": "windows", "client": "desktop" },
+				"activities": []
+			}
+		],
+		"session_type": "normal",
+		"session_id": "TODO",
+		"resume_gateway_url": "wss://gateway-us-east1-b.discord.gg",
+		"relationships": [
+			{
+				"user_id": "1",
+				"type": 1,
+				"nickname": null,
+				"id": "1"
+			},
+			{
+				"user_id": "2",
+				"type": 2,
+				"nickname": null,
+				"id": "2"
+			}
+		],
+		"read_state": {
+			"version": "64680",
+			"partial": false,
+			"entries": [
+				{
+					"mention_count": 0,
+					"last_pin_timestamp": "1970-01-01T00:00:00+00:00",
+					"last_message_id": "TODO",
+					"id": "TODO"
+				},
+				{
+					"read_state_type": 2,
+					"last_acked_id": "TODO",
+					"id": "TODO",
+					"badge_count": 0
+				},
+				{
+					"read_state_type": 4,
+					"last_acked_id": "TODO",
+					"id": "TODO",
+					"badge_count": 0
+				}
+			]
+		},
+		"private_channels": [
+			{
+				"type": 1,
+				"recipient_ids": ["1"],
+				"last_message_id": "0",
+				"is_spam": false,
+				"id": "12345",
+				"flags": 0
+			},
+			{
+				"type": 1,
+				"recipient_ids": ["2"],
+				"last_pin_timestamp": "2023-03-25T21:12:07+00:00",
+				"last_message_id": "2",
+				"is_spam": false,
+				"id": "123456",
+				"flags": 0
+			},
+			{
+				"type": 3,
+				"recipient_ids": ["1", "2"],
+				"owner_id": "0",
+				"name": null,
+				"last_message_id": "1234",
+				"id": "1234",
+				"icon": null,
+				"flags": 0
+			}
+		],
+		"merged_members": [
+			[
+				{
+					"user_id": "0",
+					"roles": ["14324", "15646474"],
+					"premium_since": null,
+					"pending": false,
+					"nick": null,
+					"mute": false,
+					"joined_at": "2023-03-25T20:21:38.156000+00:00",
+					"flags": 0,
+					"deaf": false,
+					"communication_disabled_until": null,
+					"avatar": null
+				}
+			],
+			[
+				{
+					"user_id": "0",
+					"roles": [],
+					"premium_since": null,
+					"pending": false,
+					"nick": null,
+					"mute": false,
+					"joined_at": "2023-03-25T17:18:54.430000+00:00",
+					"flags": 0,
+					"deaf": false,
+					"communication_disabled_until": null,
+					"avatar": null
+				}
+			]
+		],
+		"guilds": [
+			{
+				"version": 1679751607651,
+				"threads": [],
+				"stickers": [],
+				"statge_instances": [],
+				"roles": [
+					{
+						"unicode_emoji": null,
+						"tags": {},
+						"position": 0,
+						"permissions": "31858024242753",
+						"name": "@everyone",
+						"mentionable": false,
+						"managed": false,
+						"id": "13456575245678",
+						"icon": null,
+						"hoist": false,
+						"flags": 0,
+						"color": 0
+					}
+				],
+				"properties": {
+					"description": null,
+					"nsfw_level": 0,
+					"public_updates_channel_id": null,
+					"premium_tier": 0,
+					"afk_timeout": 300,
+					"owner_id": "0",
+					"nsfw": false,
+					"max_video_channel_users": 25,
+					"id": "13676896545337890",
+					"icon": null,
+					"afk_channel_id": null,
+					"splash": null,
+					"default_message_notifications": 0,
+					"application_id": null,
+					"system_channel_id": "343567890459",
+					"safety_alerts_channel_id": null,
+					"premium_progress_bar_enabled": false,
+					"max_stage_video_channel_users": 50,
+					"rules_channel_id": null,
+					"latest_onboarding_question_id": null,
+					"verification_level": 0,
+					"banner": null,
+					"system_channel_flags": 0,
+					"hub_type": null,
+					"vanity_url_code": null,
+					"discovery_splash": null,
+					"max_members": 500000,
+					"mfa_level": 0,
+					"preferred_locale": "en-US",
+					"name": "Test Guild",
+					"home_header": null,
+					"features": [],
+					"explicit_content_filter": 0
+				},
+				"premium_subscription_count": 0
+			}
+		]
+	}
+}

@@ -4,10 +4,11 @@ use std::{
     time::{Duration, Instant},
 };
 
-use futures_util::{stream::SplitSink, SinkExt};
+use futures_util::{stream::SplitSink, SinkExt, StreamExt};
 use serde::Serialize;
 use tokio_tungstenite::{
-    tungstenite::{stream::MaybeTlsStream, Error, Message},
+    connect_async_tls_with_config,
+    tungstenite::{client::IntoClientRequest, stream::MaybeTlsStream, Error, Message},
     WebSocketStream,
 };
 use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};

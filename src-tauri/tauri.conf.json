@@ -23,6 +23,9 @@
 			},
 			"notification": {
 				"all": true
+			},
+			"window": {
+				"startDragging": true
 			}
 		},
 		"bundle": {
@@ -75,8 +78,8 @@
 				"center": true
 			},
 			{
-				"width": 800,
-				"height": 600,
+				"width": 200,
+				"height": 400,
 				"decorations": false,
 				"url": "splashscreen.html",
 				"label": "splashscreen",

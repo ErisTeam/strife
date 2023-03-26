@@ -3,6 +3,7 @@
 	padding: 0;
 	box-sizing: border-box;
 
+
 	font-family: monospace;
 }
 
@@ -11,76 +12,80 @@
 	width: 100%;
 	height: 100vh;
 	display: flex;
+	flex-direction: column;
+	gap: 2rem;
 	justify-content: center;
 	align-items: center;
+	background-color: #1f1f20;
 }
-h3 {
+h3{
 	color: #fff;
 	font-size: 2.5rem;
 	text-align: center;
 }
-.loading::after {
-	content: '...';
-	animation: Loading 2s ease-in-out infinite;
+.loading::after{
+	content: "...";
+	animation: Loading 1s ease-in-out infinite;
 }
 @keyframes Loading {
-	0% {
-		content: '';
+	0%{
+		content: "";
 	}
-	25% {
-		content: '.';
+	25%{
+		content: ".";
 	}
-	50% {
-		content: '..';
+	50%{
+		content: "..";
 	}
-	100% {
-		content: '...';
+	100%{
+		content: "...";
 	}
 }
-.furras::after {
-	content: 'Gami to furras';
+.furras::after{
+	content: "Gami to furras";
 	animation: furras 5s ease-in-out infinite;
 }
 @keyframes furras {
-	0% {
-		content: '';
+	0%{
+		content: "";
 	}
-	7% {
-		content: 'G';
+	7%{
+		content: "G";
 	}
-	14% {
-		content: 'Ga';
+	14%{
+		content: "Ga";
 	}
-	21% {
-		content: 'Gam';
+	21%{
+		content: "Gam";
 	}
-	28% {
-		content: 'Gami';
+	28%{
+		content: "Gami";
 	}
-	35% {
-		content: 'Gami t';
+	35%{
+		content: "Gami t";
 	}
-	42% {
-		content: 'Gami to';
+	42%{
+		content: "Gami to";
 	}
-	49% {
-		content: 'Gami to f';
+	49%{
+		content: "Gami to f";
 	}
-	56% {
-		content: 'Gami to fu';
+	56%{
+		content: "Gami to fu";
 	}
-	63% {
-		content: 'Gami to fur';
+	63%{
+		content: "Gami to fur";
 	}
-	70% {
-		content: 'Gami to furr';
+	70%{
+		content: "Gami to furr";
 	}
-	77% {
-		content: 'Gami to furra';
+	77%{
+		content: "Gami to furra";
 	}
-	84% {
-		content: 'Gami to furras';
+	84%{
+		content: "Gami to furras";
 	}
+
 }
 
 .logo {

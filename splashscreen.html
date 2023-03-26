@@ -7,13 +7,26 @@
 		<link rel="stylesheet" href="splashscreen.css" />
 	</head>
 	<body>
-		<div class="main">
-			<div class="logo">
-				<img src="/src-tauri/icons/128x128.png" alt="" />
-			</div>
+		<div class="main" data-tauri-drag-region>
+			<img class="logo" src="/src-tauri/icons/128x128.png" alt="" />
+
+			<h3 class="loading">Loading</h3>
 		</div>
 	</body>
 </html>
 <script>
-	console.log('Hello from splashscreen.html');
+	let r = Math.random();
+	console.log(r);
+	if (r > 0.5) {
+		let h3 = document.querySelector('h3');
+		h3.textContent = '';
+		h3.classList.remove('loading');
+		h3.classList.add('furras');
+
+		setTimeout(() => {
+			h3.classList.add('loading');
+			h3.classList.remove('furras');
+			h3.textContent = 'Loading';
+		}, 5000);
+	}
 </script>
