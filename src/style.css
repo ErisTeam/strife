@@ -146,3 +146,7 @@ body {
 	flex-direction: row;
 	gap: 1rem;
 }
+
+.hidden{
+	display: none !important;
+}

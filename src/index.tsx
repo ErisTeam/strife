@@ -31,7 +31,7 @@ const App: Component = () => {
 	});
 
 
-		invoke('close_splashscreen')
+	invoke('close_splashscreen')
 
 
 	return (

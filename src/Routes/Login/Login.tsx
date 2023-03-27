@@ -32,27 +32,12 @@ const LoginPage = () => {
 	const [captcha_key, setCaptchaKey] = createSignal('');
 
 	const AppState = useAppState();
-	function showCaptha() {
-		if (!MFAClass().includes(style.toRight) && !MFAClass().includes(style.toLeft)) {
-			setMFAClass([style.container, style.toLeft].join(' '));
-		}
-		if (!loginClass().includes(style.toLeft) && !loginClass().includes(style.toRight)) {
-			setLoginClass([style.container, style.Left].join(' '));
-		}
-		setCaptchaClass([style.container].join(' '));
-	}
-	function showMFA() {
-		if (!captchaClass().includes(style.toRight) && !captchaClass().includes(style.toLeft)) {
-			setCaptchaClass([style.container, style.toLeft].join(' '));
-		}
-		if (!loginClass().includes(style.toLeft) && !loginClass().includes(style.toRight)) {
-			setLoginClass([style.container, style.toLeft].join(' '));
-		}
-		setMFAClass([style.container].join(' '));
-	}
-	const [loginClass, setLoginClass] = createSignal([style.container].join(' '));
-	const [MFAClass, setMFAClass] = createSignal([style.container, style.toRight].join(' '));
-	const [captchaClass, setCaptchaClass] = createSignal([style.container, style.toRight].join(' '));
+
+
+	const [showMFA, setShowMFA] = createSignal(false);
+	const [showCaptcha, setShowCaptcha] = createSignal(false);
+
+
 
 	async function logout() {
 		let token = await API.getToken();
@@ -108,7 +93,6 @@ const LoginPage = () => {
 			| Error
 			| { type: 'loginSuccess'; userId: string; userSettings?: any };
 
-
 		console.log('input', input);
 
 		switch (input.type) {
@@ -148,14 +132,15 @@ const LoginPage = () => {
 			case 'requireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
 					setCaptchaKey(input.captcha_sitekey as string);
-					showCaptha();
+					// showCaptha();
+					setShowCaptcha(true);
 					console.log('captcha required');
 				}
 				if (input.mfa || input.sms) {
 					console.log('mfa required');
 
 					setRequireCode(true);
-					showMFA();
+					setShowMFA(true);
 
 					if (input.sms) {
 						emit('send_sms', {});
@@ -199,13 +184,17 @@ const LoginPage = () => {
 		API.updateCurrentUserID();
 	}
 
+
+
 	return (
 		<div class={style.wrapper}>
 			<div class={style.gradient}>
 				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
 			</div>
+
 			{/* Main Page */}
-			<div class={loginClass()}>
+
+			<div class={[style.container, showMFA() || showCaptcha() ? style.toLeft : style.fromLeft].join(' ')}>
 				<LoginBox class={style.loginBox} login={login} />
 
 				<QRCode
@@ -218,10 +207,23 @@ const LoginPage = () => {
 					user_data={userData()}
 				></QRCode>
 			</div>
-			<div class={MFAClass()}>
+
+			<div
+				class={style.container}
+				classList={{
+					[style.toRight]: !showMFA(),
+					[style.fromRight]: showMFA(),
+				}}
+			>
 				<MFABox verify={verifyLogin} />
 			</div>
-			<div class={captchaClass()}>
+			<div
+				class={style.container}
+				classList={{
+					[style.toRight]: !showCaptcha(),
+					[style.fromRight]: showCaptcha(),
+				}}
+			>
 				<h1>Captcha</h1>
 			</div>
 

@@ -13,7 +13,63 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	transition: all 0.5s ease;
+	/* transition: all 0.5s ease; */
+}
+
+.fromLeft {
+	animation: fromLeft 0.5s ease;
+}
+.fromRight {
+	animation: fromRight 0.5s ease;
+}
+
+.toLeft {
+	visibility: hidden;
+	transform: translateX(-150%);
+	animation: toLeft 0.5s ease;
+}
+.toRight {
+	visibility: hidden;
+	transform: translateX(150%);
+	animation: toRight 0.5s ease;
+}
+
+@keyframes toLeft {
+	0% {
+		visibility: visible;
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-150%);
+		visibility: visible;
+	}
+}
+@keyframes toRight {
+	0% {
+		visibility: visible;
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(150%);
+		visibility: visible;
+	}
+}
+
+@keyframes fromLeft {
+	0% {
+		transform: translateX(-150%);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+@keyframes fromRight {
+	0% {
+		transform: translateX(150%);
+	}
+	100% {
+		transform: translateX(0);
+	}
 }
 
 .qrcode {
@@ -50,13 +106,6 @@
 	.loginBox {
 		transform: translateX(-25%);
 	}
-}
-
-.toRight {
-	transform: translateX(150%);
-}
-.toLeft {
-	transform: translateX(-150%);
 }
 
 /* Corner SVGs */
