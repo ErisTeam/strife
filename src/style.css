@@ -145,8 +145,15 @@ body {
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
+	z-index: 100;
+
+	& > div {
+		display: flex;
+
+		gap: 0.5rem;
+	}
 }
 
-.hidden{
+.hidden {
 	display: none !important;
 }

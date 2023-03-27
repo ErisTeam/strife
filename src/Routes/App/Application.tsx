@@ -13,6 +13,7 @@ import RelationshipList from '../../Components/RelationshipList/RelationshipList
 import style from './Application.module.css';
 
 import Anchor from '../../Components/Anchor/Anchor';
+import { Portal } from 'solid-js/web';
 
 const Application = () => {
 	const params = useParams();
@@ -38,6 +39,15 @@ const Application = () => {
 
 	return (
 		<div class={style.app}>
+			<Portal mount={document.querySelector('.dev') as Node}>
+				<button
+					onclick={async (e) => {
+						console.log(await API.updateGuilds());
+					}}
+				>
+					Update Guilds
+				</button>
+			</Portal>
 			<Show when={shouldRedner()}>
 				<ChannelList />
 				<RelationshipList />

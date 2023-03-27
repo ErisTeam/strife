@@ -61,6 +61,21 @@ impl Default for Properties {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct ReadState {
+    pub version: i64,
+    pub partial: bool,
+    pub entries: Vec<serde_json::Value>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ReadStateEntries {
+    pub id: String,
+    pub last_message_id: String,
+    pub mention_count: i64,
+    pub last_pin_timestamp: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct SessionReplaceData {
     status: String,
     session_id: String,
@@ -82,8 +97,14 @@ pub struct ReadyData {
     pub relationships: Vec<GatewayRelationship>,
 
     pub resume_gateway_url: String,
+
+    pub sessions: Vec<serde_json::Value>,
     pub session_type: String,
     pub session_id: String,
+
+    pub tutorial: Option<serde_json::Value>,
+
+    pub read_state: ReadState,
 
     pub guild_join_requests: Vec<serde_json::Value>,
 
@@ -104,8 +125,6 @@ pub struct ReadyData {
     pub api_code_version: u64,
 
     pub analytics_token: String,
-
-    pub tutorial: Option<serde_json::Value>,
 
     pub private_channels: Vec<serde_json::Value>,
 }

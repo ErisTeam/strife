@@ -30,9 +30,7 @@ const App: Component = () => {
 		return id;
 	});
 
-
-	invoke('close_splashscreen')
-
+	invoke('close_splashscreen');
 
 	return (
 		<Router>
@@ -40,14 +38,9 @@ const App: Component = () => {
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
 						<div class="dev">
-							<button
-								onclick={async (e) => {
-									console.log(await API.updateGuilds());
-								}}
-							>
-								Update Guilds
-							</button>
-							<Anchor state="LoginScreen" href='/'>Prev</Anchor>
+							<Anchor state="LoginScreen" href="/">
+								Prev
+							</Anchor>
 						</div>
 						<Routes>
 							{/* <Redirect /> */}

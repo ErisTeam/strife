@@ -18,6 +18,7 @@ import QRCode from './../../Components/QRCode/QRCode';
 import MFABox from '../../Components/MFABox/MFABox';
 // Style
 import style from './Login.module.css';
+import { Portal } from 'solid-js/web';
 
 const LoginPage = () => {
 	// Data of the user that scans the QR Code
@@ -195,6 +196,34 @@ const LoginPage = () => {
 				[style.firstRender]: firstRender(),
 			}}
 		>
+			<Portal mount={document.querySelector('.dev') as Node}>
+				<button
+					onclick={() => {
+						setShowCaptcha(false);
+						setShowMFA(true);
+					}}
+				>
+					show MFA
+				</button>
+
+				<button
+					onclick={() => {
+						setShowCaptcha(true);
+						setShowMFA(false);
+					}}
+				>
+					show Captcha
+				</button>
+				<button
+					onclick={() => {
+						setShowCaptcha(false);
+						setShowMFA(false);
+					}}
+				>
+					show login
+				</button>
+			</Portal>
+
 			<div class={style.gradient}>
 				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
 			</div>
