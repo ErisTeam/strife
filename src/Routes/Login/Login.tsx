@@ -33,11 +33,8 @@ const LoginPage = () => {
 
 	const AppState = useAppState();
 
-
 	const [showMFA, setShowMFA] = createSignal(false);
 	const [showCaptcha, setShowCaptcha] = createSignal(false);
-
-
 
 	async function logout() {
 		let token = await API.getToken();
@@ -184,10 +181,18 @@ const LoginPage = () => {
 		API.updateCurrentUserID();
 	}
 
-
+	const [firstRender, setFirstRender] = createSignal(true);
+	setTimeout(() => {
+		setFirstRender(false);
+	}, 500);
 
 	return (
-		<div class={style.wrapper}>
+		<div
+			class={style.wrapper}
+			classList={{
+				[style.firstRender]: firstRender(),
+			}}
+		>
 			<div class={style.gradient}>
 				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
 			</div>
