@@ -36,7 +36,7 @@ use crate::{main_app_state::MainState, manager::ThreadManager};
 
 #[tauri::command]
 fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::AppHandle) {
-    println!("change state {}", new_state);
+    debug!("change state {}", new_state);
     match new_state.as_str() {
         "Application" => {
             println!("Application");
@@ -44,7 +44,7 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
                 *state.state.lock().unwrap(),
                 main_app_state::State::MainApp { .. }
             ) {
-                println!("Already in main app");
+                warn!("Already in main app");
                 return;
             }
             state.change_state(main_app_state::State::MainApp {}, handle, false)
@@ -54,13 +54,13 @@ fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::App
                 *state.state.lock().unwrap(),
                 main_app_state::State::LoginScreen { .. }
             ) {
-                println!("Already in login screen");
+                warn!("Already in login screen");
                 return;
             }
             state.change_state(main_app_state::State::default_login_screen(), handle, false);
         }
         _ => {
-            println!("Unknown state {}", new_state);
+            error!("Unknown state {}", new_state);
         }
     }
 }
@@ -115,39 +115,6 @@ async fn test(handle: tauri::AppHandle) {
     //notifications::new_message(Message::default(), &handle, None).await;
 }
 
-fn create_log_formater(path: PathBuf) {
-    //use owo_colors::{OwoColorize, Stream::Stdout};
-    //create path if it doesn't exist
-    let path = Path::new(&path).join("latest.log");
-    if !path.exists() {
-        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    }
-    println!("{:?}", path);
-
-    fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                chrono::Local::now().format("[%y-%b-%d %H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        })
-        .level(log::LevelFilter::Debug)
-        .chain(std::io::stdout())
-        .chain(fern::log_file(path).unwrap())
-        .apply()
-        .unwrap();
-}
-fn test_logs() {
-    info!("test");
-    warn!("test");
-    error!("test");
-    log::trace!("test");
-    debug!("test");
-}
-
 fn main() {
     println!("Starting");
 
@@ -174,13 +141,6 @@ fn main() {
         )
         .manage(main_state)
         .setup(move |app| {
-            // let log_dir = app.path_resolver().app_log_dir();
-            // if let Some(log_dir) = log_dir {
-            //     println!("{:?}", log_dir);
-            //     create_log_formater(log_dir);
-            test_logs();
-            //}
-
             let app_handle = app.handle();
 
             // let splashscreen_window = app.get_window("splashscreen").unwrap();

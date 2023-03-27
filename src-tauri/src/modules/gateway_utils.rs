@@ -1,7 +1,4 @@
-use std::{
-    net::TcpStream,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use futures_util::SinkExt;
 use log::{debug, warn};
@@ -10,33 +7,7 @@ use tokio_tungstenite::{
     tungstenite::{Error, Message},
     WebSocketStream,
 };
-use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};
 
-pub fn send_heartbeat_websocket<T: Serialize>(
-    connection_info: &mut ConnectionInfo,
-    client: &mut Client<TlsStream<TcpStream>>,
-    data: Option<T>,
-) -> Option<bool> {
-    let authed = connection_info.authed;
-    let since_last_hearbeat = &mut connection_info.since_last_hearbeat;
-    let heartbeat_interval = connection_info.heartbeat_interval;
-    let ack_recived = &mut connection_info.ack_recived;
-    //println!("{} {} {}", authed, since_last_hearbeat.elapsed().as_millis(), heartbeat_interval);
-    if authed && since_last_hearbeat.elapsed() > heartbeat_interval {
-        if !*ack_recived {
-            println!("not ack_recived");
-            return Some(false);
-        }
-        *ack_recived = false;
-        connection_info.reset_since_last_hearbeat();
-        if let Some(data) = data {
-            let heartbeat = OwnedMessage::Text(serde_json::to_string(&data).unwrap());
-            client.send_message(&heartbeat).unwrap();
-            println!("Heartbeat sent");
-        }
-    }
-    None
-}
 pub async fn send_heartbeat<T: Serialize>(
     connection_info: &mut ConnectionInfo,
     write: &mut futures_util::stream::SplitSink<

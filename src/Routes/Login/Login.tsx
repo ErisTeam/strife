@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, onMount } from 'solid-js';
+import { createSignal, onCleanup, onMount } from 'solid-js';
 import { useBeforeLeave, useNavigate } from '@solidjs/router';
 
 // Tauri
@@ -158,9 +158,11 @@ const LoginPage = () => {
 
 	onMount(async () => {
 		await emit('requestQrcode', {});
-	});
 
-	useBeforeLeave(async () => {
+		await emit('startMobileGateway', {});
+	});
+	onCleanup(() => {
+		console.log('cleanup');
 		clearInterval(requestQrcode);
 	});
 

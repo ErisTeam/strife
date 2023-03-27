@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, Match, onMount, Show } from 'solid-js';
+import { createSignal, Match, onCleanup, onMount, Show } from 'solid-js';
 import { A, Link, useBeforeLeave } from '@solidjs/router';
 import HCaptcha from 'solid-hcaptcha';
 
@@ -164,7 +164,7 @@ function Prev() {
 			console.log('requesting qrcode');
 		}
 	}, 5000);
-	useBeforeLeave(async () => {
+	onCleanup(() => {
 		console.log('cleanup');
 
 		clearInterval(r);
@@ -173,7 +173,7 @@ function Prev() {
 
 	onMount(async () => {
 		await emit('requestQrcode', {});
-		info("test webview")
+		info('test webview');
 		await emit('startMobileGateway', {});
 	});
 

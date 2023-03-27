@@ -250,13 +250,6 @@ impl MainState {
                     .as_mut()
                     .unwrap()
                     .register_for_login_screen(handle.clone());
-
-                thread_manager
-                    .as_mut()
-                    .unwrap()
-                    .start_mobile_auth(handle.clone()); //todo remove
-
-                //self.start_mobile_auth(handle.clone());
             }
             State::MainApp {} => {
                 event_manager
