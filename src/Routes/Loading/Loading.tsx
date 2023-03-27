@@ -16,7 +16,6 @@ const Loading = () => {
 		}}>Reload</button>
 		</div>
 
-		</div>
 	);
 };
 
