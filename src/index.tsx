@@ -1,7 +1,7 @@
 // SolidJS
 import { render } from 'solid-js/web';
 import { Routes, Route, Router, Link } from '@solidjs/router';
-import { Component, createResource, Match, onMount, Show, Switch } from 'solid-js';
+import { Component, createResource, DEV, Match, onMount, Show, Switch } from 'solid-js';
 
 // API
 import { AppStateProvider, useAppState } from './AppState';
@@ -32,16 +32,21 @@ const App: Component = () => {
 
 	invoke('close_splashscreen');
 
+	console.log(DEV);
+
 	return (
 		<Router>
 			<Show fallback={Loading} when={!id.loading}>
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<AppStateProvider>
-						<div class="dev">
-							<Anchor state="LoginScreen" href="/">
-								Prev
-							</Anchor>
-						</div>
+						<Dev>
+							<div class="dev">
+								<Anchor state="LoginScreen" href="/">
+									Prev
+								</Anchor>
+							</div>
+						</Dev>
+
 						<Routes>
 							{/* <Redirect /> */}
 							<Route path="/" component={Prev}></Route>
@@ -74,6 +79,7 @@ import MessageTest from './Routes/Messages/MessageTest';
 import { invoke } from '@tauri-apps/api';
 import Error from './Routes/Error/Error';
 import Anchor from './Components/Anchor/Anchor';
+import Dev from './Dev';
 
 attachDevtoolsOverlay();
 

@@ -147,10 +147,13 @@ body {
 	gap: 1rem;
 	z-index: 100;
 
-	& > div {
+	& div {
 		display: flex;
 
 		gap: 0.5rem;
+	}
+	& div * {
+		color: var(--primary);
 	}
 }
 

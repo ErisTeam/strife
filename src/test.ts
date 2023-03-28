@@ -30,7 +30,7 @@ function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => vo
 }
 
 interface GatewayEvent {
-	user_id: string;
+	userId: string;
 	type: string;
 }
 interface a<T> {
@@ -73,14 +73,14 @@ function startListener<T extends { type: string }>(
 }
 
 function startGatewayListener(userId: string) {
-	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
+	return startListener<GatewayEvent>('gateway', (event) => event.userId === userId);
 }
 interface i {
 	type: string;
 }
 interface messageCreate extends i {
 	type: 'messageCreate';
-	user_id: string;
+	userId: string;
 	data: {
 		content: string;
 		author: {
