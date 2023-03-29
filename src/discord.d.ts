@@ -67,6 +67,9 @@ type GuildType = {
 	banner: string;
 	ownerId: string;
 	roles: Role[];
+	properties: {
+		
+	}
 	system_channel_id: string;
 };
 

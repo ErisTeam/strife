@@ -92,21 +92,21 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 
 export default {
 	async getUserData(userId: string) {
-		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'userData');
+		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
 		await emit('getUserData', { userId });
-		
-		return await res;
+
+		return (await res).data;
 	},
 	async getRelationships(userId: string) {
-		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'relationships');
+		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
 		await emit('getRelationships', { userId });
-		return await res;
+		return (await res).data;
 	},
 	async getGuilds(userId: string) {
-		let res = oneTimeListener<{ type: string; user_id: string; user_data: string }>('general', 'guilds');
+		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 		console.log('getGuilds', await res);
-		return await res;
+		return (await res).data;
 	},
 
 	/**
@@ -246,6 +246,12 @@ export default {
 
 	async updateGuilds() {
 		console.log(await this.getGuilds(AppState.userID()));
+		let guilds: GuildType[] = await this.getGuilds(AppState.userID());
+
+		// for (const guild of guilds){
+		// 	guild.
+		// }
+
 		// let guild: GuildType = {
 		// 	id: res.id,
 		// 	name: res.name,
