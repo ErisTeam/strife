@@ -34,8 +34,7 @@ const LoginPage = () => {
 
 	const AppState = useAppState();
 
-	const [showMFA, setShowMFA] = createSignal(false);
-	const [showCaptcha, setShowCaptcha] = createSignal(false);
+	const [panel, setPanel] = createSignal<'login' | 'mfa' | 'captcha'>('login');
 
 	async function logout() {
 		let token = await API.getToken();
@@ -130,15 +129,14 @@ const LoginPage = () => {
 			case 'requireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
 					setCaptchaKey(input.captcha_sitekey as string);
-					// showCaptha();
-					setShowCaptcha(true);
+					setPanel('captcha');
 					console.log('captcha required');
 				}
 				if (input.mfa || input.sms) {
 					console.log('mfa required');
 
 					setRequireCode(true);
-					setShowMFA(true);
+					setPanel('mfa');
 
 					if (input.sms) {
 						emit('send_sms', {});
@@ -199,8 +197,7 @@ const LoginPage = () => {
 			<Portal mount={document.querySelector('.dev') as Node}>
 				<button
 					onclick={() => {
-						setShowCaptcha(false);
-						setShowMFA(true);
+						setPanel('mfa');
 					}}
 				>
 					show MFA
@@ -208,16 +205,14 @@ const LoginPage = () => {
 
 				<button
 					onclick={() => {
-						setShowCaptcha(true);
-						setShowMFA(false);
+						setPanel('captcha');
 					}}
 				>
 					show Captcha
 				</button>
 				<button
 					onclick={() => {
-						setShowCaptcha(false);
-						setShowMFA(false);
+						setPanel('login');
 					}}
 				>
 					show login
@@ -230,7 +225,7 @@ const LoginPage = () => {
 
 			{/* Main Page */}
 
-			<div class={[style.container, showMFA() || showCaptcha() ? style.toLeft : style.fromLeft].join(' ')}>
+			<div class={[style.container, panel() == 'login' ? style.fromLeft : style.toLeft].join(' ')}>
 				<LoginBox class={style.loginBox} login={login} />
 
 				<QRCode
@@ -244,22 +239,10 @@ const LoginPage = () => {
 				></QRCode>
 			</div>
 
-			<div
-				class={style.container}
-				classList={{
-					[style.toRight]: !showMFA(),
-					[style.fromRight]: showMFA(),
-				}}
-			>
+			<div class={[style.container, panel() == 'mfa' ? style.fromRight : style.toRight].join(' ')}>
 				<MFABox verify={verifyLogin} />
 			</div>
-			<div
-				class={style.container}
-				classList={{
-					[style.toRight]: !showCaptcha(),
-					[style.fromRight]: showCaptcha(),
-				}}
-			>
+			<div class={[style.container, panel() == 'captcha' ? style.fromRight : style.toRight].join(' ')}>
 				<h1>Captcha</h1>
 			</div>
 
