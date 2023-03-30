@@ -2,6 +2,7 @@
 import { render } from 'solid-js/web';
 import { Routes, Route, Router, Link } from '@solidjs/router';
 import { Component, createResource, DEV, Match, onMount, Show, Switch } from 'solid-js';
+import { useTrans, TransProvider } from './Translation';
 
 // API
 import { AppStateProvider, useAppState } from './AppState';
@@ -22,7 +23,7 @@ import API from './API';
 
 const App: Component = () => {
 	const AppState: any = useAppState();
-
+	const [t, { locale, setLocale, getDictionary }] = useTrans();
 	const [id] = createResource(async () => {
 		let id: string = await invoke('get_last_user', {});
 		console.log(id);
@@ -36,40 +37,43 @@ const App: Component = () => {
 
 	return (
 		<Router>
-			<Show fallback={Loading} when={!id.loading}>
-				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
-					<AppStateProvider>
-						<Dev>
-							<div class="dev">
-								<Anchor state="LoginScreen" href="/">
-									Prev
-								</Anchor>
-							</div>
-						</Dev>
+			<TransProvider>
+				<Show fallback={Loading} when={!id.loading}>
+					<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
+						<AppStateProvider>
+							<Dev>
+								<div class="dev">
+									<Anchor state="LoginScreen" href="/">
+										Prev
+									</Anchor>
+									<h1>{t.logIn()}</h1>
+								</div>
+							</Dev>
 
-						<Routes>
-							{/* <Redirect /> */}
-							<Route path="/" component={Prev}></Route>
+							<Routes>
+								{/* <Redirect /> */}
+								<Route path="/" component={Prev}></Route>
 
-							<Route path="/messagetest" component={MessageTest} />
+								<Route path="/messagetest" component={MessageTest} />
 
-							<Route path={'/loading'} component={Loading} />
+								<Route path={'/loading'} component={Loading} />
 
-							<Route path={'/login'} component={Login}></Route>
+								<Route path={'/login'} component={Login}></Route>
 
-							<Route path={'/main'} component={Main}></Route>
+								<Route path={'/main'} component={Main}></Route>
 
-							<Route path="/app" component={ApplicationWrapper}>
-								<Route path="/" component={Application} />
-								<Route path="/:guildId" component={Application}>
-									<Route path="/:channelId" component={Application} />
+								<Route path="/app" component={ApplicationWrapper}>
+									<Route path="/" component={Application} />
+									<Route path="/:guildId" component={Application}>
+										<Route path="/:channelId" component={Application} />
+									</Route>
 								</Route>
-							</Route>
-							<Route path="*" component={Error} />
-						</Routes>
-					</AppStateProvider>
+								<Route path="*" component={Error} />
+							</Routes>
+						</AppStateProvider>
+					</Show>
 				</Show>
-			</Show>
+			</TransProvider>
 		</Router>
 	);
 };

@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@solid-devtools/overlay': ^0.6.0
+  '@solid-primitives/i18n': ^1.2.4
   '@solidjs/router': ^0.5.1
   '@tauri-apps/api': ^1.2.0
   '@tauri-apps/cli': ^1.2.3
@@ -21,6 +22,7 @@ specifiers:
   vite-plugin-solid: ^2.3.0
 
 dependencies:
+  '@solid-primitives/i18n': 1.2.4_solid-js@1.6.9
   '@solidjs/router': 0.5.1_solid-js@1.6.9
   '@tauri-apps/api': 1.2.0
   postcss-nested: 6.0.0_postcss@8.4.21
@@ -1865,6 +1867,14 @@ packages:
       solid-js: 1.6.9
     dev: true
 
+  /@solid-primitives/context/0.2.1_solid-js@1.6.9:
+    resolution: {integrity: sha512-XIIwCOWpRKDersgkR9LNFXaJHIV8QlCFo/tq5bV0cAOZklcwOFcqi2bN+uWgEIQSWGjWXU2kc1H1/TzgYzVDlg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      solid-js: 1.6.9
+    dev: false
+
   /@solid-primitives/cursor/0.0.105_solid-js@1.6.9:
     resolution: {integrity: sha512-/DdttvMytHWvGOTr6e2BesOFg85I1+zPz3ffGw6uwSFrUcBcxSiG3i5Rn9rKgWXyEZ+Sl1Ov8HoYJBo6NAgqrQ==}
     peerDependencies:
@@ -1903,6 +1913,15 @@ packages:
       '@solid-primitives/utils': 5.2.0_solid-js@1.6.9
       solid-js: 1.6.9
     dev: true
+
+  /@solid-primitives/i18n/1.2.4_solid-js@1.6.9:
+    resolution: {integrity: sha512-4phkfhFKAfKWWwN+U5M77P8lq65J5XljyjPkZSVzk+AI2OwpO5aDtKpDxiAMWSS8aYhnfJvlfCkIY7X7XDCDLw==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      '@solid-primitives/context': 0.2.1_solid-js@1.6.9
+      solid-js: 1.6.9
+    dev: false
 
   /@solid-primitives/immutable/0.1.6_solid-js@1.6.9:
     resolution: {integrity: sha512-P4wbDogtytijTV5En+bm6jfFbf4ZOMnfmttUJ8642MQ0tJ2VS2z8iJplg9YFJIltXz7W/+2mdfw2XczlkTxeGg==}
