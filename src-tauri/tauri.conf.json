@@ -36,13 +36,7 @@
 				"depends": []
 			},
 			"externalBin": [],
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
+			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
 			"identifier": "com.TNaDc",
 			"longDescription": "",
 			"macOS": {
@@ -83,7 +77,8 @@
 				"decorations": false,
 				"url": "splashscreen.html",
 				"label": "splashscreen",
-				"center": true
+				"center": true,
+				"resizable": false
 			}
 		]
 	}

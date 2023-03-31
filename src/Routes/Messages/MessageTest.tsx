@@ -1,5 +1,6 @@
 import { A } from '@solidjs/router';
 import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
+import { Portal } from 'solid-js/web';
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Listener, startGateway, startGatewayListener } from '../../test';
@@ -19,8 +20,8 @@ interface messageCreate extends i {
 	};
 }
 
-const channelId = '902210468108714004';
-const guildId = null;
+let channelId = '419544210027446276';
+let guildId = '419544210027446273';
 
 import style from './../../prev.module.css';
 
@@ -43,19 +44,34 @@ function MessageTest() {
 		timeStyle: 'medium',
 	});
 
-	(async () => {
+	// const [channelId, setChannelId] = createSignal('419544210027446276');
+	// const [guildId, setGuildId] = createSignal('419544210027446273');
+
+	async function fetchMessages() {
 		let res = await API.getMessages(channelId);
 		console.log(res);
-		setMessages((a) => [
-			...a,
-			...res
-				.map((message: any) => ({
-					...message,
-					timestamp: new Date(message.timestamp),
-				}))
-				.reverse(),
-		]);
-	})();
+		let r = res
+			.map((message: any) => ({
+				...message,
+				timestamp: new Date(message.timestamp),
+			}))
+			.reverse();
+		console.log(r);
+
+		setMessages(r);
+
+		// setMessages((a) => [
+		// 	...a,
+		// ...res
+		// 	.map((message: any) => ({
+		// 		...message,
+		// 		timestamp: new Date(message.timestamp),
+		// 	}))
+		// 	.reverse(),
+		// ]);
+	}
+
+	fetchMessages();
 
 	const listener = startGatewayListener(AppState.userID());
 
@@ -123,11 +139,38 @@ function MessageTest() {
 
 	return (
 		<div>
+			<Portal mount={document.querySelector('.dev') as Node}>
+				<div>
+					<input
+						oninput={(e) => {
+							channelId = e.currentTarget.value;
+						}}
+						value={channelId}
+						placeholder="ChannelId"
+					/>
+					<input
+						oninput={(e) => {
+							guildId = e.currentTarget.value;
+						}}
+						value={guildId}
+						placeholder="GuildId"
+					/>
+					<button
+						onclick={() => {
+							fetchMessages();
+						}}
+					>
+						update Messages
+					</button>
+				</div>
+			</Portal>
+
 			<A href="/">back</A>
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>
 				<For each={messages()} fallback={<h1>loading</h1>}>
 					{(val, index) => {
 						let embed;
+
 						if (val.embeds && val.embeds[0]) {
 							switch (val.embeds[0].type) {
 								case 'gifv':

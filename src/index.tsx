@@ -23,7 +23,6 @@ import API from './API';
 
 const App: Component = () => {
 	const AppState: any = useAppState();
-	const [t, { locale, setLocale, getDictionary }] = useTrans();
 	const [id] = createResource(async () => {
 		let id: string = await invoke('get_last_user', {});
 		console.log(id);
@@ -38,40 +37,44 @@ const App: Component = () => {
 	return (
 		<Router>
 			<TransProvider>
-				<Show fallback={Loading} when={!id.loading}>
-					<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
-						<AppStateProvider>
-							<Dev>
-								<div class="dev">
-									<Anchor state="LoginScreen" href="/">
-										Prev
-									</Anchor>
-									<h1>{t.logIn()}</h1>
-								</div>
-							</Dev>
+				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
+					<AppStateProvider>
+						<Dev>
+							<div class="dev">
+								<Anchor state="LoginScreen" href="/">
+									Prev
+								</Anchor>
+								<Anchor state="Application" href="/dev/translationtest">
+									TranslationTest
+								</Anchor>
+							</div>
+						</Dev>
 
-							<Routes>
-								{/* <Redirect /> */}
-								<Route path="/" component={Prev}></Route>
+						<Routes>
+							{/* <Redirect /> */}
+							<Route path="/dev">
+								<Route path="/translationtest" component={TranslationTest}></Route>
+							</Route>
 
-								<Route path="/messagetest" component={MessageTest} />
+							<Route path="/" component={Prev}></Route>
 
-								<Route path={'/loading'} component={Loading} />
+							<Route path="/messagetest" component={MessageTest} />
 
-								<Route path={'/login'} component={Login}></Route>
+							<Route path={'/loadingtest'} component={Loading} />
 
-								<Route path={'/main'} component={Main}></Route>
+							<Route path={'/login'} component={Login}></Route>
 
-								<Route path="/app" component={ApplicationWrapper}>
-									<Route path="/" component={Application} />
-									<Route path="/:guildId" component={Application}>
-										<Route path="/:channelId" component={Application} />
-									</Route>
+							<Route path={'/main'} component={Main}></Route>
+
+							<Route path="/app" component={ApplicationWrapper}>
+								<Route path="/" component={Application} />
+								<Route path="/:guildId" component={Application}>
+									<Route path="/:channelId" component={Application} />
 								</Route>
-								<Route path="*" component={Error} />
-							</Routes>
-						</AppStateProvider>
-					</Show>
+							</Route>
+							<Route path="*" component={Error} />
+						</Routes>
+					</AppStateProvider>
 				</Show>
 			</TransProvider>
 		</Router>
@@ -84,6 +87,7 @@ import { invoke } from '@tauri-apps/api';
 import Error from './Routes/Error/Error';
 import Anchor from './Components/Anchor/Anchor';
 import Dev from './Dev';
+import TranslationTest from './Routes/Dev/TranslationTest';
 
 attachDevtoolsOverlay();
 
