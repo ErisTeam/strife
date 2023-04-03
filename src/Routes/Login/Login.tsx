@@ -1,7 +1,7 @@
 // SolidJS
 import { createSignal, onCleanup, onMount } from 'solid-js';
 import { useBeforeLeave, useNavigate } from '@solidjs/router';
-
+import { useTrans } from '../../Translation';
 // Tauri
 import { emit } from '@tauri-apps/api/event';
 
@@ -21,6 +21,7 @@ import style from './Login.module.css';
 import { Portal } from 'solid-js/web';
 
 const LoginPage = () => {
+	const [t] = useTrans();
 	// Data of the user that scans the QR Code
 	// If set to undefined the component will go back to showing the QR Code
 	const [userData, setUserData] = createSignal<UserData>();
@@ -232,9 +233,9 @@ const LoginPage = () => {
 					class={style.qrcode}
 					qrcode_src={image()}
 					fallback_src="/test.gif"
-					header="Log In With QR Code"
-					paragraph="Scan the code with our app or any other one to log in!"
-					altParagraph="If you didn't mean to log in then just ignore the prompt on your discord app."
+					header={t.LoginPage.qrCodeLogin()}
+					paragraph={t.LoginPage.qrCodeParagraph()}
+					altParagraph={t.LoginPage.qrCodeParagrpahAlt()}
 					user_data={userData()}
 				></QRCode>
 			</div>

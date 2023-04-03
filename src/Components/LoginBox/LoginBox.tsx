@@ -11,7 +11,7 @@ import { emit } from '@tauri-apps/api/event';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-
+import { useTrans } from '../../Translation';
 const [name, setName] = createSignal('');
 const [password, setPassword] = createSignal('');
 
@@ -21,6 +21,8 @@ interface LoginBoxProps {
 }
 
 function LoginBox(prop: LoginBoxProps) {
+	const [t] = useTrans();
+
 	return (
 		<form
 			class={[style.container, prop.class].join(' ')}
@@ -29,28 +31,28 @@ function LoginBox(prop: LoginBoxProps) {
 				prop.login(name(), password());
 			}}
 		>
-			<h1 class={style.header}>Log In</h1>
+			<h1 class={style.header}>{t.LoginPage.logIn()}</h1>
 			<fieldset class={style.inputs}>
 				<input
 					class={inputs.default}
 					type="text"
-					placeholder="Login"
+					placeholder={t.LoginPage.login()}
 					onChange={(e) => setName(e.currentTarget.value)}
 				/>
 				<input
 					class={inputs.default}
 					type="password"
-					placeholder="Password"
+					placeholder={t.LoginPage.password()}
 					onChange={(e) => setPassword(e.currentTarget.value)}
 				/>
 			</fieldset>
 			<fieldset class={style.bottomPart}>
 				<label class={style.rememberMe}>
-					<p>Remember me:</p>
+					<p>{t.LoginPage.rememberMe()}</p>
 					<input type="checkbox" class={checkboxes.default} />
 				</label>
 				<button class={[style.loginButton, buttons.default].join(' ')} type="submit">
-					Login
+					{t.LoginPage.logIn()}
 				</button>
 			</fieldset>
 		</form>

@@ -3,7 +3,7 @@ import style from './MFABox.module.css';
 import inputs from './../../Styles/Inputs.module.css';
 import checkboxes from './../../Styles/Checkboxes.module.css';
 import buttons from './../../Styles/Buttons.module.css';
-
+import { useTrans } from '../../Translation';
 /* Tauri */
 import { emit } from '@tauri-apps/api/event';
 
@@ -17,6 +17,8 @@ interface MFABoxProps {
 }
 
 function MFABox(prop: MFABoxProps) {
+	const [t] = useTrans();
+
 	return (
 		<form
 			class={[style.container, prop.class].join(' ')}
@@ -25,12 +27,12 @@ function MFABox(prop: MFABoxProps) {
 				prop.verify(code());
 			}}
 		>
-			<h1 class={style.header}>Enter your MFA Code</h1>
+			<h1 class={style.header}>{t.LoginPage.MFATitle()}</h1>
 			<fieldset class={style.inputs}>
 				<input
 					class={inputs.default}
 					type="text"
-					placeholder="Login"
+					placeholder={t.LoginPage.login()}
 					onChange={(e) => setCode(e.currentTarget.value)}
 				/>
 			</fieldset>
@@ -41,10 +43,10 @@ function MFABox(prop: MFABoxProps) {
 						emit('send_sms', {});
 					}}
 				>
-					Send code via SMS
+					{t.LoginPage.sendSMS()}
 				</button>
 				<button class={[style.loginButton, buttons.default].join(' ')} type="submit">
-					Login
+					{t.LoginPage.logIn()}
 				</button>
 			</fieldset>
 		</form>

@@ -326,7 +326,7 @@ function Prev() {
 				<Anchor class={[buttons.default].join(' ')} href="/messagetest" state="Application">
 					message test
 				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} href="/loading" state="Application">
+				<Anchor class={[buttons.default].join(' ')} href="/loadingtest" state="Application">
 					Loading Test
 				</Anchor>
 				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
