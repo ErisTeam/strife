@@ -35,8 +35,10 @@ impl Relationship {
 #[derive(Debug, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum RelationshipType {
+    None,
     Friend,
     Block,
     IncomingFriendRequest,
     OutgoingFriendRequest,
+    Implicit,
 }

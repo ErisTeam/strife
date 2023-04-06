@@ -208,7 +208,7 @@ pub enum GatewayPacketsData {
     },
 
     VoiceStateUpdate(VoiceState),
-    Unknown {},
+    Unknown(serde_json::Value),
 }
 impl GatewayPacketsData {
     pub fn get_name(&self) -> &'static str {

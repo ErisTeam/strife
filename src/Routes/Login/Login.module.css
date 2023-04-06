@@ -16,7 +16,7 @@
 	/* transition: all 0.5s ease; */
 }
 
-.firstRender > *{
+.firstRender > * {
 	animation-duration: 0s !important;
 }
 
@@ -45,6 +45,7 @@
 	}
 	100% {
 		transform: translateX(-150%);
+
 		visibility: visible;
 	}
 }
@@ -130,6 +131,7 @@
 	filter: var(--drop-shadow);
 	position: absolute;
 	aspect-ratio: auto;
+	user-select: none;
 }
 
 .rightTop {

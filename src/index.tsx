@@ -44,9 +44,6 @@ const App: Component = () => {
 								<Anchor state="LoginScreen" href="/">
 									Prev
 								</Anchor>
-								<Anchor state="Application" href="/dev/translationtest">
-									TranslationTest
-								</Anchor>
 							</div>
 						</Dev>
 

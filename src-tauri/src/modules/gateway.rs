@@ -514,12 +514,13 @@ impl Gateway {
 
         pin_mut!(recive_loop, main_loop);
         use tokio::select;
-        let res = select! {
+        let res: Result<GatewayResult, GatewayError> = select! {
             res = recive_loop => {
                 error!("error while Sending {:?}",res);
                 Err(GatewayError::Other)
             },
             res = main_loop =>{
+
                 info!("recive_loop ended {:?}",res);
                 res
             }

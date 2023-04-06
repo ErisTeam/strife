@@ -69,6 +69,6 @@ pub struct ChannelOverride {
 }
 #[derive(Deserialize, Debug)]
 pub struct MuteConfig {
-    selected_time_window: i64,
+    selected_time_window: Option<i64>, //todo custom deserializer -1 = none
     end_time: Option<String>,
 }

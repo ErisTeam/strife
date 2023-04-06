@@ -337,6 +337,9 @@ function Prev() {
 				<Anchor class={[buttons.default].join(' ')} href="/loadingtest" state="Application">
 					Loading Test
 				</Anchor>
+				<Anchor class={[buttons.default].join(' ')} state="Application" href="/dev/translationtest">
+					Translation Test
+				</Anchor>
 				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
 					Error Page
 				</A>
