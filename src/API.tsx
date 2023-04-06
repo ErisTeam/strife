@@ -106,7 +106,7 @@ export default {
 	async getGuilds(userId: string) {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
-		console.log('getGuilds', await res);
+
 		return (await res).data;
 	},
 
@@ -246,29 +246,24 @@ export default {
 	},
 
 	async updateGuilds() {
-		console.log(await this.getGuilds(AppState.userID()));
-		let guilds: GuildType[] = await this.getGuilds(AppState.userID());
-
-		// for (const guild of guilds){
-		// 	guild.
-		// }
-
-		// let guild: GuildType = {
-		// 	id: res.id,
-		// 	name: res.name,
-		// 	icon: res.icon,
-		// 	description: res.description,
-		// 	splash: res.splash,
-		// 	member_count: res.approximate_member_count,
-		// 	presence_count: res.approximate_presence_count,
-		// 	features: res.features,
-		// 	banner: res.banner,
-		// 	ownerId: res.owner_id,
-		// 	roles: res.roles,
-		// 	system_channel_id: res.system_channel_id,
-		// };
-
-		// AppState.setUserGuilds((prev: any) => [...prev, guild]);
+		AppState.setUserGuilds([]);
+		let guilds: any[] = (await this.getGuilds(AppState.userID())).guilds;
+		for (const guild of guilds) {
+			let newGuild: GuildType = {
+				id: guild.properties.id,
+				name: guild.properties.name,
+				icon: guild.properties.icon,
+				description: guild.properties.description,
+				splash: guild.properties.splash,
+				features: guild.properties.features,
+				banner: guild.properties.banner,
+				ownerId: guild.properties.owner_id,
+				roles: guild.roles,
+				stickers: guild.stickers,
+				systemChannelId: guild.properties.system_channel_id,
+			};
+			AppState.setUserGuilds((prev: any) => [...prev, newGuild]);
+		}
 	},
 
 	async updateRelationships() {

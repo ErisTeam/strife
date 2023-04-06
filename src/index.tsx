@@ -69,7 +69,7 @@ const App: Component = () => {
 									<Route path="/:channelId" component={Application} />
 								</Route>
 							</Route>
-							<Route path="*" component={Error} />
+							<Route path="/*" component={Error} />
 						</Routes>
 					</AppStateProvider>
 				</Show>

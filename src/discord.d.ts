@@ -61,18 +61,15 @@ type GuildType = {
 	icon: string;
 	description: string;
 	splash: string;
-	member_count: number;
-	presence_count: number;
 	features: string[];
 	banner: string;
 	ownerId: string;
 	roles: Role[];
-	properties: {
-		
-	}
-	system_channel_id: string;
+	stickers: StickerType[];
+	systemChannelId: string;
 };
-
+type StickerType = {
+}
 type ChannelType = {
 	id: string;
 	type: number;

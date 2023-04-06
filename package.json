@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite",
 		"tdev": "tauri dev",
+		"devv": "tauri dev",
 		"tauri": "tauri",
 		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
 	},
