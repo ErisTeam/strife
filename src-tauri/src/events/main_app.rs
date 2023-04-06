@@ -5,7 +5,7 @@ use serde::Deserialize;
 use tauri::{Event, EventHandler, Manager};
 
 use crate::{
-    discord::types::relation_ship::Relationship,
+    discord::types::relationship::Relationship,
     main_app_state::{self, MainState, User},
     webview_packets::General,
 };

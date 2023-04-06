@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::discord::user::{CurrentUser, GuildSettings, PublicUser};
 
-use super::{guild::PartialGuild, relation_ship::GatewayRelationship};
+use super::{guild::PartialGuild, relationship::GatewayRelationship};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {

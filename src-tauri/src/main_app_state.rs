@@ -8,7 +8,7 @@ use tauri::AppHandle;
 
 use crate::{
     discord::{
-        types::{guild::PartialGuild, relation_ship::GatewayRelationship},
+        types::{guild::PartialGuild, relationship::GatewayRelationship},
         user::{CurrentUser, PublicUser},
     },
     event_manager::EventManager,

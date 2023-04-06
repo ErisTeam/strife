@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::discord::user::PublicUser;
+use crate::discord::user::{PublicUser, UserFlags};
 
 use super::{
     channel::partial_channels::{self, GuildChannel},
@@ -39,7 +39,9 @@ pub struct GuildMember {
     pub premium_since: Option<String>,
     pub deaf: bool,
     pub mute: bool,
-    pub flags: u64, //todo custom deserializer
+
+    ///public flags
+    pub flags: UserFlags,
     pub pending: bool,
     pub permissions: Option<String>,
     pub comunication_disabled_until: Option<String>,

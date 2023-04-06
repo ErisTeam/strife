@@ -1,4 +1,4 @@
-use crate::discord::{ types::{ channel::Channel, relation_ship::Relationship } };
+use crate::discord::{ types::{ channel::Channel, relationship::Relationship } };
 pub async fn get_channel(id: String, token: String) -> Result<Channel, reqwest::Error> {
 	use reqwest::Client;
 	use crate::discord::constants::GET_CHANNEL;

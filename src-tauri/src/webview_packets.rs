@@ -103,7 +103,7 @@ pub enum General {
         users: Vec<crate::discord::user::PublicUser>,
     },
     Relationships {
-        relationships: Vec<crate::discord::types::relation_ship::Relationship>,
+        relationships: Vec<crate::discord::types::relationship::Relationship>,
     },
     Guilds {
         guilds: Vec<PartialGuild>,

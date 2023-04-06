@@ -1,10 +1,10 @@
 pub mod attachment;
+pub mod channel;
 pub mod embed;
-pub mod reaction;
 pub mod emoji;
 pub mod message;
+pub mod reaction;
 pub mod role;
-pub mod channel;
 
 pub mod guild;
 
@@ -18,4 +18,4 @@ pub mod voice;
 
 pub mod gateway;
 
-pub mod relation_ship;
+pub mod relationship;
