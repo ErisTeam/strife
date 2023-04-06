@@ -94,12 +94,13 @@ export default {
 	async getUserData(userId: string) {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
 		await emit('getUserData', { userId });
-
+		console.log('getUserData', await res);
 		return (await res).data;
 	},
 	async getRelationships(userId: string) {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
 		await emit('getRelationships', { userId });
+		console.log('getRelationships', await res);
 		return (await res).data;
 	},
 	async getGuilds(userId: string) {

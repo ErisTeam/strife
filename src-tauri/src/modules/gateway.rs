@@ -454,6 +454,7 @@ impl Gateway {
                                     }
 
                                     let p = self.handle.path_resolver().app_data_dir().unwrap();
+                                    println!("{:?}", p);
                                     let mut file = std::fs::File::create(
                                         p.join(format!("gateway logs/{} {}.json", r#type, time)),
                                     )

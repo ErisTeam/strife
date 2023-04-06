@@ -310,6 +310,14 @@ function Prev() {
 					>
 						Get Relationships
 					</button>
+					<button
+						class={buttons.default}
+						onclick={async (e) => {
+							console.log(API.updateGuilds());
+						}}
+					>
+						Update Guilds
+					</button>
 				</div>
 			</div>
 			<p>{showMsg}</p>

@@ -107,7 +107,9 @@ impl event<General> for GetGuilds {
 
         let data = user_data.get(&self.user_id);
         if let Some(data) = data {
+            println!("checking if user is active");
             if let User::ActiveUser(data) = data {
+                println!("Sending guilds");
                 return Some((
                     "general",
                     General::Guilds {
