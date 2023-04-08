@@ -11,12 +11,13 @@ pub mod partial_channels {
     #[derive(Debug, Clone, Serialize, Deserialize)]
     #[serde(untagged)]
     pub enum GuildChannel {
-        Category(CategoryChannel),
-        Text(TextChannel),
         Voice(VoiceChannel),
+        Text(TextChannel),
+        Category(CategoryChannel),
 
         Unknown(serde_json::Value),
     }
+
     impl GuildChannel {
         pub fn get_id(&self) -> &str {
             match self {
@@ -81,7 +82,7 @@ pub mod partial_channels {
 
         pub parent_id: String,
 
-        pub bitrate: Option<u64>,
+        pub bitrate: u64,
 
         pub user_limit: Option<u64>,
 
