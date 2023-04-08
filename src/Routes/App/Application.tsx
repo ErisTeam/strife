@@ -18,15 +18,8 @@ import { useAppState } from '../../AppState';
 
 const Application = () => {
 	const params = useParams();
-	const [showChannels, setShowChannels] = createSignal(false);
-	const [showRelationships, setShowRelationships] = createSignal(false);
+
 	const AppState = useAppState();
-
-	onMount(async () => {
-		if (AppState.currentGuild() == null) return;
-
-		setShowChannels(true);
-	});
 
 	// TODO: Idk what this does, explain or delete it
 	// useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
@@ -50,12 +43,11 @@ const Application = () => {
 					Update Guilds
 				</button>
 			</Portal>
-			<Show when={showChannels()}>
+			<Show when={AppState.currentGuild() != null}>
 				<ChannelList />
 			</Show>
-			<Show when={showRelationships()}>
-				<RelationshipList />
-			</Show>
+
+			<RelationshipList />
 			<Anchor state={'LoginScreen'} href="/">
 				Prev
 			</Anchor>

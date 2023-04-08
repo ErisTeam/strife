@@ -65,7 +65,85 @@ type Tab ={
 	channelType:number;
 }
 
+
+
+
+
+type Role = {
+	id: string;
+	name: string;
+	permissions: string;
+	position: number;
+	color: number;
+	hoist: boolean;
+	managed: boolean;
+	mentionable: boolean;
+};
+
+//todo copy form rust discord/type/guild PartialGuild
+type GuildType = {
+	id: string;
+	name: string;
+	icon: string;
+	description: string;
+	splash: string;
+	features: string[];
+	banner: string;
+	ownerId: string;
+	roles: Role[];
+	stickers: StickerType[];
+	systemChannelId: string;
+	channels: ChannelType[];
+};
+type StickerType = {
+}
+type ChannelType = {
+	id: string;
+	type: number;
+	name: string;
+	position: number | 0;
+	guildId: string; // if it's a dm channel, this should be empty or undefined or null
+	
+	permissionOverwrites?: any[];
+
+	topic?: string;
+	nsfw?: boolean;
+	lastMessageId?: string;
+	bitrate?: number;
+	userLimit?: number;
+	rateLimitPerUser?: number;
+	recipients?: any[] /* replace with user objects when we create them */;
+	icon?: string;
+	ownerId?: string;
+	applicationId?: string;
+	parentId?: string;
+	lastPinTimestamp?: string;
+	rtcRegion?: string;
+	videoQualityMode?: number;
+	messageCount?: number;
+	memberCount?: number;
+	threadMetadata?: object;
+	member?: object;
+	defaultAutoArchiveDuration?: number;
+	permissions?: string;
+	flags?: number;
+	totalMessageSent?: number;
+	availableTags?: any[] /* replace with tag objects */;
+	appliedTags?: string[];
+	defaultReactionEmoji?: string /* replace with default reaction object */;
+	defaultThreadRateLimitPerUser?: number;
+	defaultSortOrder?: number;
+	defaultForumLayout?: number;
+};
+
 export type { InputType, ButtonType, TextAreaType, 	GuildsResponse,
-	UsersResponse,
+
 	User,
-	Relationship, Tab };
+	Relationship, Tab, 
+	UsersResponse,
+	Role,
+	GuildType,
+	ChannelType,
+
+
+}; 

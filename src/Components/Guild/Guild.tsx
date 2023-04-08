@@ -3,7 +3,7 @@ import { onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { GuildType } from '../../types';
+import { GuildType, ChannelType } from '../../types';
 
 // Style
 import style from './Guild.module.css';
@@ -24,7 +24,6 @@ const Guild = (props: GuildProps) => {
 				class={style.guild}
 				onClick={() => {
 					AppState.setCurrentGuild(guild);
-					console.log(AppState.currentGuild().channels);
 				}}
 				href={`./${props.id}/${guild.systemChannelId}`}
 			>

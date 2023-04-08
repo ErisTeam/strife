@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, onMount, For } from 'solid-js';
+import { createSignal, onMount, For, createEffect } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -16,19 +16,16 @@ interface ChannelListProps {
 }
 
 const ChannelList = (props: ChannelListProps) => {
-	const AppState: any = useAppState();
-
 	const [categories, setCategories] = createSignal<ChannelType[]>([]);
 	const [channels, setChannels] = createSignal<ChannelType[]>([]);
+	const AppState: any = useAppState();
+	createEffect(() => {
+		setCategories(AppState.currentGuild()!.channels.filter((channel: ChannelType) => channel.type === 4));
 
-	onMount(async () => {
-		setCategories(AppState.currentGuild().channels.filter((channel: ChannelType) => channel.type === 4));
+		setCategories(categories().sort((a: any, b: any) => a.position - b.position));
 
-		setCategories(categories().sort((a, b) => a.position - b.position));
-
-		setChannels(AppState.currentGuild.channels.filter((channel: ChannelType) => channel.type !== 4));
+		setChannels(AppState.currentGuild()!.channels.filter((channel: ChannelType) => channel.type !== 4));
 	});
-
 	return (
 		<nav class={[props.className, style.channelList].join(' ')}>
 			<ul>

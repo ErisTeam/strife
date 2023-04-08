@@ -28,7 +28,6 @@ import Redirect from './Redirect';
 import API from './API';
 
 import { invoke } from '@tauri-apps/api';
-import GuildTest from './Routes/Dev/GuildTest/GuildTest';
 import { useRoute } from '@solidjs/router/dist/routing';
 
 const App: Component = () => {
@@ -61,7 +60,6 @@ const App: Component = () => {
 								{/* <Redirect /> */}
 								<Route path="/dev">
 									<Route path="/translationtest" component={TranslationTest} />
-									<Route path="/guildtest" component={GuildTest} />
 								</Route>
 
 								<Route path="/" component={Prev}></Route>

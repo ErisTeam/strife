@@ -2,8 +2,7 @@
 import { createSignal, createContext, useContext } from 'solid-js';
 
 // API
-import { Relationship, Tab } from './types';
-import { GuildType } from './discord';
+import { Relationship, Tab, GuildType, ChannelType } from './types';
 
 const [userID, setUserID] = createSignal<string | null>(null);
 
