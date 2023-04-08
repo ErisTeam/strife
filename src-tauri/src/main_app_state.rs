@@ -52,7 +52,7 @@ impl UserData {
     pub fn get_guild_by_channel(&self, channel_id: &str) -> Option<&PartialGuild> {
         for guild in &self.guilds {
             for channel in &guild.channels {
-                if channel.id == channel_id {
+                if channel.get_id() == channel_id {
                     return Some(guild);
                 }
             }

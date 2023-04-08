@@ -3,7 +3,7 @@ import { createSignal, onMount, For } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { ChannelType } from '../types';
+import { ChannelType } from '../../types';
 
 // Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';

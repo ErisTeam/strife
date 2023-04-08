@@ -4,7 +4,10 @@ mod tests {
     mod gateway {
         use std::fs;
 
-        use crate::discord::{gateway_packets::GatewayIncomingPacket, types::gateway::ReadyData};
+        use crate::discord::{
+            gateway_packets::GatewayIncomingPacket,
+            types::{channel::partial_channels::GuildChannel, gateway::ReadyData},
+        };
         #[test]
         fn hello() {
             let json: GatewayIncomingPacket =

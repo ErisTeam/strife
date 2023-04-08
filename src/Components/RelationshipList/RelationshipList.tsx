@@ -4,7 +4,7 @@ import { onMount, For } from 'solid-js';
 // API
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { Relationship } from '../types';
+import { Relationship } from '../../types';
 
 // Style
 import style from './RelationshipList.module.css';

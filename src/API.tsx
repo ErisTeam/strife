@@ -5,7 +5,8 @@ import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
-import { GuildType, ChannelType, Relationship, Tab } from './Components/types';
+import { Relationship, Tab } from './types';
+import { ChannelType, GuildType } from './discord';
 interface GatewayEvent {
 	user_id: string;
 	type: string;
@@ -108,7 +109,7 @@ export default {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 
-		return (await res).data;
+		return (await res).data.guilds;
 	},
 
 	/**
@@ -215,37 +216,9 @@ export default {
 
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
-		let guilds = (await this.getGuilds(AppState.userID())).guilds;
+		let guilds = (await this.getGuilds(AppState.userID() as string)) || [];
 		console.log('guilds', guilds);
-		for (const guild of guilds) {
-			let guildChannels: ChannelType[] = [];
-			guild.channels.forEach((channel: any) => {
-				guildChannels.push({
-					id: channel.id,
-					name: channel.name,
-					type: channel.type,
-					position: channel.position,
-					guildId: guild.properties.id,
-					parentId: channel.parent_id,
-				});
-			});
-
-			let newGuild: GuildType = {
-				id: guild.properties.id,
-				name: guild.properties.name,
-				icon: guild.properties.icon,
-				description: guild.properties.description,
-				splash: guild.properties.splash,
-				features: guild.properties.features,
-				banner: guild.properties.banner,
-				ownerId: guild.properties.owner_id,
-				roles: guild.roles,
-				stickers: guild.stickers,
-				systemChannelId: guild.properties.system_channel_id,
-				channels: guildChannels,
-			};
-			AppState.setUserGuilds((prev: any) => [...prev, newGuild]);
-		}
+		AppState.setUserGuilds((prev: any) => [...prev, ...guilds]);
 	},
 
 	async updateRelationships() {
@@ -271,13 +244,18 @@ export default {
 	 * @Gami
 	 */
 	async addTab(channel: ChannelType) {
+		let guild = AppState.userGuilds().find((e: any) => e.id === channel.guild_id);
+		if (!guild) {
+			console.error('Guild not found!');
+			return;
+		}
 		let tab: Tab = {
-			guildId: channel.guildId,
+			guildId: channel.guild_id,
 			channelId: channel.id,
 			channelName: channel.name,
 			channelType: channel.type,
-			guildIcon: AppState.userGuilds().find((e: any) => e.id === channel.guildId)?.icon,
-			guildName: AppState.userGuilds().find((e: any) => e.id === channel.guildId)?.name,
+			guildIcon: guild.icon,
+			guildName: guild.name,
 		};
 		console.log(tab);
 	},

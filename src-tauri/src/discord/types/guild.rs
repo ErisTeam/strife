@@ -21,7 +21,7 @@ pub struct PartialGuild {
 }
 impl PartialGuild {
     pub fn get_channel(&self, id: &str) -> Option<GuildChannel> {
-        self.channels.iter().find(|c| c.id == id).cloned()
+        self.channels.iter().find(|c| c.get_id() == id).cloned()
     }
 }
 

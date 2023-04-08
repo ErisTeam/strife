@@ -2,7 +2,7 @@
 import { For } from 'solid-js';
 
 // API
-import { ChannelType } from '../types';
+import { ChannelType } from '../../types';
 
 // Components
 import Channel from '../Channel/Channel';

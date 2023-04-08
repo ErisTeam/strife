@@ -12,6 +12,9 @@ type Listener = {
 
 const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
 
+/**
+ * @deprecated
+ */
 function useTaurListenerOld<T>(eventName: string, on_event: (event: Event<T>) => void) {
 	createEffect(() => {
 		const unlist = listen(eventName, on_event);

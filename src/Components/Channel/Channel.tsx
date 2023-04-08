@@ -1,6 +1,6 @@
 // API
 import API from '../../API';
-import { ChannelType } from '../types';
+import { ChannelType } from '../../types';
 
 // Style
 import style from './Channel.module.css';

@@ -19,8 +19,8 @@ pub async fn new_message(
             .unwrap()
             .get_channel(&channel_id)
             .unwrap()
-            .name
-            .clone();
+            .get_name()
+            .to_string();
     } else {
         channel_name = "unknown".to_string();
     }

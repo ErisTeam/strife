@@ -55,10 +55,11 @@ type Role = {
 	mentionable: boolean;
 };
 
+//todo copy form rust discord/type/guild PartialGuild
 type GuildType = {
 
 	name: string;
-	icon: string;
+	icon: string | null;
 	description: string;
 	splash: string;
 	member_count: number;
@@ -80,10 +81,10 @@ type GuildType = {
 type ChannelType = {
 	id: string;
 	type: number;
-	guild_id?: string;
+	guild_id: string | null;
 	position: number | 0;
 	permission_overwrites?: any[];
-	name?: string;
+	name: string | null;
 	topic?: string;
 	nsfw?: boolean;
 	last_message_id?: string;
@@ -113,6 +114,11 @@ type ChannelType = {
 	default_sort_order?: number;
 	default_forum_layout?: number;
 };
+type Sticker = {
+}
+
+
+
 
 export type {
 	GuildsResponse,

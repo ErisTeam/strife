@@ -7,14 +7,87 @@ use super::thread::{ThreadMember, ThreadMetadata};
 
 pub mod partial_channels {
     use super::*;
+
     #[derive(Debug, Clone, Serialize, Deserialize)]
-    pub struct GuildChannel {
+    #[serde(untagged)]
+    pub enum GuildChannel {
+        Category(CategoryChannel),
+        Text(TextChannel),
+        Voice(VoiceChannel),
+
+        Unknown(serde_json::Value),
+    }
+    impl GuildChannel {
+        pub fn get_id(&self) -> &str {
+            match self {
+                Self::Category(c) => &c.base.id,
+                Self::Text(c) => &c.base.id,
+                Self::Voice(c) => &c.base.id,
+                _ => panic!("unimplemented"),
+            }
+        }
+        pub fn get_name(&self) -> &str {
+            match self {
+                Self::Category(c) => &c.base.name,
+                Self::Text(c) => &c.base.name,
+                Self::Voice(c) => &c.base.name,
+                _ => panic!("unimplemented"),
+            }
+        }
+
+        pub fn get_base(&self) -> &GuildChannelBase {
+            match self {
+                Self::Category(c) => &c.base,
+                Self::Text(c) => &c.base,
+                Self::Voice(c) => &c.base,
+                _ => panic!("unimplemented"),
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct CategoryChannel {
+        #[serde(flatten)]
+        pub base: GuildChannelBase,
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct TextChannel {
+        #[serde(flatten)]
+        pub base: GuildChannelBase,
+
+        pub parent_id: String,
+
+        pub last_message_id: Option<String>,
+
+        pub nsfw: Option<bool>,
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct GuildChannelBase {
         pub r#type: ChannelType,
         pub id: String,
         pub name: String,
 
         pub position: Option<u64>,
+
+        pub permission_overwrites: Vec<serde_json::Value>, // todo PermissionOverwrite
     }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct VoiceChannel {
+        #[serde(flatten)]
+        pub base: GuildChannelBase,
+
+        pub parent_id: String,
+
+        pub bitrate: Option<u64>,
+
+        pub user_limit: Option<u64>,
+
+        pub rtc_region: Option<String>,
+    }
+
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct PrivateChannel {
         pub r#type: ChannelType,
