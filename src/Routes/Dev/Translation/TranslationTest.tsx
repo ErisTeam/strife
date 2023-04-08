@@ -1,5 +1,5 @@
 import { For } from 'solid-js';
-import { useTrans } from '../../Translation';
+import { useTrans } from '../../../Translation';
 
 const localesList = {
 	Afar: {
@@ -1267,7 +1267,7 @@ const localesList = {
 };
 
 import style from './TranslationTest.module.css';
-import inputs from '../../Styles/Inputs.module.css';
+import inputs from '../../../Styles/Inputs.module.css';
 
 export default () => {
 	const [t, { locale, setLocale, getDictionary }] = useTrans();

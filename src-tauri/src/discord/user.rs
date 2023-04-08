@@ -1,13 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize};
 
-fn deserialize_flags<'de, D>(deserializer: D) -> Result<UserFlags, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let flags: u64 = Deserialize::deserialize(deserializer)?;
-
-    Ok(UserFlags { flags })
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CurrentUser {

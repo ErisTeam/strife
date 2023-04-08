@@ -105,7 +105,6 @@ impl Gateway {
                 println!("Hello {:?}", self.connection_info);
             }
             GatewayPacketsData::Ready(data) => {
-                println!("Ready {:?}", data);
                 self.resume_url = Some(data.resume_gateway_url);
                 self.session_id = Some(data.session_id);
                 if self.user_id != data.user.id {
@@ -129,6 +128,8 @@ impl Gateway {
                 }
                 user_data.insert(self.user_id.clone(), main_app_state::User::ActiveUser(user));
                 println!("Ready {:?} {:?}", user_data, user_data.get(&self.user_id));
+
+                self.emit_event(webview_packets::Gateway::Started).unwrap();
             }
             GatewayPacketsData::ReadySupplemental {
                 merged_presences,
@@ -193,42 +194,6 @@ impl Gateway {
         Ok(())
     }
 
-    fn conn(&mut self) -> Client<TlsStream<TcpStream>> {
-        use websocket::ClientBuilder;
-        let mut headers = websocket::header::Headers::new();
-        headers.set(websocket::header::Origin("https://discord.com".to_string()));
-        let url;
-        println!("use {}", self.use_resume_url);
-        if self.use_resume_url {
-            url = self.resume_url.as_ref().unwrap().clone();
-        } else {
-            url = GATEWAY_CONNECT.to_string();
-        }
-
-        let mut client = ClientBuilder::new(url.as_str())
-            .unwrap()
-            .custom_headers(&headers)
-            .connect_secure(None)
-            .unwrap();
-        client.set_nonblocking(true).unwrap();
-        if self.use_resume_url {
-            client
-                .send_message(&OwnedMessage::Text(
-                    serde_json::to_string(
-                        &(GatewayPackets::Resume {
-                            token: self.token.clone(),
-                            session_id: self.session_id.as_ref().unwrap().clone(),
-                            seq: self.seq.unwrap().clone(),
-                        }),
-                    )
-                    .unwrap(),
-                ))
-                .unwrap();
-            println!("resuming");
-        }
-        self.use_resume_url = false;
-        client
-    }
     pub async fn run(&mut self) {
         while let Ok(result) = self.connect().await {
             info!("Reconnecting");

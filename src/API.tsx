@@ -15,7 +15,7 @@ interface a<T> {
 	listener: (event: T) => void;
 }
 
-const AppState: any = useAppState();
+const AppState = useAppState();
 type Listener = {
 	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
 	cleanup: () => void;
@@ -97,13 +97,14 @@ export default {
 		console.log('getUserData', await res);
 		return (await res).data;
 	},
-	async getRelationships(userId: string) {
+	async getRelationships(userId: string = AppState.userID() as string) {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
 		return (await res).data;
 	},
-	async getGuilds(userId: string) {
+	async getGuilds(userId: string = AppState.userID() as string): Promise<GuildType[] | null> {
+		console.log('getGuilds', userId);
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 
@@ -202,13 +203,13 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(userId: string = AppState.userID()) {
+	async getToken(userId: string = AppState.userID() as string) {
 		return (await invoke('get_token', { userId })) as string | null;
 	},
 
 	async updateCurrentUserID() {
 		let response = await invoke('get_last_user');
-		AppState.setUserID(response);
+		AppState.setUserID(response as string);
 		return;
 	},
 

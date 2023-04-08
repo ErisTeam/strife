@@ -4,7 +4,7 @@ import { createSignal, createContext, useContext } from 'solid-js';
 // API
 import { GuildType, Relationship, ChannelType, Tab } from './Components/types';
 
-const [userID, setUserID] = createSignal('');
+const [userID, setUserID] = createSignal<string | null>(null);
 
 const [userGuilds, setUserGuilds] = createSignal<GuildType[]>([]);
 const [relationships, setRelationshpis] = createSignal<Relationship[]>([]);

@@ -32,12 +32,20 @@ import style from './../../prev.module.css';
 // 	)
 // }
 
-function MessageTest() {
+function MessageTest(props: any) {
+	if (props.channelId) {
+		channelId = props.channelId;
+		console.log('channelId', channelId);
+	}
+	if (props.guildId) {
+		guildId = props.guildId;
+	}
+
 	const [messages, setMessages] = createSignal<any[]>([], { equals: false });
 
 	const AppState = useAppState();
 
-	startGateway(AppState.userID());
+	//startGateway(AppState.userID());
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -73,7 +81,7 @@ function MessageTest() {
 
 	fetchMessages();
 
-	const listener = startGatewayListener(AppState.userID());
+	const listener = startGatewayListener(AppState.userID() as string);
 
 	listener.on<messageCreate>('messageCreate', (msg) => {
 		console.log('Listener gateway', msg, msg, msg.type);
@@ -124,7 +132,7 @@ function MessageTest() {
 		fetch(`https://discord.com/api/v9/channels/${channelId}/typing`, {
 			method: 'POST',
 			headers: {
-				Authorization: (await API.getToken(AppState.userID())) as string,
+				Authorization: (await API.getToken(AppState.userID() as string)) as string,
 			},
 		});
 		setTimeout(async () => {
@@ -173,26 +181,26 @@ function MessageTest() {
 
 						if (val.embeds && val.embeds[0]) {
 							switch (val.embeds[0].type) {
-								case 'gifv':
-									embed = (
-										<video
-											src={val.embeds[0].video.proxy_url}
-											autoplay={true}
-											loop={true}
-											width={val.embeds[0].video.width}
-											height={val.embeds[0].video.height}
-										></video>
-									);
-									break;
-								case 'video':
-									embed = (
-										<img
-											src={val.embeds[0].thumbnail.proxy_url}
-											width={val.embeds[0].thumbnail.width}
-											height={val.embeds[0].thumbnail.height}
-										></img>
-									);
-									break;
+								// case 'gifv':
+								// 	embed = (
+								// 		<video
+								// 			src={val.embeds[0].video.proxy_url}
+								// 			autoplay={true}
+								// 			loop={true}
+								// 			width={val.embeds[0].video.width}
+								// 			height={val.embeds[0].video.height}
+								// 		></video>
+								// 	);
+								// 	break;
+								// case 'video':
+								// 	embed = (
+								// 		<img
+								// 			src={val.embeds[0].thumbnail.proxy_url}
+								// 			width={val.embeds[0].thumbnail.width}
+								// 			height={val.embeds[0].thumbnail.height}
+								// 		></img>
+								// 	);
+								// 	break;
 								default:
 									embed = <h2>{JSON.stringify(val.embeds[0])}</h2>;
 									break;
@@ -200,7 +208,8 @@ function MessageTest() {
 						}
 						return (
 							<li>
-								{intl.format(val.timestamp)} <br /> {val.author.username}: {!embed && val.content}
+								{intl.format(val.timestamp)} <br /> {val.author.username}: {val.content}
+								{!!embed && embed}
 								{val.author.id == AppState.userID() && (
 									<button
 										class={style.button}
@@ -218,7 +227,6 @@ function MessageTest() {
 										edit
 									</button>
 								)}
-								{embed}
 								<button
 									class={style.button}
 									onClick={() => {

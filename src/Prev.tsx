@@ -297,7 +297,7 @@ function Prev() {
 						class={buttons.default}
 						onclick={async (e) => {
 							console.log(AppState.userID());
-							console.log(await API.getUserData(AppState.userID()));
+							console.log(await API.getUserData(AppState.userID() as string));
 						}}
 					>
 						Get User Data
@@ -305,7 +305,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.getRelationships(AppState.userID()));
+							console.log(await API.getRelationships(AppState.userID() as string));
 						}}
 					>
 						Get Relationships
@@ -339,6 +339,9 @@ function Prev() {
 				</Anchor>
 				<Anchor class={[buttons.default].join(' ')} state="Application" href="/dev/translationtest">
 					Translation Test
+				</Anchor>
+				<Anchor class={buttons.default} state="Application" href="/dev/guildtest">
+					Guild Test
 				</Anchor>
 				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
 					Error Page

@@ -85,6 +85,7 @@ pub enum Gateway {
     Error {
         message: String,
     },
+    Started,
 }
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -105,7 +106,15 @@ pub enum General {
     Relationships {
         relationships: Vec<crate::discord::types::relationship::Relationship>,
     },
+
     Guilds {
         guilds: Vec<PartialGuild>,
+    },
+    GuildCreate {
+        guild: PartialGuild,
+    },
+    Error {
+        _for: String,
+        message: String,
     },
 }
