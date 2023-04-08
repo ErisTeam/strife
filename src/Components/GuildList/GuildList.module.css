@@ -1,9 +1,2 @@
-.guildList {
-	background-color: var(--depth2);
-	display: flex;
-	height: 100%;
-	width: fit-content;
-	position: sticky;
-	top: 0;
-	left: 0;
+.tabs {
 }

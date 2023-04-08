@@ -14,28 +14,30 @@ import style from './Application.module.css';
 
 import Anchor from '../../Components/Anchor/Anchor';
 import { Portal } from 'solid-js/web';
+import { useAppState } from '../../AppState';
 
 const Application = () => {
 	const params = useParams();
-	const [shouldRedner, setShouldRender] = createSignal(true);
+	const [showChannels, setShowChannels] = createSignal(false);
+	const [showRelationships, setShowRelationships] = createSignal(false);
+	const AppState = useAppState();
 
 	onMount(async () => {
-		if (params.guildId == undefined) return;
+		if (AppState.currentGuild() == null) return;
 
-		await API.updateCurrentChannels(params.guildId.toString());
-		setShouldRender(true);
+		setShowChannels(true);
 	});
 
 	// TODO: Idk what this does, explain or delete it
-	useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
-		const toGuild = e.to.toString().split('/')[2];
+	// useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
+	// 	const toGuild = e.to.toString().split('/')[2];
 
-		if (toGuild != params.guildId.toString()) {
-			setShouldRender(false);
-			await API.updateCurrentChannels(toGuild);
-			setShouldRender(true);
-		}
-	});
+	// 	if (toGuild != params.guildId.toString()) {
+	// 		setShouldRender(false);
+	// 		await toGuild;
+	// 		setShouldRender(true);
+	// 	}
+	// });
 
 	return (
 		<div class={style.app}>
@@ -48,8 +50,10 @@ const Application = () => {
 					Update Guilds
 				</button>
 			</Portal>
-			<Show when={shouldRedner()}>
+			<Show when={showChannels()}>
 				<ChannelList />
+			</Show>
+			<Show when={showRelationships()}>
 				<RelationshipList />
 			</Show>
 			<Anchor state={'LoginScreen'} href="/">

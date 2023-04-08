@@ -5,7 +5,7 @@ import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
-import { GuildType, ChannelType, Relationship } from './discord';
+import { GuildType, ChannelType, Relationship, Tab } from './Components/types';
 interface GatewayEvent {
 	user_id: string;
 	type: string;
@@ -212,43 +212,23 @@ export default {
 		return;
 	},
 
-	async updateCurrentChannels(id: string) {
-		let token = await this.getToken();
-		if (!token) {
-			console.error("No user token found! Can't update current channels!");
-			return;
-		}
-
-		AppState.setCurrentGuildChannels([]);
-
-		const url = `https://discord.com/api/v9/guilds/${id}/channels`;
-		const resDataponse = await fetch(url, {
-			method: 'GET',
-			headers: {
-				Authorization: token,
-			},
-		});
-
-		let resData = await resDataponse.json();
-
-		resData.forEach((e: any) => {
-			let channel: ChannelType = {
-				id: e.id,
-				name: e.name,
-				type: e.type,
-				topic: e.topic,
-				position: e.position,
-				permission_overwrites: e.permission_overwrites,
-				parent_id: e.parent_id,
-			};
-			AppState.setCurrentGuildChannels((prev: any) => [...prev, channel]);
-		});
-	},
-
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
-		let guilds: any[] = (await this.getGuilds(AppState.userID())).guilds;
+		let guilds = (await this.getGuilds(AppState.userID())).guilds;
+		console.log('guilds', guilds);
 		for (const guild of guilds) {
+			let guildChannels: ChannelType[] = [];
+			guild.channels.forEach((channel: any) => {
+				guildChannels.push({
+					id: channel.id,
+					name: channel.name,
+					type: channel.type,
+					position: channel.position,
+					guildId: guild.properties.id,
+					parentId: channel.parent_id,
+				});
+			});
+
 			let newGuild: GuildType = {
 				id: guild.properties.id,
 				name: guild.properties.name,
@@ -261,6 +241,7 @@ export default {
 				roles: guild.roles,
 				stickers: guild.stickers,
 				systemChannelId: guild.properties.system_channel_id,
+				channels: guildChannels,
 			};
 			AppState.setUserGuilds((prev: any) => [...prev, newGuild]);
 		}
@@ -281,5 +262,22 @@ export default {
 		// 	},
 		// };
 		// AppState.setRelationshpis((prev: any) => [...prev, relationship]);
+	},
+	/**
+	 * Represents a book.
+	 * @param {string} channelId - Channel or user id.
+	 * @param {string} guildId - if dms, pass \@me.
+	 * @Gami
+	 */
+	async addTab(channel: ChannelType) {
+		let tab: Tab = {
+			guildId: channel.guildId,
+			channelId: channel.id,
+			channelName: channel.name,
+			channelType: channel.type,
+			guildIcon: AppState.userGuilds().find((e: any) => e.id === channel.guildId)?.icon,
+			guildName: AppState.userGuilds().find((e: any) => e.id === channel.guildId)?.name,
+		};
+		console.log(tab);
 	},
 };

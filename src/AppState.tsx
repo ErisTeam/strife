@@ -2,23 +2,27 @@
 import { createSignal, createContext, useContext } from 'solid-js';
 
 // API
-import { GuildType, Relationship, ChannelType } from './discord';
+import { GuildType, Relationship, ChannelType, Tab } from './Components/types';
 
 const [userID, setUserID] = createSignal('');
 
 const [userGuilds, setUserGuilds] = createSignal<GuildType[]>([]);
-const [currentGuildChannels, setCurrentGuildChannels] = createSignal<ChannelType[]>([]);
 const [relationships, setRelationshpis] = createSignal<Relationship[]>([]);
+const [tabs, setTabs] = createSignal<Tab[]>([]);
+const [currentGuild, setCurrentGuild] = createSignal<GuildType>({} as GuildType); //Used to display correct channels after being decoupled set to null to hide
 
 const AppState = createContext({
 	userGuilds,
 	setUserGuilds,
-	currentGuildChannels,
-	setCurrentGuildChannels,
+
 	relationships,
 	setRelationshpis,
 	userID,
 	setUserID,
+	tabs,
+	setTabs,
+	currentGuild,
+	setCurrentGuild,
 });
 
 export function AppStateProvider(props: any) {
@@ -27,12 +31,15 @@ export function AppStateProvider(props: any) {
 			value={{
 				userGuilds,
 				setUserGuilds,
-				currentGuildChannels,
-				setCurrentGuildChannels,
+
 				relationships,
 				setRelationshpis,
 				userID,
 				setUserID,
+				tabs,
+				setTabs,
+				currentGuild,
+				setCurrentGuild,
 			}}
 		>
 			{props.children}

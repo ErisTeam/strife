@@ -3,7 +3,7 @@ import { onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { GuildType } from '../../discord';
+import { GuildType } from '../types';
 
 // Style
 import style from './Guild.module.css';
@@ -20,7 +20,14 @@ const Guild = (props: GuildProps) => {
 
 	return (
 		<li>
-			<A class={style.guild} href={`./${props.id}/${guild.systemChannelId}`}>
+			<A
+				class={style.guild}
+				onClick={() => {
+					AppState.setCurrentGuild(guild);
+					console.log(AppState.currentGuild().channels);
+				}}
+				href={`./${props.id}/${guild.systemChannelId}`}
+			>
 				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
 			</A>
 		</li>

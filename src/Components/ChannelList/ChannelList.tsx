@@ -3,7 +3,7 @@ import { createSignal, onMount, For } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { ChannelType } from '../../discord';
+import { ChannelType } from '../types';
 
 // Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';
@@ -22,19 +22,11 @@ const ChannelList = (props: ChannelListProps) => {
 	const [channels, setChannels] = createSignal<ChannelType[]>([]);
 
 	onMount(async () => {
-		setCategories(
-			AppState.currentGuildChannels().filter(
-				(channel: ChannelType) => channel.type === 4
-			)
-		);
+		setCategories(AppState.currentGuild().channels.filter((channel: ChannelType) => channel.type === 4));
 
 		setCategories(categories().sort((a, b) => a.position - b.position));
 
-		setChannels(
-			AppState.currentGuildChannels().filter(
-				(channel: ChannelType) => channel.type !== 4
-			)
-		);
+		setChannels(AppState.currentGuild.channels.filter((channel: ChannelType) => channel.type !== 4));
 	});
 
 	return (
@@ -45,9 +37,7 @@ const ChannelList = (props: ChannelListProps) => {
 						<ChannelCategory
 							data={category}
 							id={category.id}
-							childrenChannels={channels().filter(
-								(x: ChannelType) => x.parent_id == category.id
-							)}
+							childrenChannels={channels().filter((x: ChannelType) => x.parentId == category.id)}
 						/>
 					)}
 				</For>

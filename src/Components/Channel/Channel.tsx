@@ -1,5 +1,6 @@
 // API
-import { ChannelType } from '../../discord';
+import API from '../../API';
+import { ChannelType } from '../types';
 
 // Style
 import style from './Channel.module.css';
@@ -11,7 +12,18 @@ interface ChannelProps {
 const Channel = (props: ChannelProps) => {
 	return (
 		<li class={style.channel}>
-			<a href={props.data.id}>{props.data.name}</a>
+			<button
+				onMouseDown={(e) => {
+					e.preventDefault();
+					// if middle click
+					if (e.button === 1) {
+						console.log('middle click', e.button);
+						API.addTab(props.data);
+					}
+				}}
+			>
+				{props.data.name}
+			</button>
 		</li>
 	);
 };
