@@ -31,11 +31,15 @@ mod tests {
         }
         #[test]
         fn ready_supplemental() {
-            let json: ReadyData = serde_json::from_reader(
+            let json: GatewayIncomingPacket = serde_json::from_reader(
                 fs::File::open("../tests/ready supplemental.json").unwrap(),
             )
             .unwrap();
-            assert_eq!(json.user.username, "Tauri");
+
+            assert!(matches!(
+                json.d,
+                crate::discord::gateway_packets::GatewayPacketsData::ReadySupplemental { .. }
+            ));
         }
     }
 }

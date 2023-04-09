@@ -5,8 +5,8 @@ import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
-import { Relationship, Tab } from './types';
-import { ChannelType, GuildType } from './types';
+import { Relationship, Tab, GuildType as worseGuildType, ChannelType as worseChannelType } from './types';
+import { ChannelType, GuildType } from './discord';
 interface GatewayEvent {
 	user_id: string;
 	type: string;
@@ -108,7 +108,7 @@ export default {
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 
-		return (await res).data.guilds;
+		return (await res).data.guilds as GuildType[];
 	},
 
 	/**
@@ -213,39 +213,47 @@ export default {
 		return;
 	},
 
+	snakeToCamel(str: string) {
+		return str.replace(/(?!^)_(.)/g, (_, char) => char.toUpperCase());
+	},
+
+	toCamelCase(object: any) {
+		let obj = Object.assign({}, object);
+		let newObj: any = {};
+		for (const key in obj) {
+			const camelKey = this.snakeToCamel(key);
+			if (Array.isArray(obj[key])) {
+				newObj[camelKey] = [];
+				for (const item of obj[key]) {
+					if (item instanceof Object) {
+						newObj[camelKey].push(this.toCamelCase(item));
+					} else {
+						newObj[camelKey].push(item);
+					}
+				}
+			} else if (obj[key] instanceof Object) {
+				newObj[camelKey] = this.toCamelCase(obj[key]);
+			} else {
+				newObj[camelKey] = obj[key];
+			}
+		}
+		return newObj;
+	},
+
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
-		let guilds = await this.getGuilds();
-		console.log('guilds', guilds);
-		for (const guild of guilds) {
-			let guildChannels: ChannelType[] = [];
-			guild.channels.forEach((channel: any) => {
-				guildChannels.push({
-					id: channel.id,
-					name: channel.name,
-					type: channel.type,
-					position: channel.position,
-					guildId: guild.properties.id,
-					parentId: channel.parent_id,
-				});
-			});
+		let guilds: GuildType[] = await this.getGuilds();
 
-			let newGuild: GuildType = {
-				id: guild.properties.id,
-				name: guild.properties.name,
-				icon: guild.properties.icon,
-				description: guild.properties.description,
-				splash: guild.properties.splash,
-				features: guild.properties.features,
-				banner: guild.properties.banner,
-				ownerId: guild.properties.owner_id,
-				roles: guild.roles,
-				stickers: guild.stickers,
-				systemChannelId: guild.properties.system_channel_id,
-				channels: guildChannels,
-			};
-			AppState.setUserGuilds((prev: any) => [...prev, newGuild]);
+		let newGuilds: worseGuildType[] = [];
+		for (let guild of guilds) {
+			guild = { ...guild, ...guild.properties };
+			//@ts-ignore
+			delete guild.properties;
+			let newGuild: any = {};
+			newGuild = this.toCamelCase(guild);
+			newGuilds.push(newGuild);
 		}
+		AppState.setUserGuilds((prev: any) => [...newGuilds]);
 	},
 
 	async updateRelationships() {
@@ -270,7 +278,7 @@ export default {
 	 * @param {string} guildId - if dms, pass \@me.
 	 * @Gami
 	 */
-	async addTab(channel: ChannelType) {
+	async addTab(channel: worseChannelType) {
 		let guild = AppState.userGuilds().find((e: any) => e.id === channel.guildId);
 		if (!guild) {
 			console.error('Guild not found!');
