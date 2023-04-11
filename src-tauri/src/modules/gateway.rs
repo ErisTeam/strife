@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::Write, net::TcpStream, sync::Arc, time::Duration};
+use std::{collections::HashMap, io::Write, sync::Arc, time::Duration};
 
 use flate2::Decompress;
 use futures_util::SinkExt;
@@ -10,7 +10,7 @@ use tokio_tungstenite::{
     tungstenite::{protocol::CloseFrame, Message},
     WebSocketStream,
 };
-use websocket::{native_tls::TlsStream, sync::Client, OwnedMessage};
+use websocket::OwnedMessage;
 
 use crate::{
     discord::{
@@ -108,7 +108,7 @@ impl Gateway {
                 self.resume_url = Some(data.resume_gateway_url);
                 self.session_id = Some(data.session_id);
                 if self.user_id != data.user.id {
-                    println!("Wrong user id {} != {}", self.user_id, data.user.id);
+                    error!("Wrong user id {} != {}", self.user_id, data.user.id);
                     return Err(GatewayError::Other);
                 }
                 let user = UserData::new(
@@ -116,6 +116,7 @@ impl Gateway {
                     self.token.clone(),
                     data.users,
                     data.guilds,
+                    data.user_guild_settings,
                     data.private_channels,
                     data.relationships,
                 );
@@ -177,6 +178,29 @@ impl Gateway {
                     let handle = self.handle.clone();
                     let user_data = self.state.get_user_data(self.user_id.clone());
                     println!("{:?}", user_data);
+
+                    if let Some(user_data) = &user_data {
+                        let guild = user_data.get_guild_by_channel(&message.channel_id);
+                        if let Some(guild) = guild {
+                            let settings = user_data.guild_settings.get(&guild.properties.id);
+                            if let Some(settings) = settings {
+                                let channel = settings
+                                    .channel_overrides
+                                    .iter()
+                                    .find(|x| x.channel_id == message.channel_id);
+                                let mute;
+                                if let Some(channel) = channel {
+                                    mute = channel.muted;
+                                } else {
+                                    mute = settings.muted;
+                                }
+                                println!("Mute: {}", mute);
+                                if mute {
+                                    return Ok(());
+                                }
+                            }
+                        }
+                    }
 
                     tauri::async_runtime::spawn(async move {
                         println!("notification");

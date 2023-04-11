@@ -1,7 +1,7 @@
 use std::{fmt::Debug, sync::Arc};
 
-use log::info;
-use serde::Deserialize;
+use log::{debug, error, info};
+use serde::{Deserialize, Serialize};
 use tauri::{Event, EventHandler, Manager};
 
 use crate::{
@@ -45,10 +45,12 @@ fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
                         },
                     )
                     .unwrap();
+                return;
             }
         } else {
             println!("No user data for {}", user_id);
         }
+
         handle
             .emit_all(
                 "general",
@@ -157,9 +159,9 @@ impl event<General> for GetGuilds {
 
         let data = user_data.get(&self.user_id);
         if let Some(data) = data {
-            println!("checking if user is active");
+            debug!("checking if user is active");
             if let User::ActiveUser(data) = data {
-                println!("Sending guilds");
+                info!("Sending guilds");
                 return Some((
                     "general",
                     General::Guilds {
@@ -168,7 +170,8 @@ impl event<General> for GetGuilds {
                 ));
             }
         } else {
-            println!("No user data for {}", self.user_id);
+            error!("No user data for {}", self.user_id);
+            //todo emit error
         }
         None
     }
