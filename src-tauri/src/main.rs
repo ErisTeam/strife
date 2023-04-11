@@ -22,10 +22,7 @@ mod test;
 
 extern crate tokio;
 
-use std::{
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::sync::Arc;
 
 use log::{debug, error, info, warn};
 use serde::Deserialize;

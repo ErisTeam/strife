@@ -20,26 +20,11 @@ interface messageCreate extends i {
 	};
 }
 
-let channelId = '419544210027446276';
-let guildId = '419544210027446273';
-
 import style from './../../prev.module.css';
 
-// function test(props: {listener: Listener }){
-// 	return (
-// 		<p>
-// 		</p>
-// 	)
-// }
-
-function MessageTest(props: any) {
-	if (props.channelId) {
-		channelId = props.channelId;
-		console.log('channelId', channelId);
-	}
-	if (props.guildId) {
-		guildId = props.guildId;
-	}
+function MessageTest(props: { channelId: string; guildId: string }) {
+	const [channelId, setChannelId] = createSignal(props.channelId || '419544210027446276');
+	const [guildId, setGuildId] = createSignal(props.guildId || '419544210027446273');
 
 	const [messages, setMessages] = createSignal<any[]>([], { equals: false });
 
@@ -52,11 +37,8 @@ function MessageTest(props: any) {
 		timeStyle: 'medium',
 	});
 
-	// const [channelId, setChannelId] = createSignal('419544210027446276');
-	// const [guildId, setGuildId] = createSignal('419544210027446273');
-
 	async function fetchMessages() {
-		let res = await API.getMessages(channelId);
+		let res = await API.getMessages(channelId());
 		console.log(res);
 		let r = res
 			.map((message: any) => ({
@@ -67,16 +49,6 @@ function MessageTest(props: any) {
 		console.log(r);
 
 		setMessages(r);
-
-		// setMessages((a) => [
-		// 	...a,
-		// ...res
-		// 	.map((message: any) => ({
-		// 		...message,
-		// 		timestamp: new Date(message.timestamp),
-		// 	}))
-		// 	.reverse(),
-		// ]);
 	}
 
 	fetchMessages();
@@ -151,16 +123,16 @@ function MessageTest(props: any) {
 				<div>
 					<input
 						oninput={(e) => {
-							channelId = e.currentTarget.value;
+							setChannelId(e.currentTarget.value);
 						}}
-						value={channelId}
+						value={channelId()}
 						placeholder="ChannelId"
 					/>
 					<input
 						oninput={(e) => {
-							guildId = e.currentTarget.value;
+							setGuildId(e.currentTarget.value);
 						}}
-						value={guildId}
+						value={guildId()}
 						placeholder="GuildId"
 					/>
 					<button
@@ -269,7 +241,7 @@ function MessageTest(props: any) {
 						let msg = message();
 						setMessage('');
 						if (editing()) {
-							let res = await API.editMessage(channelId, editing().id, msg);
+							let res = await API.editMessage(channelId(), editing().id, msg);
 							setEditing(null);
 							setMessages((a) => {
 								let index = a.findIndex((e) => e.id == res.id);
@@ -283,7 +255,7 @@ function MessageTest(props: any) {
 								return a;
 							});
 						} else {
-							let res = await API.sendMessage(channelId, msg, reference());
+							let res = await API.sendMessage(channelId(), msg, reference());
 							if (messages().find((e) => e.id == res.id)) {
 								return;
 							}

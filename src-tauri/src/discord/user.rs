@@ -1,6 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize};
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CurrentUser {
     pub verified: bool,
@@ -41,39 +40,39 @@ pub struct PublicUser {
 
 #[derive(Deserialize, Debug)]
 pub struct GuildSettings {
-    version: u64,
-    partial: bool,
-    entries: Vec<GuildSettingsEntry>,
+    pub version: u64,
+    pub partial: bool,
+    pub entries: Vec<GuildSettingsEntry>,
 }
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct GuildSettingsEntry {
-    version: u64,
-    suppress_roles: bool,
-    suppress_everyone: bool,
-    notify_highlights: u16, //
-    muted: bool,
-    mute_scheduled_events: bool,
-    muted_config: Option<MuteConfig>,
-    mobile_push: bool,
-    message_notifications: u16,
-    hide_muted_channels: bool,
-    guild_id: Option<String>,
-    flags: u64,
-    channel_overrides: Vec<ChannelOverride>,
+    pub version: u64,
+    pub suppress_roles: bool,
+    pub suppress_everyone: bool,
+    pub notify_highlights: u16, //
+    pub muted: bool,
+    pub mute_scheduled_events: bool,
+    pub muted_config: Option<MuteConfig>,
+    pub mobile_push: bool,
+    pub message_notifications: u16,
+    pub hide_muted_channels: bool,
+    pub guild_id: Option<String>,
+    pub flags: u64,
+    pub channel_overrides: Vec<ChannelOverride>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ChannelOverride {
-    muted: bool,
-    mute_config: Option<MuteConfig>,
-    message_notifications: u16,
-    collapsed: bool,
-    channel_id: String,
+    pub muted: bool,
+    pub mute_config: Option<MuteConfig>,
+    pub message_notifications: u16,
+    pub collapsed: bool,
+    pub channel_id: String,
 }
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct MuteConfig {
-    selected_time_window: Option<i64>, //todo custom deserializer -1 = none
-    end_time: Option<String>,
+    pub selected_time_window: Option<i64>, //todo custom deserializer -1 = none
+    pub end_time: Option<String>,
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct UserFlags {

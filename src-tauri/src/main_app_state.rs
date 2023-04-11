@@ -9,7 +9,7 @@ use tauri::AppHandle;
 use crate::{
     discord::{
         types::{guild::PartialGuild, relationship::GatewayRelationship},
-        user::{CurrentUser, PublicUser},
+        user::{CurrentUser, GuildSettings, GuildSettingsEntry, PublicUser},
     },
     event_manager::EventManager,
     manager::ThreadManager,
@@ -23,6 +23,9 @@ pub struct UserData {
     pub users: Vec<PublicUser>,
 
     pub guilds: Vec<PartialGuild>,
+
+    pub guild_settings: HashMap<String, GuildSettingsEntry>,
+
     pub private_channels: Vec<serde_json::Value>,
 
     pub relationships: Vec<GatewayRelationship>,
@@ -35,15 +38,26 @@ impl UserData {
         users: Vec<PublicUser>,
 
         guilds: Vec<PartialGuild>,
+        guild_settings: GuildSettings,
+
         private_channels: Vec<serde_json::Value>,
 
         relationships: Vec<GatewayRelationship>,
     ) -> Self {
+        let mut map = HashMap::new();
+        for entry in &guild_settings.entries {
+            if let Some(id) = &entry.guild_id {
+                map.insert(id.clone(), entry.clone());
+            } else {
+                map.insert("@me".to_string(), entry.clone());
+            }
+        }
         Self {
             user,
             token,
             users,
             guilds,
+            guild_settings: map,
             private_channels,
             relationships,
         }
