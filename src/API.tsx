@@ -7,6 +7,7 @@ import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
 import { Relationship, Tab, GuildType as worseGuildType, ChannelType as worseChannelType } from './types';
 import { ChannelType, GuildType } from './discord';
+import { useNavigate } from '@solidjs/router';
 interface GatewayEvent {
 	user_id: string;
 	type: string;
@@ -287,7 +288,7 @@ export default {
 	 * @param {string} guildId - if dms, pass \@me.
 	 * @Gami
 	 */
-	async addTab(channel: ChannelType) {
+	async addTab(channel: ChannelType, fallback: void) {
 		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
 
 		if (!guild) {
@@ -302,7 +303,7 @@ export default {
 			guildIcon: guild.icon,
 			guildName: guild.name,
 		};
-		console.log(tab);
+
 		AppState.setTabs((prev: any) => [...prev, tab]);
 		console.log(AppState.tabs());
 	},

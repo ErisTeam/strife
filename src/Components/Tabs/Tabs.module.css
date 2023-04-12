@@ -1,11 +1,22 @@
 .tabs {
-	width: 100%;
 	background-color: red;
+	height: 3em; //cant be bigger than row height in ApplicationWrapper.module.css
+
+	max-width: 100%;
+	overflow-x: scroll;
+
 	ul {
 		display: flex;
+
 		flex-wrap: nowrap;
+		height: 100%;
 		li {
+			max-height: 100%;
 			padding: 0 1em;
+			a {
+				word-break: keep-all;
+				white-space: nowrap;
+			}
 		}
 	}
 }

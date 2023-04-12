@@ -3,9 +3,19 @@
 	height: 100vh;
 	overflow-y: auto;
 	display: grid;
-	grid-template-columns: 5rem 1fr;
-	.list {
+	grid-template-columns: 5em 1fr;
+	grid-template-rows: 3em 1fr;
+	.guilds {
 		grid-column: 1;
+		grid-row: 1 / 3;
 		height: 100%;
+	}
+	.tabs {
+		grid-column: 2;
+		grid-row: 1;
+	}
+	.outlet {
+		grid-column: 2;
+		grid-row: 2;
 	}
 }

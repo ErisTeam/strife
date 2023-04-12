@@ -46,7 +46,6 @@ const Application = () => {
 					Update Guilds
 				</button>
 			</Portal>
-			<Tabs />
 			<Show when={AppState.currentGuild() != null}>
 				<ChannelList />
 			</Show>

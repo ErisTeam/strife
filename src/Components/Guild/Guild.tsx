@@ -24,7 +24,11 @@ const Guild = (props: GuildProps) => {
 			<A
 				class={style.guild}
 				onClick={() => {
-					AppState.setCurrentGuild(guild);
+					if (AppState.currentGuild() !== guild) {
+						AppState.setCurrentGuild(guild);
+					} else {
+						AppState.setCurrentGuild(null);
+					}
 				}}
 				href={`./${props.id}/${guild.systemChannelId}`}
 			>
