@@ -289,9 +289,7 @@ export default {
 	 */
 	async addTab(channel: ChannelType) {
 		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
-		console.log(AppState.userGuilds());
-		console.log(channel);
-		console.log(guild);
+
 		if (!guild) {
 			console.error('Guild not found!');
 			return;

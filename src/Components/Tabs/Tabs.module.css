@@ -1,2 +1,11 @@
 .tabs {
+	width: 100%;
+	background-color: red;
+	ul {
+		display: flex;
+		flex-wrap: nowrap;
+		li {
+			padding: 0 1em;
+		}
+	}
 }

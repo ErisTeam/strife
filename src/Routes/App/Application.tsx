@@ -15,11 +15,14 @@ import style from './Application.module.css';
 import Anchor from '../../Components/Anchor/Anchor';
 import { Portal } from 'solid-js/web';
 import { useAppState } from '../../AppState';
+import Tabs from '../../Components/Tabs/Tabs';
 
 const Application = () => {
 	const params = useParams();
 
 	const AppState = useAppState();
+	let currentGuildId = params.guildId;
+	let currentChannelId = params.channelId;
 
 	// TODO: Idk what this does, explain or delete it
 	// useBeforeLeave(async (e: BeforeLeaveEventArgs) => {
@@ -43,21 +46,23 @@ const Application = () => {
 					Update Guilds
 				</button>
 			</Portal>
+			<Tabs />
 			<Show when={AppState.currentGuild() != null}>
 				<ChannelList />
 			</Show>
-
+			<h1>
+				Current Channel:{' '}
+				{
+					AppState.userGuilds()
+						.find((x) => {
+							return x.id == currentGuildId;
+						})
+						?.channels.find((x) => {
+							return x.id == currentChannelId;
+						})?.name
+				}
+			</h1>
 			<RelationshipList />
-			<Anchor state={'LoginScreen'} href="/">
-				Prev
-			</Anchor>
-			<button
-				onClick={async () => {
-					API.updateGuilds();
-				}}
-			>
-				Test
-			</button>
 		</div>
 	);
 };
