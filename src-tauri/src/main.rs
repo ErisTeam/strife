@@ -129,8 +129,6 @@ fn main() {
     let m = main_state.clone();
 
     #[cfg(debug_assertions)]
-    test::add_token(&m);
-
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
@@ -140,7 +138,7 @@ fn main() {
         .manage(main_state)
         .setup(move |app| {
             let app_handle = app.handle();
-
+            test::add_token(&m, app_handle.clone());
             m.change_state(
                 main_app_state::State::default_login_screen(),
                 app_handle,

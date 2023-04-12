@@ -13,24 +13,25 @@
 	"devDependencies": {
 		"@solid-devtools/overlay": "^0.6.0",
 		"@tauri-apps/cli": "^1.2.3",
-		"@types/node": "^18.7.10",
+		"@types/node": "^18.15.11",
 		"@types/qrcode": "^1.5.0",
-		"autoprefixer": "^10.4.13",
+		"autoprefixer": "^10.4.14",
 		"postcss": "^8.4.21",
 		"solid-devtools": "^0.26.0",
-		"typescript": "^4.7.4",
-		"vite": "^4.0.0",
-		"vite-plugin-solid": "^2.3.0"
+		"typescript": "^5.0.4",
+		"vite": "^4.2.1",
+		"vite-plugin-solid": "^2.7.0"
 	},
 	"dependencies": {
 		"@solid-primitives/i18n": "^1.2.4",
-		"@solidjs/router": "^0.5.1",
+		"@solidjs/meta": "^0.28.4",
+		"@solidjs/router": "^0.8.2",
 		"@tauri-apps/api": "^1.2.0",
-		"postcss-nested": "^6.0.0",
-		"prettier": "^2.8.1",
+		"postcss-nested": "^6.0.1",
+		"prettier": "^2.8.7",
 		"qrcode": "^1.5.1",
 		"solid-hcaptcha": "^0.2.6",
-		"solid-js": "^1.4.7",
+		"solid-js": "^1.7.3",
 		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log"
 	}
 }

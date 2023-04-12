@@ -1,11 +1,17 @@
-use std::{fs, path::Path};
-
 use crate::main_app_state::MainState;
 
-const PATH: &str = "../../token.json";
+use std::{fs, path::Path};
 
-pub fn add_token(m: &MainState) {
-    let path = Path::new(PATH);
+pub fn add_token(m: &MainState, handle: tauri::AppHandle) {
+    let PATH = handle
+        .path_resolver()
+        .app_data_dir()
+        .unwrap()
+        .into_os_string()
+        .into_string();
+    let path = Path::new(&PATH.unwrap()).join("token.json");
+
+    println!("Looking for token file at {}", path.display());
     if !path.exists() {
         println!("Failed to find token file");
         return;

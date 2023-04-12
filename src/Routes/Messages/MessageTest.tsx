@@ -22,7 +22,7 @@ interface messageCreate extends i {
 
 import style from './../../prev.module.css';
 
-function MessageTest(props: { channelId: string; guildId: string }) {
+function MessageTest(props: { channelId?: string; guildId?: string }) {
 	const [channelId, setChannelId] = createSignal(props.channelId || '419544210027446276');
 	const [guildId, setGuildId] = createSignal(props.guildId || '419544210027446273');
 

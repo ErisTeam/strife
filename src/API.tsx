@@ -293,5 +293,8 @@ export default {
 			guildName: guild.name,
 		};
 		console.log(tab);
+		AppState.setTabs((prev: any) => [...prev, tab]);
+		console.log(AppState.tabs());
 	},
+	async replaceCurrentTab(channel: worseChannelType) {},
 };
