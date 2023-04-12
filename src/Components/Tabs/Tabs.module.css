@@ -1,6 +1,6 @@
 .tabs {
 	background-color: red;
-	height: 3em; //cant be bigger than row height in ApplicationWrapper.module.css
+	height: 3em; /*cant be bigger than row height in ApplicationWrapper.module.css*/
 
 	max-width: 100%;
 	overflow-x: scroll;
