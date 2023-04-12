@@ -1,20 +1,18 @@
 .guild {
 	--size: 3.4rem;
 	font-size: var(--size);
-	width: fit-content;
+	width: 100%;
 	height: fit-content;
-	min-width: 1em;
+
 	display: flex;
-	padding: 0.29166666666em;
-	padding-left: 0.16666666666em;
-	padding-bottom: 0.16666666666em;
-	padding-top: 0.16666666666em;
+	padding: 0.16666666666em;
+	position: relative;
 }
 
 .guild::before {
 	background-color: var(--text);
+	position: absolute;
 	content: '';
-	position: relative;
 	width: 0.125em;
 	border-top-right-radius: 1em;
 	border-bottom-right-radius: 1em;
@@ -34,9 +32,9 @@
 
 .guild > img {
 	transition: border-radius 300ms;
-	width: 1em;
-	height: 1em;
+
 	border-radius: 50%;
+	aspect-ratio: 1/1;
 }
 
 .guild:hover > img {
@@ -61,4 +59,5 @@
 }
 .li {
 	position: relative;
+	width: 100%;
 }
