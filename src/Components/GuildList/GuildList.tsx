@@ -25,9 +25,7 @@ const GuildList = (props: GuildListProps) => {
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>
-				<For each={AppState.userGuilds()}>
-					{(guild) => <Guild id={guild.id} />}
-				</For>
+				<For each={AppState.userGuilds()}>{(guild) => <Guild id={guild.id} />}</For>
 			</ul>
 		</nav>
 	);

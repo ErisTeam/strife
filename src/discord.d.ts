@@ -67,6 +67,7 @@ type GuildType = {
 	features: string[];
 	banner: string;
 
+
 	roles: Role[];
 	properties: {
 		system_channel_id: string;
@@ -81,7 +82,7 @@ type GuildType = {
 type ChannelType = {
 	id: string;
 	type: number;
-	guild_id: string | null;
+	guildId: string | null;
 	position: number | 0;
 	permission_overwrites?: any[];
 	name: string | null;

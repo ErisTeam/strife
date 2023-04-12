@@ -1,43 +1,64 @@
 .guild {
 	--size: 3.4rem;
+	font-size: var(--size);
 	width: fit-content;
 	height: fit-content;
-	min-width: var(--size);
+	min-width: 1em;
 	display: flex;
-	padding: calc(var(--size) / 6 + var(--size) / 8);
-	padding-left: calc(var(--size) / 6);
-	padding-bottom: calc(var(--size) / 6);
-	padding-top: calc(var(--size) / 6);
+	padding: 0.29166666666em;
+	padding-left: 0.16666666666em;
+	padding-bottom: 0.16666666666em;
+	padding-top: 0.16666666666em;
 }
 
 .guild::before {
 	background-color: var(--text);
 	content: '';
 	position: relative;
-	width: calc(var(--size) / 8);
-	border-top-right-radius: var(--size);
-	border-bottom-right-radius: var(--size);
+	width: 0.125em;
+	border-top-right-radius: 1em;
+	border-bottom-right-radius: 1em;
 	left: -15%;
 	transition: opacity 300ms, height 600ms, top 600ms;
 	opacity: 0%;
 	height: 0;
-	top: calc(var(--size) / 2);
+	top: 0.5em;
 }
 
 .guild:hover::before {
 	transition: opacity 300ms, height 100ms, top 100ms;
 	opacity: 100%;
-	height: calc(var(--size) / 2);
-	top: calc(var(--size) / 4);
+	height: 0.5em;
+	top: 0.25em;
 }
 
 .guild > img {
 	transition: border-radius 300ms;
-	width: var(--size);
-	height: var(--size);
+	width: 1em;
+	height: 1em;
 	border-radius: 50%;
 }
 
 .guild:hover > img {
 	border-radius: 15%;
+}
+.span {
+	transition: all 300ms;
+	position: absolute;
+	background-color: var(--depth4);
+	padding: 0.5em;
+	border-radius: 0.65em;
+	top: 50%;
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+	height: fit-content;
+	opacity: 0%;
+	pointer-events: none;
+}
+.li:hover .span {
+	translate: 6em;
+	opacity: 100%;
+}
+.li {
+	position: relative;
 }

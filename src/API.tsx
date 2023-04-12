@@ -247,10 +247,19 @@ export default {
 		let newGuilds: worseGuildType[] = [];
 		for (let guild of guilds) {
 			guild = { ...guild, ...guild.properties };
+			let guildId = guild.properties.id;
 			//@ts-ignore
+
 			delete guild.properties;
 			let newGuild: any = {};
+
+			// add guild id to each channel
+			for (let channel of guild.channels) {
+				channel.guildId = guildId;
+			}
+
 			newGuild = this.toCamelCase(guild);
+
 			newGuilds.push(newGuild);
 		}
 		AppState.setUserGuilds((prev: any) => [...newGuilds]);
@@ -278,8 +287,11 @@ export default {
 	 * @param {string} guildId - if dms, pass \@me.
 	 * @Gami
 	 */
-	async addTab(channel: worseChannelType) {
-		let guild = AppState.userGuilds().find((e: any) => e.id === channel.guildId);
+	async addTab(channel: ChannelType) {
+		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
+		console.log(AppState.userGuilds());
+		console.log(channel);
+		console.log(guild);
 		if (!guild) {
 			console.error('Guild not found!');
 			return;
@@ -296,5 +308,5 @@ export default {
 		AppState.setTabs((prev: any) => [...prev, tab]);
 		console.log(AppState.tabs());
 	},
-	async replaceCurrentTab(channel: worseChannelType) {},
+	async replaceCurrentTab(channel: ChannelType) {},
 };
