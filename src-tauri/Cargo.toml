@@ -10,6 +10,7 @@ rust-version = "1.57"
 
 [build-dependencies]
 tauri-build = { version = "1.2", features = [] }
+prost-build = "0.11.9"
 
 [target.'cfg(windows)'.dependencies]
 windows = {version = "0.44.0",features= ["Win32_UI_WindowsAndMessaging","Win32_Foundation"] }
@@ -50,6 +51,10 @@ tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", br
 
 chrono = "0.4.24"
 
+#protobuf
+prost = "0.11.9"
+
+prost-types = "0.11.9"
 
 
 reqwest = {version = "0.11.13",features = ["json"] }

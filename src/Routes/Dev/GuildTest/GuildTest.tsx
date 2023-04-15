@@ -3,7 +3,7 @@ import API from '../../../API';
 import { useAppState } from '../../../AppState';
 import GuildList from '../../../Components/GuildList/GuildList';
 import MessageTest from '../../Messages/MessageTest';
-import { GuildType } from '../../../discord';
+import { Guild } from '../../../discord';
 
 import buttons from '../../../Styles/Buttons.module.css';
 
@@ -12,7 +12,7 @@ export default () => {
 
 	const [guilds, { refetch }] = createResource(async () => (await API.getGuilds()) || []);
 
-	const [guild, setGuild] = createSignal<GuildType | null>(null);
+	const [guild, setGuild] = createSignal<Guild | null>(null);
 	const [channel, setChannel] = createSignal<any | null>(null);
 
 	return (

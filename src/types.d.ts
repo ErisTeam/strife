@@ -1,3 +1,5 @@
+import { ChannelType } from "./discord";
+
 type InputType =
 	| 'text'
 	| 'number'
@@ -93,13 +95,13 @@ type GuildType = {
 	roles: Role[];
 	stickers: StickerType[];
 	systemChannelId: string;
-	channels: ChannelType[];
+	channels: Channel[];
 };
 type StickerType = {
 }
-type ChannelType = {
+type Channel = {
 	id: string;
-	type: number;
+	type: ChannelType;
 	name: string;
 	position: number | 0;
 	guildId: string; // if it's a dm channel, this should be empty or undefined or null
@@ -143,7 +145,7 @@ export type { InputType, ButtonType, TextAreaType, 	GuildsResponse,
 	UsersResponse,
 	Role,
 	GuildType,
-	ChannelType,
+	Channel as ChannelType,
 
 
 }; 

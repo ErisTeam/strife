@@ -32,6 +32,12 @@ pub enum GatewayPackets {
         session_id: String,
         seq: u64,
     },
+    UpdatePresence {
+        since: Option<u64>,
+        activities: Vec<serde_json::Value>,
+        status: String, //todo replace with enum
+        afk: bool,
+    },
 }
 
 impl Serialize for GatewayPackets {
@@ -58,18 +64,23 @@ impl Serialize for GatewayPackets {
                 session_id: String,
                 seq: u64,
             },
+            UpdatePresence {
+                since: Option<u64>,
+                activities: Vec<serde_json::Value>,
+                status: String, //todo replace with enum
+                afk: bool,
+            },
         }
         #[derive(Serialize)]
         struct TypedGatewayPackets {
-            #[serde(rename = "op")]
-            t: u64,
+            op: u64,
 
             d: GatewayPackets_,
         }
-        let msg = match &self {
+        let msg = match self.clone() {
             GatewayPackets::Heartbeat { d } => TypedGatewayPackets {
-                t: 1,
-                d: GatewayPackets_::Heartbeat { d: *d },
+                op: 1,
+                d: GatewayPackets_::Heartbeat { d: d },
             },
             GatewayPackets::Identify {
                 token,
@@ -79,7 +90,7 @@ impl Serialize for GatewayPackets {
                 compress,
                 client_state,
             } => TypedGatewayPackets {
-                t: 2,
+                op: 2,
                 d: GatewayPackets_::Identify {
                     token: token.clone(),
                     capabilities: capabilities.clone(),
@@ -94,11 +105,25 @@ impl Serialize for GatewayPackets {
                 session_id,
                 seq,
             } => TypedGatewayPackets {
-                t: 7,
+                op: 7,
                 d: GatewayPackets_::Resume {
                     token: token.clone(),
                     session_id: session_id.clone(),
-                    seq: *seq,
+                    seq: seq,
+                },
+            },
+            GatewayPackets::UpdatePresence {
+                since,
+                activities,
+                status,
+                afk,
+            } => TypedGatewayPackets {
+                op: 3,
+                d: GatewayPackets_::UpdatePresence {
+                    since,
+                    activities,
+                    status,
+                    afk,
                 },
             },
         };

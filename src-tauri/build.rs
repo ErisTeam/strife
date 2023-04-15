@@ -1,3 +1,7 @@
-fn main() {
-  tauri_build::build()
+use std::io::Result;
+fn main() -> Result<()> {
+    prost_build::compile_protos(&["src/proto/PreloadedUserSettings.proto"], &["src/"])?;
+
+    tauri_build::build();
+    Ok(())
 }

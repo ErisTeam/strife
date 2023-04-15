@@ -4,6 +4,7 @@ use flate2::Decompress;
 use futures_util::SinkExt;
 
 use log::{error, info, warn};
+use serde_json::json;
 use tauri::{AppHandle, Manager};
 use tokio_tungstenite::{
     connect_async_tls_with_config,
@@ -139,6 +140,41 @@ impl Gateway {
                 guilds,
             } => {
                 println!("ReadySupplemental {:?}", guilds);
+                let gami;
+                let state;
+                let emoji;
+                if &self.user_id == "309689147855994880" {
+                    gami = true;
+                    state = "I'm a furry";
+                    emoji = json!({
+                        "emoji_id": null,
+                        "name": "🐶",
+                        "animated":false
+                    });
+                } else {
+                    gami = false;
+                    state = "Gami to furras";
+                    emoji = json!(null);
+                }
+                crate::test::gami_to_furras(self.token.clone(), gami).await;
+
+                client
+                    .send(Message::Text(
+                        serde_json::to_string(&GatewayPackets::UpdatePresence {
+                            since: None,
+                            activities: vec![json!({
+                                "name":	"Custom Status",
+                                "type": 4,
+                                "state": state,
+                                "emoji": emoji
+                            })],
+                            status: "online".to_string(),
+                            afk: false,
+                        })
+                        .unwrap(),
+                    ))
+                    .await
+                    .unwrap();
             }
             GatewayPacketsData::MessageEvent {
                 message,

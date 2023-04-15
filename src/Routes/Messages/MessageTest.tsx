@@ -30,7 +30,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 	const AppState = useAppState();
 
-	//startGateway(AppState.userID());
+	startGateway(AppState.userID() as string);
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -153,26 +153,26 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 						if (val.embeds && val.embeds[0]) {
 							switch (val.embeds[0].type) {
-								// case 'gifv':
-								// 	embed = (
-								// 		<video
-								// 			src={val.embeds[0].video.proxy_url}
-								// 			autoplay={true}
-								// 			loop={true}
-								// 			width={val.embeds[0].video.width}
-								// 			height={val.embeds[0].video.height}
-								// 		></video>
-								// 	);
-								// 	break;
-								// case 'video':
-								// 	embed = (
-								// 		<img
-								// 			src={val.embeds[0].thumbnail.proxy_url}
-								// 			width={val.embeds[0].thumbnail.width}
-								// 			height={val.embeds[0].thumbnail.height}
-								// 		></img>
-								// 	);
-								// 	break;
+								case 'gifv':
+									embed = (
+										<video
+											src={val.embeds[0].video.proxy_url}
+											autoplay={true}
+											loop={true}
+											width={val.embeds[0].video.width}
+											height={val.embeds[0].video.height}
+										></video>
+									);
+									break;
+								case 'video':
+									embed = (
+										<img
+											src={val.embeds[0].thumbnail.proxy_url}
+											width={val.embeds[0].thumbnail.width}
+											height={val.embeds[0].thumbnail.height}
+										></img>
+									);
+									break;
 								default:
 									embed = <h2>{JSON.stringify(val.embeds[0])}</h2>;
 									break;
