@@ -1,6 +1,6 @@
 import { ChannelType } from "./discord";
 
-type InputType =
+type Input =
 	| 'text'
 	| 'number'
 	| 'email'
@@ -8,8 +8,8 @@ type InputType =
 	| 'search'
 	| 'hidden'
 	| string;
-type ButtonType = 'button' | 'submit' | 'reset';
-type TextAreaType = 'soft' | 'hard' | 'off';
+type Button = 'button' | 'submit' | 'reset';
+type TextArea = 'soft' | 'hard' | 'off';
 
 type guild_affinities = { guild_id: string; affinity: number };
 type GuildsResponse = { guild_affinities: Array<guild_affinities> };
@@ -83,7 +83,7 @@ type Role = {
 };
 
 //todo copy form rust discord/type/guild PartialGuild
-type GuildType = {
+type Guild = {
 	id: string;
 	name: string;
 	icon: string;
@@ -93,11 +93,11 @@ type GuildType = {
 	banner: string;
 	ownerId: string;
 	roles: Role[];
-	stickers: StickerType[];
+	stickers: Sticker[];
 	systemChannelId: string;
 	channels: Channel[];
 };
-type StickerType = {
+type Sticker = {
 }
 type Channel = {
 	id: string;
@@ -138,14 +138,14 @@ type Channel = {
 	defaultForumLayout?: number;
 };
 
-export type { InputType, ButtonType, TextAreaType, 	GuildsResponse,
+export type { Input, Button, TextArea, 	GuildsResponse,
 
 	User,
 	Relationship, Tab, 
 	UsersResponse,
 	Role,
-	GuildType,
-	Channel as ChannelType,
+	Guild,
+	Channel,
 
 
 }; 

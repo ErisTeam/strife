@@ -1,15 +1,15 @@
 // API
-import { A } from '@solidjs/router';
+import { A, useParams } from '@solidjs/router';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { GuildType, ChannelType, Tab } from '../../types';
+import { Guild as GuildType, Channel, Tab } from '../../types';
 
 // Components
 import Guild from '../Guild/Guild';
 
 // Style
 import style from './Tabs.module.css';
-import { For } from 'solid-js';
+import { For, createEffect } from 'solid-js';
 
 interface TabsProps {
 	className?: string;
@@ -17,6 +17,7 @@ interface TabsProps {
 
 const Tabs = (props: TabsProps) => {
 	const AppState: any = useAppState();
+	const params = useParams();
 
 	return (
 		<nav class={[props.className, style.tabs].join(' ')}>
@@ -32,7 +33,7 @@ interface TabProps {
 }
 const TabItem = (props: TabProps) => {
 	return (
-		<li class={props.className}>
+		<li class={[props.className, style.tab].join(' ')}>
 			<A href={'/app/' + props.data.guildId + '/' + props.data.channelId}>{props.data.channelName}</A>
 		</li>
 	);

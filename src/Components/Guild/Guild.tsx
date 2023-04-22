@@ -3,7 +3,7 @@ import { onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { GuildType, ChannelType } from '../../types';
+import { Guild as GuildType, Channel } from '../../types';
 
 // Style
 import style from './Guild.module.css';

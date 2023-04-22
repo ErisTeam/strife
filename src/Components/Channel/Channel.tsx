@@ -1,7 +1,7 @@
 // API
-import { useNavigate } from '@solidjs/router';
+import { useNavigate, useParams } from '@solidjs/router';
 import API from '../../API';
-import { ChannelType } from '../../types';
+import { Channel as ChannelType } from '../../types';
 
 // Style
 import style from './Channel.module.css';
@@ -14,12 +14,27 @@ interface ChannelProps {
 const Channel = (props: ChannelProps) => {
 	const AppState = useAppState();
 	const navigate = useNavigate();
+	const params = useParams();
 	return (
 		<li class={style.channel}>
 			<button
 				onMouseDown={(e) => {
 					e.preventDefault();
-					// if middle click
+					if (e.button === 0) {
+						console.log('left click', e.button);
+						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
+							navigate(`/app/${props.data.guildId}/${props.data.id}`);
+							return;
+						}
+						if (AppState.tabs().length === 0) {
+							API.addTab(props.data);
+							navigate(`/app/${props.data.guildId}/${props.data.id}`);
+							return;
+						}
+						API.replaceCurrentTab(props.data, params.channelId);
+						navigate(`/app/${props.data.guildId}/${props.data.id}`);
+					}
+
 					if (e.button === 1) {
 						console.log('middle click', e.button);
 						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
@@ -28,6 +43,7 @@ const Channel = (props: ChannelProps) => {
 							return;
 						}
 						API.addTab(props.data);
+						navigate(`/app/${props.data.guildId}/${props.data.id}`);
 					}
 				}}
 			>

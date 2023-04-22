@@ -5,9 +5,9 @@ import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
-import { Relationship, Tab, GuildType as worseGuildType, ChannelType as worseChannelType } from './types';
+import { Relationship, Tab, Guild as worseGuildType, Channel as worseChannelType } from './types';
 import { Channel, Guild } from './discord';
-import { useNavigate } from '@solidjs/router';
+
 interface GatewayEvent {
 	user_id: string;
 	type: string;
@@ -307,5 +307,33 @@ export default {
 		AppState.setTabs((prev: any) => [...prev, tab]);
 		console.log(AppState.tabs());
 	},
-	async replaceCurrentTab(channel: Channel) {},
+	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
+		let currentTab = AppState.tabs().find((t: Tab) => t.channelId === currentChannelId);
+
+		if (!currentTab) {
+			console.error('Current tab not found!');
+			console.log(AppState.tabs());
+			console.log(currentChannelId);
+			return;
+		}
+		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
+
+		if (!guild) {
+			console.error('Guild not found!');
+			return;
+		}
+		let tab: Tab = {
+			guildId: channel.guildId,
+			channelId: channel.id,
+			channelName: channel.name,
+			channelType: channel.type,
+			guildIcon: guild.icon,
+			guildName: guild.name,
+		};
+
+		AppState.setTabs((prev: any) => {
+			let newTabs = prev.filter((t: Tab) => t.channelId !== currentChannelId);
+			return [...newTabs, tab];
+		});
+	},
 };

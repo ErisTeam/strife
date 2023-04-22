@@ -3,7 +3,7 @@ import { createSignal, onMount, For, createEffect } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { ChannelType } from '../../types';
+import { Channel } from '../../types';
 
 // Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';
@@ -16,15 +16,15 @@ interface ChannelListProps {
 }
 
 const ChannelList = (props: ChannelListProps) => {
-	const [categories, setCategories] = createSignal<ChannelType[]>([]);
-	const [channels, setChannels] = createSignal<ChannelType[]>([]);
+	const [categories, setCategories] = createSignal<Channel[]>([]);
+	const [channels, setChannels] = createSignal<Channel[]>([]);
 	const AppState: any = useAppState();
 	createEffect(() => {
-		setCategories(AppState.currentGuild()!.channels.filter((channel: ChannelType) => channel.type === 4));
+		setCategories(AppState.currentGuild()!.channels.filter((channel: Channel) => channel.type === 4));
 
 		setCategories(categories().sort((a: any, b: any) => a.position - b.position));
 
-		setChannels(AppState.currentGuild()!.channels.filter((channel: ChannelType) => channel.type !== 4));
+		setChannels(AppState.currentGuild()!.channels.filter((channel: Channel) => channel.type !== 4));
 	});
 	return (
 		<nav class={[props.className, style.channelList].join(' ')}>
@@ -34,7 +34,7 @@ const ChannelList = (props: ChannelListProps) => {
 						<ChannelCategory
 							data={category}
 							id={category.id}
-							childrenChannels={channels().filter((x: ChannelType) => x.parentId == category.id)}
+							childrenChannels={channels().filter((x: Channel) => x.parentId == category.id)}
 						/>
 					)}
 				</For>
