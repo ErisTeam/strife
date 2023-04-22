@@ -18,5 +18,8 @@
 				white-space: nowrap;
 			}
 		}
+		li:has(a.active) {
+			background-color: blue;
+		}
 	}
 }

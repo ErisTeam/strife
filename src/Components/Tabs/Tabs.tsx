@@ -1,5 +1,5 @@
 // API
-import { A, useParams } from '@solidjs/router';
+import { A, useLocation, useParams } from '@solidjs/router';
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Guild as GuildType, Channel, Tab } from '../../types';
@@ -32,9 +32,18 @@ interface TabProps {
 	data: Tab;
 }
 const TabItem = (props: TabProps) => {
+	const location = useLocation();
+	const href = `/app/${props.data.guildId}/${props.data.channelId}`;
 	return (
 		<li class={[props.className, style.tab].join(' ')}>
-			<A href={'/app/' + props.data.guildId + '/' + props.data.channelId}>{props.data.channelName}</A>
+			<A
+				classList={{
+					[style.active]: location.pathname == href,
+				}}
+				href={href}
+			>
+				{props.data.channelName}
+			</A>
 		</li>
 	);
 };

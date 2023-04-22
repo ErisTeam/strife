@@ -160,8 +160,3 @@ body {
 .hidden {
 	display: none !important;
 }
-
-/*THIS IS THE STYLING FOR THE ACTIVE TAB, IT HAS TO BE HERE OR IT WONT WORK AND THATS THE CLEANEST OPTION AVAILABLE*/
-body > div > div > nav > ul > li:has(a.active) {
-	background-color: blue;
-}
