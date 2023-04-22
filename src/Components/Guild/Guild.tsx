@@ -21,7 +21,7 @@ const Guild = (props: GuildProps) => {
 
 	return (
 		<li class={style.li}>
-			<A
+			<button
 				class={style.guild}
 				onClick={() => {
 					if (AppState.currentGuild() !== guild) {
@@ -30,10 +30,9 @@ const Guild = (props: GuildProps) => {
 						AppState.setCurrentGuild(null);
 					}
 				}}
-				href={`./${props.id}/${guild.systemChannelId}`}
 			>
 				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
-			</A>
+			</button>
 			<span class={style.span}>{guild.name}</span>
 		</li>
 	);
