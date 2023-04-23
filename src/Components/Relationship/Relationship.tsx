@@ -16,15 +16,14 @@ const Relationship = (props: RelationshipProps) => {
 	const AppState: any = useAppState();
 
 	return (
-		<div>
-			<div>
-				<img
-					src={`https://cdn.discordapp.com/avatars/${props.relationship.user.id}/${props.relationship.user.avatar}.webp?size=32`}
-					alt={props.relationship.user.username}
-				/>
-				{props.relationship.user.username}#{props.relationship.user.discriminator}
-			</div>
-		</div>
+		<li>
+			<img
+				src={`https://cdn.discordapp.com/avatars/${props.relationship.user.id}/${props.relationship.user.avatar}.webp?size=32`}
+				alt={props.relationship.user.username}
+			/>
+			<span>{props.relationship.user.username}</span>
+			<span>#{props.relationship.user.discriminator}</span>
+		</li>
 	);
 };
 

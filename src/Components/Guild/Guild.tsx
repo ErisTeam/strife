@@ -33,7 +33,7 @@ const Guild = (props: GuildProps) => {
 			>
 				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
 			</button>
-			<span class={style.span}>{guild.name}</span>
+			{/* <span class={style.span}>{guild.name}</span> */}
 		</li>
 	);
 };
