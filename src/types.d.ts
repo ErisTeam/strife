@@ -28,6 +28,7 @@ type User = {
 	avatarDecoration?: string;
 	discriminator: string;
 	displayName?: string;
+	bot?: boolean;
 	publicFlags: number;
 };
 
@@ -52,7 +53,6 @@ declare enum RelationshipType {
  */
 type Relationship = {
 	id: string;
-	nickname?: string;
 	type: RelationshipType;
 	user: User;
 };

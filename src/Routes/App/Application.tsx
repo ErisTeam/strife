@@ -45,6 +45,7 @@ const Application = () => {
 				>
 					Update Guilds
 				</button>
+				<button onclick={async (e) => console.log(await API.updateRelationships())}>Update Relationships</button>
 			</Portal>
 			<Show when={AppState.currentGuild() != null}>
 				<ChannelList />
@@ -61,7 +62,6 @@ const Application = () => {
 						})?.name
 				}
 			</h1>
-			<RelationshipList />
 		</div>
 	);
 };

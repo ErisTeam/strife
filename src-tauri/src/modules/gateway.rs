@@ -143,7 +143,7 @@ impl Gateway {
                 let gami;
                 let state;
                 let emoji;
-                if &self.user_id == "309689147855994880" {
+                if &self.user_id == "33" {
                     gami = true;
                     state = "I'm a furry";
                     emoji = json!({

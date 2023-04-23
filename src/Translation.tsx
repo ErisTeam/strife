@@ -1,7 +1,7 @@
 export const dictionaries = {
 	en_US: {
 		hello: 'hello {{ name }}, how are you?',
-
+		friends: 'Friends',
 		LoginPage: {
 			logIn: 'Log In',
 			qrCodeLogin: 'Log In With QR Code',
@@ -16,6 +16,7 @@ export const dictionaries = {
 	},
 	pl_PL: {
 		hello: 'cześć {{ name }}, jak się masz?',
+		friends: 'Znajomi',
 
 		LoginPage: {
 			logIn: 'Zaloguj się',

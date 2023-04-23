@@ -2,7 +2,7 @@
 import { For } from 'solid-js';
 
 // API
-import { ChannelType } from '../../types';
+import { Channel as ChannelType } from '../../types';
 
 // Components
 import Channel from '../Channel/Channel';
@@ -19,7 +19,7 @@ interface ChannelCategoryProps {
 
 const ChannelCategory = (props: ChannelCategoryProps) => {
 	const channels = props.childrenChannels.sort((a, b) => a.position - b.position);
-	console.log('channels', channels);
+
 	return (
 		<li class={[props.className, style.category].join(' ')}>
 			<h1>{props.data.name}</h1>

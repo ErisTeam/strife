@@ -9,4 +9,10 @@
 	ul {
 		width: 100%;
 	}
+	.divider {
+		width: 80%;
+		background-color: var(--depth4);
+		margin: 0 auto;
+		height: 2px;
+	}
 }

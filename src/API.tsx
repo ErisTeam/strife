@@ -267,20 +267,10 @@ export default {
 	},
 
 	async updateRelationships() {
-		// const relationship: Relationship = {
-		// 	id: e.id,
-		// 	type: e.type,
-		// 	user: {
-		// 		avatar: e.user.avatar,
-		// 		avatar_decoration: e.user.avatar_decoration,
-		// 		discriminator: e.user.discriminator,
-		// 		display_name: e.user.display_name,
-		// 		id: e.user.id,
-		// 		public_flags: e.user.public_flags,
-		// 		username: e.user.username,
-		// 	},
-		// };
-		// AppState.setRelationshpis((prev: any) => [...prev, relationship]);
+		AppState.setRelationships([]);
+		let relationships: Relationship[] = (await this.getRelationships()).relationships;
+		console.log(relationships);
+		AppState.setRelationships((prev: any) => [...relationships]);
 	},
 	/**
 	 * Represents a book.

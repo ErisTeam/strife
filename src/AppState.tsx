@@ -7,7 +7,7 @@ import { Relationship, Tab, Guild, Channel } from './types';
 const [userID, setUserID] = createSignal<string | null>(null);
 
 const [userGuilds, setUserGuilds] = createSignal<Guild[]>([]);
-const [relationships, setRelationshpis] = createSignal<Relationship[]>([]);
+const [relationships, setRelationships] = createSignal<Relationship[]>([]);
 const [tabs, setTabs] = createSignal<Tab[]>([]);
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null>(null); //Used to display correct channels after being decoupled set to null to hide
 
@@ -16,7 +16,7 @@ const AppState = createContext({
 	setUserGuilds,
 
 	relationships,
-	setRelationshpis,
+	setRelationships,
 	userID,
 	setUserID,
 	tabs,
@@ -33,7 +33,7 @@ export function AppStateProvider(props: any) {
 				setUserGuilds,
 
 				relationships,
-				setRelationshpis,
+				setRelationships,
 				userID,
 				setUserID,
 				tabs,
