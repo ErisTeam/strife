@@ -1,5 +1,5 @@
 // SolidJS
-import { onMount } from 'solid-js';
+import { createEffect, onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -16,11 +16,30 @@ interface GuildProps {
 
 const Guild = (props: GuildProps) => {
 	const AppState: any = useAppState();
+	let spanRef : any;
+	let liRef:any;
+	
+	function scrollu()
+	{
+		spanRef.style.visibility = "hidden";
+
+		console.log(liRef.getBoundingClientRect().top, spanRef.style.top);
+	
+	spanRef.style.top = `${liRef.getBoundingClientRect().top+13}px`;
+spanRef.style.visibility = "visible";
+	}
+	createEffect(() => {
+		spanRef.style.top = `${(liRef.getBoundingClientRect().top+13)}px`;
+		if(spanRef)
+		{
+		liRef.parentNode.parentNode.addEventListener("scroll", scrollu);
+		}
+	});
 
 	const guild = AppState.userGuilds().find((x: GuildType) => x.id === props.id);
 
 	return (
-		<li class={style.li}>
+		<li class={style.li} ref={liRef}>
 			<button
 				class={style.guild}
 				onClick={() => {
@@ -33,7 +52,7 @@ const Guild = (props: GuildProps) => {
 			>
 				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
 			</button>
-			{/* <span class={style.span}>{guild.name}</span> */}
+			 <span ref={spanRef} class={style.span}>{guild.name}</span> 
 		</li>
 	);
 };

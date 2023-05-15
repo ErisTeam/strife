@@ -1,13 +1,17 @@
 .guildList {
 	background-color: var(--depth2);
 	display: flex;
-	height: 100%;
-	width: 100%;
-	position: sticky;
+	width: 5rem;
+	height: 100vh;
+	position: fixed;
 	top: 0;
 	left: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
 	ul {
 		width: 100%;
+		position: relative;
+
 	}
 	.divider {
 		width: 80%;

@@ -22,7 +22,9 @@ const ChannelCategory = (props: ChannelCategoryProps) => {
 
 	return (
 		<li class={[props.className, style.category].join(' ')}>
-			<h1>{props.data.name}</h1>
+			<button>
+				<h1>{props.data.name}⏬</h1>
+			</button>
 			<ul>
 				<For each={channels}>{(channel) => <Channel data={channel} />}</For>
 			</ul>

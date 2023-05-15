@@ -103,7 +103,7 @@ impl Gateway {
                 self.connection_info.heartbeat_interval = Duration::from_millis(heartbeat_interval);
                 self.init_message(client, self.token.clone()).await;
                 self.connection_info.authed = true;
-                println!("Hello {:?}", self.connection_info);
+                //    println!("Hello {:?}", self.connection_info);
             }
             GatewayPacketsData::Ready(data) => {
                 self.resume_url = Some(data.resume_gateway_url);
@@ -129,7 +129,7 @@ impl Gateway {
                     user_data.remove(&self.user_id);
                 }
                 user_data.insert(self.user_id.clone(), main_app_state::User::ActiveUser(user));
-                println!("Ready {:?} {:?}", user_data, user_data.get(&self.user_id));
+                //println!("Ready {:?} {:?}", user_data, user_data.get(&self.user_id));
 
                 self.emit_event(webview_packets::Gateway::Started).unwrap();
             }
@@ -139,7 +139,7 @@ impl Gateway {
                 lazy_private_channels,
                 guilds,
             } => {
-                println!("ReadySupplemental {:?}", guilds);
+                //println!("ReadySupplemental {:?}", guilds);
                 let gami;
                 let state;
                 let emoji;
@@ -182,7 +182,7 @@ impl Gateway {
                 guild_id,
                 mentions,
             } => {
-                println!("Message {:?}", message);
+                //println!("Message {:?}", message);
                 let package;
                 match event.t.clone().unwrap().as_str() {
                     "MESSAGE_CREATE" => {
@@ -202,7 +202,7 @@ impl Gateway {
                         };
                     }
                     _ => {
-                        println!("Unknown message event {:?}", event.t);
+                        //println!("Unknown message event {:?}", event.t);
                         package = webview_packets::Gateway::Error {
                             message: "Unknown message event".to_string(),
                         };
@@ -213,7 +213,7 @@ impl Gateway {
                 if !self.state.get_users_ids().contains(&message.author.id) {
                     let handle = self.handle.clone();
                     let user_data = self.state.get_user_data(self.user_id.clone());
-                    println!("{:?}", user_data);
+                    //println!("{:?}", user_data);
 
                     if let Some(user_data) = &user_data {
                         let guild = user_data.get_guild_by_channel(&message.channel_id);
@@ -230,7 +230,7 @@ impl Gateway {
                                 } else {
                                     mute = settings.muted;
                                 }
-                                println!("Mute: {}", mute);
+                                //println!("Mute: {}", mute);
                                 if mute {
                                     return Ok(());
                                 }
@@ -438,7 +438,7 @@ impl Gateway {
 
             loop {
                 if let Ok(m) = self.reciver.try_recv() {
-                    println!("recived {:?}", m);
+                    //println!("recived {:?}", m);
                     if matches!(m, OwnedMessage::Close(_)) {
                         return Ok(GatewayResult::Close);
                     }
@@ -479,7 +479,7 @@ impl Gateway {
                                     }
 
                                     let p = self.handle.path_resolver().app_data_dir().unwrap();
-                                    println!("{:?}", p);
+                                    //    println!("{:?}", p);
                                     let mut file = std::fs::File::create(
                                         p.join(format!("gateway logs/{} {}.json", r#type, time)),
                                     )
