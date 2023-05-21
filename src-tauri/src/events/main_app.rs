@@ -26,12 +26,6 @@ fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct test {
-    #[serde(flatten)]
-    pub data: serde_json::Value,
-}
 
 fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
     move |event| {
