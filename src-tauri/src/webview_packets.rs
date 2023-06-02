@@ -2,64 +2,64 @@
 // out here: <https://serde.rs/enum-representations.html>.
 //
 // It's used here to make matching easier.
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
 
-use crate::{discord::types::guild::PartialGuild, modules::auth};
+use crate::{ discord::types::guild::PartialGuild, modules::auth };
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum Auth {
-    LoginSuccess {
-        user_id: String,
-        user_settings: Option<auth::UserSettings>,
-    },
-    RequireAuth {
-        captcha_key: Option<Vec<String>>,
-        captcha_sitekey: Option<String>,
-        captcha_service: Option<String>,
-        mfa: Option<bool>,
-        sms: Option<bool>,
-    },
+	LoginSuccess {
+		user_id: String,
+		user_settings: Option<auth::UserSettings>,
+	},
+	RequireAuth {
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+		mfa: Option<bool>,
+		sms: Option<bool>,
+	},
 
-    Error {
-        code: u64,
-        errors: auth::err,
-        message: String,
-    },
-    MobileAuthError {
-        error: String,
-    },
-    MobileTicketData {
-        user_id: String,
-        discriminator: String,
+	Error {
+		code: u64,
+		errors: auth::ErrorTypes,
+		message: String,
+	},
+	MobileAuthError {
+		error: String,
+	},
+	MobileTicketData {
+		user_id: String,
+		discriminator: String,
 
-        avatar_hash: String,
-        username: String,
-    },
-    RequireAuthMobile {
-        captcha_key: Option<Vec<String>>,
-        captcha_sitekey: Option<String>,
-        captcha_service: Option<String>,
-    },
-    MobileQrcode {
-        qrcode: Option<String>,
-    },
+		avatar_hash: String,
+		username: String,
+	},
+	RequireAuthMobile {
+		captcha_key: Option<Vec<String>>,
+		captcha_sitekey: Option<String>,
+		captcha_service: Option<String>,
+	},
+	MobileQrcode {
+		qrcode: Option<String>,
+	},
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum MFA {
-    SmsSendingResult {
-        success: bool,
-        message: String,
-    },
-    VerifyError {
-        message: String,
-    },
-    VerifySuccess {
-        user_id: String,
-        user_settings: auth::UserSettings,
-    },
+	SmsSendingResult {
+		success: bool,
+		message: String,
+	},
+	VerifyError {
+		message: String,
+	},
+	VerifySuccess {
+		user_id: String,
+		user_settings: auth::UserSettings,
+	},
 }
 
 /// # Information
@@ -68,53 +68,53 @@ pub enum MFA {
 #[serde(tag = "type", content = "data")]
 #[serde(rename_all = "camelCase")]
 pub enum Gateway {
-    MessageCreate {
-        #[serde(flatten)]
-        message: crate::discord::types::message::Message,
-        member: crate::discord::types::guild::GuildMember,
-        guild_id: String,
-        mentions: Vec<crate::discord::types::guild::GuildMember>,
-    },
-    MessageUpdate {
-        #[serde(flatten)]
-        message: crate::discord::types::message::Message,
-        member: crate::discord::types::guild::GuildMember,
-        guild_id: String,
-        mentions: Vec<crate::discord::types::guild::GuildMember>,
-    },
-    Error {
-        message: String,
-    },
-    Started,
+	MessageCreate {
+		#[serde(flatten)]
+		message: crate::discord::types::message::Message,
+		member: crate::discord::types::guild::GuildMember,
+		guild_id: String,
+		mentions: Vec<crate::discord::types::guild::GuildMember>,
+	},
+	MessageUpdate {
+		#[serde(flatten)]
+		message: crate::discord::types::message::Message,
+		member: crate::discord::types::guild::GuildMember,
+		guild_id: String,
+		mentions: Vec<crate::discord::types::guild::GuildMember>,
+	},
+	Error {
+		message: String,
+	},
+	Started,
 }
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
-    #[serde(flatten)]
-    pub event: T,
-    pub user_id: String,
+	#[serde(flatten)]
+	pub event: T,
+	pub user_id: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type", content = "data")]
 #[serde(rename_all = "camelCase")]
 pub enum General {
-    UserData {
-        user: crate::discord::user::CurrentUser,
-        users: Vec<crate::discord::user::PublicUser>,
-    },
-    Relationships {
-        relationships: Vec<crate::discord::types::relationship::Relationship>,
-    },
+	UserData {
+		user: crate::discord::user::CurrentUser,
+		users: Vec<crate::discord::user::PublicUser>,
+	},
+	Relationships {
+		relationships: Vec<crate::discord::types::relationship::Relationship>,
+	},
 
-    Guilds {
-        guilds: Vec<PartialGuild>,
-    },
-    GuildCreate {
-        guild: PartialGuild,
-    },
-    Error {
-        _for: String,
-        message: String,
-    },
+	Guilds {
+		guilds: Vec<PartialGuild>,
+	},
+	GuildCreate {
+		guild: PartialGuild,
+	},
+	Error {
+		_for: String,
+		message: String,
+	},
 }

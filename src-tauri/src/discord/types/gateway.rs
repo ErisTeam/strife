@@ -1,54 +1,54 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
 
-use crate::discord::user::{CurrentUser, GuildSettings, PublicUser};
+use crate::discord::user::{ CurrentUser, GuildSettings, PublicUser };
 
-use super::{guild::PartialGuild, relationship::GatewayRelationship};
+use super::{ guild::PartialGuild, relationship::GatewayRelationship };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
-    pub guild_versions: HashMap<String, serde_json::Value>,
-    pub highest_last_message_id: String,
-    pub read_state_version: i64,
-    pub user_guild_settings_version: i64,
-    pub user_settings_version: i64,
-    pub private_channels_version: String,
-    pub api_code_version: i64,
+	pub guild_versions: HashMap<String, serde_json::Value>,
+	pub highest_last_message_id: String,
+	pub read_state_version: i64,
+	pub user_guild_settings_version: i64,
+	pub user_settings_version: i64,
+	pub private_channels_version: String,
+	pub api_code_version: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Presence {
-    pub status: String,
-    pub since: u64,
-    pub activities: Vec<serde_json::Value>,
-    pub afk: bool,
+	pub status: String,
+	pub since: u64,
+	pub activities: Vec<serde_json::Value>,
+	pub afk: bool,
 }
 impl Default for Presence {
-    fn default() -> Self {
-        Self {
-            since: 0,
-            status: "unknown".to_string(),
-            activities: Vec::new(),
-            afk: false,
-        }
-    }
+	fn default() -> Self {
+		Self {
+			since: 0,
+			status: "unknown".to_string(),
+			activities: Vec::new(),
+			afk: false,
+		}
+	}
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Properties {
-    pub os: String,
-    pub browser: String,
-    pub device: String,
-    pub system_locale: String,
-    pub browser_user_agent: String,
-    pub browser_version: String,
-    pub os_version: String,
+	pub os: String,
+	pub browser: String,
+	pub device: String,
+	pub system_locale: String,
+	pub browser_user_agent: String,
+	pub browser_version: String,
+	pub os_version: String,
 }
 
 impl Default for Properties {
-    fn default() -> Self {
-        Self {
+	fn default() -> Self {
+		Self {
 			os: "Windows".to_string(),
 			browser: "Chrome".to_string(), //or Discord Client
 			device: String::new(),
@@ -57,119 +57,119 @@ impl Default for Properties {
 			browser_version: "91.0.4472.124".to_string(),
 			os_version: "10".to_string(),
 		}
-    }
+	}
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ReadState {
-    pub version: i64,
-    pub partial: bool,
-    pub entries: Vec<serde_json::Value>,
+	pub version: i64,
+	pub partial: bool,
+	pub entries: Vec<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ReadStateEntries {
-    pub id: String,
-    pub last_message_id: String,
-    pub mention_count: i64,
-    pub last_pin_timestamp: String,
+	pub id: String,
+	pub last_message_id: String,
+	pub mention_count: i64,
+	pub last_pin_timestamp: String,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct SessionReplaceData {
-    status: String,
-    session_id: String,
-    client_info: serde_json::Value,
-    activities: Vec<serde_json::Value>,
+	status: String,
+	session_id: String,
+	client_info: serde_json::Value,
+	activities: Vec<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ReadyData {
-    pub v: u64,
+	pub v: u64,
 
-    pub users: Vec<PublicUser>,
+	pub users: Vec<PublicUser>,
 
-    pub user: CurrentUser,
-    pub user_settings_proto: String, //todo decode using protobuf
+	pub user: CurrentUser,
+	pub user_settings_proto: String, //todo decode using protobuf
 
-    pub user_guild_settings: GuildSettings,
-    pub guilds: Vec<PartialGuild>,
-    pub relationships: Vec<GatewayRelationship>,
+	pub user_guild_settings: GuildSettings,
+	pub guilds: Vec<PartialGuild>,
+	pub relationships: Vec<GatewayRelationship>,
 
-    pub resume_gateway_url: String,
+	pub resume_gateway_url: String,
 
-    pub sessions: Vec<serde_json::Value>,
-    pub session_type: String,
-    pub session_id: String,
+	pub sessions: Vec<serde_json::Value>,
+	pub session_type: String,
+	pub session_id: String,
 
-    pub tutorial: Option<serde_json::Value>,
+	pub tutorial: Option<serde_json::Value>,
 
-    pub read_state: ReadState,
+	pub read_state: ReadState,
 
-    pub guild_join_requests: Vec<serde_json::Value>,
+	pub guild_join_requests: Vec<serde_json::Value>,
 
-    //guild_experiments: Vec<serde_json::Value>,
-    pub geo_ordered_rtc_regions: Vec<String>,
+	//guild_experiments: Vec<serde_json::Value>,
+	pub geo_ordered_rtc_regions: Vec<String>,
 
-    pub friend_suggestion_count: u64,
+	pub friend_suggestion_count: u64,
 
-    //experiments: Vec<serde_json::Value>,
-    pub country_code: String,
+	//experiments: Vec<serde_json::Value>,
+	pub country_code: String,
 
-    pub consents: serde_json::Value,
+	pub consents: serde_json::Value,
 
-    pub connected_accounts: Vec<serde_json::Value>,
+	pub connected_accounts: Vec<serde_json::Value>,
 
-    pub auth_session_id_hash: String,
+	pub auth_session_id_hash: String,
 
-    pub api_code_version: u64,
+	pub api_code_version: u64,
 
-    pub analytics_token: String,
+	pub analytics_token: String,
 
-    pub private_channels: Vec<serde_json::Value>,
+	pub private_channels: Vec<serde_json::Value>,
 }
 #[derive(Deserialize, Debug)]
 pub struct ReadyData2 {
-    pub v: u64,
+	pub v: u64,
 
-    pub users: Vec<PublicUser>,
+	pub users: Vec<PublicUser>,
 
-    pub user: CurrentUser,
-    pub user_settings_proto: String, //todo decode using protobuf
+	pub user: CurrentUser,
+	pub user_settings_proto: String, //todo decode using protobuf
 
-    pub user_guild_settings: GuildSettings,
-    pub guilds: Vec<PartialGuild>,
-    pub relationships: Vec<GatewayRelationship>,
+	pub user_guild_settings: GuildSettings,
+	pub guilds: Vec<PartialGuild>,
+	pub relationships: Vec<GatewayRelationship>,
 
-    pub resume_gateway_url: String,
+	pub resume_gateway_url: String,
 
-    pub sessions: Vec<serde_json::Value>,
-    pub session_type: String,
-    pub session_id: String,
+	pub sessions: Vec<serde_json::Value>,
+	pub session_type: String,
+	pub session_id: String,
 
-    pub tutorial: Option<serde_json::Value>,
+	pub tutorial: Option<serde_json::Value>,
 
-    pub read_state: ReadState,
+	pub read_state: ReadState,
 
-    pub guild_join_requests: Vec<serde_json::Value>,
+	pub guild_join_requests: Vec<serde_json::Value>,
 
-    //guild_experiments: Vec<serde_json::Value>,
-    pub geo_ordered_rtc_regions: Vec<String>,
+	//guild_experiments: Vec<serde_json::Value>,
+	pub geo_ordered_rtc_regions: Vec<String>,
 
-    pub friend_suggestion_count: u64,
+	pub friend_suggestion_count: u64,
 
-    //experiments: Vec<serde_json::Value>,
-    pub country_code: String,
+	//experiments: Vec<serde_json::Value>,
+	pub country_code: String,
 
-    pub consents: serde_json::Value,
+	pub consents: serde_json::Value,
 
-    pub connected_accounts: Vec<serde_json::Value>,
+	pub connected_accounts: Vec<serde_json::Value>,
 
-    pub auth_session_id_hash: String,
+	pub auth_session_id_hash: String,
 
-    pub api_code_version: u64,
+	pub api_code_version: u64,
 
-    pub analytics_token: String,
+	pub analytics_token: String,
 
-    pub private_channels: Vec<serde_json::Value>,
+	pub private_channels: Vec<serde_json::Value>,
 }

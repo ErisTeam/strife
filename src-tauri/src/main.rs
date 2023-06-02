@@ -21,7 +21,7 @@ extern crate tokio;
 
 use std::sync::Arc;
 
-use log::{ debug, error, info, warn };
+use log::{ debug, error, warn };
 use serde::Deserialize;
 use tauri::{ Manager, State, UserAttentionType };
 use tauri_plugin_log::LogTarget;
@@ -97,7 +97,7 @@ async fn test(handle: tauri::AppHandle) {
 
 	use std::time::Duration;
 
-	use winrt_notification::Toast;
+	//use winrt_notification::Toast;
 
 	//notifications::new_message(Message::default(), &handle, None).await;
 }
