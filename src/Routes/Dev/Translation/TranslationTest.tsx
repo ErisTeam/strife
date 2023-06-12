@@ -1,4 +1,4 @@
-import { For } from 'solid-js';
+import { For, JSX } from 'solid-js';
 import { useTrans } from '../../../Translation';
 
 const localesList = {
@@ -1272,10 +1272,33 @@ import inputs from '../../../Styles/Inputs.module.css';
 export default () => {
 	const [t, { locale, setLocale, getDictionary }] = useTrans();
 
+	function a(objects: Object[]) {
+		let divs: JSX.Element[] = [];
+		Object.keys(objects).forEach((key: string) => {
+			// @ts-ignore
+			if (typeof objects[key] == 'object') {
+				// @ts-ignore
+				divs.push(<ol>{...a(objects[key])}</ol>);
+			} else {
+				divs.push(
+					<li>
+						{key}:&nbsp;
+						{
+							// @ts-ignore
+							objects[key]('test')
+						}
+					</li>
+				);
+			}
+		});
+		return divs;
+	}
+
 	return (
 		<div>
 			<div>
 				<h2>Controls</h2>
+
 				<input
 					class={inputs.default}
 					type="text"
@@ -1303,19 +1326,27 @@ export default () => {
 					</For>
 				</datalist>
 			</div>
-			<div>
+			<ol>
 				<For each={Object.keys(getDictionary() || {})} fallback={<h1>Not found</h1>}>
-					{(key) => (
-						<div>
-							{key}:&nbsp;
-							{
-								// @ts-ignore
-								t[key]('test')
-							}
-						</div>
-					)}
+					{(key) => {
+						// @ts-ignore
+						if (typeof t[key] == 'object') {
+							// @ts-ignore
+							return <ul>{key}:&nbsp;{...a(t[key])}</ul>;
+						} else {
+							return (
+								<li>
+									{key}:&nbsp;
+									{
+										// @ts-ignore
+										t[key]('test')
+									}
+								</li>
+							);
+						}
+					}}
 				</For>
-			</div>
+			</ol>
 		</div>
 	);
 };

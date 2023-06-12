@@ -2,8 +2,8 @@
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 
 // Tauri
-import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
-import { invoke } from '@tauri-apps/api';
+import { listen, Event, UnlistenFn, emit, TauriEvent } from '@tauri-apps/api/event';
+import { invoke, tauri } from '@tauri-apps/api';
 
 type Listener = {
 	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
@@ -24,7 +24,7 @@ function useTaurListenerOld<T>(eventName: string, on_event: (event: Event<T>) =>
 		});
 	});
 }
-function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => void) {
+function useTaurListener<T>(eventName: string | TauriEvent, on_event: (event: Event<T>) => void) {
 	const unlist = listen(eventName, on_event);
 	return tryOnCleanup(async () => {
 		console.log('cleanup', eventName);
@@ -36,12 +36,9 @@ interface GatewayEvent {
 	userId: string;
 	type: string;
 }
-interface a<T> {
-	eventName: string;
-	listener: (event: T) => void;
-}
+
 function startListener<T extends { type: string }>(
-	eventName: string,
+	eventName: string | TauriEvent,
 	condition: ((event: T) => boolean) | null = null
 ) {
 	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
@@ -72,16 +69,19 @@ function startListener<T extends { type: string }>(
 			console.log('a', clean_up);
 			clean_up();
 		},
+		events: {
+			onMessageCreate: (channelId:string) => onMessageCreate({} as Listener,channelId) //todo
+		}
 	} as Listener;
 }
 
 function startGatewayListener(userId: string) {
 	return startListener<GatewayEvent>('gateway', (event) => event.userId === userId);
 }
-interface i {
+interface eventBase {
 	type: string;
 }
-interface messageCreate extends i {
+interface messageCreate extends eventBase {
 	type: 'messageCreate';
 	userId: string;
 	data: {

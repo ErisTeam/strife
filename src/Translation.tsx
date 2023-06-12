@@ -35,10 +35,13 @@ export const dictionaries = {
 
 import { createChainedI18nContext } from '@solid-primitives/i18n';
 
-const [I18nProvider, useI18nContext] = createChainedI18nContext({
-	dictionaries,
-	locale: 'en_US', // Starting locale
-});
+const [I18nProvider, useI18nContext] = createChainedI18nContext(
+	{
+		dictionaries,
+		locale: 'en_US', // Starting locale
+	},
+	true
+);
 
 export const useTrans = () => {
 	const context = useI18nContext();

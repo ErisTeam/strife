@@ -3,3 +3,5 @@ pub mod gateway;
 pub mod auth;
 
 pub mod gateway_utils;
+
+pub mod mobile_auth;

@@ -12,29 +12,29 @@ import style from './ApplicationWrapper.module.css';
 
 const ApplicationWrapper = () => {
 	const AppState: any = useAppState();
-	const [classes, setClasses] = createSignal([style.wrapper]);
+	const [classes, setClasses] = createSignal<string>('');
 	createEffect(() => {
 		if (AppState.currentGuild() == null && AppState.tabs().length < 1) {
 			//without channel list and without tabs
 
-			setClasses([style.wrapper, style.withoutAll]);
+			setClasses(style.withoutAll);
 		} else if (AppState.currentGuild() != null && AppState.tabs().length > 0) {
 			//with channel list and with tabs
 
-			setClasses([style.wrapper, style.withAll]);
+			setClasses(style.withAll);
 		} else if (AppState.currentGuild() != null && AppState.tabs().length < 1) {
-			setClasses([style.wrapper, style.withoutTabs]);
+			setClasses(style.withoutTabs);
 
 			//with channel list and without tabs
 		} else if (AppState.currentGuild() == null && AppState.tabs().length > 0) {
-			setClasses([style.wrapper, style.withoutChannels]);
+			setClasses(style.withoutChannels);
 
 			//without channel list and with tabs
 		}
 	});
 
 	return (
-		<div class={classes().join(' ')}>
+		<div class={style.wrapper + ' ' + classes()}>
 			<GuildList className={style.guilds} />
 			<Show when={AppState.tabs().length > 0}>
 				<Tabs className={style.tabs} />

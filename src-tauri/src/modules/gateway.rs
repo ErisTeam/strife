@@ -25,7 +25,7 @@ use crate::{
 	webview_packets::{ self, GatewayEvent },
 };
 
-use super::gateway_utils::ConnectionInfo;
+use super::gateway_utils::ConnectionInfo_old;
 
 #[derive(Debug)]
 pub enum GatewayError {
@@ -62,7 +62,7 @@ pub struct Gateway {
 
 	reciver: tokio::sync::mpsc::Receiver<OwnedMessage>,
 
-	connection_info: ConnectionInfo,
+	connection_info: ConnectionInfo_old,
 
 	use_resume_url: bool,
 }
@@ -82,7 +82,7 @@ impl Gateway {
 			reciver,
 			token,
 			user_id,
-			connection_info: ConnectionInfo::default(),
+			connection_info: ConnectionInfo_old::default(),
 			resume_url: None,
 			session_id: None,
 			seq: None,
@@ -159,7 +159,7 @@ impl Gateway {
 					state = "Gami to furras";
 					emoji = json!(null);
 				}
-				crate::test::gami_to_furras(self.token.clone(), gami).await;
+				crate::dev::gami_to_furras(self.token.clone(), gami).await;
 
 				client
 					.send(

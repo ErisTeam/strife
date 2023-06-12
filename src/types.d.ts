@@ -1,5 +1,8 @@
 import { ChannelType } from "./discord";
 
+//todo move discord types to diffrent file
+
+
 type Input =
 	| 'text'
 	| 'number'
@@ -21,7 +24,7 @@ type UsersResponse = {
 };
 
 // Represents a Relationship User
-type User = {
+type RelationShipUser = {
 	id: string;
 	username: string;
 	avatar?: string;
@@ -30,7 +33,7 @@ type User = {
 	displayName?: string;
 	bot?: boolean;
 	publicFlags: number;
-};
+}; 
 
 declare enum RelationshipType {
 	Friend = 1,
@@ -54,7 +57,7 @@ declare enum RelationshipType {
 type Relationship = {
 	id: string;
 	type: RelationshipType;
-	user: User;
+	user: RelationShipUser;
 };
 
 
@@ -139,13 +142,10 @@ type Channel = {
 };
 
 export type { Input, Button, TextArea, 	GuildsResponse,
-
-	User,
+	RelationShipUser as User,
 	Relationship, Tab, 
 	UsersResponse,
 	Role,
 	Guild,
 	Channel,
-
-
 }; 

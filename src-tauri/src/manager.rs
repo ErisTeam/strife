@@ -11,19 +11,20 @@ use crate::{ main_app_state::MainState, modules::{ gateway::Gateway, mobile_auth
 /// TODO
 #[derive(Debug)]
 pub enum Modules {
-	MobileAuth(mpsc::Sender<OwnedMessage>),
+	MobileAuth(MobileAuthHandler),
 	Gateway(mpsc::Sender<OwnedMessage>),
 }
 
 /// # Information
 /// TODO
 #[derive(Debug)]
+#[deprecated]
 pub struct ThreadManager {
 	state: Arc<MainState>,
 
 	senders: HashMap<String, Vec<Modules>>,
 }
-
+//todo remove
 impl ThreadManager {
 	pub fn new(state: Arc<MainState>) -> Self {
 		let mut s = Self {
@@ -35,7 +36,7 @@ impl ThreadManager {
 		s
 	}
 
-	pub fn start_mobile_auth(&mut self, handle: AppHandle) -> Result<(), String> {
+	pub async fn start_mobile_auth(&mut self, handle: AppHandle) -> Result<(), String> {
 		if let Some(sender) = self.senders.get("main") {
 			if sender.iter().any(|s| matches!(s, Modules::MobileAuth(_))) {
 				warn!("Mobile auth already running");
@@ -49,11 +50,19 @@ impl ThreadManager {
 
 		let mut gate = MobileAuthHandler::new(self.state.clone(), handle.clone(), async_proc_input_rx);
 
-		self.senders.get_mut("main").unwrap().push(Modules::MobileAuth(async_proc_input_tx));
+		gate.generate_keys();
+		let mut on_error = gate.connect(handle).await.unwrap();
+
+		self.senders.get_mut("main").unwrap().push(Modules::MobileAuth(gate));
+
 		//todo change it
 		tauri::async_runtime::spawn(async move {
-			gate.generate_keys();
-			gate.run().await;
+			loop {
+				if let Ok(_) = on_error.recv().await {
+					warn!("Mobile auth error:");
+					break;
+				}
+			}
 		});
 		Ok(())
 	}
@@ -64,10 +73,11 @@ impl ThreadManager {
 			if let Some(index) = sender.iter().position(|s| matches!(s, Modules::MobileAuth(_))) {
 				let r = self.senders.get_mut("main").unwrap().remove(index);
 				debug!("recived: {:?}", r);
-				if let Modules::MobileAuth(sender) = r {
-					if !sender.is_closed() {
-						sender.blocking_send(OwnedMessage::Close(None)).unwrap();
-					}
+				if let Modules::MobileAuth(auth) = r {
+					let _ = auth.stop.unwrap().send(());
+					// if !sender.is_closed() {
+					// 	sender.blocking_send(OwnedMessage::Close(None)).unwrap();
+					// }
 					info!("Mobile auth stopped")
 				}
 			}

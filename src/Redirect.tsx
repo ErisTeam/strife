@@ -3,7 +3,7 @@ import { useAppState } from './AppState';
 import API from './API';
 import { useNavigate } from '@solidjs/router';
 function Redirect() {
-	const AppState: any = useAppState();
+	const AppState = useAppState();
 	const navigate = useNavigate();
 	onMount(async () => {
 		if (!AppState.userID()) {
@@ -15,7 +15,6 @@ function Redirect() {
 				navigate('/login');
 				console.log('navigated to login');
 			}
-			AppState.setUserToken(token);
 			navigate('/app');
 			console.log('navigated to app');
 		}

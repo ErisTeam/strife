@@ -15,7 +15,7 @@ mod modules;
 mod token_utils;
 mod webview_packets;
 
-mod test;
+mod dev;
 
 extern crate tokio;
 
@@ -26,31 +26,35 @@ use serde::Deserialize;
 use tauri::{ Manager, State, UserAttentionType };
 use tauri_plugin_log::LogTarget;
 
-use crate::{ main_app_state::MainState, manager::ThreadManager };
+use crate::{ main_app_state::MainState, manager::ThreadManager, modules::auth::Auth };
+
+pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[tauri::command]
-fn set_state(new_state: String, state: State<Arc<MainState>>, handle: tauri::AppHandle) {
+async fn set_state(
+	new_state: String,
+	state: State<'_, Arc<MainState>>,
+	handle: tauri::AppHandle
+) -> std::result::Result<(), String> {
 	debug!("change state {}", new_state);
 	match new_state.as_str() {
 		"Application" => {
-			println!("Application");
-			if matches!(*state.state.lock().unwrap(), main_app_state::State::MainApp { .. }) {
-				warn!("Already in main app");
-				return;
-			}
-			state.change_state(main_app_state::State::MainApp {}, handle, false)
+			let s = crate::main_app_state::State::MainApp();
+			state.change_state(s, handle).or_else(|e| Err(e.to_string()))?;
 		}
 		"LoginScreen" => {
-			if matches!(*state.state.lock().unwrap(), main_app_state::State::LoginScreen { .. }) {
-				warn!("Already in login screen");
-				return;
-			}
-			state.change_state(main_app_state::State::default_login_screen(), handle, false);
+			let mut auth = Auth::new(Arc::downgrade(&state));
+			auth.start_gateway(handle.clone()).await.or_else(|e| Err(e.to_string()))?;
+			let s = crate::main_app_state::State::LoginScreen(auth);
+
+			state.change_state(s, handle).or_else(|e| Err(e.to_string()))?;
 		}
 		_ => {
 			error!("Unknown state {}", new_state);
+			return Err("Unknown state".to_string());
 		}
 	}
+	Ok(())
 }
 
 #[tauri::command]
@@ -105,15 +109,17 @@ async fn test(handle: tauri::AppHandle) {
 fn main() {
 	println!("Starting");
 
-	let main_state = Arc::new(MainState::new());
+	let event_manager = event_manager::EventManager::new();
+
+	let main_state = Arc::new(MainState::new(event_manager));
+
+	main_state.event_manager.lock().unwrap().set_state(Arc::downgrade(&main_state));
 
 	let thread_manager = ThreadManager::new(main_state.clone());
 
-	let event_manager = event_manager::EventManager::new(main_state.clone());
-
 	*main_state.thread_manager.lock().unwrap() = Some(thread_manager);
 
-	*main_state.event_manager.lock().unwrap() = Some(event_manager);
+	//*main_state.event_manager.lock().unwrap() = Some(event_manager);
 
 	let m = main_state.clone();
 
@@ -129,8 +135,8 @@ fn main() {
 		.manage(main_state)
 		.setup(move |app| {
 			let app_handle = app.handle();
-			test::add_token(&m, app_handle.clone());
-			m.change_state(main_app_state::State::default_login_screen(), app_handle, false);
+			dev::add_token(&m, app_handle.clone());
+			m.change_state_old(main_app_state::StateOld::default_login_screen(), app_handle, false);
 
 			let splashscreen_window = app.get_window("splashscreen").unwrap();
 			let main_window = app.get_window("main").unwrap();

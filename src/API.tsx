@@ -8,6 +8,8 @@ import { createEffect, getOwner, onCleanup } from 'solid-js';
 import { Relationship, Tab, Guild as worseGuildType, Channel as worseChannelType } from './types';
 import { Channel, Guild } from './discord';
 
+//todo clean
+
 interface GatewayEvent {
 	user_id: string;
 	type: string;

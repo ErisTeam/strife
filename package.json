@@ -20,7 +20,8 @@
 		"solid-devtools": "^0.26.0",
 		"typescript": "^5.0.4",
 		"vite": "^4.2.1",
-		"vite-plugin-solid": "^2.7.0"
+		"vite-plugin-solid": "^2.7.0",
+		"vitest": "^0.31.4"
 	},
 	"dependencies": {
 		"@solid-primitives/i18n": "^1.2.4",

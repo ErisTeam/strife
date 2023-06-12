@@ -8,10 +8,12 @@ use crate::{
 		types::{ guild::PartialGuild, relationship::GatewayRelationship },
 		user::{ CurrentUser, GuildSettings, GuildSettingsEntry, PublicUser },
 	},
-	event_manager::EventManager,
+	event_manager::{ EventManager },
 	manager::ThreadManager,
+	modules::auth::Auth,
 };
 
+//todo move
 #[derive(Debug, Clone)]
 pub struct UserData {
 	pub user: CurrentUser,
@@ -80,6 +82,7 @@ impl UserData {
 	}
 }
 
+//todo move
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub enum User {
@@ -104,11 +107,11 @@ impl User {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum State {
+#[deprecated]
+pub enum StateOld {
 	None {},
 	LoginScreen {
 		qr_url: Option<String>,
-		captcha_token: Option<String>,
 		ticket: Option<String>,
 		use_mfa: bool,
 		captcha_rqdata: Option<String>,
@@ -117,14 +120,13 @@ pub enum State {
 	},
 	MainApp {},
 }
-impl State {
-	pub fn variant_eq(a: &State, b: &State) -> bool {
+impl StateOld {
+	pub fn variant_eq(a: &StateOld, b: &StateOld) -> bool {
 		std::mem::discriminant(a) == std::mem::discriminant(b)
 	}
 	pub fn default_login_screen() -> Self {
 		Self::LoginScreen {
 			qr_url: None,
-			captcha_token: None, //todo remove maybe
 			ticket: None,
 			use_mfa: false,
 			captcha_rqdata: None,
@@ -135,11 +137,33 @@ impl State {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
+pub enum State {
+	None,
+	LoginScreen(Auth),
+	MainApp(), //todo add data
+}
+impl State {
+	pub fn variant_eq(a: &Self, b: &Self) -> bool {
+		std::mem::discriminant(a) == std::mem::discriminant(b)
+	}
+
+	pub fn login(&mut self) -> Option<&mut Auth> {
+		match self {
+			Self::LoginScreen(auth) => Some(auth),
+			_ => None,
+		}
+	}
+}
+
+#[derive(Debug)]
 pub struct MainState {
 	pub tokens: Mutex<HashMap<String, String>>,
+	pub state_old: Arc<Mutex<StateOld>>,
+
 	pub state: Arc<Mutex<State>>,
 
-	pub event_manager: Mutex<Option<EventManager>>,
+	pub event_manager: Mutex<EventManager>,
 
 	pub thread_manager: Mutex<Option<ThreadManager>>,
 
@@ -150,13 +174,14 @@ pub struct MainState {
 }
 
 impl MainState {
-	pub fn new() -> Self {
+	pub fn new(event_manager: EventManager) -> Self {
 		Self {
 			tokens: Mutex::new(HashMap::new()),
-			state: Arc::new(Mutex::new(State::None {})),
+			state_old: Arc::new(Mutex::new(StateOld::None {})),
+			state: Arc::new(Mutex::new(State::None)),
 
 			thread_manager: Mutex::new(None),
-			event_manager: Mutex::new(None),
+			event_manager: Mutex::new(event_manager),
 
 			users: Mutex::new(HashMap::new()),
 
@@ -217,51 +242,75 @@ impl MainState {
 		}
 		None
 	}
+	pub fn change_state(&self, new_state: State, handle: AppHandle) -> crate::Result<()> {
+		let mut state = self.state.lock().unwrap();
+		let event_manager = self.event_manager.lock().unwrap();
 
-	pub fn change_state(&self, new_state: State, handle: AppHandle, force: bool) {
-		if !force && State::variant_eq(&*self.state.lock().unwrap(), &new_state) {
+		*state = new_state;
+
+		event_manager.clear_listeners(handle.clone());
+
+		event_manager.register_debug(handle.clone());
+
+		match &*state {
+			State::LoginScreen(s) => {
+				event_manager.register_for_login_screen(handle.clone());
+			}
+			State::MainApp() => {
+				event_manager.register_for_main_app(handle.clone());
+			}
+			State::None => {
+				panic!("State::None");
+			}
+		}
+
+		Ok(())
+	}
+
+	pub fn change_state_old(&self, new_state: StateOld, handle: AppHandle, force: bool) {
+		if !force && StateOld::variant_eq(&*self.state_old.lock().unwrap(), &new_state) {
 			println!("variant eq");
 			return;
 		}
 
-		let mut state = self.state.lock().unwrap();
+		let mut state = self.state_old.lock().unwrap();
 		let mut thread_manager = self.thread_manager.lock().unwrap();
 		let mut event_manager = self.event_manager.lock().unwrap();
 
 		println!("{:?}", state);
 		match &*state {
-			State::LoginScreen { .. } => {
+			StateOld::LoginScreen { .. } => {
 				thread_manager.as_mut().unwrap().stop_mobile_auth();
 				println!("Stoping mobile auth");
 			}
-			State::MainApp {} => {
+			StateOld::MainApp {} => {
 				if !self.last_id.lock().unwrap().is_none() {
 					//todo repair for multiple users
 					thread_manager.as_mut().unwrap().stop_gateway(self.last_id.lock().unwrap().clone().unwrap());
 				}
 			}
-			State::None {} => {}
+			StateOld::None {} => {}
 		}
 
 		*state = new_state;
 
-		event_manager.as_mut().unwrap().clear_listeners(handle.clone());
+		event_manager.clear_listeners(handle.clone());
 
-		event_manager.as_mut().unwrap().register_debug(handle.clone());
+		event_manager.register_debug(handle.clone());
 
 		match &*state {
-			State::LoginScreen { .. } => {
-				event_manager.as_mut().unwrap().register_for_login_screen(handle.clone());
+			StateOld::LoginScreen { .. } => {
+				event_manager.register_for_login_screen(handle.clone());
 			}
-			State::MainApp {} => {
-				event_manager.as_mut().unwrap().register_for_main_app(handle.clone());
+			StateOld::MainApp {} => {
+				event_manager.register_for_main_app(handle.clone());
 			}
-			State::None {} => { panic!("State::None") }
+			StateOld::None {} => { panic!("State::None") }
 		}
 	}
 
-	pub fn start_mobile_auth(&self, handle: AppHandle) -> Result<(), String> {
-		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle)
+	pub async fn start_mobile_auth(&self, handle: AppHandle) -> Result<(), String> {
+		self.thread_manager.lock().unwrap().as_mut().unwrap().start_mobile_auth(handle).await
 	}
 	pub fn start_gateway(&self, handle: AppHandle, user_id: String) -> Result<(), String> {
 		let token = self.get_token(user_id.clone()).ok_or("No token found".to_string())?;

@@ -1,3 +1,6 @@
 {
-	"easynpm.packageManager": "pnpm"
+	"easynpm.packageManager": "pnpm",
+	"[rust]": {
+		"editor.defaultFormatter": "jinxdash.prettier-rust"
+	}
 }

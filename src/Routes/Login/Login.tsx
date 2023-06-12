@@ -20,6 +20,8 @@ import MFABox from '../../Components/MFABox/MFABox';
 import style from './Login.module.css';
 import { Portal } from 'solid-js/web';
 
+//todo clean
+
 const LoginPage = () => {
 	const [t] = useTrans();
 	// Data of the user that scans the QR Code
