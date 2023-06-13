@@ -1,6 +1,8 @@
 import { ChannelType } from "./discord";
 
-//todo move discord types to diffrent file
+//TODO: move discord types to diffrent file
+
+type AppState ='LoginScreen' | 'Application' | 'Dev';
 
 
 type Input =
@@ -85,7 +87,7 @@ type Role = {
 	mentionable: boolean;
 };
 
-//todo copy form rust discord/type/guild PartialGuild
+//TODO: copy form rust discord/type/guild PartialGuild
 type Guild = {
 	id: string;
 	name: string;
@@ -148,4 +150,5 @@ export type { Input, Button, TextArea, 	GuildsResponse,
 	Role,
 	Guild,
 	Channel,
+	AppState
 }; 

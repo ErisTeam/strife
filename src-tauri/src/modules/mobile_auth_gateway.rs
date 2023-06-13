@@ -9,7 +9,7 @@ use tokio_tungstenite::{ connect_async_tls_with_config, tungstenite::Message, We
 use websocket::OwnedMessage;
 
 use crate::{
-	discord::{ constants, http_packets::{ self, Auth }, mobile_auth_packets::{ self, Packets } },
+	discord::{ constants, http_packets::{ self, auth::LoginResponse }, mobile_auth_packets::{ self, Packets } },
 	main_app_state::{ MainState, StateOld },
 	modules::{ gateway::{ GatewayError, GatewayResult }, gateway_utils::send_heartbeat },
 	webview_packets,
@@ -62,6 +62,7 @@ impl MobileAuthConnectionData {
 /// For more information on how all of this functions you <br>
 /// should visit the [Unofficial Discord API](https://luna.gitlab.io/discord-unofficial-docs/desktop_remote_auth_v2.html).
 #[derive(Debug)]
+#[deprecated]
 pub struct MobileAuthHandler {
 	pub public_key: Option<RsaPublicKey>,
 	private_key: Option<RsaPrivateKey>,
@@ -197,7 +198,7 @@ impl MobileAuthHandler {
 		Ok(())
 	}
 
-	//todo add error handling
+	//TODO: add error handling
 	async fn get_token(
 		connection_info: &mut ConnectionInfo<MobileAuthConnectionData>,
 		ticket: String
@@ -206,22 +207,28 @@ impl MobileAuthHandler {
 		let res = client
 			.post(constants::MOBILE_AUTH_GET_TOKEN)
 			.header("Content-Type", "application/json")
-			.body(serde_json::to_string(&(http_packets::Auth::Login { ticket: ticket })).unwrap())
+			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket: ticket })).unwrap())
 			.send().await
 			.unwrap();
 
-		let json = res.json::<http_packets::Auth>().await.unwrap();
+		let json = res.json::<LoginResponse>().await.unwrap();
 		match json {
-			http_packets::Auth::LoginResponse { encrypted_token } => {
+			LoginResponse::Success { encrypted_token } => {
 				let bytes = general_purpose::STANDARD.decode(encrypted_token.as_bytes()).unwrap();
 				let token = String::from_utf8(connection_info.aditional_data.decrypt(bytes).unwrap()).unwrap();
 				Ok(token)
 			}
-			Auth::Error { code, errors, message } => {
-				error!("{} {} {}", code, errors, message);
+			LoginResponse::Error { code, errors, message } => {
+				error!("{} {:?} {}", code, errors, message);
 				Err(GetTokenResponse::Other(message))
 			}
-			Auth::RequireAuth { captcha_key, captcha_rqdata, captcha_rqtoken, captcha_service, captcha_sitekey } => {
+			LoginResponse::RequireAuth {
+				captcha_key,
+				captcha_rqdata,
+				captcha_rqtoken,
+				captcha_service,
+				captcha_sitekey,
+			} => {
 				info!("MobileAuth RequireAuth");
 				Err(GetTokenResponse::RequireAuth {
 					captcha_key: captcha_key.clone(),
@@ -326,7 +333,7 @@ impl MobileAuthHandler {
 				Self::emit_event(connection_info.handle.clone(), webview_packets::Auth::MobileQrcode {
 					qrcode: Some(new_qr_url.clone()),
 				}).unwrap();
-				//todo send to module manager
+				//TODO: send to module manager
 				// let mut state = self.app_state.state.lock().unwrap();
 				// match *state {
 				// 	State::LoginScreen { ref mut qr_url, .. } => {
@@ -356,7 +363,7 @@ impl MobileAuthHandler {
 				match Self::get_token(&mut *connection_info, ticket.clone()).await {
 					Ok(token) => {
 						// if let Some(user_id) = self.user_id.as_ref() {
-						// todo send info to Main State
+						// TODO: send info to Main State
 
 						// 	self.app_state.add_new_user(user_id.clone(), token);
 
@@ -368,7 +375,7 @@ impl MobileAuthHandler {
 						return Ok(GatewayResult::Close);
 					}
 					Err(message) => {
-						//todo on error
+						//TODO: on error
 						// if self.on_token_error(message, ticket.clone()) {
 						// 	return Ok(GatewayResult::Reconnect);
 						// }
@@ -509,7 +516,7 @@ impl MobileAuthHandler {
                     }
                     _ = Self::read_thread(read,write,connection_info) => {
                         println!("Reconnecting");
-                        //todo send error
+                        //TODO: send error
                         let _ = stop_sender.send(());
                         let _  = error_sender.send(());
                     }
@@ -530,7 +537,7 @@ impl MobileAuthHandler {
                     }
                     _ = Self::heartbeat_thread(connection_info,write) => {
                         println!("Reconnectiong");
-                        //todo send error
+                        //TODO: send error 
                         stop_sender.send(()).unwrap();
                         error_sender.send(()).unwrap();
                     }

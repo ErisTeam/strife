@@ -4,7 +4,7 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::{ discord::types::guild::PartialGuild, modules::auth };
+use crate::{ discord::{ types::guild::PartialGuild, http_packets::auth::ErrorTypes }, modules::auth };
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
@@ -23,7 +23,7 @@ pub enum Auth {
 
 	Error {
 		code: u64,
-		errors: auth::ErrorTypes,
+		errors: ErrorTypes,
 		message: String,
 	},
 	MobileAuthError {

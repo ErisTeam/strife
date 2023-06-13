@@ -1,0 +1,24 @@
+.dev {
+	position: absolute;
+	right: 30px;
+	top: 30px;
+	width: fit-content;
+	height: fit-content;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	z-index: 100;
+
+	background-color: rgba(0, 0, 0, 0.171);
+	padding: 1rem;
+	border-radius: var(--round-large);
+
+	& div {
+		display: flex;
+
+		gap: 0.5rem;
+	}
+	& div * {
+		color: var(--primary);
+	}
+}

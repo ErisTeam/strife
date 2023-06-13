@@ -1,6 +1,6 @@
 // SolidJS
 import { render } from 'solid-js/web';
-import { Routes, Route, Router, Link } from '@solidjs/router';
+import { Routes, Route, Router, Link, A } from '@solidjs/router';
 import { Component, createResource, DEV, Match, onMount, Show, Switch } from 'solid-js';
 import { useTrans, TransProvider } from './Translation';
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
@@ -14,10 +14,10 @@ import Application from './Routes/App/Application';
 import Prev from './Prev';
 import Login from './Routes/Login/Login';
 import Main from './Routes/Main/Main';
-import Loading from './Routes/Loading/Loading';
+import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import Error from './Routes/Error/Error';
 import Anchor from './Components/Anchor/Anchor';
-import Dev from './Dev';
+import Dev from './Components/Dev/Dev';
 import TranslationTest from './Routes/Dev/Translation/TranslationTest';
 import MessageTest from './Routes/Messages/MessageTest';
 
@@ -29,6 +29,9 @@ import API from './API';
 
 import { invoke } from '@tauri-apps/api';
 import { useRoute } from '@solidjs/router/dist/routing';
+import R from './R';
+import ChangeState from './Components/ChangeState/ChangeState';
+import DevTools from './Components/DevTools/DevTools';
 
 const App: Component = () => {
 	const AppState: any = useAppState();
@@ -49,28 +52,26 @@ const App: Component = () => {
 					<Show when={!id.loading}>
 						<AppStateProvider>
 							<Dev>
-								<div class="dev">
-									<Anchor state="LoginScreen" href="/">
-										Prev
-									</Anchor>
-								</div>
+								<DevTools />
 							</Dev>
 
 							<Routes>
 								{/* <Redirect /> */}
-								<Route path="/dev">
+								<Route path="/dev" element={<ChangeState state={'Dev'} />}>
 									<Route path="/translationtest" component={TranslationTest} />
+									<Route path="/loadingtest" component={LoadingTest} />
 								</Route>
 
-								<Route path="/" component={Prev}></Route>
+								<Route path="/login" element={<R state={'LoginScreen'} force={true} component={Login} />} />
 
+								<Route path="/" element={<R state={'LoginScreen'} force={true} component={Prev} />}></Route>
+
+								<Route path="/dev" element={<ChangeState state={'Application'} />}>
+									<Route path="/main" component={Main} />
+								</Route>
 								<Route path="/messagetest" component={MessageTest} />
 
-								<Route path={'/loadingtest'} component={Loading} />
-
-								<Route path={'/login'} component={Login}></Route>
-
-								<Route path={'/main'} component={Main}></Route>
+								<Route path="/login" component={Login} />
 
 								<Route path="/app" component={ApplicationWrapper}>
 									<Route path="/" component={Application} />

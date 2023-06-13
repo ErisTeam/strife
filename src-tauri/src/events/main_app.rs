@@ -147,7 +147,7 @@ impl EventTrait<General> for GetGuilds {
 			}
 		} else {
 			error!("No user data for {}", self.user_id);
-			//todo emit error
+			//TODO: emit error
 		}
 		None
 	}
@@ -156,7 +156,7 @@ impl EventTrait<General> for GetGuilds {
 		"getGuilds".to_string()
 	}
 }
-//todo move or remove
+//TODO: move or remove
 trait EventTrait<T: serde::Serialize + Sized + Clone + Debug>: serde::de::DeserializeOwned {
 	fn execute(&self, state: Arc<MainState>, handle: tauri::AppHandle) -> Option<(&str, T)>;
 

@@ -140,7 +140,7 @@ impl Gateway {
 				lazy_private_channels,
 				guilds,
 			} => {
-				//todo implement
+				//TODO: implement
 				//println!("ReadySupplemental {:?}", guilds);
 				let gami;
 				let state;

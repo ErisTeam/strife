@@ -13,7 +13,7 @@ interface AnchorProps {
 	class?: string;
 	classList?: {
 		[k: string]: boolean | undefined;
-	  }
+	};
 }
 
 const Anchor = (props: AnchorProps) => {

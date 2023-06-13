@@ -33,21 +33,33 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 #[tauri::command]
 async fn set_state(
 	new_state: String,
+	force: Option<bool>,
 	state: State<'_, Arc<MainState>>,
 	handle: tauri::AppHandle
 ) -> std::result::Result<(), String> {
 	debug!("change state {}", new_state);
+	let force = force.unwrap_or(false);
+	if !force && state.state.lock().unwrap().get_name() == new_state {
+		warn!("State already set to {}", new_state);
+		debug!("USE force=true to force change state");
+		return Ok(());
+	}
+	state.reset_state();
 	match new_state.as_str() {
 		"Application" => {
 			let s = crate::main_app_state::State::MainApp();
-			state.change_state(s, handle).or_else(|e| Err(e.to_string()))?;
+			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
 		}
 		"LoginScreen" => {
-			let mut auth = Auth::new(Arc::downgrade(&state));
-			auth.start_gateway(handle.clone()).await.or_else(|e| Err(e.to_string()))?;
+			let auth = Auth::new(Arc::downgrade(&state));
+			let auth = auth.start_gateway(handle.clone()).await.or_else(|e| Err(e.to_string()))?;
 			let s = crate::main_app_state::State::LoginScreen(auth);
 
-			state.change_state(s, handle).or_else(|e| Err(e.to_string()))?;
+			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
+		}
+		"Dev" => {
+			let s = crate::main_app_state::State::Dev;
+			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
 		}
 		_ => {
 			error!("Unknown state {}", new_state);

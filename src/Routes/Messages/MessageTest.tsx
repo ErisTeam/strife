@@ -119,7 +119,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 	return (
 		<div>
-			<Portal mount={document.querySelector('.dev') as Node}>
+			<Portal mount={document.querySelector('#dev') as Node}>
 				<div>
 					<input
 						oninput={(e) => {

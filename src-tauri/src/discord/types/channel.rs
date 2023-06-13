@@ -73,7 +73,7 @@ pub mod partial_channels {
 
 		pub position: Option<u64>,
 
-		pub permission_overwrites: Vec<serde_json::Value>, // todo PermissionOverwrite
+		pub permission_overwrites: Vec<serde_json::Value>, // TODO: PermissionOverwrite
 	}
 
 	#[derive(Debug, Clone, Serialize, Deserialize)]
@@ -123,7 +123,7 @@ pub struct ChannelBase {
 	pub r#type: ChannelType,
 	pub guild_id: Option<String>,
 	pub position: Option<u64>,
-	pub permission_overwrites: Option<Vec<serde_json::Value>>, // todo PermissionOverwrite
+	pub permission_overwrites: Option<Vec<serde_json::Value>>, // TODO: PermissionOverwrite
 	pub name: Option<String>,
 	pub topic: Option<String>,
 	pub nsfw: Option<bool>,
@@ -146,11 +146,11 @@ pub struct ChannelBase {
 	pub member: Option<ThreadMember>,
 	pub default_auto_archive_duration: Option<u64>,
 	pub permissions: Option<String>,
-	pub flags: Option<u64>, // todo custom deserializer
+	pub flags: Option<u64>, // TODO: custom deserializer
 	pub total_message_sent: Option<u64>,
-	pub avaible_tags: Option<Vec<serde_json::Value>>, // todo ChannelTag
-	pub applied_tags: Option<Vec<serde_json::Value>>, // todo ChannelTag
-	pub default_reaction_emoji: Option<Vec<serde_json::Value>>, // todo Emoji
+	pub avaible_tags: Option<Vec<serde_json::Value>>, // TODO: ChannelTag
+	pub applied_tags: Option<Vec<serde_json::Value>>, // TODO: ChannelTag
+	pub default_reaction_emoji: Option<Vec<serde_json::Value>>, // TODO: Emoji
 	pub default_thread_rate_limit_per_user: Option<u64>,
 	pub default_sort_order: Option<u64>,
 	pub default_forum_layout: Option<u64>,

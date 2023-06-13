@@ -155,27 +155,6 @@ function Prev() {
 			//	break
 		}
 	});
-	const r = setInterval(async () => {
-		if (image()) {
-			console.log('clearing interval', image());
-			clearInterval(r);
-		} else {
-			await emit('requestQrcode', {});
-			console.log('requesting qrcode');
-		}
-	}, 5000);
-	onCleanup(() => {
-		console.log('cleanup');
-
-		clearInterval(r);
-		console.log('cleanup done');
-	});
-
-	onMount(async () => {
-		await emit('requestQrcode', {});
-		info('test webview');
-		await emit('startMobileGateway', {});
-	});
 
 	return (
 		<div class={style.container}>
@@ -322,27 +301,27 @@ function Prev() {
 			</div>
 			<p>{showMsg()}</p>
 			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-				<Anchor class={[buttons.default].join(' ')} href="/login" state="LoginScreen">
+				<A class={[buttons.default].join(' ')} href="/login">
 					Better Login
-				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} href="/main" state="Application">
+				</A>
+				<A class={[buttons.default].join(' ')} href="/main">
 					Main
-				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} href="/app" state="Application">
+				</A>
+				<A class={[buttons.default].join(' ')} href="/app">
 					Application
-				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} href="/messagetest" state="Application">
+				</A>
+				<A class={[buttons.default].join(' ')} href="/messagetest">
 					message test
-				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} href="/loadingtest" state="Application">
+				</A>
+				<A class={[buttons.default].join(' ')} href="/dev/loadingtest">
 					Loading Test
-				</Anchor>
-				<Anchor class={[buttons.default].join(' ')} state="Application" href="/dev/translationtest">
+				</A>
+				<A class={[buttons.default].join(' ')} href="/dev/translationtest">
 					Translation Test
-				</Anchor>
-				<Anchor class={buttons.default} state="Application" href="/dev/guildtest">
+				</A>
+				<A class={buttons.default} href="/dev/guildtest">
 					Guild Test
-				</Anchor>
+				</A>
 				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
 					Error Page
 				</A>

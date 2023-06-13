@@ -20,7 +20,7 @@ import MFABox from '../../Components/MFABox/MFABox';
 import style from './Login.module.css';
 import { Portal } from 'solid-js/web';
 
-//todo clean
+//TODO clean
 
 const LoginPage = () => {
 	const [t] = useTrans();
@@ -197,7 +197,7 @@ const LoginPage = () => {
 				[style.firstRender]: firstRender(),
 			}}
 		>
-			<Portal mount={document.querySelector('.dev') as Node}>
+			<Portal mount={document.querySelector('#dev') as Node}>
 				<button
 					onclick={() => {
 						setPanel('mfa');
@@ -218,7 +218,7 @@ const LoginPage = () => {
 						setPanel('login');
 					}}
 				>
-					show login
+					show Login
 				</button>
 			</Portal>
 

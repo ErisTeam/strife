@@ -103,5 +103,5 @@ impl<T> ConnectionInfo<T> {
 }
 #[async_trait]
 trait Gateway<T> where T: Send + Sync {
-	//todo implemnent
+	//TODO: implemnent
 }

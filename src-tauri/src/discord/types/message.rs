@@ -40,16 +40,16 @@ pub struct Message {
 	pinned: bool,
 	webhook_id: Option<serde_json::Value>,
 
-	r#type: u64, //todo enum
+	r#type: u64, //TODO: enum
 	activity: Option<MessageActivity>,
 	application: Option<serde_json::Value>,
 	application_id: Option<u64>,
 
 	message_reference: Option<serde_json::Value>,
 
-	flags: Option<u64>, //todo custom deserializer
+	flags: Option<u64>, //TODO: custom deserializer
 
-	referenced_message: Option<Box<Message>>, //todo differentiate between null and not existing
+	referenced_message: Option<Box<Message>>, //TODO: differentiate between null and not existing
 
 	interaction: Option<MessageInteraction>,
 

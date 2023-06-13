@@ -24,7 +24,7 @@ pub struct ThreadManager {
 
 	senders: HashMap<String, Vec<Modules>>,
 }
-//todo remove
+//TODO: remove
 impl ThreadManager {
 	pub fn new(state: Arc<MainState>) -> Self {
 		let mut s = Self {
@@ -55,7 +55,7 @@ impl ThreadManager {
 
 		self.senders.get_mut("main").unwrap().push(Modules::MobileAuth(gate));
 
-		//todo change it
+		//TODO: change it
 		tauri::async_runtime::spawn(async move {
 			loop {
 				if let Ok(_) = on_error.recv().await {
@@ -116,7 +116,7 @@ impl ThreadManager {
 		}
 		self.senders.get_mut(user_id.as_str()).unwrap().push(Modules::Gateway(sender));
 
-		//todo change it
+		//TODO: change it
 		tauri::async_runtime::spawn(async move {
 			gate.run().await;
 		});

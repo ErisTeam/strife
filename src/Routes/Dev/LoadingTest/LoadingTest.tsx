@@ -1,9 +1,9 @@
 // Style
-import style from './Loading.module.css';
+import style from './LoadingTest.module.css';
 
-import buttons from '../../Styles/Buttons.module.css';
+import buttons from '../../../Styles/Buttons.module.css';
 
-const Loading = () => {
+const LoadingTest = () => {
 	return (
 		<div class={style.main}>
 			<iframe id="frame" src="/splashscreen.html" style={{ width: '200px', height: '400px' }}></iframe>
@@ -20,4 +20,4 @@ const Loading = () => {
 	);
 };
 
-export default Loading;
+export default LoadingTest;

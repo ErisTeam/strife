@@ -90,7 +90,7 @@ pub struct ReadyData {
 	pub users: Vec<PublicUser>,
 
 	pub user: CurrentUser,
-	pub user_settings_proto: String, //todo decode using protobuf
+	pub user_settings_proto: String, //TODO: decode using protobuf
 
 	pub user_guild_settings: GuildSettings,
 	pub guilds: Vec<PartialGuild>,
@@ -135,7 +135,7 @@ pub struct ReadyData2 {
 	pub users: Vec<PublicUser>,
 
 	pub user: CurrentUser,
-	pub user_settings_proto: String, //todo decode using protobuf
+	pub user_settings_proto: String, //TODO: decode using protobuf
 
 	pub user_guild_settings: GuildSettings,
 	pub guilds: Vec<PartialGuild>,

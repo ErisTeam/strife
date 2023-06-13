@@ -55,7 +55,7 @@ type Role = {
 	mentionable: boolean;
 };
 
-//todo copy form rust discord/type/guild PartialGuild
+//TODO: copy form rust discord/type/guild PartialGuild
 type Guild = {
 
 	name: string;

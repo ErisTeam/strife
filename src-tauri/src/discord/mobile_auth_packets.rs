@@ -68,8 +68,8 @@ pub enum Packets {
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "op")]
 pub enum IncomingPackets {
-	///Sent on connection open
 	#[serde(rename = "hello")]
+	///Sent on connection open
 	Hello {
 		heartbeat_interval: u64,
 		timeout_ms: u64,

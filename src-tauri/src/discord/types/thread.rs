@@ -2,7 +2,7 @@ use serde::{ Serialize, Deserialize };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ThreadMember {
-	//todo implement
+	//TODO implement
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -120,7 +120,7 @@ const Application = () => {
 
 	return (
 		<div>
-			<Portal mount={document.querySelector('.dev') as Node}>
+			<Portal mount={document.querySelector('#dev') as Node}>
 				<div>
 					{params.channelId}
 

@@ -4,12 +4,7 @@ use serde::Deserialize;
 use tauri::{ async_runtime::TokioHandle, Event, EventHandler, Manager };
 use tokio::task::block_in_place;
 
-use crate::{
-	main_app_state::{ self, MainState },
-	modules::auth::{ Auth, MFAResponse, ErrorTypes },
-	token_utils,
-	webview_packets,
-};
+use crate::{ main_app_state::{ self, MainState }, modules::auth::{ Auth, MFAResponse }, token_utils, webview_packets };
 
 fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |_event| {
@@ -44,7 +39,7 @@ fn request_qrcode(
 }
 
 fn send_sms(state: Arc<Mutex<crate::main_app_state::StateOld>>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-	//todo clean up and add comments
+	//TODO: clean up and add comments
 
 	move |_event: Event| {
 		let ticket;
@@ -71,7 +66,7 @@ fn send_sms(state: Arc<Mutex<crate::main_app_state::StateOld>>, handle: tauri::A
 		}
 		if use_sms {
 			let ticket = ticket.clone().unwrap();
-			//todo make it work
+			//TODO: make it work
 			let _ = block_in_place(move || {
 				TokioHandle::current().block_on(async move { Auth::send_sms(ticket).await });
 			});
@@ -123,15 +118,15 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 				.unwrap();
 		}
 		let ticket = ticket.clone().unwrap();
-		//todo repair
+		//TODO: repair
 		if !use_mfa && true == false {
 			let res = block_in_place(move || {
 				TokioHandle::current().block_on(async move { Auth::verify_sms(ticket, c.code).await })
 			});
-			let res = res.unwrap(); //todo handle error
+			let res = res.unwrap(); //TODO: handle error
 
 			if let MFAResponse::Success { token, user_settings } = res {
-				let user_id = token_utils::get_id(token.clone());
+				let user_id = token_utils::get_id(&token);
 
 				state.add_new_user(user_id.clone(), token.clone());
 
@@ -143,7 +138,7 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 					.unwrap();
 			}
 
-			//todo!("return response to webview");
+			//TODO:!("return response to webview");
 		} else {
 			let res = block_in_place(move || {
 				TokioHandle::current().block_on(async move { Auth::verify_totp(ticket, c.code).await })
@@ -162,7 +157,7 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 					//user_id,
 					user_settings,
 				} => {
-					let user_id = token_utils::get_id(token.clone());
+					let user_id = token_utils::get_id(&token);
 
 					state.add_new_user(user_id.clone(), token.clone());
 
@@ -190,7 +185,7 @@ struct LoginPayload {
 }
 fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
-		let payload: LoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap(); //todo handle error
+		let payload: LoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap(); //TODO: handle error
 
 		let mut state = state.state.lock().unwrap();
 
@@ -203,7 +198,7 @@ fn login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> (
 		});
 		let payload = res.unwrap_or(webview_packets::Auth::Error {
 			code: 0,
-			errors: ErrorTypes {
+			errors: crate::discord::http_packets::auth::ErrorTypes {
 				login: None,
 				password: None,
 				email: None,
@@ -224,14 +219,15 @@ fn login_mobile_auth(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn
 		let payload: MobileAuthLoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap();
 		let state = &*state.state_old.lock().unwrap();
 		if let main_app_state::StateOld::LoginScreen { captcha_rqtoken, captcha_sitekey: captcha_key, .. } = state {
-			//todo make it work
-			let res = block_in_place(move || {
-				TokioHandle::current().block_on(async move {
-					let captcha_key = captcha_key.as_ref().unwrap().clone();
-					let captcha_rqtoken = captcha_rqtoken.as_ref().unwrap().clone();
-					Auth::login_mobile_auth(payload.captcha_token.clone(), captcha_key, captcha_rqtoken).await
-				})
-			});
+			//TODO: make it work
+			todo!()
+			// let res = block_in_place(move || {
+			// 	TokioHandle::current().block_on(async move {
+			// 		let captcha_key = captcha_key.as_ref().unwrap().clone();
+			// 		let captcha_rqtoken = captcha_rqtoken.as_ref().unwrap().clone();
+			// 		Auth::login_mobile_auth(payload.captcha_token.clone(), captcha_key, captcha_rqtoken).await
+			// 	})
+			// });
 		}
 	}
 }

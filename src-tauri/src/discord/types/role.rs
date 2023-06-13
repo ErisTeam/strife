@@ -9,7 +9,7 @@ pub struct Role {
 	pub icon: Option<String>,
 	pub unicode_emoji: Option<String>,
 	pub position: u64,
-	pub permissions: String, //todo custom deserializer
+	pub permissions: String, //TODO: custom deserializer
 	pub managed: bool,
 	pub mentionable: bool,
 	pub tags: Option<RoleTags>,
