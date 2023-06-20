@@ -3,7 +3,7 @@ import { createSignal, onMount, For, createEffect, Show } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { Channel } from '../../types';
+import { Channel } from '../../discord';
 import Relationship from '../Relationship/Relationship';
 // Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';
@@ -36,7 +36,7 @@ const ChannelList = (props: ChannelListProps) => {
 							<ChannelCategory
 								data={category}
 								id={category.id}
-								childrenChannels={channels().filter((x: Channel) => x.parentId == category.id)}
+								childrenChannels={channels().filter((x: Channel) => x.parent_id == category.id)}
 							/>
 						)}
 					</For>

@@ -244,10 +244,16 @@ export default {
 		return newObj;
 	},
 
-	//oh mein gott, what retard wrote this????				(me, i am the retard)
+	//oh mein gott, what retard wrote this????				(me, i am the retard)      nvm fiex it
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 		let guilds: Guild[] = await this.getGuilds();
+		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
+		guilds.forEach((guild) => {
+			guild.channels.forEach((channel) => {
+				channel.guild_id = guild.properties.id;
+			});
+		});
 
 		AppState.setUserGuilds((prev: any) => guilds);
 	},
@@ -265,14 +271,15 @@ export default {
 	 * @Gami
 	 */
 	async addTab(channel: Channel, fallback: void) {
-		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guildId);
+		console.log('channel', channel);
+		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id == channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');
 			return;
 		}
 		let tab: Tab = {
-			guildId: channel.guildId,
+			guildId: channel.guild_id,
 			channelId: channel.id,
 			channelName: channel.name,
 			channelType: channel.type,
@@ -292,14 +299,14 @@ export default {
 			console.log(currentChannelId);
 			return;
 		}
-		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guildId);
+		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');
 			return;
 		}
 		let tab: Tab = {
-			guildId: channel.guildId,
+			guildId: channel.guild_id,
 			channelId: channel.id,
 			channelName: channel.name,
 			channelType: channel.type,

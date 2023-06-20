@@ -71,6 +71,7 @@ type Guild = {
 		id: string;
 		name: string;
 		owner_id: string;
+		icon?: string;
 	};
 
 	channels: Channel[];
@@ -79,7 +80,7 @@ type Guild = {
 type Channel = {
 	id: string;
 	type: ChannelType;
-	guildId: string | null;
+	guild_id: string | null;
 	position: number | 0;
 	permission_overwrites?: any[];
 	name: string | null;

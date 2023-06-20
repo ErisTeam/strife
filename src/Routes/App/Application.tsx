@@ -122,10 +122,7 @@ const Application = () => {
 		<div>
 			<Portal mount={document.querySelector('#dev') as Node}>
 				<div>
-					{params.channelId}
-
-					{params.guildId}
-
+					{params.guildId} -- {params.channelId}
 					<button
 						onclick={() => {
 							fetchMessages();

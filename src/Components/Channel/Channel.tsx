@@ -1,7 +1,7 @@
 // API
 import { useNavigate, useParams } from '@solidjs/router';
 import API from '../../API';
-import { Channel as ChannelType } from '../../types';
+import { Channel as ChannelType } from '../../discord';
 
 // Style
 import style from './Channel.module.css';
@@ -32,27 +32,27 @@ const Channel = (props: ChannelProps) => {
 					if (e.button === 0) {
 						console.log('left click', e.button);
 						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
-							navigate(`/app/${props.data.guildId}/${props.data.id}`);
+							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;
 						}
 						if (AppState.tabs().length === 0) {
 							API.addTab(props.data);
-							navigate(`/app/${props.data.guildId}/${props.data.id}`);
+							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;
 						}
 						API.replaceCurrentTab(props.data, params.channelId);
-						navigate(`/app/${props.data.guildId}/${props.data.id}`);
+						navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 					}
 
 					if (e.button === 1) {
 						console.log('middle click', e.button);
 						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
 							console.error('Tab already exists!');
-							navigate(`/app/${props.data.guildId}/${props.data.id}`);
+							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;
 						}
 						API.addTab(props.data);
-						navigate(`/app/${props.data.guildId}/${props.data.id}`);
+						navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 					}
 				}}
 			>

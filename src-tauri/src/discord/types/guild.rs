@@ -69,7 +69,7 @@ pub struct Guild {
 	pub nsfw_level: u8, //might want to change to enum or constants
 	pub stickers: Vec<PartialSticker>, //TODO: create sticker struct
 	pub premium_progress_bar_enabled: bool,
-	pub safet_alerts_channel_id: Option<String>,
+	pub safety_alerts_channel_id: Option<String>,
 
 }
 
