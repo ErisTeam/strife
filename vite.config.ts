@@ -1,13 +1,11 @@
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import autoprefixer from "autoprefixer";
-import devtools from "solid-devtools/vite";
+
 
 export default defineConfig({
   plugins: [
-    devtools({
-      autoname: true,
-    }),
+  
     solidPlugin()
   ],
   css:{
