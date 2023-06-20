@@ -91,12 +91,12 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 		let c: VerifyLoginPayload = serde_json::from_str(event.payload().unwrap()).unwrap();
 
 		let ticket;
-		let use_mfa;
+		let use_mfa = true;//does this check if ueses sms?
 		{
-			let app_state = state.state_old.lock().unwrap();
-			if let main_app_state::StateOld::LoginScreen { use_mfa: u, ticket: t, .. } = &*app_state {
-				ticket = t.clone();
-				use_mfa = *u;
+			let app_state = state.state.lock().unwrap();
+			//LoginScreen(Arc<Auth>),
+			if let main_app_state::State::LoginScreen(u) = &*app_state {
+				ticket = u.ticket.try_read().unwrap().clone();
 			} else {
 				handle
 					.emit_all("auth", webview_packets::MFA::SmsSendingResult {
@@ -106,6 +106,8 @@ fn verify_login(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Even
 					.unwrap();
 				return;
 			}
+
+			
 		}
 
 		if ticket.is_none() {

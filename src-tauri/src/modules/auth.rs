@@ -52,6 +52,9 @@ pub enum LoginResponse {
 		sms: Option<bool>,
 		ticket: Option<String>,
 	},
+
+	
+	
 }
 
 #[derive(Deserialize, Debug)]
@@ -91,7 +94,7 @@ pub struct Auth {
 	pub gateway: Arc<RwLock<MobileAuth>>,
 	state: Weak<MainState>,
 
-	ticket: RwLock<Option<String>>,
+	pub ticket: RwLock<Option<String>>,
 }
 
 impl Auth {

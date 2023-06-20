@@ -25,8 +25,8 @@ const Guild = (props: GuildProps) => {
 
 		console.log(liRef.getBoundingClientRect().top, spanRef.style.top);
 	
-	spanRef.style.top = `${liRef.getBoundingClientRect().top+13}px`;
-spanRef.style.visibility = "visible";
+		spanRef.style.top = `${liRef.getBoundingClientRect().top+13}px`;
+		spanRef.style.visibility = "visible";
 	}
 	createEffect(() => {
 		spanRef.style.top = `${(liRef.getBoundingClientRect().top+13)}px`;
@@ -35,6 +35,7 @@ spanRef.style.visibility = "visible";
 		liRef.parentNode.parentNode.addEventListener("scroll", scrollu);
 		}
 	});
+	scrollu();
 
 	const guild = AppState.userGuilds().find((x: GuildType) => x.id === props.id);
 
