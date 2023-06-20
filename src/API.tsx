@@ -110,8 +110,11 @@ export default {
 		console.log('getGuilds', userId);
 		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
+		let guilds = (await res).data.guilds as Guild[];
+		console.log('getGuilds', guilds);
+		return guilds;
 
-		return (await res).data.guilds as Guild[];
+		
 	},
 
 	/**
@@ -243,9 +246,11 @@ export default {
 		return newObj;
 	},
 
+	//oh mein gott, what retard wrote this????				(me, i am the retard)
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 		let guilds: Guild[] = await this.getGuilds();
+console.log(guilds);
 
 		let newGuilds: worseGuildType[] = [];
 		for (let guild of guilds) {

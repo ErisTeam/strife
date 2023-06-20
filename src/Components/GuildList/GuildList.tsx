@@ -24,10 +24,11 @@ const GuildList = (props: GuildListProps) => {
 		API.updateGuilds();
 	});
 	const [t] = useTrans();
-
+//TODO: Switch friends tab to use the guild component
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>
+				
 				<li class={style2.li}>
 					<button
 						class={style2.guild}

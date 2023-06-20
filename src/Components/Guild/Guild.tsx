@@ -18,7 +18,7 @@ const Guild = (props: GuildProps) => {
 	const AppState: any = useAppState();
 	let spanRef : any;
 	let liRef:any;
-	
+	//my god this is so hacky
 	function scrollu()
 	{
 		spanRef.style.visibility = "hidden";
@@ -27,6 +27,7 @@ const Guild = (props: GuildProps) => {
 	
 		spanRef.style.top = `${liRef.getBoundingClientRect().top+13}px`;
 		spanRef.style.visibility = "visible";
+		return ""
 	}
 	createEffect(() => {
 		spanRef.style.top = `${(liRef.getBoundingClientRect().top+13)}px`;
@@ -35,9 +36,10 @@ const Guild = (props: GuildProps) => {
 		liRef.parentNode.parentNode.addEventListener("scroll", scrollu);
 		}
 	});
-	scrollu();
+
 
 	const guild = AppState.userGuilds().find((x: GuildType) => x.id === props.id);
+	//TODO: rewrite data storing to use arrays to remove constant find calls
 
 	return (
 		<li class={style.li} ref={liRef}>
@@ -54,6 +56,8 @@ const Guild = (props: GuildProps) => {
 				<img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`} alt={guild.name} />
 			</button>
 			 <span ref={spanRef} class={style.span}>{guild.name}</span> 
+		{scrollu()} 
+
 		</li>
 	);
 };
