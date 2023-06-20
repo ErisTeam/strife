@@ -6,7 +6,7 @@ use log::{ error, debug };
 use rsa::{ RsaPublicKey, RsaPrivateKey, PaddingScheme, pkcs8::EncodePublicKey };
 use sha2::{ Sha256, Digest };
 use tauri::AppHandle;
-use tokio::{ net::TcpStream, sync::{ Mutex, broadcast::Receiver } };
+use tokio::{ net::TcpStream, sync::{ Mutex } };
 use tokio_tungstenite::{ MaybeTlsStream, connect_async_tls_with_config, WebSocketStream };
 
 use crate::discord::{ constants, mobile_auth_packets::{ Packets, IncomingPackets } };
@@ -48,12 +48,12 @@ impl MobileAuthConnectionData {
 
 #[derive(Debug)]
 pub struct MobileAuth {
-	stop_sender: Option<tokio::sync::broadcast::Sender<()>>,
+	stop_notifyer: Option<Arc<tokio::sync::Notify>>,
 }
 impl MobileAuth {
 	pub fn new() -> Self {
 		Self {
-			stop_sender: None,
+			stop_notifyer: None,
 		}
 	}
 
@@ -71,7 +71,7 @@ impl MobileAuth {
 			.uri(constants::MOBILE_AUTH)
 			.header("Origin", "https://discord.com")
 			.body(())?;
-		let (stream, _) = connect_async_tls_with_config(req, None, None).await?;
+		let (stream, _) = connect_async_tls_with_config(req, None, false, None).await?;
 		Ok(stream)
 	}
 	fn generate_keys(&self) -> Result<(RsaPublicKey, RsaPrivateKey), rsa::errors::Error> {
@@ -88,7 +88,6 @@ impl MobileAuth {
 
 	fn create_connection_info(
 		&self,
-		stop: tokio::sync::broadcast::Sender<()>,
 		auth_sender: tokio::sync::mpsc::Sender<Cos>,
 		app_handle: AppHandle
 	) -> Result<ConnectionInfo<MobileAuthConnectionData>, Box<dyn std::error::Error>> {
@@ -100,7 +99,7 @@ impl MobileAuth {
 					private_key,
 					auth_sender,
 				},
-				stop,
+
 				app_handle
 			)
 		)
@@ -141,6 +140,7 @@ impl MobileAuth {
 				return Err(Errors::ReadError.into());
 			}
 			let message = read.unwrap()?;
+			println!("{:?}", message);
 			match message {
 				tokio_tungstenite::tungstenite::Message::Text(data) => {
 					let event = serde_json::from_str::<IncomingPackets>(&data)?;
@@ -252,6 +252,7 @@ impl MobileAuth {
 			let connection_info = connection_info.lock().await;
 			connection_info.start_hearbeat.clone()
 		};
+		debug!("Waiting for start heartbeat");
 		should_start.notified().await;
 
 		let mut interval = {
@@ -278,14 +279,13 @@ impl MobileAuth {
 		&mut self,
 		handle: AppHandle,
 		auth_sender: tokio::sync::mpsc::Sender<Cos>
-	) -> std::result::Result<tokio::sync::broadcast::Receiver<()>, Box<dyn std::error::Error>> {
-		let (error_sender, error_reciver) = tokio::sync::broadcast::channel::<()>(1);
-		let (stop_sender, _) = tokio::sync::broadcast::channel(1);
-		self.stop_sender = Some(stop_sender.clone());
+	) -> std::result::Result<tokio::sync::broadcast::Receiver<String>, Box<dyn std::error::Error>> {
+		let (error_sender, error_reciver) = tokio::sync::broadcast::channel::<String>(1);
 
-		let connection_info = Arc::new(
-			Mutex::new(self.create_connection_info(stop_sender.clone(), auth_sender, handle)?)
-		);
+		let connection_info = Arc::new(Mutex::new(self.create_connection_info(auth_sender, handle)?));
+
+		let stop = connection_info.lock().await.stop.clone();
+		self.stop_notifyer = Some(stop.clone());
 
 		let connection = self.connect().await?;
 
@@ -296,29 +296,27 @@ impl MobileAuth {
 		{
 			let error_sender = error_sender.clone();
 
-			let stop_sender = stop_sender.clone();
-			let mut stop_receiver = stop_sender.subscribe();
+			let stop = stop.clone();
 
 			let write = write.clone();
 			let connection_info = connection_info.clone();
 
 			tokio::spawn(async move {
 				tokio::select! {
-                    _ = stop_receiver.recv() => {
+                    _ = stop.notified() => {
                         debug!("Stopping logic thread");
-                        stop_sender.send(()).unwrap();
                     }
                     e = Self::logic_thread(read,write,connection_info) => {
                         
 						if let Err(err) = &e{
-							if err.to_string().contains("Connection closed") {
-							 let _ = error_sender.send(());
-						}else{
-								error!("Mobile auth logic thread encountered an error: {:?}",e);
-             			        let _ = stop_sender.send(());
-						}     
+							let r = error_sender.send(err.to_string());
+							println!("{:?}",r);
+							error!("Mobile auth logic thread encountered an error: {:?}",e);
+						}
+             			
+						
 					}
-				}   
+				   
                 }
 			});
 		}
@@ -326,22 +324,25 @@ impl MobileAuth {
 		{
 			let error_sender = error_sender.clone();
 
-			let stop_sender = stop_sender.clone();
-			let mut stop_receiver = stop_sender.subscribe();
+			let stop = stop.clone();
 
 			let write = write.clone();
 			let connection_info = connection_info.clone();
 
 			tokio::spawn(async move {
 				tokio::select! {
-                    _ = stop_receiver.recv() => {
+                    _ = stop.notified() => {
                         debug!("Stopping heartbeat thread");
-                        stop_sender.send(()).unwrap();
+                        
                     }
-                    _ = Self::heartbeat_thread(write,connection_info) => {
-                        debug!("Mobile auth logic thread stopped");
-                        let _ = stop_sender.send(());
-                        let _ = error_sender.send(());
+                    e = Self::heartbeat_thread(write,connection_info) => {
+                        debug!("Mobile auth heartbeat thread stopped");
+						error!("heartbeat thread encountered an error: {:?}",e);
+                        if let Err(e) = e {
+                        	let r = error_sender.send(e.to_string());
+							println!("sending result: {:?}",r);
+						}
+						
                     }
                 }
 			});
@@ -351,14 +352,14 @@ impl MobileAuth {
 	}
 
 	pub fn stop(&self) {
-		if let Some(stop_sender) = &self.stop_sender {
+		if let Some(stop_notifyer) = &self.stop_notifyer {
 			debug!("Stopping mobile auth");
-			let _ = stop_sender.send(());
+			stop_notifyer.notify_waiters();
 		}
 	}
-	pub fn stop_receiver(&self) -> Option<Receiver<()>> {
-		if let Some(stop_sender) = &self.stop_sender {
-			return Some(stop_sender.subscribe());
+	pub fn stop_notifyer(&self) -> Option<Arc<tokio::sync::Notify>> {
+		if let Some(stop_notifyer) = &self.stop_notifyer {
+			return Some(stop_notifyer.clone());
 		}
 		None
 	}

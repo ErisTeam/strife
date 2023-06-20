@@ -4,6 +4,24 @@
 	position: absolute;
 	overflow: hidden;
 }
+.background {
+	content: '';
+	width: 100vw;
+	height: 100vh;
+	background: linear-gradient(107.57deg, #f2003a 0%, rgba(0, 178, 255, 0.63) 100.02%);
+}
+.background::before {
+	content: '';
+	background-image: url('LoginPage/BackgroundDoodle.png');
+	background-size: cover;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	opacity: 0.6;
+}
+
 .container {
 	width: 100vw;
 	height: 100vh;
@@ -16,8 +34,9 @@
 	/* transition: all 0.5s ease; */
 }
 
-.firstRender > * {
-	animation-duration: 0s !important;
+.hcaptchaContainer {
+	background-color: var(--depth2);
+	border-radius: var(--round-large);
 }
 
 .fromLeft {

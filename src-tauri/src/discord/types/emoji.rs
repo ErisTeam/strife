@@ -1,6 +1,6 @@
 use serde::{ Deserialize, Serialize };
 
-use crate::discord::user::PublicUser;
+use super::user::PublicUser;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Emoji {

@@ -2,12 +2,12 @@ pub mod auth {
 	use serde::{ Deserialize, Serialize };
 	#[derive(Serialize, Deserialize, Debug)]
 	pub struct LoginRequest {
-		captcha_key: Option<String>,
-		email: String,
-		password: String,
-		undelete: bool,
-		login_source: Option<String>,
-		gift_code_sku_id: Option<String>,
+		pub captcha_key: Option<String>,
+		pub email: String,
+		pub password: String,
+		pub undelete: bool,
+		pub login_source: Option<String>,
+		pub gift_code_sku_id: Option<String>,
 	}
 
 	#[derive(Serialize, Deserialize, Debug)]

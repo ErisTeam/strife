@@ -5,6 +5,7 @@ import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Listener, startGateway, startGatewayListener } from '../../test';
 import { useParams } from '@solidjs/router';
+import Dev from '../../Components/Dev/Dev';
 interface i {
 	type: string;
 }
@@ -39,6 +40,11 @@ const Application = () => {
 	}, [params.channelId]);
 
 	async function fetchMessages() {
+		console.log('aaa', params, params.channelId);
+		if (!params.channelId) {
+			console.log('no channel id');
+			return;
+		}
 		let res = await API.getMessages(params.channelId);
 		console.log(res);
 		let r = res
@@ -120,7 +126,7 @@ const Application = () => {
 
 	return (
 		<div>
-			<Portal mount={document.querySelector('#dev') as Node}>
+			<Dev>
 				<div>
 					{params.guildId} -- {params.channelId}
 					<button
@@ -131,7 +137,7 @@ const Application = () => {
 						update Messages
 					</button>
 				</div>
-			</Portal>
+			</Dev>
 
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>
 				<For each={messages()} fallback={<h1>loading</h1>}>

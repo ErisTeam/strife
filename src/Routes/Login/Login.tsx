@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, onCleanup, onMount } from 'solid-js';
+import { Show, createSignal, onCleanup, onMount } from 'solid-js';
 import { useBeforeLeave, useNavigate } from '@solidjs/router';
 import { useTrans } from '../../Translation';
 // Tauri
@@ -7,7 +7,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './../../API';
-import { useTaurListenerOld } from './../../test';
+import { useTaurListener, useTaurListenerOld } from './../../test';
 import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
 import { UserData } from './../../Components/QRCode/QRCode';
@@ -18,7 +18,9 @@ import QRCode from './../../Components/QRCode/QRCode';
 import MFABox from '../../Components/MFABox/MFABox';
 // Style
 import style from './Login.module.css';
-import { Portal } from 'solid-js/web';
+import Dev from '../../Components/Dev/Dev';
+import { AuthEvents } from '../../types/Auth';
+import HCaptcha from 'solid-hcaptcha';
 
 //TODO clean
 
@@ -33,105 +35,46 @@ const LoginPage = () => {
 
 	const [requireCode, setRequireCode] = createSignal(false);
 	const [didSendSMS, setDidSendSMS] = createSignal(false);
-	const [captcha_key, setCaptchaKey] = createSignal('');
+	const [captchaSiteKey, setCaptchaSiteKey] = createSignal('');
 
-	const AppState = useAppState();
+	const appState = useAppState();
 
 	const [panel, setPanel] = createSignal<'login' | 'mfa' | 'captcha'>('login');
 
-	async function logout() {
-		let token = await API.getToken();
-		if (!token) {
-			console.log('No token');
-		}
-	}
 	const navigate = useNavigate();
-	useTaurListenerOld('auth', (event) => {
-		interface i {
-			type: string;
-		}
-		interface qrcode extends i {
-			type: 'mobileQrcode';
-			qrcode: string;
-		}
-		interface ticketData extends i {
-			type: 'ticketData';
-			userId: string;
-			discriminator: string;
-			username: string;
-			avatarHash: string;
-		}
-		interface RequireAuth extends i {
-			type: 'requireAuth';
-			captcha_key?: string[];
-			captcha_sitekey?: string;
-			mfa: boolean;
-			sms: boolean;
-		}
-		interface RequireAuthMobile extends i {
-			type: 'requireAuthMobile';
-			captcha_key?: string[];
-			captcha_sitekey: string;
-		}
-		interface VerifyError extends i {
-			type: 'VerifyError';
-			message: string;
-		}
-		interface Error extends i {
-			type: 'error';
-			message: string;
-			code: number;
-			errors: any;
-		}
-
-		let input = event.payload as unknown as
-			| qrcode
-			| ticketData
-			| RequireAuth
-			| RequireAuthMobile
-			| VerifyError
-			| Error
-			| { type: 'loginSuccess'; userId: string; userSettings?: any };
-
+	useTaurListener('auth', (event) => {
+		let input = event.payload as AuthEvents;
 		console.log('input', input);
-
 		switch (input.type) {
 			case 'mobileQrcode': {
 				qrcode.toDataURL(input.qrcode, (err: any, url: any) => {
 					setImage(url);
 				});
-
 				setUserData(undefined);
-
 				break;
 			}
-
-			case 'ticketData': {
+			case 'mobileTicketData': {
 				setImage(`https://cdn.discordapp.com/avatars/${input.userId}/${input.avatarHash}.webp?size=128`);
-
 				setUserData({
 					user_id: input.userId,
 					discriminator: input.discriminator,
 					username: input.username,
 					avatar_hash: input.avatarHash,
 				});
-
 				break;
 			}
-
 			case 'loginSuccess': {
-				async () => {
-					await API.updateCurrentUserID();
-					console.log(AppState.userID());
-				};
+				appState.setUserID(input.userId);
+
+				console.log(appState.userID());
+
 				console.log('login success');
 				navigate('/');
 				break;
 			}
-
 			case 'requireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
-					setCaptchaKey(input.captcha_sitekey as string);
+					setCaptchaSiteKey(input.captcha_sitekey as string);
 					setPanel('captcha');
 					console.log('captcha required');
 				}
@@ -148,24 +91,6 @@ const LoginPage = () => {
 				break;
 			}
 		}
-	});
-
-	let requestQrcode = setInterval(async () => {
-		if (image()) {
-			clearInterval(requestQrcode);
-		} else {
-			await emit('requestQrcode', {});
-		}
-	}, 5000);
-
-	onMount(async () => {
-		await emit('requestQrcode', {});
-
-		await emit('startMobileGateway', {});
-	});
-	onCleanup(() => {
-		console.log('cleanup');
-		clearInterval(requestQrcode);
 	});
 
 	async function login(name: string, password: string, captcha_token: string | null = null) {
@@ -185,22 +110,34 @@ const LoginPage = () => {
 		API.updateCurrentUserID();
 	}
 
-	const [firstRender, setFirstRender] = createSignal(true);
-	setTimeout(() => {
-		setFirstRender(false);
-	}, 500);
+	const [classes, setClasses] = createSignal<{ login: string; mfa: string; captcha: string }>({
+		login: '',
+		mfa: 'hidden',
+		captcha: 'hidden',
+	});
+
+	function switchTo(to: 'login' | 'mfa' | 'captcha') {
+		let current = panel();
+		let direction = Math.random() > 0.5 ? 'left' : 'right';
+		console.log(classes());
+		setClasses((c) => {
+			return {
+				...c,
+				[current]: direction == 'left' ? style.toLeft : style.toRight,
+				[to]: direction == 'left' ? style.fromRight : style.fromLeft,
+			};
+		});
+		console.log(classes());
+		setPanel(to);
+	}
+	const [test, setTest] = createSignal(false);
 
 	return (
-		<div
-			class={style.wrapper}
-			classList={{
-				[style.firstRender]: firstRender(),
-			}}
-		>
-			<Portal mount={document.querySelector('#dev') as Node}>
+		<div class={[style.wrapper, style.background].join(' ')}>
+			<Dev>
 				<button
 					onclick={() => {
-						setPanel('mfa');
+						switchTo('mfa');
 					}}
 				>
 					show MFA
@@ -208,27 +145,36 @@ const LoginPage = () => {
 
 				<button
 					onclick={() => {
-						setPanel('captcha');
+						switchTo('captcha');
 					}}
 				>
 					show Captcha
 				</button>
 				<button
 					onclick={() => {
-						setPanel('login');
+						switchTo('login');
 					}}
 				>
 					show Login
 				</button>
-			</Portal>
+				<button
+					onclick={() => {
+						setTest(!test());
+					}}
+				>
+					Test
+				</button>
+			</Dev>
 
-			<div class={style.gradient}>
-				<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
-			</div>
+			<Show when={test()}>
+				<div class={style.gradient}>
+					<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
+				</div>
+			</Show>
 
 			{/* Main Page */}
 
-			<div class={[style.container, panel() == 'login' ? style.fromLeft : style.toLeft].join(' ')}>
+			<div class={[style.container, classes().login].join(' ')}>
 				<LoginBox class={style.loginBox} login={login} />
 
 				<QRCode
@@ -242,11 +188,13 @@ const LoginPage = () => {
 				></QRCode>
 			</div>
 
-			<div class={[style.container, panel() == 'mfa' ? style.fromRight : style.toRight].join(' ')}>
+			<div class={[style.container, classes().mfa].join(' ')}>
 				<MFABox verify={verifyLogin} />
 			</div>
-			<div class={[style.container, panel() == 'captcha' ? style.fromRight : style.toRight].join(' ')}>
-				<h1>Captcha</h1>
+			<div class={[style.container, classes().captcha].join(' ')}>
+				<div class={style.hcaptchaContainer}>
+					<HCaptcha sitekey="" />
+				</div>
 			</div>
 
 			{/* Corner SVGS */}

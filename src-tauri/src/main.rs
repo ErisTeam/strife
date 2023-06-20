@@ -9,7 +9,6 @@ mod notifications;
 mod main_app_state;
 
 mod event_manager;
-mod manager;
 
 mod modules;
 mod token_utils;
@@ -26,7 +25,7 @@ use serde::Deserialize;
 use tauri::{ Manager, State, UserAttentionType };
 use tauri_plugin_log::LogTarget;
 
-use crate::{ main_app_state::MainState, manager::ThreadManager, modules::auth::Auth };
+use crate::{ main_app_state::MainState, modules::{ auth::Auth, main_app::MainApp } };
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -36,18 +35,22 @@ async fn set_state(
 	force: Option<bool>,
 	state: State<'_, Arc<MainState>>,
 	handle: tauri::AppHandle
-) -> std::result::Result<(), String> {
-	debug!("change state {}", new_state);
+) -> std::result::Result<i32, String> {
+	debug!("Change state {}", new_state);
 	let force = force.unwrap_or(false);
 	if !force && state.state.lock().unwrap().get_name() == new_state {
 		warn!("State already set to {}", new_state);
 		debug!("USE force=true to force change state");
-		return Ok(());
+		return Ok(0);
 	}
 	state.reset_state();
 	match new_state.as_str() {
 		"Application" => {
-			let s = crate::main_app_state::State::MainApp();
+			let m = MainApp::new();
+			let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
+			let token = state.get_token(&id);
+			m.start_gateway(state.inner().clone(), handle.clone(), token.unwrap(), id);
+			let s = crate::main_app_state::State::MainApp(m);
 			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
 		}
 		"LoginScreen" => {
@@ -66,12 +69,13 @@ async fn set_state(
 			return Err("Unknown state".to_string());
 		}
 	}
-	Ok(())
+	println!("SUCCESS");
+	Ok(1)
 }
 
 #[tauri::command]
 fn get_token(user_id: String, state: State<Arc<MainState>>) -> Option<String> {
-	state.get_token(user_id)
+	state.get_token(&user_id)
 }
 
 #[tauri::command]
@@ -94,7 +98,6 @@ async fn close_splashscreen(window: tauri::Window) {
 #[derive(Debug, Deserialize)]
 struct TestData {}
 
-#[cfg(debug_assertions)]
 #[tauri::command]
 async fn test(handle: tauri::AppHandle) {
 	println!("test");
@@ -117,6 +120,13 @@ async fn test(handle: tauri::AppHandle) {
 
 	//notifications::new_message(Message::default(), &handle, None).await;
 }
+fn close_loading(app: &mut tauri::App) -> Result<()> {
+	let splashscreen_window = app.get_window("splashscreen").ok_or("No splashscreen window")?;
+	let main_window = app.get_window("main").ok_or("No main window")?;
+	splashscreen_window.close()?;
+	main_window.show()?;
+	Ok(())
+}
 
 fn main() {
 	println!("Starting");
@@ -127,15 +137,8 @@ fn main() {
 
 	main_state.event_manager.lock().unwrap().set_state(Arc::downgrade(&main_state));
 
-	let thread_manager = ThreadManager::new(main_state.clone());
-
-	*main_state.thread_manager.lock().unwrap() = Some(thread_manager);
-
-	//*main_state.event_manager.lock().unwrap() = Some(event_manager);
-
 	let m = main_state.clone();
 
-	#[cfg(debug_assertions)]
 	tauri::Builder
 		::default()
 		.plugin(
@@ -147,13 +150,11 @@ fn main() {
 		.manage(main_state)
 		.setup(move |app| {
 			let app_handle = app.handle();
-			dev::add_token(&m, app_handle.clone());
-			m.change_state_old(main_app_state::StateOld::default_login_screen(), app_handle, false);
 
-			let splashscreen_window = app.get_window("splashscreen").unwrap();
-			let main_window = app.get_window("main").unwrap();
-			splashscreen_window.close().unwrap();
-			main_window.show().unwrap();
+			#[cfg(debug_assertions)]
+			dev::add_token(&m, app_handle.clone());
+
+			//close_loading(app)?;
 
 			Ok(())
 		})

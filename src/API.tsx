@@ -6,92 +6,10 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
 import { Tab } from './types';
-import { Relationship, Guild, Channel } from './discord';
-
-//TODO: clean
-
-interface GatewayEvent {
-	user_id: string;
-	type: string;
-}
-interface a<T> {
-	eventName: string;
-	listener: (event: T) => void;
-}
+import { Channel, Guild, Relationship } from './discord';
+import { oneTimeListener } from './test';
 
 const AppState = useAppState();
-type Listener = {
-	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
-	cleanup: () => void;
-};
-const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
-function useTaurListener<T>(eventName: string, on_event: (event: Event<T>) => void) {
-	const unlist = listen(eventName, on_event);
-	return tryOnCleanup(async () => {
-		console.log('cleanup', eventName);
-		(await unlist)();
-	});
-}
-function startListener<T extends { type: string }>(
-	eventName: string,
-	condition: ((event: T) => boolean) | null = null
-) {
-	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
-	console.log('start gateway NEW', eventName);
-
-	let clean_up = useTaurListener<T>(eventName, (event: Event<T>) => {
-		let run = true;
-
-		if (condition && !condition(event.payload)) {
-			run = false;
-		}
-		if (run) {
-			listeners.forEach((l) => {
-				console.log(' event', event.payload.type, l.eventName);
-				if (l.eventName === event.payload.type) {
-					l.listener(event.payload);
-				}
-			});
-		}
-	});
-	return {
-		on: <T,>(eventName: string, listener: (event: T) => void) => {
-			listeners.add({ eventName, listener });
-			console.log('add listener', eventName);
-			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
-		},
-		cleanup: () => {
-			console.log('a', clean_up);
-			clean_up();
-		},
-	} as Listener;
-}
-function startGatewayListener(userId: string) {
-	return startListener<GatewayEvent>('gateway', (event) => event.user_id === userId);
-}
-async function oneTimeListener<T extends { type: string }>(
-	event: string,
-	eventName: string,
-	condition: ((event: T) => boolean) | null = null
-): Promise<T> {
-	return new Promise((resolve) => {
-		let a = startListener<T>(event, condition);
-		a.on(eventName, (event: T) => {
-			a.cleanup();
-
-			resolve(event);
-		});
-	});
-}
-async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
-	return new Promise((resolve: (value: T) => void) => {
-		let a = startGatewayListener(userId);
-		a.on(eventName, (event: T) => {
-			a.cleanup();
-			resolve(event);
-		});
-	});
-}
 
 export default {
 	async getUserData(userId: string) {

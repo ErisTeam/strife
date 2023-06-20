@@ -18,8 +18,9 @@ use crate::{
 		constants::GATEWAY_CONNECT,
 		gateway_packets::{ GatewayIncomingPacket, GatewayPackets, GatewayPacketsData },
 		types::gateway::{ ClientState, Presence, Properties },
+		user::UserData,
 	},
-	main_app_state::{ self, MainState, UserData },
+	main_app_state::{ self, MainState },
 	modules::gateway_utils::send_heartbeat,
 	notifications,
 	webview_packets::{ self, GatewayEvent },
@@ -43,6 +44,7 @@ pub enum GatewayResult {
 }
 
 #[derive(Debug)]
+#[deprecated]
 pub struct Gateway {
 	pub timeout_ms: u64,
 	pub state: Arc<MainState>,
@@ -103,6 +105,7 @@ impl Gateway {
 				self.connection_info.heartbeat_interval = Duration::from_millis(heartbeat_interval);
 				self.init_message(client, self.token.clone()).await;
 				self.connection_info.authed = true;
+				println!("Received Hello");
 				//    println!("Hello {:?}", self.connection_info);
 			}
 			GatewayPacketsData::Ready(data) => {
@@ -129,6 +132,7 @@ impl Gateway {
 					user_data.remove(&self.user_id);
 				}
 				user_data.insert(self.user_id.clone(), main_app_state::User::ActiveUser(user));
+				println!("Received Ready");
 				//println!("Ready {:?} {:?}", user_data, user_data.get(&self.user_id));
 
 				self.emit_event(webview_packets::Gateway::Started).unwrap();
@@ -371,7 +375,7 @@ impl Gateway {
 			url = GATEWAY_CONNECT.to_string();
 		}
 
-		let result = connect_async_tls_with_config(url.clone(), None, None).await;
+		let result = connect_async_tls_with_config(url.clone(), None, false, None).await;
 		if let Err(err) = result {
 			error!("Failed to connect to gateway: {}", err);
 			return Err(GatewayError::Other);

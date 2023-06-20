@@ -2,6 +2,7 @@ export const dictionaries = {
 	en_US: {
 		hello: 'hello {{ name }}, how are you?',
 		friends: 'Friends',
+		error: 'Retrying in {{ time }}s',
 		LoginPage: {
 			logIn: 'Log In',
 			qrCodeLogin: 'Log In With QR Code',
@@ -17,6 +18,8 @@ export const dictionaries = {
 	pl_PL: {
 		hello: 'cześć {{ name }}, jak się masz?',
 		friends: 'Znajomi',
+
+		error: 'Retrying in {{ time }}s',
 
 		LoginPage: {
 			logIn: 'Zaloguj się',

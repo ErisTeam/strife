@@ -1,7 +1,7 @@
 use serde::{ Deserialize, Serialize };
 use serde_repr::{ Deserialize_repr, Serialize_repr };
 
-use crate::discord::user::{ PublicUser, UserFlags };
+use crate::discord::types::user::{ PublicUser, UserFlags };
 
 use super::{ channel::partial_channels::{ self, GuildChannel }, role::Role, sticker::PartialSticker };
 

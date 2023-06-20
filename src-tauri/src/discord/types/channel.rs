@@ -1,8 +1,6 @@
 use serde::{ Deserialize, Serialize };
 use serde_repr::{ Deserialize_repr, Serialize_repr };
 
-use crate::discord::user;
-
 use super::thread::{ ThreadMember, ThreadMetadata };
 
 pub mod partial_channels {
@@ -131,7 +129,7 @@ pub struct ChannelBase {
 	pub bitrate: Option<u64>,
 	pub user_limit: Option<u64>,
 	pub rate_limit_per_user: Option<u64>,
-	pub recipients: Option<Vec<user::PublicUser>>,
+	pub recipients: Option<Vec<super::user::PublicUser>>,
 	pub icon: Option<String>,
 	pub owner_id: Option<String>,
 	pub application_id: Option<String>,

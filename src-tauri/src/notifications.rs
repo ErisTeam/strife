@@ -3,7 +3,7 @@ use tauri::{ AppHandle, Manager, UserAttentionType };
 pub async fn new_message(
 	message: crate::discord::types::message::Message,
 	handle: &AppHandle,
-	user_data: Option<crate::main_app_state::UserData>
+	user_data: Option<crate::discord::user::UserData>
 ) {
 	use crate::discord::idk::get_avatar;
 	use std::{ fs::File, io::prelude::* };

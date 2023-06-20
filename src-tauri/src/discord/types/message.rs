@@ -1,6 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
-use crate::discord::user;
+use crate::discord::{ user, self };
 
 use super::{
 	role::Role,
@@ -19,7 +19,7 @@ use super::{
 pub struct Message {
 	pub id: String,
 	pub channel_id: String,
-	pub author: user::PublicUser,
+	pub author: super::user::PublicUser,
 
 	pub content: String,
 	pub timestamp: String,
@@ -63,7 +63,7 @@ pub struct Message {
 
 	position: Option<u64>,
 
-	role_subscribtion_date: Option<RoleSubscriptionData>,
+	role_subscription_data: Option<RoleSubscriptionData>,
 }
 
 #[cfg(debug_assertions)]
@@ -72,7 +72,7 @@ impl Default for Message {
 		Self {
 			id: "12345".to_string(),
 			channel_id: "12345".to_string(),
-			author: user::PublicUser {
+			author: discord::types::user::PublicUser {
 				username: "?".to_string(),
 				public_flags: 0,
 				id: "362958640656941056".to_string(),
@@ -108,7 +108,7 @@ impl Default for Message {
 			sticker_items: None,
 			stickers: None,
 			position: None,
-			role_subscribtion_date: None,
+			role_subscription_data: None,
 		}
 	}
 }
@@ -152,6 +152,6 @@ pub struct MessageInteraction {
 
 	r#type: InteractionType,
 	name: String,
-	user: user::PublicUser,
+	user: super::user::PublicUser,
 	member: Option<GuildMember>,
 }

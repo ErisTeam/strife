@@ -1,9 +1,8 @@
 import { A } from '@solidjs/router';
-import { createEffect, createResource, createSignal, For, Index, onCleanup } from 'solid-js';
-import { Portal } from 'solid-js/web';
+import { createSignal, For } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { Listener, startGateway, startGatewayListener } from '../../test';
+import { startGateway, startGatewayListener } from '../../test';
 interface i {
 	type: string;
 }
@@ -21,6 +20,7 @@ interface messageCreate extends i {
 }
 
 import style from './../../prev.module.css';
+import Dev from '../../Components/Dev/Dev';
 
 function MessageTest(props: { channelId?: string; guildId?: string }) {
 	const [channelId, setChannelId] = createSignal(props.channelId || '419544210027446276');
@@ -119,7 +119,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 	return (
 		<div>
-			<Portal mount={document.querySelector('#dev') as Node}>
+			<Dev>
 				<div>
 					<input
 						oninput={(e) => {
@@ -143,7 +143,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 						update Messages
 					</button>
 				</div>
-			</Portal>
+			</Dev>
 
 			<A href="/">back</A>
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>

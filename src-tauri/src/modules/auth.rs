@@ -1,28 +1,18 @@
 use std::sync::{ Weak, Arc };
 use base64::Engine;
-use log::{ warn, info, error, debug };
+use log::{ info, error, debug };
 use rsa::PaddingScheme;
 use serde::{ Deserialize, Serialize };
 use serde_json::json;
-use tauri::async_runtime::block_on;
 use tauri::{ AppHandle, Manager };
 use tokio::runtime::Handle;
 use tokio::sync::RwLock;
-use crate::discord::http_packets::auth::ErrorTypes;
+use crate::discord::http_packets::auth::{ ErrorTypes, LoginRequest };
+use crate::discord::types::gateway::Properties;
 use crate::{ Result, webview_packets, token_utils };
 use crate::discord::{ constants, http_packets };
 use crate::main_app_state::MainState;
 use super::mobile_auth::MobileAuth;
-
-#[derive(Serialize, Deserialize, Debug)]
-struct LoginRequest {
-	captcha_key: Option<String>,
-	email: String,
-	password: String,
-	undelete: bool,
-	login_source: Option<String>,
-	gift_code_sku_id: Option<String>,
-}
 
 //-----------------------
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -52,9 +42,6 @@ pub enum LoginResponse {
 		sms: Option<bool>,
 		ticket: Option<String>,
 	},
-
-	
-	
 }
 
 #[derive(Deserialize, Debug)]
@@ -69,6 +56,12 @@ pub enum MFAResponse {
 		code: u64,
 		message: String,
 	},
+}
+
+#[derive(Deserialize, Debug)]
+pub enum VerificationMethod {
+	Sms,
+	Mfa,
 }
 
 #[derive(Debug, Clone)]
@@ -90,11 +83,20 @@ pub enum Cos { //TODO change name
 }
 
 #[derive(Debug)]
+pub struct CaptchaData {
+	pub captcha_data: String,
+	pub captcha_token: String,
+	pub captcha_sitekey: String,
+}
+
+#[derive(Debug)]
 pub struct Auth {
 	pub gateway: Arc<RwLock<MobileAuth>>,
 	state: Weak<MainState>,
 
-	pub ticket: RwLock<Option<String>>,
+	ticket: RwLock<Option<String>>,
+
+	pub captcha_data: RwLock<Option<CaptchaData>>,
 }
 
 impl Auth {
@@ -103,6 +105,7 @@ impl Auth {
 			gateway: Arc::new(RwLock::new(MobileAuth::new())),
 			state,
 			ticket: RwLock::new(None),
+			captcha_data: RwLock::new(None),
 		}
 	}
 	pub async fn login_request(
@@ -119,7 +122,12 @@ impl Auth {
 			gift_code_sku_id: None,
 		};
 		let client = reqwest::Client::new();
-		let res = client.post(constants::LOGIN).header("credentials", "include").json(&body).send().await?;
+		let res = client
+			.post(constants::LOGIN)
+			.header("credentials", "include")
+			.header("x-super-properties", Properties::default().base64()?)
+			.json(&body)
+			.send().await?;
 		let text = res.text().await?;
 		println!("json: {}", text);
 		//res.json::<LoginResponse>().await.unwrap()
@@ -131,12 +139,12 @@ impl Auth {
 		captcha_token: Option<String>,
 		login: String,
 		password: String
-	) -> Result<webview_packets::Auth> {
+	) -> Result<webview_packets::auth::Auth> {
 		let res = Self::login_request(captcha_token, login, password).await?;
 
 		let state = self.state.upgrade().ok_or("state is none")?;
 
-		let response: webview_packets::Auth;
+		let response: webview_packets::auth::Auth;
 
 		match res {
 			LoginResponse::Success { token, user_id, user_settings } => {
@@ -144,7 +152,7 @@ impl Auth {
 
 				state.add_new_user(user_id.clone(), token.clone());
 
-				response = webview_packets::Auth::LoginSuccess { user_id, user_settings: Some(user_settings) };
+				response = webview_packets::auth::Auth::LoginSuccess { user_id, user_settings: Some(user_settings) };
 			}
 			LoginResponse::RequireAuth {
 				ticket: new_ticket,
@@ -159,17 +167,18 @@ impl Auth {
 				let mut ticket = self.ticket.write().await;
 				*ticket = new_ticket;
 
-				response = webview_packets::Auth::RequireAuth {
+				response = webview_packets::auth::Auth::RequireAuth {
 					captcha_key,
 					captcha_sitekey,
 					captcha_service,
 					sms,
 					mfa,
+					remote_auth: false,
 				};
 			}
 			LoginResponse::Error { message, code, errors } => {
 				println!("message: {}", message);
-				response = webview_packets::Auth::Error { code, errors, message };
+				response = webview_packets::auth::Auth::Error { code, errors, message };
 			}
 		}
 		Ok(response)
@@ -185,7 +194,7 @@ impl Auth {
 			if let Some(payload) = payload {
 				match payload {
 					Cos::Login { ticket, private_key } => {
-						match Self::login_mobile_auth(ticket).await.unwrap() {
+						match Self::login_mobile_auth(ticket, None, None).await.unwrap() {
 							http_packets::auth::LoginResponse::Success { encrypted_token } => {
 								debug!("LoginResponse::Success");
 								let state = this.state.upgrade().unwrap(); //todo error handeling
@@ -200,12 +209,15 @@ impl Auth {
 
 								let user_id = token_utils::get_id(&token);
 
-								state.add_new_user(user_id, token);
+								state.add_new_user(user_id.clone(), token);
 
 								let gateway = this.gateway.read().await;
 								gateway.stop();
 
-								//TODO: send info to webview
+								handle.emit_all("auth", webview_packets::auth::Auth::LoginSuccess {
+									user_id: user_id,
+									user_settings: None,
+								})?;
 							}
 							http_packets::auth::LoginResponse::RequireAuth {
 								captcha_key,
@@ -213,15 +225,30 @@ impl Auth {
 								captcha_service,
 								captcha_rqdata,
 								captcha_rqtoken,
-							} => todo!(),
+							} => {
+								let captcha_sitekey = captcha_sitekey.ok_or("captcha_sitekey is none")?;
+								this.captcha_data.write().await.replace(CaptchaData {
+									captcha_data: captcha_rqdata.ok_or("captcha_rqdata is none")?,
+									captcha_token: captcha_rqtoken.ok_or("captcha_rqtoken is none")?,
+									captcha_sitekey: captcha_sitekey.clone(),
+								});
+								handle.emit_all("auth", webview_packets::auth::Auth::RequireAuth {
+									captcha_key,
+									captcha_sitekey: Some(captcha_sitekey),
+									captcha_service,
+									mfa: None,
+									sms: None,
+									remote_auth: true,
+								})?;
+							}
 							http_packets::auth::LoginResponse::Error { code, errors, message } => {
 								error!("LoginResponse::Error: {}", message);
-								handle.emit_all("auth", webview_packets::Auth::Error { code, errors, message })?;
+								handle.emit_all("auth", webview_packets::auth::Auth::Error { code, errors, message })?;
 							}
 						}
 					}
 					Cos::UpdateQrUserData { user_id, discriminator, avatar_hash, username } => {
-						handle.emit_all("auth", webview_packets::Auth::MobileTicketData {
+						handle.emit_all("auth", webview_packets::auth::Auth::MobileTicketData {
 							user_id,
 							discriminator,
 							avatar_hash,
@@ -230,13 +257,13 @@ impl Auth {
 						debug!("Sent ticket data");
 					}
 					Cos::UpdateQrCode { fingerprint } => {
-						handle.emit_all("auth", webview_packets::Auth::MobileQrcode {
+						handle.emit_all("auth", webview_packets::auth::Auth::MobileQrcode {
 							qrcode: Some(format!("https://discordapp.com/ra/{}", fingerprint)),
 						})?;
 						debug!("Sent qrcode");
 					}
 					Cos::CancelQrCode => {
-						handle.emit_all("auth", webview_packets::Auth::MobileQrcode {
+						handle.emit_all("auth", webview_packets::auth::Auth::MobileQrcode {
 							qrcode: None,
 						})?;
 						debug!("Canceled qrcode");
@@ -249,7 +276,7 @@ impl Auth {
 		}
 	}
 
-	pub async fn start_gateway(self, handle: AppHandle) -> Result<Arc<Self>> {
+	pub async fn start_gateway(self, handle: AppHandle) -> std::result::Result<Arc<Self>, Box<dyn std::error::Error>> {
 		let this = Arc::new(self);
 		let mut gateway = this.gateway.write().await;
 
@@ -258,7 +285,7 @@ impl Auth {
 		let mut error_receiver = gateway.start(handle.clone(), auth_sender.clone()).await?;
 
 		{
-			let mut stop = gateway.stop_receiver().unwrap(); //TODO: error handeling
+			let stop = gateway.stop_notifyer().ok_or("stop_notifyer is none")?;
 			let gateway = Arc::downgrade(&this.gateway);
 
 			let this = this.clone();
@@ -266,7 +293,7 @@ impl Auth {
 
 			tokio::spawn(async move {
 				tokio::select! {
-						_ = stop.recv() =>{
+						_ = stop.notified() =>{
 							debug!("Stopping Auth Receiver thread");
 						},
 						_res = Self::receiver_thread(auth_reciver,this,handle) =>{
@@ -279,67 +306,109 @@ impl Auth {
 			});
 		}
 
-		let mut stop = gateway.stop_receiver().unwrap();
+		let stop = gateway.stop_notifyer().unwrap();
 		let gateway = Arc::downgrade(&this.gateway);
 		let handle = handle;
 		tokio::spawn(async move {
-			enum R {
-				stop,
-				error(()),
+			#[derive(Debug)]
+			enum SelectType {
+				Stop,
+				Error(String),
 			}
 			loop {
-				let a: R =
+				let a: SelectType =
 					tokio::select! {
-					e = stop.recv() =>{
-						if let Err(e) = e {
-							error!("error: {}", e);
-							break;
-						}
-						R::stop
+					_ = stop.notified() =>{
+						SelectType::Stop
 					}
 					e = error_receiver.recv() => {
 						if let Err(e) = e {
-							error!("error: {}", e);
+							error!("Error receiver encountered an error: {}", e);
 							break;
 						}
 						
-						R::error(e.unwrap())
+						SelectType::Error(e.unwrap())
 					}
 				};
-				if let R::stop = a {
-					debug!("stoping auth receiver");
+				if let SelectType::Stop = a {
+					debug!("Stoping auth receiver");
 					break;
 				}
+				handle
+					.emit_all("auth", webview_packets::auth::Auth::MobileQrcode {
+						qrcode: None,
+					})
+					.unwrap();
+				println!("{:?}", a);
+				if let SelectType::Error(e) = a {
+					// todo!("Error handeling");
+					println!("Error: {}", e);
+					// if (e == "ConnectionClosed"){
+
+					// }
+					//TODO: Error handeling
+				}
+
 				let gateway = gateway.upgrade();
 
 				if let Some(gateway) = gateway {
+					debug!("Restarting mobile auth");
 					let mut gateway = gateway.write().await;
 					*gateway = MobileAuth::new();
-					let _ = gateway.start(handle.clone(), auth_sender.clone()).await;
+					let e = gateway.start(handle.clone(), auth_sender.clone()).await;
+					if let Ok(e) = e {
+						error_receiver = e;
+					} else {
+						println!("{:?}", e);
+						todo!("Error Message");
+					}
 				}
 			}
 		});
 		Ok(this.clone())
 	}
 
-	//TODO: Make it work use captcha
+	//TODO: check if works
 	pub async fn login_mobile_auth(
-		ticket: String
+		ticket: String,
+		rqtoken: Option<String>,
+		captcha_key: Option<String>
 	) -> std::result::Result<http_packets::auth::LoginResponse, Box<dyn std::error::Error + Sync + Send>> {
 		let client = reqwest::Client::new();
-		let res = client
+		let mut request = client
 			.post(constants::MOBILE_AUTH_GET_TOKEN)
 			.header("Content-Type", "application/json")
-			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket: ticket }))?)
-			.send().await?;
+			.header("x-super-properties", Properties::default().base64().unwrap())
+			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket: ticket }))?);
+		if let Some(rqtoken) = rqtoken {
+			request = request.header("x-captcha-rqtoken", rqtoken);
+		}
+		if let Some(captcha_key) = captcha_key {
+			request = request.header("x-captcha-key", captcha_key);
+		}
+
+		let res = request.send().await?;
+		if cfg!(debug_assertions) {
+			let res = res.text().await?;
+
+			println!("{:?}", res);
+			return Ok(serde_json::from_str::<http_packets::auth::LoginResponse>(&res)?);
+		}
 		Ok(res.json::<http_packets::auth::LoginResponse>().await?)
 	}
 
-	pub async fn send_sms(ticket: String) -> Result<String> {
+	pub async fn send_sms(&self) -> Result<String> {
+		let ticket = self.ticket.read().await;
+		let t;
+		if let Some(ticket) = &*ticket {
+			t = ticket.clone();
+		} else {
+			return Err("Ticket is none".into());
+		}
 		let client = reqwest::Client::new();
 		let res = client
 			.post(constants::SMS_SEND)
-			.json(&json!({ "ticket": ticket }))
+			.json(&json!({ "ticket": t }))
 			.send().await
 			.unwrap();
 		let text = res.text().await?;
@@ -375,12 +444,32 @@ impl Auth {
 
 		Ok(res)
 	}
+
+	pub async fn verify_login(&self, code: String, method: VerificationMethod) -> Result<MFAResponse> {
+		let ticket = self.ticket.read().await;
+		let t;
+		if let Some(ticket) = &*ticket {
+			t = ticket.clone();
+		} else {
+			return Err("Ticket is none".into());
+		}
+
+		match method {
+			VerificationMethod::Sms => {
+				return Ok(Self::verify_sms(t, code).await?);
+			}
+			VerificationMethod::Mfa => {
+				return Ok(Self::verify_totp(t.clone(), code).await?);
+			}
+		}
+	}
+
 	pub fn stop(&self) {
 		debug!("Stopping Auth");
 		let gateway = self.gateway.clone();
 		tokio::task::block_in_place(move || {
 			Handle::current().block_on(async move {
-				let mut gateway = gateway.read().await;
+				let gateway = gateway.read().await;
 				gateway.stop();
 			});
 		});

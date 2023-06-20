@@ -5,6 +5,7 @@ pub mod emoji;
 pub mod message;
 pub mod reaction;
 pub mod role;
+pub mod user;
 
 pub mod guild;
 
@@ -19,6 +20,5 @@ pub mod voice;
 pub mod gateway;
 
 pub mod relationship;
-
 
 pub mod protos;

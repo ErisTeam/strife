@@ -4,62 +4,77 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::{ discord::{ types::guild::PartialGuild, http_packets::auth::ErrorTypes }, modules::auth };
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type")]
-#[serde(rename_all = "camelCase")]
-pub enum Auth {
-	LoginSuccess {
-		user_id: String,
-		user_settings: Option<auth::UserSettings>,
-	},
-	RequireAuth {
-		captcha_key: Option<Vec<String>>,
-		captcha_sitekey: Option<String>,
-		captcha_service: Option<String>,
-		mfa: Option<bool>,
-		sms: Option<bool>,
-	},
+use crate::{ discord::{ types::guild::PartialGuild } };
+pub mod auth {
+	use serde::{ Deserialize, Serialize };
 
-	Error {
-		code: u64,
-		errors: ErrorTypes,
-		message: String,
-	},
-	MobileAuthError {
-		error: String,
-	},
-	MobileTicketData {
-		user_id: String,
-		discriminator: String,
+	use crate::{ discord::http_packets::auth::ErrorTypes, token_utils };
+	#[derive(Serialize, Deserialize, Debug, Clone)]
+	#[serde(tag = "type")]
+	#[serde(rename_all = "camelCase")]
+	pub enum Auth {
+		#[serde(rename_all = "camelCase")] LoginSuccess {
+			user_id: String,
+			user_settings: Option<crate::modules::auth::UserSettings>,
+		},
+		#[serde(rename_all = "camelCase")] RequireAuth {
+			captcha_key: Option<Vec<String>>,
+			captcha_sitekey: Option<String>,
+			captcha_service: Option<String>,
+			mfa: Option<bool>,
+			sms: Option<bool>,
+			remote_auth: bool,
+		},
 
-		avatar_hash: String,
-		username: String,
-	},
-	RequireAuthMobile {
-		captcha_key: Option<Vec<String>>,
-		captcha_sitekey: Option<String>,
-		captcha_service: Option<String>,
-	},
-	MobileQrcode {
-		qrcode: Option<String>,
-	},
-}
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type")]
-#[serde(rename_all = "camelCase")]
-pub enum MFA {
-	SmsSendingResult {
-		success: bool,
-		message: String,
-	},
-	VerifyError {
-		message: String,
-	},
-	VerifySuccess {
-		user_id: String,
-		user_settings: auth::UserSettings,
-	},
+		#[serde(rename_all = "camelCase")] Error {
+			code: u64,
+			errors: ErrorTypes,
+			message: String,
+		},
+		MobileAuthError {
+			error: String,
+		},
+		#[serde(rename_all = "camelCase")] MobileTicketData {
+			user_id: String,
+			discriminator: String,
+
+			avatar_hash: String,
+			username: String,
+		},
+		#[serde(rename_all = "camelCase")] RequireAuthMobile {
+			captcha_key: Option<Vec<String>>,
+			captcha_sitekey: Option<String>,
+			captcha_service: Option<String>,
+		},
+		MobileQrcode {
+			qrcode: Option<String>,
+		},
+	}
+	#[derive(Serialize, Deserialize, Debug, Clone)]
+	#[serde(tag = "type")]
+	#[serde(rename_all = "camelCase")]
+	pub enum MFA {
+		SmsSendingResult {
+			success: bool,
+			message: String,
+		},
+		VerifyError {
+			message: String,
+		},
+		VerifySuccess {
+			user_id: String,
+			user_settings: crate::modules::auth::UserSettings,
+		},
+	}
+	impl From<crate::modules::auth::MFAResponse> for MFA {
+		fn from(value: crate::modules::auth::MFAResponse) -> Self {
+			match value {
+				crate::modules::auth::MFAResponse::Success { token, user_settings } =>
+					Self::VerifySuccess { user_id: token_utils::get_id(&token), user_settings },
+				crate::modules::auth::MFAResponse::Error { message, .. } => Self::VerifyError { message },
+			}
+		}
+	}
 }
 
 /// # Information
@@ -100,8 +115,8 @@ pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
 #[serde(rename_all = "camelCase")]
 pub enum General {
 	UserData {
-		user: crate::discord::user::CurrentUser,
-		users: Vec<crate::discord::user::PublicUser>,
+		user: crate::discord::types::user::CurrentUser,
+		users: Vec<crate::discord::types::user::PublicUser>,
 	},
 	Relationships {
 		relationships: Vec<crate::discord::types::relationship::Relationship>,

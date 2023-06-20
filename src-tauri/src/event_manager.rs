@@ -40,32 +40,7 @@ impl EventManager {
 		struct Message {
 			user_id: String,
 		}
-
-		event_listeners.push(
-			handle.listen_global("testReconnecting", move |event| {
-				let payload = serde_json::from_str::<Message>(event.payload().unwrap());
-				if payload.is_err() {
-					error!("Error parsing payload: {:?}", payload);
-					return;
-				}
-				debug!("test Reconnecting: {:?}", payload);
-				let payload = payload.unwrap();
-				let state = state.as_ref().unwrap().clone().upgrade().unwrap();
-				block_in_place(move || {
-					TokioHandle::current().block_on(async move {
-						state.thread_manager
-							.lock()
-							.unwrap()
-							.as_mut()
-							.unwrap()
-							.send_to_gateway(
-								payload.user_id,
-								websocket::OwnedMessage::Text("testReconnecting".to_string())
-							).await
-					});
-				});
-			})
-		);
+		//todo test Reconnecting
 	}
 
 	pub fn register_for_login_screen(&self, handle: AppHandle) {

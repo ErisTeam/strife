@@ -38,6 +38,7 @@ pub async fn send_heartbeat<T: Serialize>(
 	Ok(true)
 }
 #[derive(Debug)]
+#[deprecated]
 pub struct ConnectionInfo_old {
 	pub authed: bool,
 	pub ack_recived: bool,
@@ -81,14 +82,14 @@ pub struct ConnectionInfo<T> {
 
 	pub start_hearbeat: Arc<tokio::sync::Notify>,
 
-	pub stop: tokio::sync::broadcast::Sender<()>,
+	pub stop: Arc<tokio::sync::Notify>,
 
 	pub handle: tauri::AppHandle,
 
 	pub aditional_data: T,
 }
 impl<T> ConnectionInfo<T> {
-	pub fn new(aditional_data: T, stop: tokio::sync::broadcast::Sender<()>, app_handle: AppHandle) -> Self {
+	pub fn new(aditional_data: T, app_handle: AppHandle) -> Self {
 		Self {
 			authed: false,
 			ack_recived: true,
@@ -96,7 +97,7 @@ impl<T> ConnectionInfo<T> {
 			timeout_ms: 0,
 			start_hearbeat: Arc::new(tokio::sync::Notify::new()),
 			aditional_data,
-			stop,
+			stop: Arc::new(tokio::sync::Notify::new()),
 			handle: app_handle,
 		}
 	}

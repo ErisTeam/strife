@@ -9,24 +9,13 @@ use crate::{
 	main_app_state::{ self, MainState, User },
 	webview_packets::General,
 };
-
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct StartGatewayPayload {
+struct GetUserData {
 	user_id: String,
 }
-fn start_gateway(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
-	move |event| {
-		println!("got start_gateway with payload {:?}", event.payload());
-		let user_id = serde_json::from_str::<StartGatewayPayload>(event.payload().unwrap()).unwrap().user_id;
-
-		let _ = state.start_gateway(handle.clone(), user_id);
-	}
-}
-
 fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
-		let user_id = serde_json::from_str::<StartGatewayPayload>(event.payload().unwrap()).unwrap().user_id;
+		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
 		let user_data = state.users.lock().unwrap();
 
 		let data = user_data.get(&user_id);
@@ -55,7 +44,7 @@ fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 
 fn get_relationships(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
-		let user_id = serde_json::from_str::<StartGatewayPayload>(event.payload().unwrap()).unwrap().user_id;
+		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
 		let user_data = state.users.lock().unwrap();
 
 		let data = user_data.get(&user_id);
@@ -180,7 +169,6 @@ trait EventTrait<T: serde::Serialize + Sized + Clone + Debug>: serde::de::Deseri
 pub fn get_all_events(state: Arc<main_app_state::MainState>, handle: tauri::AppHandle) -> Vec<EventHandler> {
 	let h = handle.clone();
 	vec![
-		handle.listen_global("startGateway", start_gateway(state.clone(), h.clone())),
 		handle.listen_global("getUserData", get_user_data(state.clone(), h.clone())),
 		handle.listen_global("getRelationships", get_relationships(state.clone(), h.clone())),
 		// GetUserData::register(&state, &handle),

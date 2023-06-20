@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
+use base64::Engine;
 use serde::{ Deserialize, Serialize };
 
-use crate::discord::user::{ CurrentUser, GuildSettings, PublicUser };
+use crate::{ discord::types::user::{ CurrentUser, GuildSettings, PublicUser }, Result };
 
 use super::{ guild::PartialGuild, relationship::GatewayRelationship };
 
@@ -45,12 +46,16 @@ pub struct Properties {
 	pub browser_version: String,
 	pub os_version: String,
 }
-
+impl Properties {
+	pub fn base64(&self) -> Result<String> {
+		Ok(base64::engine::general_purpose::STANDARD.encode(serde_json::to_vec(&self)?))
+	}
+}
 impl Default for Properties {
 	fn default() -> Self {
 		Self {
 			os: "Windows".to_string(),
-			browser: "Chrome".to_string(), //or Discord Client
+			browser: "Discord Client".to_string(), //or Discord Client
 			device: String::new(),
 			system_locale: "en-US".to_string(),
 			browser_user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".to_string(),
@@ -85,51 +90,6 @@ pub struct SessionReplaceData {
 
 #[derive(Deserialize, Debug)]
 pub struct ReadyData {
-	pub v: u64,
-
-	pub users: Vec<PublicUser>,
-
-	pub user: CurrentUser,
-	pub user_settings_proto: String, //TODO: decode using protobuf
-
-	pub user_guild_settings: GuildSettings,
-	pub guilds: Vec<PartialGuild>,
-	pub relationships: Vec<GatewayRelationship>,
-
-	pub resume_gateway_url: String,
-
-	pub sessions: Vec<serde_json::Value>,
-	pub session_type: String,
-	pub session_id: String,
-
-	pub tutorial: Option<serde_json::Value>,
-
-	pub read_state: ReadState,
-
-	pub guild_join_requests: Vec<serde_json::Value>,
-
-	//guild_experiments: Vec<serde_json::Value>,
-	pub geo_ordered_rtc_regions: Vec<String>,
-
-	pub friend_suggestion_count: u64,
-
-	//experiments: Vec<serde_json::Value>,
-	pub country_code: String,
-
-	pub consents: serde_json::Value,
-
-	pub connected_accounts: Vec<serde_json::Value>,
-
-	pub auth_session_id_hash: String,
-
-	pub api_code_version: u64,
-
-	pub analytics_token: String,
-
-	pub private_channels: Vec<serde_json::Value>,
-}
-#[derive(Deserialize, Debug)]
-pub struct ReadyData2 {
 	pub v: u64,
 
 	pub users: Vec<PublicUser>,
