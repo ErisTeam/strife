@@ -24,11 +24,10 @@ const GuildList = (props: GuildListProps) => {
 		API.updateGuilds();
 	});
 	const [t] = useTrans();
-//TODO: Switch friends tab to use the guild component
+	//TODO: Switch friends tab to use the guild component
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>
-				
 				<li class={style2.li}>
 					<button
 						class={style2.guild}
@@ -49,7 +48,7 @@ const GuildList = (props: GuildListProps) => {
 					<span class={style2.span}>{t.friends()}</span>
 				</li>
 				<li class={style.divider} />
-				<For each={AppState.userGuilds()}>{(guild) => <Guild id={guild.id} />}</For>
+				<For each={AppState.userGuilds()}>{(guild, index) => <Guild index={index()} />}</For>
 			</ul>
 		</nav>
 	);

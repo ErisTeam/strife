@@ -5,8 +5,8 @@ import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
-import { Relationship, Tab, Guild as worseGuildType, Channel as worseChannelType } from './types';
-import { Channel, Guild } from './discord';
+import { Tab } from './types';
+import { Relationship, Guild, Channel } from './discord';
 
 //TODO: clean
 
@@ -113,8 +113,6 @@ export default {
 		let guilds = (await res).data.guilds as Guild[];
 		console.log('getGuilds', guilds);
 		return guilds;
-
-		
 	},
 
 	/**
@@ -250,27 +248,8 @@ export default {
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 		let guilds: Guild[] = await this.getGuilds();
-console.log(guilds);
 
-		let newGuilds: worseGuildType[] = [];
-		for (let guild of guilds) {
-			guild = { ...guild, ...guild.properties };
-			let guildId = guild.properties.id;
-			//@ts-ignore
-
-			delete guild.properties;
-			let newGuild: any = {};
-
-			// add guild id to each channel
-			for (let channel of guild.channels) {
-				channel.guildId = guildId;
-			}
-
-			newGuild = this.toCamelCase(guild);
-
-			newGuilds.push(newGuild);
-		}
-		AppState.setUserGuilds((prev: any) => [...newGuilds]);
+		AppState.setUserGuilds((prev: any) => guilds);
 	},
 
 	async updateRelationships() {
@@ -286,7 +265,7 @@ console.log(guilds);
 	 * @Gami
 	 */
 	async addTab(channel: Channel, fallback: void) {
-		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
+		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guildId);
 
 		if (!guild) {
 			console.error('Guild not found!');
@@ -313,7 +292,7 @@ console.log(guilds);
 			console.log(currentChannelId);
 			return;
 		}
-		let guild = AppState.userGuilds().find((g: worseGuildType) => g.id === channel.guildId);
+		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guildId);
 
 		if (!guild) {
 			console.error('Guild not found!');

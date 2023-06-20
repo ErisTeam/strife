@@ -26,7 +26,52 @@ impl PartialGuild {
 
 ///TODO: <br>
 /// https://discord.com/developers/docs/resources/guild#guild-object
-pub struct Guild {}
+pub struct Guild {
+	pub id: String,
+	pub name: String,
+	pub icon: Option<String>,
+	pub icon_hash: Option<String>,
+	pub splash: Option<String>,
+	pub discovery_splash: Option<String>,
+	pub owner: Option<bool>,
+	pub owner_id: String,
+	pub permissions: Option<String>,
+	pub region: Option<String>,
+	pub afk_channel_id: Option<String>,
+	pub afk_timeout: u64,
+	pub widget_enabled: Option<bool>,
+	pub widget_channel_id: Option<String>,
+	pub verification_level: u8, //might want to change to enum or constants
+	pub default_message_notifications: u8, //might want to change to enum or constants
+	pub explicit_content_filter: u8, //might want to change to enum or constants
+	pub roles: Vec<Role>,
+	pub emojis: Vec<serde_json::Value>, //TODO: create emoji struct
+	pub features: Vec<serde_json::Value>, //TODO: create value struct
+	pub mfa_level: u8, //might want to change to enum or constants
+	pub application_id: Option<String>,
+	pub system_channel_id: Option<String>,
+	pub system_channel_flags: u8, //might want to change to enum or constants
+	pub rules_channel_id: Option<String>,
+	pub max_presences: Option<u64>,
+	pub max_members: Option<u64>,
+	pub vanity_url_code: Option<String>,
+	pub description: Option<String>,
+	pub banner: Option<String>,
+	pub premium_tier: u8, //might want to change to enum or constants
+	pub premium_subscription_count: Option<u64>,
+	pub preferred_locale: String,
+	pub public_updates_channel_id: Option<String>,
+	pub max_video_channel_users: Option<u64>,
+	pub max_stage_video_channel_users: Option<u64>,
+	pub approximate_member_count: Option<u64>,
+	pub approximate_presence_count: Option<u64>,
+	pub welcome_screen: Option<serde_json::Value>, //TODO: create welcome screen struct
+	pub nsfw_level: u8, //might want to change to enum or constants
+	pub stickers: Vec<PartialSticker>, //TODO: create sticker struct
+	pub premium_progress_bar_enabled: bool,
+	pub safet_alerts_channel_id: Option<String>,
+
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuildMember {

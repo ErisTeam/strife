@@ -57,8 +57,6 @@ type Role = {
 
 //TODO: copy form rust discord/type/guild PartialGuild
 type Guild = {
-
-	name: string;
 	icon: string | null;
 	description: string;
 	splash: string;
@@ -67,14 +65,13 @@ type Guild = {
 	features: string[];
 	banner: string;
 
-
 	roles: Role[];
 	properties: {
 		system_channel_id: string;
 		id: string;
 		name: string;
 		owner_id: string;
-	}
+	};
 
 	channels: Channel[];
 };
@@ -115,32 +112,21 @@ type Channel = {
 	default_sort_order?: number;
 	default_forum_layout?: number;
 };
-type Sticker = {
-}
+type Sticker = {};
 
 declare enum ChannelType {
-    GuildText = 0,
-    DM = 1,
-    GuildVoice = 2,
-    GroupDM = 3,
-    GuildCategory = 4,
-    GuildAnnouncement = 5,
-    AnnouncementThread = 10,
-    PublicThread = 11,
-    PrivateThread = 12,
-    GuildStageVoice = 13,
-    GuildDirectory = 14,
-    GuildForum = 15,
+	GuildText = 0,
+	DM = 1,
+	GuildVoice = 2,
+	GroupDM = 3,
+	GuildCategory = 4,
+	GuildAnnouncement = 5,
+	AnnouncementThread = 10,
+	PublicThread = 11,
+	PrivateThread = 12,
+	GuildStageVoice = 13,
+	GuildDirectory = 14,
+	GuildForum = 15,
 }
 
-
-export type {
-	GuildsResponse,
-	UsersResponse,
-	Role,
-	Guild,
-	Channel,
-	User,
-	Relationship,
-	ChannelType,
-};
+export type { GuildsResponse, UsersResponse, Role, Guild, Channel, User, Relationship, ChannelType };
