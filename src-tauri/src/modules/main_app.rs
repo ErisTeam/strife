@@ -28,7 +28,7 @@ impl MainApp {
 		user_id: String
 	) -> Result<()> {
 		let (sender, receiver) = tokio::sync::mpsc::channel::<OwnedMessage>(10);
-		let mut gateway = super::gateway::Gateway::new(state, handle, receiver, token, user_id);
+		let mut gateway = super::gateway_old::Gateway::new(state, handle, receiver, token, user_id);
 
 		tauri::async_runtime::spawn(async move {
 			gateway.run().await;

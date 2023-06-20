@@ -1,4 +1,4 @@
-use serde::{ Deserialize, Deserializer, Serialize };
+use serde::{ Deserialize, Serialize };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CurrentUser {
@@ -74,186 +74,55 @@ pub struct MuteConfig {
 	pub selected_time_window: Option<i64>, //TODO: custom deserializer -1 = none
 	pub end_time: Option<String>,
 }
-#[derive(Debug, Clone, Serialize)]
-pub struct UserFlags {
-	pub flags: u64,
-}
 
-impl<'de> Deserialize<'de> for UserFlags {
-	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
-		let flags: u64 = Deserialize::deserialize(deserializer)?;
+pub type UserFlags = u64;
 
-		Ok(UserFlags { flags })
+///Source: https://flags.lewisakura.moe/
+pub mod user_flags {
+	pub mod private {
+		///User has SMS 2FA enabled.
+		const MFA_SMS: u64 = 1 << 4;
+		const VERIFIED_EMAIL: u64 = 1 << 43;
+		///Unknown. Presumably some sort of Discord Nitro promotion that the user dismissed.
+		const PREMIUM_PROMO_DISMISSED: u64 = 1 << 5;
+		///User has unread messages from Discord.
+		const HAS_UNREAD_URGENT_MESSAGES: u64 = 1 << 13;
 	}
-}
-//TODO: Rewrite this
-impl PublicUserFlags for UserFlags {
-	fn staff(&self) -> bool {
-		(self.flags & (1 << 0)) != 0
-	}
-	fn partner(&self) -> bool {
-		(self.flags & (1 << 1)) != 0
-	}
-	fn hype_squad_events(&self) -> bool {
-		(self.flags & (1 << 2)) != 0
-	}
-	fn bug_hunter_level_1(&self) -> bool {
-		(self.flags & (1 << 3)) != 0
-	}
-	fn bug_hunter_level_2(&self) -> bool {
-		(self.flags & (1 << 14)) != 0
-	}
-	fn house_bravery(&self) -> bool {
-		(self.flags & (1 << 6)) != 0
-	}
-	fn house_brilliance(&self) -> bool {
-		(self.flags & (1 << 7)) != 0
-	}
-	fn house_balance(&self) -> bool {
-		(self.flags & (1 << 8)) != 0
-	}
-	fn early_supporter(&self) -> bool {
-		(self.flags & (1 << 9)) != 0
-	}
-	fn team_user(&self) -> bool {
-		(self.flags & (1 << 10)) != 0
-	}
-	fn system(&self) -> bool {
-		(self.flags & (1 << 12)) != 0
-	}
-	fn verified_bot(&self) -> bool {
-		(self.flags & (1 << 16)) != 0
-	}
+	pub mod public {
+		///User is a Discord employee.
+		const STAFF: u64 = 1 << 0;
+		///User is a Discord partner.
+		const PARTNER: u64 = 1 << 1;
+		///User is a HypeSquad Events member.
+		const HYPE_SQUAD_EVENTS: u64 = 1 << 2;
+		///User is a Bug Hunter.
+		const BUG_HUNTER_LEVEL_1: u64 = 1 << 3;
+		const BUG_HUNTER_LEVEL_2: u64 = 1 << 14;
 
-	fn verified_bot_developer(&self) -> bool {
-		(self.flags & (1 << 17)) != 0
-	}
-	fn active_developer(&self) -> bool {
-		(self.flags & (1 << 22)) != 0
-	}
-	fn certified_moderator(&self) -> bool {
-		(self.flags & (1 << 18)) != 0
-	}
-}
-impl PrivateUserFlags for UserFlags {
-	fn mfa_sms(&self) -> bool {
-		(self.flags & (1 << 4)) != 0
-	}
-	fn verified_email(&self) -> bool {
-		(self.flags & (1 << 43)) != 0
-	}
-	fn premium_promo_dismissed(&self) -> bool {
-		(self.flags & (1 << 5)) != 0
-	}
+		///User is part of HypeSquad Bravery.
+		const HOUSE_BRAVERY: u64 = 1 << 6;
+		///User is part of HypeSquad Brilliance.
+		const HOUSE_BRILLIANCE: u64 = 1 << 7;
+		///User is a part of HypeSquad Balance.
+		const HOUSE_BALANCE: u64 = 1 << 8;
 
-	fn has_unread_urgent_messages(&self) -> bool {
-		(self.flags & (1 << 13)) != 0
+		///User is an Early Supporter.
+		const PREMIUM_EARLY_SUPPORTER: u64 = 1 << 9;
+		///Account is a Team account.
+		const TEAM_PSEUDO_USER: u64 = 1 << 10;
+		///Account is a Discord system account.
+		const SYSTEM: u64 = 1 << 12;
+		///User is a verified bot.
+		const VERIFIED_BOT: u64 = 1 << 16;
+		///User is a verified bot developer.
+		const VERIFIED_BOT_DEVELOPER: u64 = 1 << 17;
+		///User is a Discord certified moderator alum.
+		const CERTIFIED_MODERATOR: u64 = 1 << 18;
 	}
-}
-impl OtherUserFlags for UserFlags {
-	fn bot_http_interactions(&self) -> bool {
-		(self.flags & (1 << 19)) != 0
+	pub mod other {
+		///Account has been deleted.
+		const DELETED: u64 = 1 << 34;
+		///User is currently temporarily or permanently disabled.
+		const DISABLED: u64 = 1 << 41;
 	}
-	fn internal_application(&self) -> bool {
-		(self.flags & (1 << 11)) != 0
-	}
-
-	fn premium_discriminator(&self) -> bool {
-		(self.flags & (1 << 37)) != 0
-	}
-	fn spammer(&self) -> bool {
-		(self.flags & (1 << 20)) != 0
-	}
-	fn disabled_premium(&self) -> bool {
-		(self.flags & (1 << 21)) != 0
-	}
-
-	fn hight_global_rate_limit(&self) -> bool {
-		(self.flags & (1 << 33)) != 0
-	}
-
-	fn deleted(&self) -> bool {
-		(self.flags & (1 << 34)) != 0
-	}
-
-	fn disabled_suspicious_activity(&self) -> bool {
-		(self.flags & (1 << 35)) != 0
-	}
-
-	fn disabled_self_deleted(&self) -> bool {
-		(self.flags & (1 << 36)) != 0
-	}
-
-	fn used_desktop(&self) -> bool {
-		(self.flags & (1 << 38)) != 0
-	}
-
-	fn used_mobile(&self) -> bool {
-		(self.flags & (1 << 40)) != 0
-	}
-
-	fn used_web(&self) -> bool {
-		(self.flags & (1 << 39)) != 0
-	}
-
-	fn disabled(&self) -> bool {
-		(self.flags & (1 << 41)) != 0
-	}
-
-	fn quarantined(&self) -> bool {
-		(self.flags & (1 << 44)) != 0
-	}
-
-	fn collaborator(&self) -> bool {
-		(self.flags & (1 << 50)) != 0
-	}
-	fn restricted_collaborator(&self) -> bool {
-		(self.flags & (1 << 51)) != 0
-	}
-}
-pub trait PublicUserFlags {
-	fn staff(&self) -> bool;
-	fn partner(&self) -> bool;
-	fn hype_squad_events(&self) -> bool;
-	fn bug_hunter_level_1(&self) -> bool;
-	fn bug_hunter_level_2(&self) -> bool;
-
-	fn house_bravery(&self) -> bool;
-	fn house_brilliance(&self) -> bool;
-	fn house_balance(&self) -> bool;
-
-	fn early_supporter(&self) -> bool;
-	fn team_user(&self) -> bool;
-	fn system(&self) -> bool;
-
-	fn verified_bot(&self) -> bool;
-	fn verified_bot_developer(&self) -> bool;
-	fn active_developer(&self) -> bool;
-	fn certified_moderator(&self) -> bool;
-}
-pub trait OtherUserFlags {
-	fn bot_http_interactions(&self) -> bool;
-	fn internal_application(&self) -> bool;
-
-	fn premium_discriminator(&self) -> bool;
-	fn spammer(&self) -> bool;
-	fn disabled_premium(&self) -> bool;
-	fn hight_global_rate_limit(&self) -> bool;
-	fn deleted(&self) -> bool;
-	fn disabled_suspicious_activity(&self) -> bool;
-	fn disabled_self_deleted(&self) -> bool;
-	fn used_desktop(&self) -> bool;
-	fn used_mobile(&self) -> bool;
-	fn used_web(&self) -> bool;
-	fn disabled(&self) -> bool;
-	fn quarantined(&self) -> bool;
-	fn collaborator(&self) -> bool;
-	fn restricted_collaborator(&self) -> bool;
-}
-
-pub trait PrivateUserFlags {
-	fn mfa_sms(&self) -> bool;
-	fn verified_email(&self) -> bool;
-	fn premium_promo_dismissed(&self) -> bool;
-	fn has_unread_urgent_messages(&self) -> bool;
 }

@@ -3,9 +3,7 @@ use std::collections::HashMap;
 use base64::Engine;
 use serde::{ Deserialize, Serialize };
 
-use crate::{ discord::types::user::{ CurrentUser, GuildSettings, PublicUser }, Result };
-
-use super::{ guild::PartialGuild, relationship::GatewayRelationship };
+use crate::Result;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientState {
@@ -87,49 +85,110 @@ pub struct SessionReplaceData {
 	client_info: serde_json::Value,
 	activities: Vec<serde_json::Value>,
 }
+pub mod packets_data {
+	use serde::{ Deserialize, Serialize };
 
-#[derive(Deserialize, Debug)]
-pub struct ReadyData {
-	pub v: u64,
+	use crate::discord::types::{
+		guild::{ GuildMember, PartialGuild },
+		message::Message,
+		user::{ PublicUser, CurrentUser, GuildSettings },
+		relationship::GatewayRelationship,
+	};
 
-	pub users: Vec<PublicUser>,
+	use super::{ Properties, Presence, ClientState, ReadState };
 
-	pub user: CurrentUser,
-	pub user_settings_proto: String, //TODO: decode using protobuf
+	#[derive(Deserialize, Debug)]
+	pub struct MessageEvent {
+		#[serde(flatten)]
+		pub message: Message,
+		pub mentions: Vec<GuildMember>,
 
-	pub user_guild_settings: GuildSettings,
-	pub guilds: Vec<PartialGuild>,
-	pub relationships: Vec<GatewayRelationship>,
+		pub member: GuildMember,
 
-	pub resume_gateway_url: String,
+		pub guild_id: String,
+	}
+	#[derive(Deserialize, Debug)]
+	pub struct MessageDelete {
+		pub id: String,
+		pub channel_id: String,
+		pub guild_id: Option<String>,
+	}
 
-	pub sessions: Vec<serde_json::Value>,
-	pub session_type: String,
-	pub session_id: String,
+	#[derive(Deserialize, Debug)]
+	pub struct Hello {
+		pub heartbeat_interval: u64,
+	}
 
-	pub tutorial: Option<serde_json::Value>,
+	#[derive(Deserialize, Debug)]
+	pub struct TypingStart {
+		pub user_id: String,
+		pub timestamp: u64,
+		pub member: GuildMember,
+		pub channel_id: String,
+		pub guild_id: String,
+	}
 
-	pub read_state: ReadState,
+	#[derive(Deserialize, Serialize, Debug)]
+	pub struct Heartbeat {
+		pub d: Option<u64>,
+	}
+	#[derive(Serialize, Debug)]
+	pub struct Identify {
+		pub token: String,
+		pub capabilities: u64,
+		pub properties: Properties,
+		pub presence: Presence,
+		pub compress: bool,
+		pub client_state: ClientState,
+	}
+	impl Identify {
+		pub fn default_capabilities() -> u64 {
+			4093
+		}
+	}
+	#[derive(Deserialize, Debug)]
+	pub struct Ready {
+		pub v: u64,
 
-	pub guild_join_requests: Vec<serde_json::Value>,
+		pub users: Vec<PublicUser>,
 
-	//guild_experiments: Vec<serde_json::Value>,
-	pub geo_ordered_rtc_regions: Vec<String>,
+		pub user: CurrentUser,
+		pub user_settings_proto: String, //TODO: decode using protobuf
 
-	pub friend_suggestion_count: u64,
+		pub user_guild_settings: GuildSettings,
+		pub guilds: Vec<PartialGuild>,
+		pub relationships: Vec<GatewayRelationship>,
 
-	//experiments: Vec<serde_json::Value>,
-	pub country_code: String,
+		pub resume_gateway_url: String,
 
-	pub consents: serde_json::Value,
+		pub sessions: Vec<serde_json::Value>,
+		pub session_type: String,
+		pub session_id: String,
 
-	pub connected_accounts: Vec<serde_json::Value>,
+		pub tutorial: Option<serde_json::Value>,
 
-	pub auth_session_id_hash: String,
+		pub read_state: ReadState,
 
-	pub api_code_version: u64,
+		pub guild_join_requests: Vec<serde_json::Value>,
 
-	pub analytics_token: String,
+		//guild_experiments: Vec<serde_json::Value>,
+		pub geo_ordered_rtc_regions: Vec<String>,
 
-	pub private_channels: Vec<serde_json::Value>,
+		pub friend_suggestion_count: u64,
+
+		//experiments: Vec<serde_json::Value>,
+		pub country_code: String,
+
+		pub consents: serde_json::Value,
+
+		pub connected_accounts: Vec<serde_json::Value>,
+
+		pub auth_session_id_hash: String,
+
+		pub api_code_version: u64,
+
+		pub analytics_token: String,
+
+		pub private_channels: Vec<serde_json::Value>,
+	}
 }

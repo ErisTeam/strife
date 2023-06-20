@@ -1,6 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
-use crate::discord::{ user, self };
+use crate::discord::{ self };
 
 use super::{
 	role::Role,
@@ -67,8 +67,8 @@ pub struct Message {
 }
 
 #[cfg(debug_assertions)]
-impl Default for Message {
-	fn default() -> Self {
+impl Message {
+	fn debug() -> Self {
 		Self {
 			id: "12345".to_string(),
 			channel_id: "12345".to_string(),

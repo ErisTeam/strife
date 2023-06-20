@@ -9,7 +9,7 @@ use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex } };
 use tokio_tungstenite::{ MaybeTlsStream, connect_async_tls_with_config, WebSocketStream };
 
-use crate::discord::{ constants, mobile_auth_packets::{ Packets, IncomingPackets } };
+use crate::discord::{ constants, mobile_auth_packets::{ OutGoingPackets, IncomingPackets } };
 
 use super::{ gateway_utils::ConnectionInfo, auth::Cos };
 
@@ -115,7 +115,7 @@ impl MobileAuth {
 		debug!("Sending init packet");
 		let encoded_public_key = general_purpose::STANDARD.encode(public_key.to_public_key_der()?);
 
-		let packet = serde_json::to_string(&(Packets::Init { encoded_public_key }))?;
+		let packet = serde_json::to_string(&(OutGoingPackets::Init { encoded_public_key }))?;
 
 		client.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;
 
@@ -167,7 +167,7 @@ impl MobileAuth {
 							let hash = hasher.finalize();
 							let proof = general_purpose::URL_SAFE_NO_PAD.encode(&hash);
 
-							let packet = serde_json::to_string(&(Packets::NonceProof { proof }))?;
+							let packet = serde_json::to_string(&(OutGoingPackets::NonceProof { proof }))?;
 
 							let mut client = writer.lock().await;
 							debug!("Sending nonce proof packet");
@@ -267,7 +267,7 @@ impl MobileAuth {
 			} else {
 				todo!("return error");
 			}
-			let packet = serde_json::to_string(&(Packets::Heartbeat {}))?;
+			let packet = serde_json::to_string(&(OutGoingPackets::Heartbeat {}))?;
 
 			let mut writer = writer.lock().await;
 			writer.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;

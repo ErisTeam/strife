@@ -1,8 +1,15 @@
+use log::debug;
 use serde::{ Deserialize, Serialize };
 use serde_repr::Deserialize_repr;
 
 use super::types::{
-	gateway::{ ClientState, Presence, Properties, ReadyData, SessionReplaceData },
+	gateway::{
+		ClientState,
+		Presence,
+		Properties,
+		packets_data::{ Ready, Heartbeat, Identify, MessageEvent, MessageDelete, Hello, TypingStart },
+		SessionReplaceData,
+	},
 	guild::GuildMember,
 	message::Message,
 	voice::VoiceState,
@@ -13,6 +20,7 @@ use super::types::{
 #[derive(Deserialize, Debug, Clone)]
 //#[serde(tag = "op", content = "d")]
 #[serde(untagged)]
+#[deprecated]
 pub enum GatewayPackets {
 	/// # Information
 	/// TODO
@@ -120,6 +128,7 @@ impl Serialize for GatewayPackets {
 }
 
 #[derive(Debug)]
+#[deprecated]
 pub struct GatewayIncomingPacket {
 	pub s: Option<u64>,
 	pub t: Option<String>,
@@ -154,6 +163,7 @@ impl<'de> Deserialize<'de> for GatewayIncomingPacket {
 
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize_repr)]
 #[repr(u8)]
+#[deprecated]
 pub enum DataType {
 	Hello = 10,
 	HeartbeatAck = 11,
@@ -161,13 +171,14 @@ pub enum DataType {
 }
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
+#[deprecated]
 pub enum GatewayPacketsData {
 	Hello {
 		heartbeat_interval: u64,
 	},
 	HeartbeatAck,
 
-	Ready(ReadyData),
+	Ready(Ready),
 	ReadySupplemental {
 		merged_presences: serde_json::Value,
 		merged_members: serde_json::Value,
@@ -253,5 +264,202 @@ impl GatewayPacketsData {
 				return "Unknown";
 			}
 		}
+	}
+}
+
+#[derive(Serialize, Debug)]
+pub enum OutGoingPacketsData {
+	/// Fired periodically by the client to keep the connection alive.
+	/// opcode: `1`
+	Heartbeat(Heartbeat),
+	///Starts a new session during the initial handshake.
+	/// opcode: `2`
+	Identify(Identify),
+}
+#[derive(Serialize, Debug)]
+pub struct OutGoingPacket {
+	op: u64,
+	d: OutGoingPacketsData,
+}
+impl OutGoingPacket {
+	#[allow(unreachable_patterns)]
+	pub fn new(d: OutGoingPacketsData) -> crate::Result<Self> {
+		let op_code = match d {
+			OutGoingPacketsData::Heartbeat(_) => 1,
+			OutGoingPacketsData::Identify(_) => 2,
+			_ => {
+				return Err("Invalid OutGoingPacketsData".into());
+			}
+		};
+		Ok(Self { op: op_code, d })
+	}
+}
+
+#[derive(Debug)]
+pub enum IncomingPacketsData {
+	Hello(Hello),
+	/// Discord documentation states that this send and received by client
+	/// opcode: `1`
+	Heartbeat(Heartbeat),
+	///Sent in response to receiving a heartbeat to acknowledge that it has been received.
+	/// opcode: `11`
+	HeartbeatAck,
+
+	///TODO: Description
+	/// opcode: `0`
+	Ready(Ready),
+
+	///TODO: Description
+	/// opcode: `0`
+	SessionReplace(Vec<SessionReplaceData>),
+
+	///Sent when message is created or updated
+	/// opcode: `0`
+	MessageEvent(MessageEvent),
+
+	///Sent when message is deleted
+	/// opcode: `0`
+	MessageDelete(MessageDelete),
+
+	///Sent when user starts typing
+	/// opcode: `0`
+	StartTyping(TypingStart),
+
+	///Fallback for unknown packets
+	/// opcode: `?`
+	Unknown(serde_json::Value),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize_repr)]
+#[repr(u8)]
+///Source: https://discord.com/developers/docs/topics/opcodes-and-status-codes#opcodes-and-status-codes
+pub enum OpCode {
+	///An event was dispatched.
+	Dispatch = 0,
+	///Fired periodically by the client to keep the connection alive.
+	Heartbeat = 1,
+	///Starts a new session during the initial handshake.
+	Identify = 2,
+	///Update the client's presence.
+	PresenceUpdate = 3,
+	//Used to join/leave or move between voice channels.
+	VoiceStateUpdate = 4,
+	///Resume a previous session that was disconnected.
+	Resume = 5,
+	///You should attempt to reconnect and resume immediately.
+	Reconnect = 6,
+	///Request information about offline guild members in a large guild.
+	RequestGuildMembers = 8,
+	///The session has been invalidated. You should reconnect and identify/resume accordingly.
+	InvalidSession = 9,
+	///Sent immediately after connecting, contains the `heartbeat_interval` to use.
+	Hello = 10,
+	///Sent in response to receiving a heartbeat to acknowledge that it has been received.
+	HeartbeatAck = 11,
+}
+
+#[derive(Debug)]
+pub struct IncomingPacket {
+	payload_type: Option<String>,
+	sequence_number: Option<u64>,
+	op_code: OpCode,
+	data: IncomingPacketsData,
+}
+impl<'de> Deserialize<'de> for IncomingPacket {
+	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+		#[derive(Deserialize)]
+		struct DataInner {
+			///opcode
+			op: OpCode,
+			///sequence number, used for resuming sessions and heartbeats
+			s: Option<u64>,
+			///event name
+			t: Option<String>,
+			///event data
+			d: serde_json::Value,
+		}
+		let inner = DataInner::deserialize(deserializer)?;
+		let packet_data = match inner.op {
+			OpCode::Dispatch => {
+				if let Some(t) = &inner.t {
+					match t.as_str() {
+						"READY" =>
+							IncomingPacketsData::Ready(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng Ready Packet {:?}", x)
+										)
+									)?
+							),
+						"SESSIONS_REPLACE" =>
+							IncomingPacketsData::SessionReplace(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng SessionReplace Packet {:?}", x)
+										)
+									)?
+							),
+						"START_TYPING" =>
+							IncomingPacketsData::StartTyping(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng StartTyping Packet {:?}", x)
+										)
+									)?
+							),
+						"MESSAGE_DELETE" =>
+							IncomingPacketsData::MessageDelete(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng MessageDelete Packet{:?}", x)
+										)
+									)?
+							),
+
+						"MESSAGE_CREATE" | "MESSAGE_UPDATE" => {
+							IncomingPacketsData::MessageEvent(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng {} Packet {:?}", t, x)
+										)
+									)?
+							)
+						}
+						_ => { IncomingPacketsData::Unknown(inner.d) }
+					}
+				} else {
+					return Err(serde::de::Error::custom("Missing t field"));
+				}
+			}
+			OpCode::Hello =>
+				IncomingPacketsData::Hello(
+					serde_json::from_value(inner.d).map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?
+				),
+			OpCode::Heartbeat =>
+				IncomingPacketsData::Heartbeat(
+					serde_json::from_value(inner.d).map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?
+				),
+			OpCode::HeartbeatAck => IncomingPacketsData::HeartbeatAck,
+			a => {
+				debug!("Unknown OpCode: {:?}", a);
+				return Err(serde::de::Error::custom(format!("Unknown OpCode: {:?}", a)));
+			}
+		};
+		Ok(IncomingPacket {
+			payload_type: inner.t,
+			sequence_number: inner.s,
+			op_code: inner.op,
+			data: packet_data,
+		})
 	}
 }
