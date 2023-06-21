@@ -5,7 +5,7 @@ const DISCORD_API: &str = "https://discord.com/api/v9";
 pub const MOBILE_AUTH: &str = "wss://remote-auth-gateway.discord.gg/?v=2";
 pub const MOBILE_AUTH_GET_TOKEN: &str = concatcp!(DISCORD_API, "/users/@me/remote-auth/login");
 
-pub const LOGIN: &str = concatcp!("/auth/login");
+pub const LOGIN: &str = concatcp!(DISCORD_API, "/auth/login");
 
 pub const SMS_SEND: &str = concatcp!(DISCORD_API, "/auth/mfa/sms/send");
 
