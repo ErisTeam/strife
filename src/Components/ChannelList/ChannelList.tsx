@@ -21,29 +21,32 @@ const ChannelList = (props: ChannelListProps) => {
 
 	const [channelsRenderReady, setChannelsRenderReady] = createSignal([] as any[]);
 
-	let channelsRender: any[] = [];
+	createEffect(() => {
+		console.log('rendering channels');
+		let channelsRender: any[] = [];
 
-	let children: any[] = [];
+		let children: any[] = [];
 
-	AppState.currentGuild().channels.forEach((channel: ChannelType) => {
-		if (channel.type === 4) {
-			channelsRender.push(
-				(
-					<ChannelCategory id={channel.id} data={channel}>
-						{children}
-					</ChannelCategory>
-				) as Element
-			);
-			children = [];
-		} else {
-			if (channel.parent_id) {
-				children.push((<Channel data={channel} />) as Element);
+		AppState.currentGuild().channels.forEach((channel: ChannelType) => {
+			if (channel.type === 4) {
+				channelsRender.push(
+					(
+						<ChannelCategory id={channel.id} data={channel}>
+							{children}
+						</ChannelCategory>
+					) as Element
+				);
+				children = [];
 			} else {
-				channelsRender.push((<Channel data={channel} />) as Element);
+				if (channel.parent_id) {
+					children.push((<Channel data={channel} />) as Element);
+				} else {
+					channelsRender.push((<Channel data={channel} />) as Element);
+				}
 			}
-		}
-	});
-	setChannelsRenderReady(channelsRender.toReversed());
+		});
+		setChannelsRenderReady(channelsRender.toReversed());
+	}, [AppState.currentGuild()]);
 
 	return (
 		<nav class={[props.className, style.channelList].join(' ')}>
