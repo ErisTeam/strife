@@ -1,34 +1,13 @@
 .guild {
-	--size: 3.4rem;
+	--size: 3.3rem;
 	font-size: var(--size);
 	width: 100%;
 	height: fit-content;
 
 	display: flex;
-	padding: 0.16666666666em;
+	padding: 0.16em;
 	position: relative;
-}
-
-.guild::before {
-	background-color: var(--text);
-	position: relative;
-	content: '';
-	width: 0.125em;
-	border-top-right-radius: 1em;
-	border-bottom-right-radius: 1em;
-
-	transition: opacity 300ms, height 600ms, top 600ms;
-	opacity: 0%;
-	height: 0;
-	top: 0.65em;
-	left: 5em;
-}
-
-.guild:hover::before {
-	transition: opacity 300ms, height 100ms, top 100ms;
-	opacity: 100%;
-	height: 0.5em;
-	top: 0.45em;
+	aspect-ratio: 1/1;
 }
 
 .guild > img {
@@ -59,4 +38,22 @@
 .li {
 	position: relative;
 	width: 100%;
+}
+
+.li:hover .before {
+	scale: 1;
+	opacity: 100%;
+}
+.li .before {
+	background-color: var(--text);
+	position: fixed;
+	content: '';
+	width: 0.2em;
+	border-top-right-radius: 1em;
+	border-bottom-right-radius: 1em;
+
+	transition: opacity 300ms, scale 300ms;
+	scale: 0.3;
+	opacity: 0%;
+	height: 1.5em;
 }

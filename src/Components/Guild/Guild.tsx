@@ -18,19 +18,22 @@ const Guild = (props: GuildProps) => {
 	const AppState: any = useAppState();
 	let spanRef: any;
 	let liRef: any;
-	//my god this is so hacky
+	let beforeRef: any;
+
 	function scrollu() {
-		spanRef.style.visibility = 'hidden';
-
-		console.log(liRef.getBoundingClientRect().top, spanRef.style.top);
-
+		spanRef.style.transitionDuration = '0s';
+		beforeRef.style.transitionDuration = '0s';
 		spanRef.style.top = `${liRef.getBoundingClientRect().top + 13}px`;
-		spanRef.style.visibility = 'visible';
-		return '';
+		beforeRef.style.top = `${liRef.getBoundingClientRect().top + 19}px`;
+
+		spanRef.style.transitionDuration = '0.3s';
+		beforeRef.style.transitionDuration = '0.3s';
 	}
 	createEffect(() => {
-		spanRef.style.top = `${liRef.getBoundingClientRect().top + 13}px`;
-		if (spanRef) {
+		if (spanRef && beforeRef) {
+			spanRef.style.top = `${liRef.getBoundingClientRect().top + 13}px`;
+			beforeRef.style.top = `${liRef.getBoundingClientRect().top + 19}px`;
+
 			liRef.parentNode.parentNode.addEventListener('scroll', scrollu);
 		}
 	});
@@ -41,6 +44,7 @@ const Guild = (props: GuildProps) => {
 
 	return (
 		<li class={style.li} ref={liRef}>
+			<div class={style.before} ref={beforeRef} />
 			<button
 				class={style.guild}
 				onClick={() => {
@@ -59,7 +63,6 @@ const Guild = (props: GuildProps) => {
 			<span ref={spanRef} class={style.span}>
 				{guild.properties.name}
 			</span>
-			{scrollu()}
 		</li>
 	);
 };
