@@ -9,11 +9,11 @@ edition = "2021"
 rust-version = "1.57"
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "1.4.0", features = [] }
 prost-build = "0.11.9"
 
 [target.'cfg(windows)'.dependencies]
-windows = {version = "0.44.0",features= ["Win32_UI_WindowsAndMessaging", "Win32_Foundation"] }
+windows = {version = "0.48.0",features= ["Win32_UI_WindowsAndMessaging", "Win32_Foundation"] }
 
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 #speeds up RSA key generation
@@ -29,7 +29,7 @@ base64 = "0.21.2"
 
 
 # Async functionality 🗼
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.28.2", features = ["full"] }
 futures-util = "0.3.28"
 async-trait = "0.1.68"
 
@@ -54,14 +54,14 @@ log = {version="0.4.19",features= ["max_level_debug"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = ["colored"] }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }
 
-chrono = "0.4.24"
+chrono = "0.4.26"
 
 #protobuf
 prost = "0.11.9"
 prost-types = "0.11.9"
 
 
-reqwest = {version = "0.11.13",features = ["json"] }
+reqwest = {version = "0.11.18",features = ["json"] }
 
 #🕸socket
 websocket = "0.26.5" #TODO: remove

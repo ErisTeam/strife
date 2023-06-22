@@ -1,50 +1,58 @@
 // SolidJS
-import { createSignal, onMount, For, createEffect, Show } from 'solid-js';
+import { createSignal, onMount, For, createEffect, Show, JSXElement } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { Channel } from '../../discord';
+import { Channel as ChannelType } from '../../discord';
 import Relationship from '../Relationship/Relationship';
 // Components
 import ChannelCategory from '../ChannelCategory/ChannelCategory';
 
 //Style
 import style from './ChannelList.module.css';
+import Channel from '../Channel/Channel';
 
 interface ChannelListProps {
 	className?: string;
 }
 
 const ChannelList = (props: ChannelListProps) => {
-	const [categories, setCategories] = createSignal<Channel[]>([]);
-	const [channels, setChannels] = createSignal<Channel[]>([]);
 	const AppState: any = useAppState();
-	createEffect(() => {
-		if (AppState.currentGuild() == 'friends') return;
-		setCategories(AppState.currentGuild()!.channels.filter((channel: Channel) => channel.type === 4));
 
-		setCategories(categories().sort((a: any, b: any) => a.position - b.position));
+	const [channelsRenderReady, setChannelsRenderReady] = createSignal([] as any[]);
 
-		setChannels(AppState.currentGuild()!.channels.filter((channel: Channel) => channel.type !== 4));
+	let channelsRender: any[] = [];
+
+	let children: any[] = [];
+
+	AppState.currentGuild().channels.forEach((channel: ChannelType) => {
+		if (channel.type === 4) {
+			channelsRender.push(
+				(
+					<ChannelCategory id={channel.id} data={channel}>
+						{children}
+					</ChannelCategory>
+				) as Element
+			);
+			children = [];
+		} else {
+			if (channel.parent_id) {
+				children.push((<Channel data={channel} />) as Element);
+			} else {
+				channelsRender.push((<Channel data={channel} />) as Element);
+			}
+		}
 	});
+	setChannelsRenderReady(channelsRender.toReversed());
+
 	return (
 		<nav class={[props.className, style.channelList].join(' ')}>
-			<ul>
-				<Show when={AppState.currentGuild() !== 'friends'}>
-					<For each={categories()}>
-						{(category) => (
-							<ChannelCategory
-								data={category}
-								id={category.id}
-								childrenChannels={channels().filter((x: Channel) => x.parent_id == category.id)}
-							/>
-						)}
-					</For>
-				</Show>
+			<ol>
+				<Show when={AppState.currentGuild() !== 'friends'}>{channelsRenderReady()}</Show>
 				<Show when={AppState.currentGuild() === 'friends'}>
 					<For each={AppState.relationships()}>{(relationship) => <Relationship relationship={relationship} />}</For>
 				</Show>
-			</ul>
+			</ol>
 		</nav>
 	);
 };

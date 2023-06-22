@@ -2,7 +2,7 @@
 import { For } from 'solid-js';
 
 // API
-import { Channel as ChannelType } from '../../types';
+import { Channel as ChannelType } from '../../discord';
 
 // Components
 import Channel from '../Channel/Channel';
@@ -14,20 +14,16 @@ interface ChannelCategoryProps {
 	id: string;
 	className?: string;
 	data: ChannelType;
-	childrenChannels: ChannelType[];
+	children: any[];
 }
 
 const ChannelCategory = (props: ChannelCategoryProps) => {
-	const channels = props.childrenChannels.sort((a, b) => a.position - b.position);
-
 	return (
 		<li class={[props.className, style.category].join(' ')}>
 			<button>
 				<h1>{props.data.name}⏬</h1>
 			</button>
-			<ul>
-				<For each={channels}>{(channel) => <Channel data={channel} />}</For>
-			</ul>
+			<ol>{props.children}</ol>
 		</li>
 	);
 };

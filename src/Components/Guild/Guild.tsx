@@ -36,8 +36,7 @@ const Guild = (props: GuildProps) => {
 	});
 
 	const guild = AppState.userGuilds()[props.index];
-	console.log('userGuilds', AppState.userGuilds());
-	console.log(guild);
+
 	//TODO: rewrite data storing to use arrays to remove constant find calls
 
 	return (

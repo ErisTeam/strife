@@ -163,6 +163,8 @@ export default {
 	},
 
 	//oh mein gott, what retard wrote this????				(me, i am the retard)      nvm fiex it
+	//still a mess, but SHOULD result in better performance because i can run less loops on each channel list render
+	//is reversed cause you for some reason cant append children to the last element in an array of elements
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 		let guilds: Guild[] = await this.getGuilds();
@@ -172,7 +174,34 @@ export default {
 				channel.guild_id = guild.properties.id;
 			});
 		});
+		guilds.forEach((guild) => {
+			let categories: any[] = guild.channels.filter((channel) => channel.type === 4);
 
+			categories.forEach((category: any) => {
+				category.children = guild.channels.filter((channel) => channel.parent_id == category.id);
+
+				category.children.sort((a: any, b: any) => b.type - a.type || b.position - a.position);
+			});
+
+			let leftovers = guild.channels.filter((channel) => channel.type != 4 && !channel.parent_id);
+
+			categories = categories.concat(leftovers);
+			categories.sort((a: any, b: any) => a.type - b.type || a.position - b.position);
+			let channelsFinal: Channel[] = [];
+			categories.forEach((channel: any) => {
+				if (channel.type != 4) {
+					channelsFinal.push(channel);
+				}
+				if (channel.type == 4) {
+					channelsFinal.push(channel);
+					channel.children.forEach((child: any) => {
+						channelsFinal.push(child);
+					});
+				}
+			});
+			guild.channels = channelsFinal.reverse();
+			console.log('guild' + guild.properties.name, guild);
+		});
 		AppState.setUserGuilds((prev: any) => guilds);
 	},
 
