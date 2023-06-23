@@ -2,7 +2,8 @@
 import { A, useLocation, useParams } from '@solidjs/router';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { Guild as GuildType, Channel, Tab } from '../../types';
+import { Tab } from '../../types';
+import { Guild as GuildType, Channel, Relationship } from '../../discord';
 
 // Components
 import Guild from '../Guild/Guild';

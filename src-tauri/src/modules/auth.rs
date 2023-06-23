@@ -208,7 +208,7 @@ impl Auth {
 								let token = String::from_utf8(decrypted)?;
 
 								let user_id = token_utils::get_id(&token);
-
+								println!("id:{} \n token: {}",user_id, token);
 								state.add_new_user(user_id.clone(), token);
 
 								let gateway = this.gateway.read().await;
