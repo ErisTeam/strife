@@ -191,8 +191,6 @@ export default {
 				guild.channels = guild.channels.concat(channel.children);
 			});
 
-			guild.channels.reverse();
-
 			console.log('guild' + guild.properties.name, guild);
 		});
 		AppState.setUserGuilds((prev: any) => guilds);

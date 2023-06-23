@@ -26,25 +26,24 @@ const ChannelList = (props: ChannelListProps) => {
 		let channelsRender: any[] = [];
 
 		let children: any[] = [];
-
-		AppState.currentGuild().channels.forEach((channel: ChannelType) => {
-			if (channel.type === 4) {
+		for (let i = AppState.currentGuild().channels.length - 1; i >= 0; i--) {
+			if (AppState.currentGuild().channels[i].type === 4) {
 				channelsRender.push(
 					(
-						<ChannelCategory id={channel.id} data={channel}>
+						<ChannelCategory id={AppState.currentGuild().channels[i].id} data={AppState.currentGuild().channels[i]}>
 							{children}
 						</ChannelCategory>
 					) as Element
 				);
 				children = [];
 			} else {
-				if (channel.parent_id) {
-					children.push((<Channel data={channel} />) as Element);
+				if (AppState.currentGuild().channels[i].parent_id) {
+					children.push((<Channel data={AppState.currentGuild().channels[i]} />) as Element);
 				} else {
-					channelsRender.push((<Channel data={channel} />) as Element);
+					channelsRender.push((<Channel data={AppState.currentGuild().channels[i]} />) as Element);
 				}
 			}
-		});
+		}
 		setChannelsRenderReady(channelsRender.toReversed());
 	}, [AppState.currentGuild()]);
 
