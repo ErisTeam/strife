@@ -222,7 +222,7 @@ export default {
 			channelName: channel.name,
 			channelType: channel.type,
 			guildIcon: guild.icon,
-			guildName: guild.name,
+			guildName: guild.properties.name,
 		};
 
 		AppState.setTabs((prev: any) => [...prev, tab]);
@@ -249,7 +249,7 @@ export default {
 			channelName: channel.name,
 			channelType: channel.type,
 			guildIcon: guild.icon,
-			guildName: guild.name,
+			guildName: guild.properties.name,
 		};
 
 		AppState.setTabs((prev: any) => {

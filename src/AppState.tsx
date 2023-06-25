@@ -1,8 +1,9 @@
 // SolidJS
 import { createSignal, createContext, useContext } from 'solid-js';
-
+import { createStore } from 'solid-js/store';
 // API
-import { Relationship, Tab, Guild, Channel } from './types';
+import { Guild, Channel, Relationship } from './discord';
+import { Tab } from './types';
 
 const [userID, setUserID] = createSignal<string | null>(null);
 
