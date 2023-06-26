@@ -14,19 +14,19 @@ const ApplicationWrapper = () => {
 	const AppState: any = useAppState();
 	const [classes, setClasses] = createSignal<string>('');
 	createEffect(() => {
-		if (AppState.currentGuild() == null && AppState.tabs().length < 1) {
+		if (AppState.currentGuild() == null && AppState.tabs.length < 1) {
 			//without channel list and without tabs
 
 			setClasses(style.withoutAll);
-		} else if (AppState.currentGuild() != null && AppState.tabs().length > 0) {
+		} else if (AppState.currentGuild() != null && AppState.tabs.length > 0) {
 			//with channel list and with tabs
 
 			setClasses(style.withAll);
-		} else if (AppState.currentGuild() != null && AppState.tabs().length < 1) {
+		} else if (AppState.currentGuild() != null && AppState.tabs.length < 1) {
 			setClasses(style.withoutTabs);
 
 			//with channel list and without tabs
-		} else if (AppState.currentGuild() == null && AppState.tabs().length > 0) {
+		} else if (AppState.currentGuild() == null && AppState.tabs.length > 0) {
 			setClasses(style.withoutChannels);
 
 			//without channel list and with tabs
@@ -36,7 +36,7 @@ const ApplicationWrapper = () => {
 	return (
 		<div class={style.wrapper + ' ' + classes()}>
 			<GuildList className={style.guilds} />
-			<Show when={AppState.tabs().length > 0}>
+			<Show when={AppState.tabs.length > 0}>
 				<Tabs className={style.tabs} />
 			</Show>
 			<Show when={AppState.currentGuild() != null}>

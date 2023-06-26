@@ -55,10 +55,7 @@ const Guild = (props: GuildProps) => {
 					}
 				}}
 			>
-				<img
-					src={`https://cdn.discordapp.com/icons/${guild.properties.id}/${guild.properties.icon}.webp?size=96`}
-					alt={guild.properties.name}
-				/>
+				<img src={guild.properties.icon} alt={guild.properties.name} />
 			</button>
 			<span ref={spanRef} class={style.span}>
 				{guild.properties.name}

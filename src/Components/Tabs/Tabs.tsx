@@ -10,7 +10,7 @@ import Guild from '../Guild/Guild';
 
 // Style
 import style from './Tabs.module.css';
-import { For, createEffect } from 'solid-js';
+import { Accessor, For, Index, createEffect } from 'solid-js';
 
 interface TabsProps {
 	className?: string;
@@ -23,27 +23,32 @@ const Tabs = (props: TabsProps) => {
 	return (
 		<nav class={[props.className, style.tabs].join(' ')}>
 			<ul>
-				<For each={AppState.tabs()}>{(tab) => <TabItem data={tab} />}</For>
+				<Index each={AppState.tabs}>{(tab, index) => <TabItem tabIndex={index} />}</Index>
 			</ul>
 		</nav>
 	);
 };
 interface TabProps {
 	className?: string;
-	data: Tab;
+	tabIndex: number;
 }
-const TabItem = (props: TabProps) => {
+const TabItem = ({ className, tabIndex }: TabProps) => {
+	const AppState: any = useAppState();
 	const location = useLocation();
-	const href = `/app/${props.data.guildId}/${props.data.channelId}`;
+	console.log(AppState.tabs[tabIndex]);
+
+	const href = `/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`;
 	return (
-		<li class={[props.className, style.tab].join(' ')}>
+		<li class={[className, style.tab].join(' ')}>
 			<A
 				classList={{
 					[style.active]: location.pathname == href,
 				}}
 				href={href}
 			>
-				{props.data.channelName}
+				<img src={AppState.tabs[tabIndex].guildIcon} alt={'{server name} logo '} />
+				{/* TODO: Add translation string to alt text */}
+				<span>{AppState.tabs[tabIndex].channelName}</span>
 			</A>
 		</li>
 	);

@@ -57,7 +57,6 @@ type Role = {
 
 //TODO: copy form rust discord/type/guild PartialGuild
 type Guild = {
-	icon: string | null;
 	description: string;
 	splash: string;
 	member_count: number;
@@ -80,10 +79,10 @@ type Guild = {
 type Channel = {
 	id: string;
 	type: ChannelType;
-	guild_id: string | null;
+	guild_id: string; // if it's a dm channel, set to @me
 	position: number | 0;
 	permission_overwrites?: any[];
-	name: string | null;
+	name: string; //or user name if it's a dm channel
 	topic?: string;
 	nsfw?: boolean;
 	last_message_id?: string;
@@ -91,7 +90,7 @@ type Channel = {
 	user_limit?: number;
 	rate_limit_per_user?: number;
 	recipients?: any[] /* replace with user objects when we create them */;
-	icon?: string;
+	icon?: string; //provide full address to icon
 	owner_id?: string;
 	application_id?: string;
 	parent_id?: string;

@@ -192,6 +192,9 @@ export default {
 			});
 
 			console.log('guild' + guild.properties.name, guild);
+			if (guild.properties.icon) {
+				guild.properties.icon = `https://cdn.discordapp.com/icons/${guild.properties.id}/${guild.properties.icon}.webp?size=96`;
+			}
 		});
 		AppState.setUserGuilds((prev: any) => guilds);
 	},
@@ -221,19 +224,19 @@ export default {
 			channelId: channel.id,
 			channelName: channel.name,
 			channelType: channel.type,
-			guildIcon: guild.icon,
+			guildIcon: guild.properties.icon,
 			guildName: guild.properties.name,
 		};
 
 		AppState.setTabs((prev: any) => [...prev, tab]);
-		console.log(AppState.tabs());
+		console.log(AppState.tabs);
 	},
 	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
-		let currentTab = AppState.tabs().find((t: Tab) => t.channelId === currentChannelId);
+		let currentTab = AppState.tabs.find((t: Tab) => t.channelId === currentChannelId);
 
 		if (!currentTab) {
 			console.error('Current tab not found!');
-			console.log(AppState.tabs());
+			console.log(AppState.tabs);
 			console.log(currentChannelId);
 			return;
 		}
@@ -248,7 +251,7 @@ export default {
 			channelId: channel.id,
 			channelName: channel.name,
 			channelType: channel.type,
-			guildIcon: guild.icon,
+			guildIcon: guild.properties.icon,
 			guildName: guild.properties.name,
 		};
 

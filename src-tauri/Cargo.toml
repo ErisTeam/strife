@@ -50,7 +50,7 @@ winrt-notification = "0.5.1"
 
 #Logging📋
 fern = "0.6.2"
-log = {version="0.4.19",features= ["max_level_debug"] }
+log = {version="0.4.19",features= ["max_level_error"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = ["colored"] }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }
 

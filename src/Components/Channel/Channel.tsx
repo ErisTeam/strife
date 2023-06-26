@@ -31,11 +31,11 @@ const Channel = (props: ChannelProps) => {
 					e.preventDefault();
 					if (e.button === 0) {
 						console.log('left click', e.button);
-						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
+						if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
 							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;
 						}
-						if (AppState.tabs().length === 0) {
+						if (AppState.tabs.length === 0) {
 							API.addTab(props.data);
 							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;
@@ -46,7 +46,7 @@ const Channel = (props: ChannelProps) => {
 
 					if (e.button === 1) {
 						console.log('middle click', e.button);
-						if (AppState.tabs().find((t: Tab) => t.channelId === props.data.id)) {
+						if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
 							console.error('Tab already exists!');
 							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
 							return;

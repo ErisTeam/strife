@@ -1,5 +1,4 @@
 .tabs {
-	background-color: red;
 	height: 3em; /*cant be bigger than row height in ApplicationWrapper.module.css*/
 
 	max-width: 100%;
@@ -10,16 +9,43 @@
 
 		flex-wrap: nowrap;
 		height: 100%;
-		li {
+	}
+}
+
+.tab {
+	margin: 0 0.25em;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+
+	a {
+		background-color: var(--depth2);
+
+		border-radius: 6px 6px 0px 0px;
+
+		display: inline-flex;
+		padding: 0.25em 0.5em;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5em;
+		height: 85%;
+		width: 100%;
+		word-break: keep-all;
+		white-space: nowrap;
+
+		img {
+			aspect-ratio: 1/1;
 			max-height: 100%;
-			padding: 0 1em;
-			a {
-				word-break: keep-all;
-				white-space: nowrap;
-			}
+			height: 1.5em;
+			border-radius: 16px;
 		}
-		li:has(a.active) {
-			background-color: blue;
+		span {
+			color: white;
+			text-align: center;
 		}
+	}
+
+	&:has(a.active) a {
+		background-color: blue;
 	}
 }
