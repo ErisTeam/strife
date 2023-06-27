@@ -162,9 +162,6 @@ export default {
 		return newObj;
 	},
 
-	//oh mein gott, what retard wrote this????				(me, i am the retard)      nvm fiex it
-	//still a mess, but SHOULD result in better performance because i can run less loops on each channel list render
-	//is reversed cause you for some reason cant append children to the last element in an array
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 		let guilds: Guild[] = await this.getGuilds();
@@ -196,7 +193,7 @@ export default {
 				guild.properties.icon = `https://cdn.discordapp.com/icons/${guild.properties.id}/${guild.properties.icon}.webp?size=96`;
 			}
 		});
-		AppState.setUserGuilds((prev: any) => guilds);
+		AppState.setUserGuilds(guilds);
 	},
 
 	async updateRelationships() {
@@ -205,12 +202,7 @@ export default {
 		console.log(relationships);
 		AppState.setRelationships((prev: any) => [...relationships]);
 	},
-	/**
-	 * Represents a book.
-	 * @param {string} channelId - Channel or user id.
-	 * @param {string} guildId - if dms, pass \@me.
-	 * @Gami
-	 */
+
 	async addTab(channel: Channel, fallback: void) {
 		console.log('channel', channel);
 		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id == channel.guild_id);
