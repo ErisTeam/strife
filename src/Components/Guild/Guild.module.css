@@ -23,7 +23,7 @@
 .span {
 	transition: opacity 100ms, scale 300ms, translate 300ms;
 	position: fixed;
-	background-color: var(--depth4);
+	background-color: var(--depth2);
 	padding: 0.5em;
 	border-radius: 0.65em;
 

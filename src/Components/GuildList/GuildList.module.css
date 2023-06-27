@@ -1,7 +1,6 @@
 .guildList {
-	background-color: var(--depth2);
 	display: flex;
-	width: 5rem;
+	width: 4.5em;
 	height: 100vh;
 	position: fixed;
 	top: 0;
@@ -11,7 +10,6 @@
 	ul {
 		width: 100%;
 		position: relative;
-
 	}
 	.divider {
 		width: 80%;

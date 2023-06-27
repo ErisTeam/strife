@@ -81,18 +81,40 @@ pre {
    PANDACORD STYLES     |||||    ALL ABOVE IS NORMALIZATION
    ========================================================================== */
 
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-track {
+	background-color: hsl(205, 0%, 30%);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: hsl(205, 0%, 16%);
+	border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background-color: hsl(205, 0%, 12%);
+}
+
 :root {
-	/* --depth1: #2a2c2a;
+	/*FIGMA --depth1: #2a2c2a;
 	--depth2: #323636;
 	--depth3: #3a4042;
 	--depth4: #434a4d; */
 
-	--depth1: #1f1f20;
+	/*PREVIOUS --depth1: #1f1f20;
 	--depth2: #252628;
 	--depth3: #2d2f31;
-	--depth4: #343438;
+	--depth4: #343438; */
 
-	--primary: #00b2ff;
+	--depth0: hsl(205, 0%, 8%);
+	--depth1: hsl(205, 0%, 12%);
+	--depth2: hsl(205, 0%, 20%);
+	--depth3: hsl(205, 0%, 26%);
+	--depth4: hsl(205, 0%, 32%);
+
+	--primary: hsl(205, 100%, 50%);
 	--darken: brightness(93%);
 	--darken-for-active: brightness(80%);
 
@@ -126,7 +148,7 @@ body {
 	min-height: 100vh;
 	width: 100%;
 	height: 100%;
-	background-color: var(--depth1);
+	background-color: var(--depth0);
 }
 .hidden {
 	display: none !important;

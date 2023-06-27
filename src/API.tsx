@@ -8,6 +8,7 @@ import { createEffect, getOwner, onCleanup } from 'solid-js';
 import { Tab } from './types';
 import { Channel, Guild, Relationship } from './discord';
 import { oneTimeListener } from './test';
+import { produce } from 'solid-js/store';
 
 const AppState = useAppState();
 
@@ -223,10 +224,18 @@ export default {
 		AppState.setTabs((prev: any) => [...prev, tab]);
 		console.log(AppState.tabs);
 	},
-	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
-		let currentTab = AppState.tabs.find((t: Tab) => t.channelId === currentChannelId);
+	async removeTab(tabIndex: number) {
+		console.log('before', AppState.tabs);
+		AppState.setTabs(produce((draft: any) => draft.splice(tabIndex, 1)));
+		console.log('after', AppState.tabs);
+	},
 
-		if (!currentTab) {
+	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
+		let currentTabIndex = AppState.tabs.findIndex(
+			(t: Tab) => t.channelId === currentChannelId && t.guildId === channel.guild_id
+		);
+
+		if (!currentTabIndex) {
 			console.error('Current tab not found!');
 			console.log(AppState.tabs);
 			console.log(currentChannelId);
@@ -247,9 +256,6 @@ export default {
 			guildName: guild.properties.name,
 		};
 
-		AppState.setTabs((prev: any) => {
-			let newTabs = prev.filter((t: Tab) => t.channelId !== currentChannelId);
-			return [...newTabs, tab];
-		});
+		AppState.setTabs(currentTabIndex, tab);
 	},
 };

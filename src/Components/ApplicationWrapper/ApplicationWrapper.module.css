@@ -3,6 +3,8 @@
 	height: 100vh;
 	overflow-y: auto;
 	display: grid;
+	grid-template-columns: 4.5em 15em 1fr;
+	grid-template-rows: 3em 1fr;
 	.guilds {
 		overflow-y: scroll;
 	}
@@ -20,8 +22,6 @@
 }
 
 .withAll {
-	grid-template-columns: 5em 15em 1fr;
-	grid-template-rows: 3em 1fr;
 	.guilds {
 		grid-column: 1/2;
 		grid-row: 1 / 4;
@@ -40,8 +40,6 @@
 	}
 }
 .withoutTabs {
-	grid-template-columns: 5em 15em 1fr;
-	grid-template-rows: 3em 1fr;
 	.guilds {
 		grid-column: 1/2;
 		grid-row: 1 / 4;
@@ -56,8 +54,6 @@
 }
 
 .withoutChannels {
-	grid-template-columns: 5em 15em 1fr;
-	grid-template-rows: 3em 1fr;
 	.guilds {
 		grid-column: 1/2;
 		grid-row: 1 / 4;
@@ -72,7 +68,7 @@
 	}
 }
 .withoutAll {
-	grid-template-columns: 5em 1fr;
+	grid-template-columns: 4.5em 1fr;
 	grid-template-rows: 1fr;
 	.guilds {
 		grid-column: 1/2;

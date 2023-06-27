@@ -1,5 +1,5 @@
 // API
-import { A, useLocation, useParams } from '@solidjs/router';
+import { A, useLocation, useNavigate, useParams } from '@solidjs/router';
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Tab } from '../../types';
@@ -10,7 +10,7 @@ import Guild from '../Guild/Guild';
 
 // Style
 import style from './Tabs.module.css';
-import { Accessor, For, Index, createEffect } from 'solid-js';
+import { Accessor, For, Index, createEffect, createSignal } from 'solid-js';
 
 interface TabsProps {
 	className?: string;
@@ -34,22 +34,43 @@ interface TabProps {
 }
 const TabItem = ({ className, tabIndex }: TabProps) => {
 	const AppState: any = useAppState();
+	const params = useParams();
+
 	const location = useLocation();
 	console.log(AppState.tabs[tabIndex]);
+	const navigate = useNavigate();
+	const [href, setHref] = createSignal('');
+	createEffect(() => {
+		setHref(`/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`);
+	}, [AppState.tabs[tabIndex].guildId, AppState.tabs[tabIndex].channelId]);
 
-	const href = `/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`;
 	return (
 		<li class={[className, style.tab].join(' ')}>
 			<A
 				classList={{
-					[style.active]: location.pathname == href,
+					[style.active]: location.pathname == href(),
 				}}
-				href={href}
+				href={href()}
 			>
 				<img src={AppState.tabs[tabIndex].guildIcon} alt={'{server name} logo '} />
 				{/* TODO: Add translation string to alt text */}
 				<span>{AppState.tabs[tabIndex].channelName}</span>
 			</A>
+			<button
+				onClick={async () => {
+					if (
+						AppState.tabs.length > 1 &&
+						AppState.tabs[tabIndex].guildId == params.guildId &&
+						AppState.tabs[tabIndex].channelId == params.channelId
+					) {
+						console.log('href: ', href);
+						navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
+					}
+					await API.removeTab(tabIndex);
+				}}
+			>
+				X
+			</button>
 		</li>
 	);
 };

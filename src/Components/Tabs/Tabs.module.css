@@ -5,6 +5,7 @@
 	overflow-x: scroll;
 
 	ul {
+		padding: 0 0.2em;
 		display: flex;
 
 		flex-wrap: nowrap;
@@ -13,22 +14,25 @@
 }
 
 .tab {
-	margin: 0 0.25em;
+	margin-right: 0.2em;
+	margin-top: 0.39em;
 	position: relative;
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
+	flex-shrink: 0;
+	justify-content: center;
+	background-color: var(--depth1);
+
+	height: 2.21em;
+	border-radius: 6px 6px 0px 0px;
+	padding: 0.3em 0.5em;
 
 	a {
-		background-color: var(--depth2);
-
-		border-radius: 6px 6px 0px 0px;
-
 		display: inline-flex;
-		padding: 0.25em 0.5em;
+		margin-right: 0.5em;
 		justify-content: center;
 		align-items: center;
 		gap: 0.5em;
-		height: 85%;
 		width: 100%;
 		word-break: keep-all;
 		white-space: nowrap;
@@ -44,8 +48,11 @@
 			text-align: center;
 		}
 	}
+	button {
+		text-align: center;
+	}
 
-	&:has(a.active) a {
+	&:has(a.active) {
 		background-color: blue;
 	}
 }

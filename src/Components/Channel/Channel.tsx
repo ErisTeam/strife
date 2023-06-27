@@ -24,35 +24,38 @@ const Channel = (props: ChannelProps) => {
 	const AppState = useAppState();
 	const navigate = useNavigate();
 	const params = useParams();
+	const href = `/app/${props.data.guild_id}/${props.data.id}`;
+
 	return (
 		<li class={style.channel}>
 			<button
 				onMouseDown={(e) => {
 					e.preventDefault();
+					console.log('clicked on', props.data.name, href);
 					if (e.button === 0) {
 						console.log('left click', e.button);
 						if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
-							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
+							navigate(href);
 							return;
 						}
 						if (AppState.tabs.length === 0) {
 							API.addTab(props.data);
-							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
+							navigate(href);
 							return;
 						}
 						API.replaceCurrentTab(props.data, params.channelId);
-						navigate(`/app/${props.data.guild_id}/${props.data.id}`);
+						navigate(href);
 					}
 
 					if (e.button === 1) {
 						console.log('middle click', e.button);
 						if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
 							console.error('Tab already exists!');
-							navigate(`/app/${props.data.guild_id}/${props.data.id}`);
+							navigate(href);
 							return;
 						}
 						API.addTab(props.data);
-						navigate(`/app/${props.data.guild_id}/${props.data.id}`);
+						navigate(href);
 					}
 				}}
 			>
