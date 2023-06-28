@@ -10,7 +10,7 @@ import Guild from '../Guild/Guild';
 
 // Style
 import style from './GuildList.module.css';
-import { useTrans } from '../../Translation';
+
 import style2 from '../Guild/Guild.module.css';
 
 interface GuildListProps {
@@ -23,7 +23,7 @@ const GuildList = (props: GuildListProps) => {
 	onMount(async () => {
 		API.updateGuilds();
 	});
-	const [t] = useTrans();
+
 	//TODO: Switch friends tab to use the guild component
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
@@ -42,10 +42,10 @@ const GuildList = (props: GuildListProps) => {
 					>
 						<img
 							src={`https://variety.com/wp-content/uploads/2021/07/Rick-Astley-Never-Gonna-Give-You-Up.png?w=681&h=383&crop=1`}
-							alt={t.friends()}
+							alt={AppState.t.friends()}
 						/>
 					</button>
-					<span class={style2.span}>{t.friends()}</span>
+					<span class={style2.span}>{AppState.t.friends()}</span>
 				</li>
 				<li class={style.divider} />
 				<For each={AppState.userGuilds()}>{(guild, index) => <Guild index={index()} />}</For>

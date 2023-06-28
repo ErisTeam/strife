@@ -4,6 +4,7 @@ import { createStore } from 'solid-js/store';
 // API
 import { Guild, Channel, Relationship } from './discord';
 import { Tab } from './types';
+import { useTrans } from './Translation';
 
 const [userID, setUserID] = createSignal<string | null>(null);
 
@@ -11,6 +12,7 @@ const [userGuilds, setUserGuilds] = createSignal<Guild[]>([]);
 const [relationships, setRelationships] = createSignal<Relationship[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null>(null); //Used to display correct channels after being decoupled set to null to hide
+const [t] = useTrans();
 
 const AppState = createContext({
 	userGuilds,
@@ -24,6 +26,7 @@ const AppState = createContext({
 	setTabs,
 	currentGuild,
 	setCurrentGuild,
+	t,
 });
 
 export function AppStateProvider(props: any) {
@@ -41,6 +44,7 @@ export function AppStateProvider(props: any) {
 				setTabs,
 				currentGuild,
 				setCurrentGuild,
+				t,
 			}}
 		>
 			{props.children}

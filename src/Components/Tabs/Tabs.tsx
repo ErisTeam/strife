@@ -40,6 +40,7 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 	console.log(AppState.tabs[tabIndex]);
 	const navigate = useNavigate();
 	const [href, setHref] = createSignal('');
+
 	createEffect(() => {
 		setHref(`/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`);
 	}, [AppState.tabs[tabIndex].guildId, AppState.tabs[tabIndex].channelId]);
@@ -52,7 +53,10 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 				}}
 				href={href()}
 			>
-				<img src={AppState.tabs[tabIndex].guildIcon} alt={'{server name} logo '} />
+				<img
+					src={AppState.tabs[tabIndex].guildIcon}
+					alt={AppState.t.guild.logoAlt({ guildName: AppState.tabs[tabIndex].guildName })}
+				/>
 				{/* TODO: Add translation string to alt text */}
 				<span>{AppState.tabs[tabIndex].channelName}</span>
 			</A>

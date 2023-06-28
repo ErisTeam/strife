@@ -3,11 +3,9 @@ import { Accessor, createEffect, onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-import { Guild as GuildType, Channel } from '../../discord';
 
 // Style
 import style from './Guild.module.css';
-import { A } from '@solidjs/router';
 
 interface GuildProps {
 	index: number;
@@ -55,7 +53,7 @@ const Guild = (props: GuildProps) => {
 					}
 				}}
 			>
-				<img src={guild.properties.icon} alt={guild.properties.name} />
+				<img src={guild.properties.icon} alt={AppState.t.guild.logoAlt({ guildName: guild.properties.name })} />
 			</button>
 			<span ref={spanRef} class={style.span}>
 				{guild.properties.name}

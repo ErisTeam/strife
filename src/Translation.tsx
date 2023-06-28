@@ -14,6 +14,9 @@ export const dictionaries = {
 			password: 'Password',
 			rememberMe: 'Remember me:',
 		},
+		guild: {
+			logoAlt: 'Logo for {{ guildName }}',
+		},
 	},
 	pl_PL: {
 		hello: 'cześć {{ name }}, jak się masz?',
@@ -32,6 +35,9 @@ export const dictionaries = {
 			sendSMS: 'Wyślij kod SMS',
 			password: 'Hasło',
 			rememberMe: 'Zapamiętaj mnie:',
+		},
+		guild: {
+			logoAlt: 'Logo gildii {{ guildName }}',
 		},
 	},
 };
