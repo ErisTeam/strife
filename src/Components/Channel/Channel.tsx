@@ -42,10 +42,12 @@ const Channel = (props: ChannelProps) => {
 							API.addTab(props.data);
 							navigate(href);
 							return;
+						} else {
+							API.replaceCurrentTab(props.data, params.channelId);
+							navigate(href);
 						}
-						API.replaceCurrentTab(props.data, params.channelId);
-						navigate(href);
 					}
+					//TODO fix replacing tab, seems to not work on tabs with index 0
 
 					if (e.button === 1) {
 						console.log('middle click', e.button);
@@ -59,7 +61,7 @@ const Channel = (props: ChannelProps) => {
 					}
 				}}
 			>
-				{chosenIcon()}
+				<div>{chosenIcon()}</div>
 				{props.data.name}
 			</button>
 		</li>
