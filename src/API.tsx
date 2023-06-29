@@ -231,11 +231,9 @@ export default {
 	},
 
 	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
-		let currentTabIndex = AppState.tabs.findIndex(
-			(t: Tab) => t.channelId === currentChannelId && t.guildId === channel.guild_id
-		);
+		let currentTabIndex = AppState.tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
 
-		if (!currentTabIndex) {
+		if (!(currentTabIndex + 1)) {
 			console.error('Current tab not found!');
 			console.log(AppState.tabs);
 			console.log(currentChannelId);
@@ -256,6 +254,7 @@ export default {
 			guildName: guild.properties.name,
 		};
 
+		console.warn('replacing tab with index', currentTabIndex, 'with');
 		AppState.setTabs(currentTabIndex, tab);
 	},
 };

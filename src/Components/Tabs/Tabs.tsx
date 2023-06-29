@@ -61,16 +61,25 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 				<span>{AppState.tabs[tabIndex].channelName}</span>
 			</A>
 			<button
-				onClick={async () => {
+				onClick={() => {
+					// 						navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
+
 					if (
-						AppState.tabs.length > 1 &&
 						AppState.tabs[tabIndex].guildId == params.guildId &&
 						AppState.tabs[tabIndex].channelId == params.channelId
 					) {
-						console.log('href: ', href);
-						navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
+						API.removeTab(tabIndex);
+						if (AppState.tabs.length == 0) {
+						} else if (AppState.tabs[tabIndex - 1]) {
+							navigate(`/app/${AppState.tabs[tabIndex - 1].guildId}/${AppState.tabs[tabIndex - 1].channelId}`);
+						} else if (AppState.tabs[0]) {
+							navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
+						} else {
+							navigate(`/app`);
+						}
+					} else {
+						API.removeTab(tabIndex);
 					}
-					await API.removeTab(tabIndex);
 				}}
 			>
 				X
