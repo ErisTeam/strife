@@ -47,7 +47,6 @@ const Channel = (props: ChannelProps) => {
 							navigate(href);
 						}
 					}
-					//TODO fix replacing tab, seems to not work on tabs with index 0
 
 					if (e.button === 1) {
 						console.log('middle click', e.button);
