@@ -6,11 +6,21 @@
 		height: 2em;
 		color: #ffffff;
 		width: 100%;
-		margin: 0.2em;
+		margin: 0.3em;
 		svg {
 			padding: 0.3em;
 			fill: var(--disabled-text);
 			height: 100%;
 		}
 	}
+}
+.icon {
+	aspect-ratio: 1/1;
+	height: 100%;
+	background-color: var(--depth2);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-right: 0.5em;
 }

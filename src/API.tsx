@@ -225,9 +225,8 @@ export default {
 		console.log(AppState.tabs);
 	},
 	async removeTab(tabIndex: number) {
-		console.log('before', AppState.tabs);
+		console.log('removing tab', tabIndex);
 		AppState.setTabs(produce((draft: any) => draft.splice(tabIndex, 1)));
-		console.log('after', AppState.tabs);
 	},
 
 	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
