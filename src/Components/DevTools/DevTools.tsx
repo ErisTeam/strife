@@ -19,7 +19,7 @@ export default () => {
 	function mouseMove(e: MouseEvent) {
 		e.preventDefault();
 
-		let target = e.target as HTMLElement;
+		const target = e.target as HTMLElement;
 	}
 
 	return (

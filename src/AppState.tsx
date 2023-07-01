@@ -1,8 +1,8 @@
 // SolidJS
-import { createSignal, createContext, useContext } from 'solid-js';
+import { createSignal, createContext, useContext, Accessor } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
-import { Guild, Channel, Relationship } from './discord';
+import { Guild, Relationship } from './discord';
 import { Tab } from './types';
 import { useTrans } from './Translation';
 
@@ -29,7 +29,7 @@ const AppState = createContext({
 	t,
 });
 
-export function AppStateProvider(props: any) {
+export function AppStateProvider({ children }: { children: Node }) {
 	return (
 		<AppState.Provider
 			value={{
@@ -47,7 +47,7 @@ export function AppStateProvider(props: any) {
 				t,
 			}}
 		>
-			{props.children}
+			{children}
 		</AppState.Provider>
 	);
 }

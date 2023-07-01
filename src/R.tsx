@@ -27,7 +27,7 @@ const R = (props: Props) => {
 
 	const [a, { mutate, refetch }] = createResource(async () => {
 		console.log('aaaaaaaaa');
-		let res = await invoke('set_state', { newState: props.state, force: props.force });
+		const res = await invoke('set_state', { newState: props.state, force: props.force });
 		console.log('bbbbbbbbbb');
 		console.log('res', res);
 		return res;
@@ -37,7 +37,7 @@ const R = (props: Props) => {
 		if (a.error) {
 			console.log(a.error);
 			setTimeLeft(TimeLeft);
-			let r = setInterval(() => {
+			const r = setInterval(() => {
 				if (timeLeft() == 0) {
 					refetch();
 					clearInterval(r);

@@ -1,9 +1,8 @@
 // SolidJS
 import { useAppState } from './AppState';
-import { listen, Event, UnlistenFn, emit } from '@tauri-apps/api/event';
+import { emit } from '@tauri-apps/api/event';
 // Tauri
 import { invoke } from '@tauri-apps/api/tauri';
-import { createEffect, getOwner, onCleanup } from 'solid-js';
 // API
 import { Tab } from './types';
 import { Channel, Guild, Relationship } from './discord';
@@ -13,24 +12,24 @@ import { produce } from 'solid-js/store';
 const AppState = useAppState();
 
 export default {
+	//TODO: Handle awaiting in wrapper functions not here
 	async getUserData(userId: string) {
-		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
+		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
 		await emit('getUserData', { userId });
 		console.log('getUserData', await res);
 		return (await res).data;
 	},
 	async getRelationships(userId: string = AppState.userID() as string) {
-		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
+		const res = oneTimeListener<{ type: string; user_id: string; data: Relationship[] }>('general', 'relationships');
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
 		return (await res).data;
 	},
 	async getGuilds(userId: string = AppState.userID() as string) {
 		console.log('getGuilds', userId);
-		let res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
+		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
-		let guilds = (await res).data.guilds as Guild[];
-		console.log('getGuilds', guilds);
+		const guilds = (await res).data.guilds as Guild[];
 		return guilds;
 	},
 
@@ -40,7 +39,7 @@ export default {
 	 * @returns
 	 */
 	async getMessages(channelId: string) {
-		let token = await this.getToken();
+		const token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't get messages!");
 			return;
@@ -54,7 +53,7 @@ export default {
 			},
 		});
 
-		let resData = await resDataponse.json();
+		const resData = await resDataponse.json();
 
 		return resData;
 	},
@@ -67,7 +66,7 @@ export default {
 	 * @returns
 	 */
 	async sendMessage(channelId: string, content: string, reference: any) {
-		let token = await this.getToken();
+		const token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't send message!");
 			return;
@@ -89,7 +88,7 @@ export default {
 			}),
 		});
 
-		let resData = await resDataponse.json();
+		const resData = await resDataponse.json();
 
 		console.log(resData);
 		return resData;
@@ -103,12 +102,12 @@ export default {
 	 * @returns edited message
 	 */
 	async editMessage(channelId: string, messageId: string, content: string) {
-		let token = await this.getToken();
+		const token = await this.getToken();
 		if (!token) {
 			console.error("No user token found! Can't edit message!");
 			return;
 		}
-		let res = await fetch('https://discord.com/api/v9/channels/' + channelId + '/messages/' + messageId, {
+		const res = await fetch('https://discord.com/api/v9/channels/' + channelId + '/messages/' + messageId, {
 			method: 'PATCH',
 			headers: {
 				Authorization: token,
@@ -118,7 +117,7 @@ export default {
 				content: content,
 			}),
 		});
-		let resData = await res.json();
+		const resData = await res.json();
 		return resData;
 	},
 
@@ -127,22 +126,22 @@ export default {
 	 * @param user_id
 	 */
 	async getToken(userId: string = AppState.userID() as string) {
-		return (await invoke('get_token', { userId })) as string | null;
+		return await invoke('get_token', { userId });
 	},
 
 	async updateCurrentUserID() {
-		let response = await invoke('get_last_user');
+		const response = await invoke('get_last_user');
 		AppState.setUserID(response as string);
 		return;
 	},
 
-	snakeToCamel(str: string) {
+	snakeToCamel(str: string): string {
 		return str.replace(/(?!^)_(.)/g, (_, char) => char.toUpperCase());
 	},
 
 	toCamelCase(object: any) {
-		let obj = Object.assign({}, object);
-		let newObj: any = {};
+		const obj = Object.assign({}, object);
+		const newObj: any = {};
 		for (const key in obj) {
 			const camelKey = this.snakeToCamel(key);
 			if (Array.isArray(obj[key])) {
@@ -165,28 +164,30 @@ export default {
 
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
-		let guilds: Guild[] = await this.getGuilds();
+		const guilds: Guild[] = await this.getGuilds();
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
 		guilds.forEach((guild) => {
 			guild.channels.forEach((channel) => {
 				channel.guild_id = guild.properties.id;
 			});
 		});
+		type ChannelWithChildren = Channel & { children?: Channel[] };
 
 		guilds.forEach((guild) => {
-			let categories: any[] = guild.channels.filter((channel) => !channel.parent_id);
-
-			categories.forEach((category: any) => {
+			const categories: ChannelWithChildren[] = guild.channels.filter((channel) => !channel.parent_id);
+			categories.forEach((category: ChannelWithChildren) => {
 				category.children = guild.channels.filter((channel) => channel.parent_id == category.id);
 
-				category.children.sort((a: any, b: any) => b.type - a.type || b.position - a.position);
+				category.children.sort((a: Channel, b: Channel) => b.type - a.type || b.position - a.position);
 			});
 
-			categories.sort((a: any, b: any) => a.type - b.type || a.position - b.position);
+			categories.sort((a: ChannelWithChildren, b: ChannelWithChildren) => a.type - b.type || a.position - b.position);
 			guild.channels = [];
-			categories.forEach((channel: any) => {
+			categories.forEach((channel: ChannelWithChildren) => {
 				guild.channels.push(channel);
-				guild.channels = guild.channels.concat(channel.children);
+				if (channel.children) {
+					guild.channels = guild.channels.concat(channel.children);
+				}
 			});
 
 			console.log('guild' + guild.properties.name, guild);
@@ -199,20 +200,20 @@ export default {
 
 	async updateRelationships() {
 		AppState.setRelationships([]);
-		let relationships: Relationship[] = (await this.getRelationships()).relationships;
+		const relationships: Relationship[] = (await this.getRelationships()).relationships;
 		console.log(relationships);
-		AppState.setRelationships((prev: any) => [...relationships]);
+		AppState.setRelationships(relationships);
 	},
 
-	async addTab(channel: Channel, fallback: void) {
+	addTab(channel: Channel) {
 		console.log('channel', channel);
-		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id == channel.guild_id);
+		const guild = AppState.userGuilds().find((g: Guild) => g.properties.id == channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');
 			return;
 		}
-		let tab: Tab = {
+		const tab: Tab = {
 			guildId: channel.guild_id,
 			channelId: channel.id,
 			channelName: channel.name,
@@ -221,16 +222,16 @@ export default {
 			guildName: guild.properties.name,
 		};
 
-		AppState.setTabs((prev: any) => [...prev, tab]);
+		AppState.setTabs((prev) => [...prev, tab]);
 		console.log(AppState.tabs);
 	},
-	async removeTab(tabIndex: number) {
+	removeTab(tabIndex: number) {
 		console.log('removing tab', tabIndex);
-		AppState.setTabs(produce((draft: any) => draft.splice(tabIndex, 1)));
+		AppState.setTabs(produce((draft) => draft.splice(tabIndex, 1)));
 	},
 
-	async replaceCurrentTab(channel: Channel, currentChannelId: string) {
-		let currentTabIndex = AppState.tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
+	replaceCurrentTab(channel: Channel, currentChannelId: string) {
+		const currentTabIndex = AppState.tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
 
 		if (!(currentTabIndex + 1)) {
 			console.error('Current tab not found!');
@@ -238,13 +239,13 @@ export default {
 			console.log(currentChannelId);
 			return;
 		}
-		let guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guild_id);
+		const guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');
 			return;
 		}
-		let tab: Tab = {
+		const tab: Tab = {
 			guildId: channel.guild_id,
 			channelId: channel.id,
 			channelName: channel.name,

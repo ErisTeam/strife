@@ -10,7 +10,7 @@ const LoadingTest = () => {
 			<button
 				class={buttons.default}
 				onClick={() => {
-					let frame: HTMLIFrameElement = document.getElementById('frame') as HTMLIFrameElement;
+					const frame: HTMLIFrameElement = document.getElementById('frame') as HTMLIFrameElement;
 					frame.src += '';
 				}}
 			>

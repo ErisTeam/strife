@@ -9,7 +9,7 @@ type TextArea = 'soft' | 'hard' | 'off';
 type Tab = {
 	guildId: string; // if it's a dm channel, set to null
 	guildName: string; // if it's a dm channel, set to @me or similar we will come up with
-	guildIcon: string | null | undefined; // if it's a dm channel, set to user's avatar;
+	guildIcon: string | undefined; // if it's a dm channel, set to user's avatar;
 
 	channelId: string;
 	channelName: string; // if it's a dm channel, set to the user's name;

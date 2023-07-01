@@ -1273,7 +1273,7 @@ export default () => {
 	const [t, { locale, setLocale, getDictionary }] = useTrans();
 
 	function a(objects: Object[]) {
-		let divs: JSX.Element[] = [];
+		const divs: JSX.Element[] = [];
 		Object.keys(objects).forEach((key: string) => {
 			// @ts-ignore
 			if (typeof objects[key] == 'object') {
@@ -1313,12 +1313,12 @@ export default () => {
 				<datalist id="locales" class={style.datalist}>
 					<For each={Object.keys(localesList)}>
 						{(key) => {
-							let ret = [];
+							const ret = [];
 							// @ts-ignore
 							for (const locale in localesList[key]) {
 								// @ts-ignore
-								let l = localesList[key][locale];
-								let localeName = locale == 'null' ? key : `${key} (${locale})`;
+								const l = localesList[key][locale];
+								const localeName = locale == 'null' ? key : `${key} (${locale})`;
 								ret.push(<option value={l} label={localeName} />);
 							}
 							return ret;

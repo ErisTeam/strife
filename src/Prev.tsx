@@ -50,7 +50,7 @@ function Prev() {
 		});
 	}
 	async function logout() {
-		let token = await API.getToken();
+		const token = await API.getToken();
 		if (!token) {
 			setshowMsg('No token');
 			return;
@@ -99,7 +99,7 @@ function Prev() {
 			errors: any;
 		}
 
-		let input = event.payload as unknown as
+		const input = event.payload  as
 			| qrcode
 			| ticketData
 			| RequireAuth
@@ -140,7 +140,7 @@ function Prev() {
 				}
 				break;
 			case 'requireAuthMobile':
-				setCaptchaKey(input.captcha_sitekey as string);
+				setCaptchaKey(input.captcha_sitekey );
 				setMobileAuthCaptcha(true);
 				break;
 			case 'VerifyError':

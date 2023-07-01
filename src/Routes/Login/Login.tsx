@@ -43,7 +43,7 @@ const LoginPage = () => {
 
 	const navigate = useNavigate();
 	useTaurListener('auth', (event) => {
-		let input = event.payload as AuthEvents;
+		const input = event.payload as AuthEvents;
 		console.log('input', input);
 		switch (input.type) {
 			case 'mobileQrcode': {
@@ -117,8 +117,8 @@ const LoginPage = () => {
 	});
 
 	function switchTo(to: 'login' | 'mfa' | 'captcha') {
-		let current = panel();
-		let direction = Math.random() > 0.5 ? 'left' : 'right';
+		const current = panel();
+		const direction = Math.random() > 0.5 ? 'left' : 'right';
 		console.log(classes());
 		setClasses((c) => {
 			return {

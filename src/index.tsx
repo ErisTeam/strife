@@ -36,7 +36,7 @@ import DevTools from './Components/DevTools/DevTools';
 const App: Component = () => {
 	const AppState: any = useAppState();
 	const [id] = createResource(async () => {
-		let id: string = await invoke('get_last_user', {});
+		const id: string = await invoke('get_last_user', {});
 		console.log(id);
 		AppState.setUserID(id);
 		invoke('close_splashscreen');

@@ -23,7 +23,7 @@ const ChannelList = (props: ChannelListProps) => {
 
 	createEffect(() => {
 		console.log('rendering channels');
-		let channelsRender: any[] = [];
+		const channelsRender: any[] = [];
 
 		let children: any[] = [];
 		for (let i = AppState.currentGuild().channels.length - 1; i >= 0; i--) {

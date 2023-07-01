@@ -38,9 +38,9 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 	});
 
 	async function fetchMessages() {
-		let res = await API.getMessages(channelId());
+		const res = await API.getMessages(channelId());
 		console.log(res);
-		let r = res
+		const r = res
 			.map((message: any) => ({
 				...message,
 				timestamp: new Date(message.timestamp),
@@ -72,7 +72,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 		console.log('Listener gateway', msg, msg, msg.type);
 		setMessages((clone) => {
 			//let clone = [...a];
-			let index = clone.findIndex((e) => e.id == msg.data.id);
+			const index = clone.findIndex((e) => e.id == msg.data.id);
 
 			if (index == -1) {
 				return clone;
@@ -238,13 +238,13 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 				<button
 					class={style.button}
 					onClick={async () => {
-						let msg = message();
+						const msg = message();
 						setMessage('');
 						if (editing()) {
-							let res = await API.editMessage(channelId(), editing().id, msg);
+							const res = await API.editMessage(channelId(), editing().id, msg);
 							setEditing(null);
 							setMessages((a) => {
-								let index = a.findIndex((e) => e.id == res.id);
+								const index = a.findIndex((e) => e.id == res.id);
 								if (index == -1) {
 									return a;
 								}
@@ -255,7 +255,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 								return a;
 							});
 						} else {
-							let res = await API.sendMessage(channelId(), msg, reference());
+							const res = await API.sendMessage(channelId(), msg, reference());
 							if (messages().find((e) => e.id == res.id)) {
 								return;
 							}

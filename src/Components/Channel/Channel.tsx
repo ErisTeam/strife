@@ -54,7 +54,7 @@ const Channel = (props: ChannelProps) => {
 		const emoji = props.data.name.match(/\p{Extended_Pictographic}/gu);
 		if (emoji) {
 			//remove emoji from name
-			let regEx = new RegExp(emoji[0], 'g');
+			const regEx = new RegExp(emoji[0], 'g');
 			props.data.name = props.data.name.replace(regEx, '');
 			return emoji[0];
 		}

@@ -11,10 +11,10 @@ export default () => {
 
 	const [image] = createResource(async () => {
 		console.log('fetching');
-		let s = subReddits;
+		const s = subReddits;
 
 		if (!state.userID()) {
-			let id: string = await invoke('get_last_user', {});
+			const id: string = await invoke('get_last_user', {});
 			console.log('last id', id);
 			state.setUserID(id);
 		}
@@ -25,11 +25,11 @@ export default () => {
 
 		const subReddit = s[Math.floor(Math.random() * s.length)];
 		const url = `https://www.reddit.com/r/${subReddit}/top.json?sort=top&t=${time}&limit=100"`;
-		let res = await (await fetch(url)).json();
+		const res = await (await fetch(url)).json();
 		console.log(res);
 		let count = 0;
 		while (count < 100) {
-			let child = res.data.children[Math.floor(Math.random() * res.data.children.length)];
+			const child = res.data.children[Math.floor(Math.random() * res.data.children.length)];
 			console.log(child.data.post_hint, child.data.is_gallery);
 			if (child.data.post_hint === 'image' && !child.data.is_gallery) {
 				return { type: 'image', src: child.data.url };

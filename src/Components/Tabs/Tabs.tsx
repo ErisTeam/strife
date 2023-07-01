@@ -17,8 +17,7 @@ interface TabsProps {
 }
 
 const Tabs = (props: TabsProps) => {
-	const AppState: any = useAppState();
-	const params = useParams();
+	const AppState = useAppState();
 
 	return (
 		<nav class={[props.className, style.tabs].join(' ')}>
@@ -33,7 +32,7 @@ interface TabProps {
 	tabIndex: number;
 }
 const TabItem = ({ className, tabIndex }: TabProps) => {
-	const AppState: any = useAppState();
+	const AppState = useAppState();
 	const params = useParams();
 
 	const location = useLocation();
@@ -70,12 +69,11 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 					) {
 						API.removeTab(tabIndex);
 						if (AppState.tabs.length == 0) {
+							navigate(`/app`);
 						} else if (AppState.tabs[tabIndex - 1]) {
 							navigate(`/app/${AppState.tabs[tabIndex - 1].guildId}/${AppState.tabs[tabIndex - 1].channelId}`);
 						} else if (AppState.tabs[0]) {
 							navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
-						} else {
-							navigate(`/app`);
 						}
 					} else {
 						API.removeTab(tabIndex);

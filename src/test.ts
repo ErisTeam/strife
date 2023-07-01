@@ -41,10 +41,10 @@ function startListener<T extends { type: string }>(
 	eventName: string | TauriEvent,
 	condition: ((event: T) => boolean) | null = null
 ) {
-	let listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
+	const listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
 	console.log('start gateway NEW', eventName);
 
-	let clean_up = useTaurListener<T>(eventName, (event: Event<T>) => {
+	const clean_up = useTaurListener<T>(eventName, (event: Event<T>) => {
 		let run = true;
 		console.log('event', event.payload);
 		if (condition && !condition(event.payload)) {
@@ -108,7 +108,7 @@ async function oneTimeListener<T extends { type: string }>(
 	condition: ((event: T) => boolean) | null = null
 ): Promise<T> {
 	return new Promise((resolve) => {
-		let a = startListener<T>(event, condition);
+		const a = startListener<T>(event, condition);
 		a.on(eventName, (event: T) => {
 			console.log('a', a.cleanup, a);
 			a.cleanup();
@@ -128,7 +128,7 @@ async function startGateway(userId: string) {
 
 async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 	return new Promise((resolve: (value: T) => void) => {
-		let a = startGatewayListener(userId);
+		const a = startGatewayListener(userId);
 		a.on(eventName, (event: T) => {
 			a.cleanup();
 			resolve(event);
