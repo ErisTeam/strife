@@ -20,6 +20,25 @@
 .guild:hover > img {
 	border-radius: 15%;
 }
+.fallbackText {
+	transition: border-radius 300ms;
+	width: 100%;
+	height: 100%;
+
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 0.6em;
+	aspect-ratio: 1/1;
+	line-height: 100%;
+	border-radius: 50%;
+	background-color: var(--depth2);
+}
+.guild:hover .fallbackText {
+	border-radius: 15%;
+}
+
 .span {
 	transition: opacity 100ms, scale 300ms, translate 300ms;
 	position: fixed;
@@ -84,14 +103,4 @@
 		margin-bottom: 0.4em;
 		height: 2px;
 	}
-}
-.fallbackText {
-	width: 100%;
-	height: 100%;
-
-	text-align: center;
-	padding: 0;
-	margin: 0;
-	vertical-align: middle;
-	line-height: 100%;
 }
