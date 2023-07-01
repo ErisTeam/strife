@@ -1,7 +1,7 @@
 /** @format */
 
 import { Show } from 'solid-js';
-import style from './QRCode.module.css';
+import style from './css.module.css';
 
 interface UserData {
 	user_id: any | null;
@@ -23,20 +23,18 @@ interface QRCodeProps {
 
 function QRCode(prop: QRCodeProps) {
 	return (
-		<div class={[style.container, prop.class].join(' ')}>
-			<img class={style.qrcode} src={prop.qrcode_src ? prop.qrcode_src : prop.fallback_src } alt="QR Code" />
+		<div class={[style.qrBox, prop.class].join(' ')}>
+			<img class={style.qrcode} src={prop.qrcode_src ? prop.qrcode_src : prop.fallback_src} alt="QR Code" />
 			<Show
 				when={prop.user_data === undefined}
 				fallback={
 					<>
-						<h1 class={style.header}>
-							{prop.user_data?.username + '#' + prop.user_data?.discriminator}
-						</h1>
+						<h1 class={style.subheader}>{prop.user_data?.username + '#' + prop.user_data?.discriminator}</h1>
 						<p class={style.paragraph}>{prop.altParagraph}</p>
 					</>
 				}
 			>
-				<h1 class={style.header}>{prop.header}</h1>
+				<h1 class={style.subheader}>{prop.header}</h1>
 				<p class={style.paragraph}>{prop.paragraph}</p>
 			</Show>
 		</div>

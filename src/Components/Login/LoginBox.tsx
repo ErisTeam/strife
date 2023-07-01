@@ -1,13 +1,10 @@
 /** @format */
 
 /* Style */
-import style from './LoginBox.module.css';
+import style from './css.module.css';
 import inputs from './../../Styles/Inputs.module.css';
 import checkboxes from './../../Styles/Checkboxes.module.css';
 import buttons from './../../Styles/Buttons.module.css';
-
-/* Tauri */
-import { emit } from '@tauri-apps/api/event';
 
 /* Solid */
 import { createSignal } from 'solid-js';
@@ -17,7 +14,7 @@ const [password, setPassword] = createSignal('');
 
 interface LoginBoxProps {
 	class?: string;
-	login: any;
+	login: (name: string, password: string, captcha_token?: string) => Promise<void>;
 }
 
 function LoginBox(prop: LoginBoxProps) {
@@ -28,7 +25,9 @@ function LoginBox(prop: LoginBoxProps) {
 			class={[style.container, prop.class].join(' ')}
 			onsubmit={(e) => {
 				e.preventDefault();
-				prop.login(name(), password());
+				prop.login(name(), password()).catch((e) => {
+					console.log(e);
+				});
 			}}
 		>
 			<h1 class={style.header}>{t.LoginPage.logIn()}</h1>

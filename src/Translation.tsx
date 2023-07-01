@@ -17,6 +17,7 @@ export const dictionaries = {
 		guild: {
 			logoAlt: 'Logo for {{ guildName }}',
 		},
+		friendsAlt: 'Red Panda icon for friends tab',
 	},
 	pl_PL: {
 		hello: 'cześć {{ name }}, jak się masz?',
@@ -39,6 +40,7 @@ export const dictionaries = {
 		guild: {
 			logoAlt: 'Logo gildii {{ guildName }}',
 		},
+		friendsAlt: 'Ikona czerwonej pandy dla zakładki znajomi',
 	},
 };
 

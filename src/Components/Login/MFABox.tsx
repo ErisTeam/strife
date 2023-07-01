@@ -1,7 +1,7 @@
 /* Style */
-import style from './MFABox.module.css';
+import style from './css.module.css';
 import inputs from './../../Styles/Inputs.module.css';
-import checkboxes from './../../Styles/Checkboxes.module.css';
+
 import buttons from './../../Styles/Buttons.module.css';
 import { useTrans } from '../../Translation';
 /* Tauri */
@@ -13,7 +13,7 @@ const [code, setCode] = createSignal('');
 
 interface MFABoxProps {
 	class?: string;
-	verify: any;
+	verify: (code: string) => Promise<void>;
 }
 
 function MFABox(prop: MFABoxProps) {

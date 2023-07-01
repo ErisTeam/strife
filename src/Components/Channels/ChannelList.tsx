@@ -3,21 +3,21 @@ import { createSignal, onMount, For, createEffect, Show, JSXElement } from 'soli
 
 // API
 import { useAppState } from '../../AppState';
-import { Channel as ChannelType } from '../../discord';
+``;
 import Relationship from '../Relationship/Relationship';
 // Components
-import ChannelCategory from '../ChannelCategory/ChannelCategory';
+import ChannelCategory from './ChannelCategory';
 
 //Style
-import style from './ChannelList.module.css';
-import Channel from '../Channel/Channel';
+import style from './css.module.css';
+import Channel from './Channel';
 
 interface ChannelListProps {
 	className?: string;
 }
 
 const ChannelList = (props: ChannelListProps) => {
-	const AppState: any = useAppState();
+	const AppState = useAppState();
 
 	const [channelsRenderReady, setChannelsRenderReady] = createSignal([] as any[]);
 
@@ -49,10 +49,11 @@ const ChannelList = (props: ChannelListProps) => {
 
 	return (
 		<nav class={[props.className, style.channelList].join(' ')}>
+			<h1>{AppState.currentGuild().properties.name}</h1>
 			<ol>
 				<Show when={AppState.currentGuild() !== 'friends'}>{channelsRenderReady()}</Show>
 				<Show when={AppState.currentGuild() === 'friends'}>
-					<For each={AppState.relationships()}>{(relationship) => <Relationship relationship={relationship} />}</For>
+					<For each={AppState.relationships}>{(relationship) => <Relationship relationship={relationship} />}</For>
 				</Show>
 			</ol>
 		</nav>

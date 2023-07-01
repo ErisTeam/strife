@@ -1,14 +1,9 @@
-// SolidJS
-import { For } from 'solid-js';
-
 // API
 import { Channel as ChannelType } from '../../discord';
 
 // Components
-import Channel from '../Channel/Channel';
-
 // Style
-import style from './ChannelCategory.module.css';
+import style from './css.module.css';
 
 interface ChannelCategoryProps {
 	id: string;

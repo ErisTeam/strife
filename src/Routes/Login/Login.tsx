@@ -10,12 +10,12 @@ import API from './../../API';
 import { useTaurListener, useTaurListenerOld } from './../../test';
 import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
-import { UserData } from './../../Components/QRCode/QRCode';
+import { UserData } from '../../Components/Login/QRCode';
 
 // Components
-import LoginBox from './../../Components/LoginBox/LoginBox';
-import QRCode from './../../Components/QRCode/QRCode';
-import MFABox from '../../Components/MFABox/MFABox';
+import LoginBox from '../../Components/Login/LoginBox';
+import QRCode from '../../Components/Login/QRCode';
+import MFABox from '../../Components/Login/MFABox';
 // Style
 import style from './Login.module.css';
 import Dev from '../../Components/Dev/Dev';

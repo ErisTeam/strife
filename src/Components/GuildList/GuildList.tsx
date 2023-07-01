@@ -18,37 +18,19 @@ interface GuildListProps {
 }
 
 const GuildList = (props: GuildListProps) => {
-	const AppState: any = useAppState();
+	const AppState = useAppState();
 
-	onMount(async () => {
-		API.updateGuilds();
+	onMount(() => {
+		API.updateGuilds().catch((err) => console.error(err));
 	});
 
 	//TODO: Switch friends tab to use the guild component
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>
-				<li class={style2.li}>
-					<button
-						class={style2.guild}
-						onClick={() => {
-							if (AppState.currentGuild() !== 'friends') {
-								API.updateRelationships();
-								AppState.setCurrentGuild('friends');
-							} else {
-								AppState.setCurrentGuild(null);
-							}
-						}}
-					>
-						<img
-							src={`https://variety.com/wp-content/uploads/2021/07/Rick-Astley-Never-Gonna-Give-You-Up.png?w=681&h=383&crop=1`}
-							alt={AppState.t.friends()}
-						/>
-					</button>
-					<span class={style2.span}>{AppState.t.friends()}</span>
-				</li>
+				<Guild index={-1} />
 				<li class={style.divider} />
-				<For each={AppState.userGuilds()}>{(guild, index) => <Guild index={index()} />}</For>
+				<For each={AppState.userGuilds}>{(guild, index) => <Guild index={index()} />}</For>
 			</ul>
 		</nav>
 	);

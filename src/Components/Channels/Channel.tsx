@@ -4,16 +4,18 @@ import API from '../../API';
 import { Channel as ChannelType } from '../../discord';
 
 // Style
-import style from './Channel.module.css';
+import style from './css.module.css';
 import { useAppState } from '../../AppState';
 import { Tab } from '../../types';
 import { CONSTANTS } from '../../Constants';
+import { createSignal } from 'solid-js';
 
 interface ChannelProps {
 	data: ChannelType;
 }
 
 const Channel = (props: ChannelProps) => {
+	const [displayName, setDisplayName] = createSignal(props.data.name);
 	function handleClick(e: MouseEvent) {
 		console.log('clicked on', props.data.name, href);
 		if (e.button === 0) {
@@ -55,7 +57,7 @@ const Channel = (props: ChannelProps) => {
 		if (emoji) {
 			//remove emoji from name
 			const regEx = new RegExp(emoji[0], 'g');
-			props.data.name = props.data.name.replace(regEx, '');
+			setDisplayName(props.data.name.replace(regEx, ''));
 			return emoji[0];
 		}
 		switch (props.data.type) {
@@ -89,7 +91,7 @@ const Channel = (props: ChannelProps) => {
 				}}
 			>
 				<div class={style.icon}>{chosenIcon()}</div>
-				{props.data.name}
+				{displayName()}
 			</button>
 		</li>
 	);

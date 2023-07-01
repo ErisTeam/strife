@@ -207,7 +207,7 @@ export default {
 
 	addTab(channel: Channel) {
 		console.log('channel', channel);
-		const guild = AppState.userGuilds().find((g: Guild) => g.properties.id == channel.guild_id);
+		const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');
@@ -239,7 +239,7 @@ export default {
 			console.log(currentChannelId);
 			return;
 		}
-		const guild = AppState.userGuilds().find((g: Guild) => g.properties.id === channel.guild_id);
+		const guild = AppState.userGuilds.find((g: Guild) => g.properties.id === channel.guild_id);
 
 		if (!guild) {
 			console.error('Guild not found!');

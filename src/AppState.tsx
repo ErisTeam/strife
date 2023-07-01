@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, createContext, useContext, Accessor } from 'solid-js';
+import { createSignal, createContext, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
 import { Guild, Relationship } from './discord';
@@ -8,10 +8,10 @@ import { useTrans } from './Translation';
 
 const [userID, setUserID] = createSignal<string | null>(null);
 
-const [userGuilds, setUserGuilds] = createSignal<Guild[]>([]);
-const [relationships, setRelationships] = createSignal<Relationship[]>([]);
+const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
+const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
-const [currentGuild, setCurrentGuild] = createSignal<Guild | null>(null); //Used to display correct channels after being decoupled set to null to hide
+const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
 const [t] = useTrans();
 
 const AppState = createContext({

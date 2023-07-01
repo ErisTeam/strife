@@ -2,7 +2,7 @@
 import { Outlet } from '@solidjs/router';
 import { Show, createEffect, createSignal } from 'solid-js';
 import { useAppState } from '../../AppState';
-import ChannelList from '../ChannelList/ChannelList';
+import ChannelList from '../Channels/ChannelList';
 // Components
 import GuildList from '../GuildList/GuildList';
 import Tabs from '../Tabs/Tabs';
