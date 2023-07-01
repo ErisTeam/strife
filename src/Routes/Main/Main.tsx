@@ -1,5 +1,5 @@
 // Components
-import GuildList from './../../Components/GuildList/GuildList';
+import GuildList from '../../Components/Guild/GuildList';
 
 // Style
 import style from './Main.module.css';

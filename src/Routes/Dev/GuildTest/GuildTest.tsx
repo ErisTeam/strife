@@ -1,7 +1,7 @@
 import { For, Show, createResource, createSignal } from 'solid-js';
 import API from '../../../API';
 import { useAppState } from '../../../AppState';
-import GuildList from '../../../Components/GuildList/GuildList';
+import GuildList from '../../../Components/Guild/GuildList';
 import MessageTest from '../../Messages/MessageTest';
 import { Guild } from '../../../discord';
 

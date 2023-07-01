@@ -4,7 +4,7 @@ import { Show, createEffect, createSignal } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../Channels/ChannelList';
 // Components
-import GuildList from '../GuildList/GuildList';
+import GuildList from '../Guild/GuildList';
 import Tabs from '../Tabs/Tabs';
 
 // Style

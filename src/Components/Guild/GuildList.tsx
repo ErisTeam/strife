@@ -6,12 +6,10 @@ import API from '../../API';
 import { useAppState } from '../../AppState';
 
 // Components
-import Guild from '../Guild/Guild';
+import Guild from './Guild';
 
 // Style
-import style from './GuildList.module.css';
-
-import style2 from '../Guild/Guild.module.css';
+import style from './css.module.css';
 
 interface GuildListProps {
 	className?: string;

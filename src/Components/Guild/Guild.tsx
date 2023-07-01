@@ -1,11 +1,12 @@
 // SolidJS
-import { createEffect } from 'solid-js';
+import { Show, createEffect } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
 
 // Style
-import style from './Guild.module.css';
+import style from './css.module.css';
+import API from '../../API';
 
 interface GuildProps {
 	index: number;
@@ -82,7 +83,12 @@ const Guild = (props: GuildProps) => {
 					}
 				}}
 			>
-				<img src={guild.properties.icon} alt={AppState.t.guild.logoAlt({ guildName: guild.properties.name })} />
+				<Show
+					when={guild.properties.icon}
+					fallback={<h1 class={style.fallbackText}>{API.getInitials(guild.properties.name)}</h1>}
+				>
+					<img src={guild.properties.icon} alt={AppState.t.guild.logoAlt({ guildName: guild.properties.name })} />
+				</Show>
 			</button>
 			<span ref={spanRef} class={style.span}>
 				{guild.properties.name}

@@ -257,4 +257,17 @@ export default {
 		console.warn('replacing tab with index', currentTabIndex, 'with');
 		AppState.setTabs(currentTabIndex, tab);
 	},
+	getInitials(input: string): string {
+		const words = input.split(' ');
+		let initials = '';
+		if (words.length > 1) {
+			words.forEach((word) => {
+				initials += word[0];
+			});
+		} else {
+			initials = input[0];
+		}
+
+		return initials;
+	},
 };
