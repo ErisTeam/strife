@@ -20,7 +20,7 @@ export default {
 		return (await res).data;
 	},
 	async getRelationships(userId: string = AppState.userID() as string) {
-		const res = oneTimeListener<{ type: string; user_id: string; data: Relationship[] }>('general', 'relationships');
+		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
 		return (await res).data;

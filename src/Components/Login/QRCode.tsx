@@ -29,13 +29,13 @@ function QRCode(prop: QRCodeProps) {
 				when={prop.user_data === undefined}
 				fallback={
 					<>
-						<h1 class={style.subheader}>{prop.user_data?.username + '#' + prop.user_data?.discriminator}</h1>
-						<p class={style.paragraph}>{prop.altParagraph}</p>
+						<h1>{prop.user_data?.username + '#' + prop.user_data?.discriminator}</h1>
+						<p>{prop.altParagraph}</p>
 					</>
 				}
 			>
-				<h1 class={style.subheader}>{prop.header}</h1>
-				<p class={style.paragraph}>{prop.paragraph}</p>
+				<h1>{prop.header}</h1>
+				<p>{prop.paragraph}</p>
 			</Show>
 		</div>
 	);

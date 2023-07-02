@@ -22,7 +22,7 @@ function LoginBox(prop: LoginBoxProps) {
 
 	return (
 		<form
-			class={[style.container, prop.class].join(' ')}
+			class={[style.loginBox, prop.class].join(' ')}
 			onsubmit={(e) => {
 				e.preventDefault();
 				prop.login(name(), password()).catch((e) => {

@@ -21,7 +21,7 @@ function MFABox(prop: MFABoxProps) {
 
 	return (
 		<form
-			class={[style.container, prop.class].join(' ')}
+			class={[style.MFABox, prop.class].join(' ')}
 			onsubmit={async (e) => {
 				e.preventDefault();
 				prop.verify(code());
