@@ -9,6 +9,8 @@ import { useAppState } from '../../AppState';
 import { Tab } from '../../types';
 import { CONSTANTS } from '../../Constants';
 import { createSignal } from 'solid-js';
+import ContextMenu from '../ContextMenu/ContextMenu';
+import { produce } from 'solid-js/store';
 
 interface ChannelProps {
 	data: ChannelType;
@@ -88,6 +90,19 @@ const Channel = (props: ChannelProps) => {
 				onMouseDown={(e) => {
 					e.preventDefault();
 					handleClick(e);
+				}}
+				onContextMenu={(e) => {
+					e.preventDefault();
+					AppState.setContextMenuData(
+						produce((x) => {
+							x.type = 'channel';
+							x.channel = props.data;
+							x.x = e.clientX;
+							x.y = e.clientY;
+							x.isShow = true;
+						})
+					);
+					console.log('right click', AppState.contextMenuData);
 				}}
 			>
 				<div class={style.icon}>{chosenIcon()}</div>

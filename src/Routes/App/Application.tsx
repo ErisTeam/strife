@@ -6,6 +6,7 @@ import { useAppState } from '../../AppState';
 import { Listener, startGateway, startGatewayListener } from '../../test';
 import { useParams } from '@solidjs/router';
 import Dev from '../../Components/Dev/Dev';
+import ContextMenu from '../../Components/ContextMenu/ContextMenu';
 interface i {
 	type: string;
 }
@@ -138,7 +139,6 @@ const Application = () => {
 					</button>
 				</div>
 			</Dev>
-
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>
 				<For each={messages()} fallback={<h1>loading</h1>}>
 					{(val, index) => {

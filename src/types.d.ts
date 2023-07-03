@@ -1,5 +1,7 @@
 //TODO: move discord types to diffrent file
 
+import { Channel, Guild } from './discord';
+
 type AppState = 'LoginScreen' | 'Application' | 'Dev';
 
 type Input = 'text' | 'number' | 'email' | 'password' | 'search' | 'hidden' | string;
@@ -18,4 +20,16 @@ type Tab = {
 
 type Sticker = {};
 
-export type { Input, Button, TextArea, Tab, AppState };
+type ContextMenuData = {
+	type: 'channel' | 'message' | 'user' | 'guild' | 'guildMember' | 'image' | 'video' | 'audio' | 'file' | 'other';
+	channel?: Channel;
+	message?: any; //TODO: Replace with Message type
+	user?: any; //TODO: Replace with User type
+	guild?: Guild;
+	attachment?: any; //TODO: Replace with Attachment type
+	children?: Element;
+	x: number;
+	y: number;
+	isShow: boolean;
+};
+export type { Input, Button, TextArea, Tab, AppState, Sticker, ContextMenuData };

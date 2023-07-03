@@ -1,14 +1,19 @@
-import style from './css.module.scss';
+import style from './css.module.css';
 interface IContextMenuItem {
 	text?: string;
 	icon?: any;
 	fn?: VoidFunction;
-	fnArgs?: any[];
 }
 const ContextMenuItem = (props: IContextMenuItem) => {
 	return (
 		<li class={style.contextMenuItem}>
-			<button onClick={() => props.fn?.(...props.fnArgs)}>
+			<button
+				onClick={() => {
+					if (!props.fn) return;
+
+					props.fn();
+				}}
+			>
 				<div class={style.icon}>{props.icon}</div>
 				<span>{props.text}</span>
 			</button>
