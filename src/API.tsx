@@ -206,6 +206,11 @@ export default {
 	},
 
 	addTab(channel: Channel) {
+		if (AppState.tabs.find((tab) => tab.channelId == channel.id)) {
+			console.log('tab already exists');
+			return;
+		}
+
 		console.log('channel', channel);
 		const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
 

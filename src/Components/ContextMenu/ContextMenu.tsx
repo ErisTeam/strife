@@ -5,27 +5,37 @@ import { useAppState } from '../../AppState';
 import ContextMenuItem from './ContextMenuItem';
 import API from '../../API';
 import { useNavigate, useParams } from '@solidjs/router';
-import { Accessor } from 'solid-js';
-import clickOutside from '../../clickOutside';
+import { Accessor, Match, Switch, createEffect, onMount } from 'solid-js';
 const ContextMenu = () => {
 	const AppState = useAppState();
 	const params = useParams();
+	let ref;
 	const navigate = useNavigate();
+	//on click outside
+	onMount(() => {
+		const listener = (e: MouseEvent) => {
+			if (!ref.contains(e.target as Node)) {
+				AppState.setContextMenuData('isShow', false);
+			}
+		};
+		document.addEventListener('click', listener);
+		return () => {
+			document.removeEventListener('click', listener);
+		};
+	});
 
-	switch (AppState.contextMenuData.type) {
-		case 'channel':
-			return (
-				<Portal>
-					<Show when={AppState.contextMenuData.isShow}>
+	// AppState.setContextMenuData('isShow', false);
+	return (
+		<Portal>
+			<Show when={AppState.contextMenuData.isShow}>
+				<Switch>
+					<Match when={AppState.contextMenuData.type == 'channel'}>
 						<ol
+							ref={ref}
 							class={style.contextMenu}
 							style={{
-								left: AppState.contextMenuData.x.toPrecision(1) + 'px',
-								top: AppState.contextMenuData.y.toPrecision(1) + 'px',
-							}}
-							use:clickOutside={() => {
-								AppState.setContextMenuData('isShow', false);
-								console.log('click outside');
+								top: AppState.contextMenuData.y.toString() + 'px',
+								left: AppState.contextMenuData.x.toString() + 'px',
 							}}
 						>
 							<ContextMenuItem
@@ -47,35 +57,27 @@ const ContextMenu = () => {
 
 									if (params.channelId) {
 										API.replaceCurrentTab(AppState.contextMenuData.channel as Channel, params.channelId);
+
+										navigate(
+											`/app/${(AppState.contextMenuData.channel as Channel).guild_id}/${
+												(AppState.contextMenuData.channel as Channel).id
+											}`
+										);
 									} else {
 										API.addTab(AppState.contextMenuData.channel as Channel);
+										navigate(
+											`/app/${AppState.tabs[AppState.tabs.length - 1].guildId}/${
+												AppState.tabs[AppState.tabs.length - 1].channelId
+											}`
+										);
 									}
 								}}
 							/>
 						</ol>
-					</Show>
-				</Portal>
-			);
-		// case 'message':
-		// 	return ()
-		// case 'user':
-		// 	return ()
-		// case 'guild':
-		// 	return ()
-		// case 'guildMember':
-		// 	return ()
-		// case 'image':
-		// 	return ()
-		// case 'video':
-		// 	return ()
-		// case 'audio':
-		// 	return ()
-		// case 'file':
-		// 	return ()
-		// case 'other':
-		// 	return ()
-		default:
-			return <></>;
-	}
+					</Match>
+				</Switch>
+			</Show>
+		</Portal>
+	);
 };
 export default ContextMenu;
