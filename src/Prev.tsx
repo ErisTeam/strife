@@ -249,7 +249,7 @@ function Prev() {
 				>
 					change state to main
 				</button>
-				<SplashText text="REQUIRED">
+				<SplashText text="REQUIRED (In future)">
 					<button
 						class={buttons.default}
 						onClick={async (e) => {
