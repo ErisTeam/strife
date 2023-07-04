@@ -6,7 +6,7 @@ function Redirect() {
 	const AppState = useAppState();
 	const navigate = useNavigate();
 	onMount(() => {
-		if (!AppState.userID()) {
+		if (!AppState.userId()) {
 			navigate('/login');
 			console.log('navigated to login');
 		} else {

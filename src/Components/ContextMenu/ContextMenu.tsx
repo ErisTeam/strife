@@ -9,7 +9,7 @@ import { Accessor, Match, Switch, createEffect, onMount } from 'solid-js';
 const ContextMenu = () => {
 	const AppState = useAppState();
 	const params = useParams();
-	let ref;
+	let ref: HTMLOListElement;
 	const navigate = useNavigate();
 	//on click outside
 	onMount(() => {

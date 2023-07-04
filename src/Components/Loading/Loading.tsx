@@ -1,6 +1,7 @@
+import { JSX } from 'solid-js';
 import style from './Loading.module.css';
 interface Props {
-	message?: Element;
+	message?: JSX.Element;
 }
 export default (props: Props) => {
 	console.log(props.message);

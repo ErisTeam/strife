@@ -66,7 +66,7 @@ const LoginPage = () => {
 			case 'loginSuccess': {
 				appState.setUserID(input.userId);
 
-				console.log(appState.userID());
+				console.log(appState.userId());
 
 				console.log('login success');
 				navigate('/');

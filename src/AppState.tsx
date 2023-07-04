@@ -1,12 +1,12 @@
 // SolidJS
-import { createSignal, createContext, useContext } from 'solid-js';
+import { createSignal, createContext, useContext, Accessor, JSX } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
 import { Guild, Relationship } from './discord';
 import { ContextMenuData, Tab } from './types';
 import { useTrans } from './Translation';
 
-const [userID, setUserID] = createSignal<string | null>(null);
+const [userId, setUserId] = createSignal<string | null>(null);
 
 const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [contextMenuData, setContextMenuData] = createStore<ContextMenuData>({
@@ -28,8 +28,8 @@ const AppState = createContext({
 
 	relationships,
 	setRelationships,
-	userID,
-	setUserID,
+	userId,
+	setUserID: setUserId,
 	tabs,
 	setTabs,
 	currentGuild,
@@ -37,7 +37,7 @@ const AppState = createContext({
 	t,
 });
 
-export function AppStateProvider({ children }: { children: Node }) {
+export function AppStateProvider({ children }: { children: JSX.Element[] | JSX.Element }) {
 	return (
 		<AppState.Provider
 			value={{
@@ -48,8 +48,8 @@ export function AppStateProvider({ children }: { children: Node }) {
 
 				relationships,
 				setRelationships,
-				userID,
-				setUserID,
+				userId,
+				setUserID: setUserId,
 				tabs,
 				setTabs,
 				currentGuild,
@@ -65,3 +65,4 @@ export function AppStateProvider({ children }: { children: Node }) {
 export function useAppState() {
 	return useContext(AppState);
 }
+export const TEST = userId;

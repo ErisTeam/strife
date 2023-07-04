@@ -13,29 +13,21 @@ import ContextMenu from '../ContextMenu/ContextMenu';
 
 const ApplicationWrapper = () => {
 	const AppState: any = useAppState();
-	const [classes, setClasses] = createSignal<string>('');
+	const [wrapperStyle, setWrapperStyle] = createSignal<string>('');
 	createEffect(() => {
 		if (AppState.currentGuild() == null && AppState.tabs.length < 1) {
-			//without channel list and without tabs
-
-			setClasses(style.withoutAll);
+			setWrapperStyle(style.withoutAll);
 		} else if (AppState.currentGuild() != null && AppState.tabs.length > 0) {
-			//with channel list and with tabs
-
-			setClasses(style.withAll);
+			setWrapperStyle(style.withAll);
 		} else if (AppState.currentGuild() != null && AppState.tabs.length < 1) {
-			setClasses(style.withoutTabs);
-
-			//with channel list and without tabs
+			setWrapperStyle(style.withoutTabs);
 		} else if (AppState.currentGuild() == null && AppState.tabs.length > 0) {
-			setClasses(style.withoutChannels);
-
-			//without channel list and with tabs
+			setWrapperStyle(style.withoutChannels);
 		}
 	});
 
 	return (
-		<div class={style.wrapper + ' ' + classes()}>
+		<div class={style.wrapper + ' ' + wrapperStyle()}>
 			<ContextMenu />
 			<GuildList className={style.guilds} />
 			<Show when={AppState.tabs.length > 0}>

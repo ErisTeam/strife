@@ -30,7 +30,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 	const AppState = useAppState();
 
-	startGateway(AppState.userID() as string);
+	startGateway(AppState.userId() as string);
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -53,7 +53,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 
 	fetchMessages();
 
-	const listener = startGatewayListener(AppState.userID() as string);
+	const listener = startGatewayListener(AppState.userId() as string);
 
 	listener.on<messageCreate>('messageCreate', (msg) => {
 		console.log('Listener gateway', msg, msg, msg.type);
@@ -104,7 +104,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 		fetch(`https://discord.com/api/v9/channels/${channelId}/typing`, {
 			method: 'POST',
 			headers: {
-				Authorization: (await API.getToken(AppState.userID() as string)) as string,
+				Authorization: (await API.getToken(AppState.userId() as string)) as string,
 			},
 		});
 		setTimeout(async () => {
@@ -182,7 +182,7 @@ function MessageTest(props: { channelId?: string; guildId?: string }) {
 							<li>
 								{intl.format(val.timestamp)} <br /> {val.author.username}: {val.content}
 								{!!embed && embed}
-								{val.author.id == AppState.userID() && (
+								{val.author.id == AppState.userId() && (
 									<button
 										class={style.button}
 										onClick={() => {

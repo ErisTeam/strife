@@ -1,18 +1,9 @@
-import { Outlet, Route, RouteProps } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api';
-import {
-	Component,
-	JSXElement,
-	Show,
-	Suspense,
-	catchError,
-	createEffect,
-	createResource,
-	createSignal,
-} from 'solid-js';
+import { Component, ErrorBoundary, Show, createEffect, createResource, createSignal } from 'solid-js';
 import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
 import { useTrans } from './Translation';
+import Dev from './Components/Dev/Dev';
 
 interface Props {
 	state: AppState;
@@ -25,7 +16,9 @@ const TimeLeft = 10;
 const R = (props: Props) => {
 	const [t] = useTrans();
 
-	const [a, { mutate, refetch }] = createResource(async () => {
+	const [error, setError] = createSignal<Error | null>(null);
+
+	const [a, { refetch }] = createResource(async () => {
 		console.log('aaaaaaaaa');
 		const res = await invoke('set_state', { newState: props.state, force: props.force });
 		console.log('bbbbbbbbbb');
@@ -36,36 +29,61 @@ const R = (props: Props) => {
 	createEffect(() => {
 		if (a.error) {
 			console.log(a.error);
-			setTimeLeft(TimeLeft);
-			const r = setInterval(() => {
-				if (timeLeft() == 0) {
-					refetch();
-					clearInterval(r);
-					return;
-				}
-				setTimeLeft((v) => v - 1);
-			}, 1000);
+			setError(a.error);
+			startTimer(() => {
+				refetch();
+			});
 		}
 	}, a);
 
-	return (
-		<Show
-			when={!a.loading && !a.error}
-			fallback={
-				<Loading
-					message={
-						a.error && (
-							<>
-								<h3>{a.error.toString()}</h3>
-								<h3>{t.error({ time: timeLeft() })}</h3>
-							</>
-						)
-					}
-				/>
+	function startTimer(onEnd: () => void) {
+		setTimeLeft(TimeLeft);
+		const r = setInterval(() => {
+			if (timeLeft() == 0) {
+				onEnd();
+				clearInterval(r);
+				return;
 			}
-		>
-			<props.component />
-		</Show>
+			setTimeLeft((v) => v - 1);
+		}, 1000);
+	}
+
+	return (
+		<>
+			<Dev>
+				<h1>changeState response {a() as any}</h1>
+			</Dev>
+			<Show
+				when={!a.loading && !a.error && error() == null}
+				fallback={
+					<Loading
+						message={
+							error() && (
+								<>
+									<h3>{error().toString()}</h3>
+									<h3>{t.error({ time: timeLeft() })}</h3>
+								</>
+							)
+						}
+					/>
+				}
+			>
+				{/* <ErrorBoundary
+					fallback={(error) => {
+						setError(error);
+						startTimer(() => {
+							setError(null);
+							if (props.force) {
+								refetch();
+							}
+						});
+						return <div>Gami to Furras. You shouldn't be seeing this message: {error.toString()}</div>;
+					}}
+				> */}
+				<props.component />
+				{/* </ErrorBoundary> */}
+			</Show>
+		</>
 	);
 };
 export default R;

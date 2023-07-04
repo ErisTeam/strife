@@ -1,0 +1,35 @@
+.container {
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	width: fit-content;
+	overflow: visible;
+}
+.splashText {
+	top: 50%;
+	left: 90%;
+	position: absolute;
+	z-index: 90;
+	transform: translateX(-50%) translateY(-50%) rotate(-25deg);
+	color: #ffff55;
+
+	font-size: 0.8em;
+	font-family: Monocraft, var(--default-font);
+	animation: alternate splashText 0.5s infinite;
+	user-select: none;
+	pointer-events: none;
+}
+
+.noWrap {
+	white-space: nowrap;
+}
+
+@keyframes splashText {
+	0% {
+		font-size: 0.8em;
+	}
+
+	100% {
+		font-size: 1em;
+	}
+}

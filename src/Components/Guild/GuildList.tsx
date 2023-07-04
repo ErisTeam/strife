@@ -1,5 +1,5 @@
 // SolidJS
-import { onMount, For } from 'solid-js';
+import { onMount, For, createResource } from 'solid-js';
 
 // API
 import API from '../../API';
@@ -10,6 +10,7 @@ import Guild from './Guild';
 
 // Style
 import style from './css.module.css';
+import { A } from '@solidjs/router';
 
 interface GuildListProps {
 	className?: string;
@@ -18,8 +19,11 @@ interface GuildListProps {
 const GuildList = (props: GuildListProps) => {
 	const AppState = useAppState();
 
-	onMount(() => {
-		API.updateGuilds().catch((err) => console.error(err));
+	const [guilds] = createResource(async () => {
+		console.log('updating guilds');
+		await API.updateGuilds();
+		console.log(AppState.userGuilds);
+		return AppState.userGuilds;
 	});
 
 	//TODO: Switch friends tab to use the guild component
@@ -28,7 +32,7 @@ const GuildList = (props: GuildListProps) => {
 			<ul>
 				<Guild index={-1} />
 				<li class={style.divider} />
-				<For each={AppState.userGuilds}>{(guild, index) => <Guild index={index()} />}</For>
+				<For each={guilds()}>{(guild, index) => <Guild index={index()} />}</For>
 			</ul>
 		</nav>
 	);

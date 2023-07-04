@@ -17,8 +17,9 @@
 		display: flex;
 
 		gap: 0.5rem;
-	}
-	& div * {
-		color: var(--primary);
+
+		button {
+			color: var(--primary);
+		}
 	}
 }

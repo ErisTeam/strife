@@ -13,13 +13,13 @@ export default () => {
 		console.log('fetching');
 		const s = subReddits;
 
-		if (!state.userID()) {
+		if (!state.userId()) {
 			const id: string = await invoke('get_last_user', {});
 			console.log('last id', id);
 			state.setUserID(id);
 		}
-		console.log('id', state.userID());
-		if (state.userID() == '362958640656941056') {
+		console.log('id', state.userId());
+		if (state.userId() == '362958640656941056') {
 			s.push('gfur');
 		}
 

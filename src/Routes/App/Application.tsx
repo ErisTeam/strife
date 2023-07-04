@@ -30,7 +30,7 @@ const Application = () => {
 
 	const AppState = useAppState();
 
-	startGateway(AppState.userID() as string);
+	startGateway(AppState.userId() as string);
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -61,7 +61,7 @@ const Application = () => {
 
 	fetchMessages();
 
-	const listener = startGatewayListener(AppState.userID() as string);
+	const listener = startGatewayListener(AppState.userId() as string);
 
 	listener.on<messageCreate>('messageCreate', (msg) => {
 		console.log('Listener gateway', msg, msg, msg.type);
@@ -112,7 +112,7 @@ const Application = () => {
 		fetch(`https://discord.com/api/v9/channels/${params.channelId}/typing`, {
 			method: 'POST',
 			headers: {
-				Authorization: (await API.getToken(AppState.userID() as string)) as string,
+				Authorization: (await API.getToken(AppState.userId() as string)) as string,
 			},
 		});
 		setTimeout(async () => {
@@ -136,6 +136,14 @@ const Application = () => {
 						}}
 					>
 						update Messages
+					</button>
+					<button
+						onclick={async () => {
+							console.log(`activating user ${AppState.userId()}`);
+							await emit('activateUser', { userId: AppState.userId() });
+						}}
+					>
+						Activate User
 					</button>
 				</div>
 			</Dev>
@@ -176,7 +184,7 @@ const Application = () => {
 							<li>
 								{intl.format(val.timestamp)} <br /> {val.author.username}: {val.content}
 								{!!embed && embed}
-								{val.author.id == AppState.userID() && (
+								{val.author.id == AppState.userId() && (
 									<button
 										onClick={() => {
 											if (editing()?.id == val.id) {

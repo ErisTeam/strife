@@ -7,7 +7,7 @@
 	gap: 2rem;
 	justify-content: center;
 	align-items: center;
-	background-color: #1f1f20;
+	background-color: var(--depth0), #1f1f20;
 }
 h3 {
 	color: #fff;

@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, Match, onCleanup, onMount, Show } from 'solid-js';
+import { createResource, createSignal, Match, onCleanup, onMount, Show } from 'solid-js';
 import { A, Link, useBeforeLeave } from '@solidjs/router';
 import HCaptcha from 'solid-hcaptcha';
 
@@ -13,17 +13,20 @@ import { changeState, useTaurListener, useTaurListenerOld } from './test';
 import { useAppState } from './AppState';
 import qrcode from 'qrcode';
 
-// Components
-import Anchor from './Components/Anchor/Anchor';
-
 // Style
 import style from './prev.module.css';
 import buttons from './Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
 import { info } from 'tauri-plugin-log-api';
+import SplashText from './Components/Dev/SplashText';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
+	const [a] = createResource(async () => {
+		throw new Error('test');
+	});
+
+	console.log('Prev');
 	const [showMsg, setshowMsg] = createSignal('');
 	const [name, setName] = createSignal('');
 	const [password, setPassword] = createSignal('');
@@ -99,7 +102,7 @@ function Prev() {
 			errors: any;
 		}
 
-		const input = event.payload  as
+		const input = event.payload as
 			| qrcode
 			| ticketData
 			| RequireAuth
@@ -140,7 +143,7 @@ function Prev() {
 				}
 				break;
 			case 'requireAuthMobile':
-				setCaptchaKey(input.captcha_sitekey );
+				setCaptchaKey(input.captcha_sitekey);
 				setMobileAuthCaptcha(true);
 				break;
 			case 'VerifyError':
@@ -158,7 +161,7 @@ function Prev() {
 
 	return (
 		<div class={style.container}>
-			<h1>{AppState.userID()}</h1>
+			<h1>{AppState.userId()}</h1>
 			<div class={style.row}>
 				<div>
 					<input class={inputs.default} onChange={(e) => setName(e.currentTarget.value)} placeholder="Login" />
@@ -246,15 +249,27 @@ function Prev() {
 				>
 					change state to main
 				</button>
+				<SplashText text="REQUIRED">
+					<button
+						class={buttons.default}
+						onClick={async (e) => {
+							console.log(`activating user ${AppState.userId()}`);
+							const r = await invoke('activate_user', { userId: AppState.userId() });
+							console.log(r);
+						}}
+					>
+						Activate User
+					</button>
+				</SplashText>
 				<button
 					class={buttons.default}
-					onClick={async (e) => {
-						console.log('start gateway');
-						await emit('startGateway', { userId: AppState.userID() });
+					onclick={() => {
+						setImage('aa');
 					}}
 				>
-					Start Gateway
+					Error Test
 				</button>
+
 				<button
 					class={buttons.default}
 					onClick={async (e) => {
@@ -266,7 +281,7 @@ function Prev() {
 				<button
 					class={buttons.default}
 					onClick={async (e) => {
-						await emit('testReconnecting', { user_id: AppState.userID() });
+						await emit('testReconnecting', { user_id: AppState.userId() });
 					}}
 				>
 					Test Reconnecting (Broken)
@@ -275,8 +290,8 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(AppState.userID());
-							console.log(await API.getUserData(AppState.userID() as string));
+							console.log(AppState.userId());
+							console.log(await API.getUserData(AppState.userId() as string));
 						}}
 					>
 						Get User Data
@@ -284,7 +299,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.getRelationships(AppState.userID() as string));
+							console.log(await API.getRelationships(AppState.userId() as string));
 						}}
 					>
 						Get Relationships
@@ -300,29 +315,36 @@ function Prev() {
 				</div>
 			</div>
 			<p>{showMsg()}</p>
+			<Show when={image() == 'aa'}>
+				{(() => {
+					return <div>{a()}</div>;
+				})()}
+			</Show>
 			<div style="background-color:var(--depth2);width:fit-content;height:fit-content;display:flex;justify-content:center;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-				<A class={[buttons.default].join(' ')} href="/login">
+				<A class={buttons.default} href="/login">
 					Better Login
 				</A>
-				<A class={[buttons.default].join(' ')} href="/main">
-					Main
-				</A>
-				<A class={[buttons.default].join(' ')} href="/app">
+				<A class={buttons.default} href="/app">
 					Application
 				</A>
-				<A class={[buttons.default].join(' ')} href="/messagetest">
+				<A class={buttons.default} href="/messagetest">
 					message test
 				</A>
-				<A class={[buttons.default].join(' ')} href="/dev/loadingtest">
+				<A class={buttons.default} href="/dev/loadingtest">
 					Loading Test
 				</A>
-				<A class={[buttons.default].join(' ')} href="/dev/translationtest">
+				<SplashText text="Check It Out" settings={{ noWrap: true }}>
+					<A class={buttons.default} href="/dev/test">
+						Context Menu Test
+					</A>
+				</SplashText>
+				<A class={buttons.default} href="/dev/translationtest">
 					Translation Test
 				</A>
 				<A class={buttons.default} href="/dev/guildtest">
 					Guild Test
 				</A>
-				<A class={[buttons.default].join(' ')} href="/shugsgsrolfdghdflgddid">
+				<A class={buttons.default} href="/shugsgsrolfdghdflgddid">
 					Error Page
 				</A>
 			</div>

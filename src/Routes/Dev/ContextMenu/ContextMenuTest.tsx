@@ -1,0 +1,121 @@
+import { Accessor, Context, JSX, Setter, Show, createContext, createSignal, onMount, useContext } from 'solid-js';
+import { Channel, Guild } from '../../../discord';
+import { Portal } from 'solid-js/web';
+import ContextMenu, { useMenu } from './ContextMenu';
+import { TEST, useAppState } from '../../../AppState';
+import SplashText from '../../../Components/Dev/SplashText';
+
+interface channelContextMenu {
+	channel: Accessor<Channel>;
+}
+interface guildContextMenu {
+	guild: Accessor<Guild>;
+}
+
+function ChannelTestElement() {
+	const menu = useMenu<channelContextMenu>();
+	console.log(menu);
+	return <div>channel id: {menu.channel().id}</div>;
+}
+function GuildTestElement() {
+	const menu = useMenu<guildContextMenu>();
+	console.log(menu);
+	return <div>guild id: {menu.guild().properties.id}</div>;
+}
+
+function TestElement2() {
+	const appState = useAppState();
+	return <div>userId: {appState.userId()}</div>;
+}
+interface MenuProps {
+	children: JSX.Element[] | JSX.Element;
+	channel: Accessor<Channel>;
+	show: boolean;
+}
+
+function ContextChannel() {
+	const [channel, setChannel] = createSignal<Channel>({
+		id: '123467807654',
+		guild_id: '123456789',
+		name: 'test',
+		type: 0,
+		position: 0,
+		permission_overwrites: [],
+		rtc_region: null,
+		parent_id: null,
+		nsfw: false,
+		last_message_id: null,
+		bitrate: 0,
+	});
+	let ref;
+	return (
+		<>
+			<div style={{ background: 'green', width: '5rem', height: '5rem' }} ref={ref}>
+				Click Here
+			</div>
+			<ContextMenu
+				mainRef={ref}
+				data={{
+					channel: channel,
+				}}
+			>
+				<ChannelTestElement />
+				<TestElement2 />
+			</ContextMenu>
+		</>
+	);
+}
+function ContextGuild() {
+	const [guild, setGuild] = createSignal<Guild>({
+		properties: {
+			id: '123456789',
+			name: 'test',
+			icon: '',
+			system_channel_id: null,
+			owner_id: '123456789',
+		},
+		description: '',
+		splash: '',
+		banner: '',
+		member_count: 0,
+		presence_count: 0,
+		features: [],
+		channels: [],
+		roles: [],
+	});
+
+	let ref;
+	return (
+		<>
+			<div ref={ref} style={{ background: 'green', width: '5rem', height: '5rem' }}>
+				Click Here
+			</div>
+			<ContextMenu
+				mainRef={ref}
+				data={{
+					guild: guild,
+				}}
+			>
+				<GuildTestElement />
+			</ContextMenu>
+		</>
+	);
+}
+
+export default () => {
+	console.log('test');
+
+	return (
+		<div style={{ display: 'flex', 'flex-direction': 'column', gap: '1rem' }}>
+			<Portal>
+				<div id="ContexMenu"></div>
+			</Portal>
+			Test
+			<ContextGuild />
+			<ContextChannel />
+			<SplashText text="Fix this" settings={{ noWrap: true }}>
+				<div>UserId: {TEST()}</div>
+			</SplashText>
+		</div>
+	);
+};

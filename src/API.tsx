@@ -12,6 +12,10 @@ import { produce } from 'solid-js/store';
 const AppState = useAppState();
 
 export default {
+	async activateUser(userId: string = AppState.userId()) {
+		return await invoke('activate_user', { userId });
+	},
+
 	//TODO: Handle awaiting in wrapper functions not here
 	async getUserData(userId: string) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
@@ -19,13 +23,13 @@ export default {
 		console.log('getUserData', await res);
 		return (await res).data;
 	},
-	async getRelationships(userId: string = AppState.userID() as string) {
+	async getRelationships(userId: string = AppState.userId()) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
 		return (await res).data;
 	},
-	async getGuilds(userId: string = AppState.userID() as string) {
+	async getGuilds(userId: string = AppState.userId()) {
 		console.log('getGuilds', userId);
 		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
 		await emit('getGuilds', { userId });
@@ -125,7 +129,7 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(userId: string = AppState.userID() as string) {
+	async getToken(userId: string = AppState.userId() as string) {
 		return await invoke('get_token', { userId });
 	},
 
@@ -164,6 +168,9 @@ export default {
 
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
+
+		//await this.activateUser();
+
 		const guilds: Guild[] = await this.getGuilds();
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
 		guilds.forEach((guild) => {
@@ -195,6 +202,7 @@ export default {
 				guild.properties.icon = `https://cdn.discordapp.com/icons/${guild.properties.id}/${guild.properties.icon}.webp?size=96`;
 			}
 		});
+		console.log(guilds);
 		AppState.setUserGuilds(guilds);
 	},
 
