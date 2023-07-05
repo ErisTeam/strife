@@ -5,6 +5,10 @@
 	width: fit-content;
 	overflow: visible;
 }
+.container :first-child {
+	display: block;
+}
+
 .splashText {
 	top: 50%;
 	left: 90%;
