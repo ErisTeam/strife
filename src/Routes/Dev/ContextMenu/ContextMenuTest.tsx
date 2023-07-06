@@ -1,7 +1,7 @@
 import { Accessor, Context, JSX, Setter, Show, createContext, createSignal, onMount, useContext } from 'solid-js';
 import { Channel, Guild } from '../../../discord';
 import { Portal } from 'solid-js/web';
-import ContextMenu, { useMenu } from './ContextMenu';
+import ContextMenu, { useMenu } from '../../../Components/ContextMenu/ContextMenu';
 import { TEST, useAppState } from '../../../AppState';
 import SplashText from '../../../Components/Dev/SplashText';
 
@@ -54,7 +54,7 @@ function ContextChannel() {
 				Click Here
 			</div>
 			<ContextMenu
-				mainRef={ref}
+				openRef={ref}
 				data={{
 					channel: channel,
 				}}
@@ -91,7 +91,7 @@ function ContextGuild() {
 				Click Here
 			</div>
 			<ContextMenu
-				mainRef={ref}
+				openRef={ref}
 				data={{
 					guild: guild,
 				}}

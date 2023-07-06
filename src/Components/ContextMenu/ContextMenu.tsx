@@ -1,83 +1,91 @@
-import { Portal, Show } from 'solid-js/web';
-import { Channel, Guild } from '../../discord';
-import style from './css.module.css';
-import { useAppState } from '../../AppState';
-import ContextMenuItem from './ContextMenuItem';
-import API from '../../API';
-import { useNavigate, useParams } from '@solidjs/router';
-import { Accessor, Match, Switch, createEffect, onMount } from 'solid-js';
-const ContextMenu = () => {
-	const AppState = useAppState();
-	const params = useParams();
+import { A } from '@tauri-apps/api/cli-373e13ed';
+import {
+	Accessor,
+	Context,
+	JSX,
+	Setter,
+	Show,
+	createContext,
+	createSignal,
+	onCleanup,
+	onMount,
+	useContext,
+} from 'solid-js';
+import { Portal } from 'solid-js/web';
+let MenuContext = createContext<any>(null);
+
+interface MenuProviderData {
+	closeMenu: () => void;
+}
+
+interface MenuProviderProps<T> {
+	children: JSX.Element[] | JSX.Element;
+	data: T;
+	closeMenu: () => void;
+}
+
+export function MenuProvider<T>(props: MenuProviderProps<T>) {
+	console.log(props);
+
+	return (
+		<MenuContext.Provider value={{ closeMenu: props.closeMenu, ...props.data }}>{props.children}</MenuContext.Provider>
+	);
+}
+export function useMenu<T>() {
+	return useContext(MenuContext as Context<T & MenuProviderData>);
+}
+
+interface ContexMenuProps<T> {
+	children: JSX.Element[] | JSX.Element;
+	data: T;
+	openRef: HTMLElement;
+}
+export default function ContextMenu<T>(props: ContexMenuProps<T>) {
+	const [show, setShow] = createSignal(false);
+	const [pos, setPos] = createSignal({ x: 0, y: 0 });
+
 	let ref: HTMLOListElement;
-	const navigate = useNavigate();
-	//on click outside
+
+	const closeMenu = (ev: MouseEvent) => {
+		if (ev.target == props.openRef) {
+			document.removeEventListener('mousedown', closeMenu);
+			return;
+		}
+		if (!ref.contains(ev.target as Node)) {
+			console.log('close');
+			c();
+		}
+	};
+
+	function c() {
+		setShow(false);
+		document.removeEventListener('mousedown', closeMenu);
+	}
+
+	function openMenu(e: MouseEvent) {
+		e.preventDefault();
+		setShow(true);
+		setPos({ x: e.clientX, y: e.clientY });
+
+		document.addEventListener('mousedown', closeMenu);
+	}
 	onMount(() => {
-		const listener = (e: MouseEvent) => {
-			if (!ref.contains(e.target as Node)) {
-				AppState.setContextMenuData('isShow', false);
-			}
-		};
-		document.addEventListener('click', listener);
-		return () => {
-			document.removeEventListener('click', listener);
-		};
+		props.openRef.addEventListener('contextmenu', openMenu);
+	});
+	onCleanup(() => {
+		props.openRef.removeEventListener('contextmenu', openMenu);
+		document.removeEventListener('mousedown', closeMenu);
 	});
 
-	// AppState.setContextMenuData('isShow', false);
 	return (
-		<Portal>
-			<Show when={AppState.contextMenuData.isShow}>
-				<Switch>
-					<Match when={AppState.contextMenuData.type == 'channel'}>
-						<ol
-							ref={ref}
-							class={style.contextMenu}
-							style={{
-								top: AppState.contextMenuData.y.toString() + 'px',
-								left: AppState.contextMenuData.x.toString() + 'px',
-							}}
-						>
-							<ContextMenuItem
-								text="TEMP Open channel in new tab"
-								fn={() => {
-									AppState.setContextMenuData('isShow', false);
-									API.addTab(AppState.contextMenuData.channel as Channel);
-									navigate(
-										`/app/${AppState.tabs[AppState.tabs.length - 1].guildId}/${
-											AppState.tabs[AppState.tabs.length - 1].channelId
-										}`
-									);
-								}}
-							/>
-							<ContextMenuItem
-								text="TEMP Open channel"
-								fn={() => {
-									AppState.setContextMenuData('isShow', false);
-
-									if (params.channelId) {
-										API.replaceCurrentTab(AppState.contextMenuData.channel as Channel, params.channelId);
-
-										navigate(
-											`/app/${(AppState.contextMenuData.channel as Channel).guild_id}/${
-												(AppState.contextMenuData.channel as Channel).id
-											}`
-										);
-									} else {
-										API.addTab(AppState.contextMenuData.channel as Channel);
-										navigate(
-											`/app/${AppState.tabs[AppState.tabs.length - 1].guildId}/${
-												AppState.tabs[AppState.tabs.length - 1].channelId
-											}`
-										);
-									}
-								}}
-							/>
-						</ol>
-					</Match>
-				</Switch>
+		<Portal mount={document.getElementById('ContexMenu')}>
+			<Show when={show()}>
+				<ol style={{ position: 'absolute', left: `${pos().x}px`, top: `${pos().y}px`, background: 'red' }} ref={ref}>
+					<MenuProvider data={props.data} closeMenu={c}>
+						{props.children}
+					</MenuProvider>
+				</ol>
 			</Show>
 		</Portal>
 	);
-};
-export default ContextMenu;
+}

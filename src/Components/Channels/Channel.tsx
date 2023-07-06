@@ -8,9 +8,9 @@ import style from './css.module.css';
 import { useAppState } from '../../AppState';
 import { Tab } from '../../types';
 import { CONSTANTS } from '../../Constants';
-import { createSignal } from 'solid-js';
-import ContextMenu from '../ContextMenu/ContextMenu';
-import { produce } from 'solid-js/store';
+import { createSignal, getOwner } from 'solid-js';
+import ContextMenu, { useMenu } from '../ContextMenu/ContextMenu';
+import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
 
 interface ChannelProps {
 	data: ChannelType;
@@ -84,30 +84,21 @@ const Channel = (props: ChannelProps) => {
 	const params = useParams();
 	const href = `/app/${props.data.guild_id}/${props.data.id}`;
 
+	let openRef;
 	return (
-		<li class={style.channel}>
+		<li class={style.channel} ref={openRef}>
 			<button
 				onMouseDown={(e) => {
 					e.preventDefault();
 					handleClick(e);
 				}}
-				onContextMenu={(e) => {
-					e.preventDefault();
-					AppState.setContextMenuData(
-						produce((x) => {
-							x.type = 'channel';
-							x.channel = props.data;
-							x.x = e.clientX;
-							x.y = e.clientY;
-							x.isShow = true;
-						})
-					);
-					console.log('right click', AppState.contextMenuData);
-				}}
 			>
 				<div class={style.icon}>{chosenIcon()}</div>
 				{displayName()}
 			</button>
+			<ContextMenu data={{ channel: props.data }} openRef={openRef}>
+				<OpenInNewTab />
+			</ContextMenu>
 		</li>
 	);
 };

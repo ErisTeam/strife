@@ -6,7 +6,7 @@ import { useAppState } from '../../AppState';
 import { Listener, startGateway, startGatewayListener } from '../../test';
 import { useParams } from '@solidjs/router';
 import Dev from '../../Components/Dev/Dev';
-import ContextMenu from '../../Components/ContextMenu/ContextMenu';
+import { emit } from '@tauri-apps/api/event';
 interface i {
 	type: string;
 }

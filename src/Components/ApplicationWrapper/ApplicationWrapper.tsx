@@ -9,7 +9,6 @@ import Tabs from '../Tabs/Tabs';
 
 // Style
 import style from './ApplicationWrapper.module.css';
-import ContextMenu from '../ContextMenu/ContextMenu';
 
 const ApplicationWrapper = () => {
 	const AppState: any = useAppState();
@@ -28,7 +27,6 @@ const ApplicationWrapper = () => {
 
 	return (
 		<div class={style.wrapper + ' ' + wrapperStyle()}>
-			<ContextMenu />
 			<GuildList className={style.guilds} />
 			<Show when={AppState.tabs.length > 0}>
 				<Tabs className={style.tabs} />

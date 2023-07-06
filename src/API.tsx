@@ -8,10 +8,48 @@ import { Tab } from './types';
 import { Channel, Guild, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
+import { Navigator, useNavigate } from '@solidjs/router';
+import { Owner, runWithOwner } from 'solid-js';
 
 const AppState = useAppState();
 
 export default {
+	Tabs: {
+		openTab(tab: Tab, navigator: Navigator) {
+			navigator(`/app/${tab.guildId}/${tab.channelId}`);
+		},
+		addNewTab(channel: Channel, navigator?: Navigator): [number, Tab?] {
+			let t = AppState.tabs.find((tab) => tab.channelId == channel.id);
+			if (t) {
+				console.log('tab already exists');
+				return [1, t];
+			}
+
+			console.log('channel', channel);
+			const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
+
+			if (!guild) {
+				console.error('Guild not found!');
+				return [2];
+			}
+			const tab: Tab = {
+				guildId: channel.guild_id,
+				channelId: channel.id,
+				channelName: channel.name,
+				channelType: channel.type,
+				guildIcon: guild.properties.icon,
+				guildName: guild.properties.name,
+			};
+
+			AppState.setTabs(produce((tabs) => tabs.push(tab)));
+			console.log(AppState.tabs);
+			if (navigator) {
+				this.openTab(tab, navigator);
+			}
+			return [0, tab];
+		},
+	},
+
 	async activateUser(userId: string = AppState.userId()) {
 		return await invoke('activate_user', { userId });
 	},
@@ -169,7 +207,7 @@ export default {
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
 
-		//await this.activateUser();
+		await this.activateUser();
 
 		const guilds: Guild[] = await this.getGuilds();
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
