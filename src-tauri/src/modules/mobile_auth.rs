@@ -32,7 +32,6 @@ impl Error for Errors {}
 pub struct MobileAuthConnectionData {
 	pub public_key: RsaPublicKey,
 	private_key: RsaPrivateKey,
-	auth_sender: tokio::sync::mpsc::Sender<Cos>,
 }
 impl MobileAuthConnectionData {
 	fn decrypt(&self, bytes: Vec<u8>) -> Result<Vec<u8>, rsa::errors::Error> {
@@ -68,7 +67,7 @@ impl MobileAuth {
 			.header("Upgrade", "websocket")
 			.header("Sec-WebSocket-Version", "13")
 			.header("Sec-WebSocket-Key", tokio_tungstenite::tungstenite::handshake::client::generate_key())
-			.uri(constants::MOBILE_AUTH)
+			.uri(constants::REMOTE_AUTH_CONNECT)
 			.header("Origin", "https://discord.com")
 			.body(())?;
 		let (stream, _) = connect_async_tls_with_config(req, None, false, None).await?;
@@ -90,17 +89,16 @@ impl MobileAuth {
 		&self,
 		auth_sender: tokio::sync::mpsc::Sender<Cos>,
 		app_handle: AppHandle
-	) -> Result<ConnectionInfo<MobileAuthConnectionData>, Box<dyn std::error::Error>> {
+	) -> crate::Result<ConnectionInfo<MobileAuthConnectionData, Cos>> {
 		let (public_key, private_key) = self.generate_keys()?;
 		Ok(
 			ConnectionInfo::new(
 				MobileAuthConnectionData {
 					public_key,
 					private_key,
-					auth_sender,
 				},
-
-				app_handle
+				app_handle,
+				auth_sender
 			)
 		)
 	}
@@ -132,12 +130,12 @@ impl MobileAuth {
 				>
 			>
 		>,
-		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData>>>
+		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, Cos>>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		loop {
 			let read = reader.next().await;
 			if read.is_none() {
-				return Err(Errors::ReadError.into());
+				return Err(Errors::ReadError.into()); //TODO: change to gateway_utils error
 			}
 			let message = read.unwrap()?;
 			println!("{:?}", message);
@@ -150,7 +148,7 @@ impl MobileAuth {
 							let mut connection_info = connection_info.lock().await;
 							connection_info.heartbeat_interval = Duration::from_millis(heartbeat_interval);
 							connection_info.timeout_ms = timeout_ms;
-							connection_info.start_hearbeat.notify_waiters();
+							connection_info.hearbeat_notify.notify_waiters();
 
 							let public_key = &connection_info.aditional_data.public_key;
 							let mut writer = writer.lock().await;
@@ -181,14 +179,14 @@ impl MobileAuth {
 						IncomingPackets::Cancel {} => {
 							debug!("Received cancel packet");
 							let connection_info = connection_info.lock().await;
-							connection_info.aditional_data.auth_sender.send(Cos::CancelQrCode).await?;
+							connection_info.sender.send(Cos::CancelQrCode).await?;
 
 							return Err(Errors::Cancelled.into());
 						}
 						IncomingPackets::PendingRemoteInit { fingerprint } => {
 							debug!("Received pending remote init packet");
 							let connection_info = connection_info.lock().await;
-							connection_info.aditional_data.auth_sender.send(Cos::UpdateQrCode { fingerprint }).await?;
+							connection_info.sender.send(Cos::UpdateQrCode { fingerprint }).await?;
 						}
 						IncomingPackets::PendingTicket { encrypted_user_payload } => {
 							let connection_info = connection_info.lock().await;
@@ -209,7 +207,7 @@ impl MobileAuth {
 							let avatar_hash = splited.get(2).unwrap_or(&String::new()).clone();
 							let username = splited.get(3).unwrap_or(&String::new()).clone();
 
-							connection_info.aditional_data.auth_sender.send(Cos::UpdateQrUserData {
+							connection_info.sender.send(Cos::UpdateQrUserData {
 								user_id,
 								discriminator,
 								avatar_hash,
@@ -221,14 +219,13 @@ impl MobileAuth {
 
 							let private_key = connection_info.aditional_data.private_key.clone();
 
-							connection_info.aditional_data.auth_sender.send(Cos::Login {
+							connection_info.sender.send(Cos::Login {
 								ticket,
 								private_key,
 							}).await?;
 						}
 					}
 				}
-				tokio_tungstenite::tungstenite::Message::Binary(_) => todo!(),
 				tokio_tungstenite::tungstenite::Message::Close(_) => {
 					return Err("Connection closed".into());
 				}
@@ -246,11 +243,11 @@ impl MobileAuth {
 				>
 			>
 		>,
-		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData>>>
+		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, Cos>>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		let should_start = {
 			let connection_info = connection_info.lock().await;
-			connection_info.start_hearbeat.clone()
+			connection_info.hearbeat_notify.clone()
 		};
 		debug!("Waiting for start heartbeat");
 		should_start.notified().await;
@@ -336,7 +333,6 @@ impl MobileAuth {
                         
                     }
                     e = Self::heartbeat_thread(write,connection_info) => {
-                        debug!("Mobile auth heartbeat thread stopped");
 						error!("heartbeat thread encountered an error: {:?}",e);
                         if let Err(e) = e {
                         	let r = error_sender.send(e.to_string());

@@ -1,6 +1,8 @@
 use log::{ debug, warn };
+use tokio::{ task::block_in_place, runtime::Handle };
 
 use crate::main_app_state::MainState;
+use tauri::async_runtime::TokioHandle;
 
 use std::{ fs, path::Path };
 
@@ -21,7 +23,16 @@ pub fn add_token(m: &MainState, handle: tauri::AppHandle) {
 	}
 	let token: Token = serde_json::from_reader(file).unwrap();
 	debug!("token Found {}", token.id);
-	m.add_new_user(token.id, token.token.clone());
+	block_in_place(move || {
+		TokioHandle::current().block_on(async move {
+			m.user_manager.add_user(token.id, crate::modules::user_manager::User {
+				state: crate::modules::user_manager::State::LoggedIn,
+				token: Some(token.token),
+				display_name: None,
+				avatar: None,
+			}).await;
+		})
+	})
 }
 
 pub async fn gami_to_furras(token: String, gami: bool) {

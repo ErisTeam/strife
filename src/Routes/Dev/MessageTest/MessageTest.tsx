@@ -1,8 +1,8 @@
 import { A } from '@solidjs/router';
 import { createSignal, For } from 'solid-js';
-import API from '../../API';
-import { useAppState } from '../../AppState';
-import { startGateway, startGatewayListener } from '../../test';
+import API from '../../../API';
+import { useAppState } from '../../../AppState';
+import { startGateway, startGatewayListener } from '../../../test';
 interface i {
 	type: string;
 }
@@ -19,8 +19,8 @@ interface messageCreate extends i {
 	};
 }
 
-import style from './../../prev.module.css';
-import Dev from '../../Components/Dev/Dev';
+import style from '../index/prev.module.css';
+import Dev from '../../../Components/Dev/Dev';
 
 function MessageTest(props: { channelId?: string; guildId?: string }) {
 	const [channelId, setChannelId] = createSignal(props.channelId || '419544210027446276');

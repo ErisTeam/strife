@@ -1,52 +1,76 @@
-use std::{ sync::Mutex, collections::HashMap };
-use crate::Result;
+use std::{ collections::HashMap };
+use serde::Serialize;
+use tokio::sync::RwLock;
 
-use crate::discord::user::UserData;
-
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub enum User {
-	LoggedOut {
-		discriminator: String,
-		display_name: String,
-		image: Option<String>,
-		id: String,
-	},
-	ActiveUser(UserData),
-	InactiveUser {
-		token: String,
-	},
+#[derive(Debug, Clone, Serialize)]
+pub enum State {
+	LoggedIn,
+	LoggedOut,
 }
-impl User {
-	pub fn get_token(&self) -> Option<&str> {
-		match self {
-			Self::LoggedOut { .. } => None,
-			Self::ActiveUser(UserData { token, .. }) => Some(token),
-			Self::InactiveUser { token } => Some(token),
-		}
-	}
-	pub fn get_id(&self) -> Option<&str> {
-		match self {
-			Self::LoggedOut { id, .. } => Some(id),
-			Self::ActiveUser(user) => Some(user.user.id.as_str()),
-			Self::InactiveUser { .. } => None,
+#[derive(Debug, Clone, Serialize)]
+pub struct User {
+	pub state: State,
+	pub token: Option<String>,
+	pub display_name: Option<String>,
+	pub avatar: Option<String>,
+}
+impl Default for User {
+	fn default() -> Self {
+		Self {
+			state: State::LoggedOut,
+			token: None,
+			display_name: None,
+			avatar: None,
 		}
 	}
 }
 
+#[derive(Debug, thiserror::Error)]
+enum UserManagerError {
+	#[error("User not found")]
+	UserNotFound,
+}
+
+#[derive(Debug)]
 pub struct UserManager {
 	/// A map of user IDs to their respective user data.
-	pub users: Mutex<HashMap<String, User>>,
+	pub users: RwLock<HashMap<String, User>>,
 }
 impl UserManager {
 	pub fn new() -> Self {
 		Self {
-			users: Mutex::new(HashMap::new()),
+			users: RwLock::new(HashMap::new()),
 		}
 	}
-	pub fn add_user(&self, user: User) -> Result<()> {
-		let mut users = self.users.lock().unwrap();
-		users.insert(user.get_id().ok_or("User is Inactive")?.to_string(), user);
-		Ok(())
+	pub async fn add_user(&self, user_id: String, user: User) {
+		let mut users = self.users.write().await;
+		users.insert(user_id, user);
+	}
+
+	#[allow(dead_code)]
+	//TODO: add a way to logout
+	pub async fn logout(&self, user_id: &str) -> crate::Result<()> {
+		let mut users = self.users.write().await;
+		let user = users.get_mut(user_id);
+		if let Some(user) = user {
+			user.state = State::LoggedOut;
+			return Ok(());
+		}
+		Err(UserManagerError::UserNotFound.into())
+	}
+	#[allow(dead_code)]
+	pub async fn remove_user(&self, user_id: &str) {
+		let mut users = self.users.write().await;
+		users.remove(user_id);
+	}
+
+	pub async fn get_user(&self, user_id: &str) -> Option<User> {
+		let users = self.users.read().await;
+		users.get(user_id).cloned()
+	}
+
+	pub async fn get_all_users(&self) -> HashMap<String, User> {
+		let users = self.users.read().await;
+		users.clone()
 	}
 }

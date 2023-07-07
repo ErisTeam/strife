@@ -1,15 +1,17 @@
+//TODO: move out of discord module
+
 use std::collections::HashMap;
 
 use super::types::{
 	user::{ CurrentUser, PublicUser, GuildSettingsEntry, GuildSettings },
 	guild::PartialGuild,
 	relationship::GatewayRelationship,
+	gateway::packets_data::Ready,
 };
 
 #[derive(Debug, Clone)]
 pub struct UserData {
 	pub user: CurrentUser,
-	pub(crate) token: String,
 
 	pub users: Vec<PublicUser>,
 
@@ -24,7 +26,6 @@ pub struct UserData {
 impl UserData {
 	pub fn new(
 		user: CurrentUser,
-		token: String,
 
 		users: Vec<PublicUser>,
 
@@ -45,7 +46,6 @@ impl UserData {
 		}
 		Self {
 			user,
-			token,
 			users,
 			guilds,
 			guild_settings: map,
@@ -54,6 +54,12 @@ impl UserData {
 		}
 	}
 
+	#[allow(dead_code)]
+	pub fn get_formated_guilds(&self) -> serde_json::Value {
+		todo!("format guilds")
+	}
+
+	#[allow(dead_code)]
 	pub fn get_guild_by_channel(&self, channel_id: &str) -> Option<&PartialGuild> {
 		for guild in &self.guilds {
 			for channel in &guild.channels {
@@ -71,5 +77,22 @@ impl UserData {
 			}
 		}
 		None
+	}
+}
+
+impl From<Ready> for UserData {
+	fn from(ready: Ready) -> Self {
+		Self::new(
+			ready.user,
+
+			ready.users,
+
+			ready.guilds,
+			ready.user_guild_settings,
+
+			ready.private_channels,
+
+			ready.relationships
+		)
 	}
 }

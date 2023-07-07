@@ -96,7 +96,7 @@ pub struct Auth {
 
 	ticket: RwLock<Option<String>>,
 
-	pub captcha_data: RwLock<Option<CaptchaData>>,
+	pub captcha_data: Arc<RwLock<Option<CaptchaData>>>,
 }
 
 impl Auth {
@@ -105,7 +105,7 @@ impl Auth {
 			gateway: Arc::new(RwLock::new(MobileAuth::new())),
 			state,
 			ticket: RwLock::new(None),
-			captcha_data: RwLock::new(None),
+			captcha_data: Arc::new(RwLock::new(None)),
 		}
 	}
 	pub async fn login_request(
@@ -150,7 +150,12 @@ impl Auth {
 			LoginResponse::Success { token, user_id, user_settings } => {
 				println!("token: {}", token);
 
-				state.add_new_user(user_id.clone(), token.clone());
+				state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
+					state: crate::modules::user_manager::State::LoggedIn,
+					token: Some(token),
+					display_name: None,
+					avatar: None,
+				}).await;
 
 				response = webview_packets::auth::Auth::LoginSuccess { user_id, user_settings: Some(user_settings) };
 			}
@@ -186,7 +191,9 @@ impl Auth {
 
 	async fn receiver_thread(
 		mut auth_receiver: tokio::sync::mpsc::Receiver<Cos>,
-		this: Arc<Self>,
+		state: Weak<MainState>,
+		gateaway: Weak<RwLock<MobileAuth>>,
+		captcha_data: Weak<RwLock<Option<CaptchaData>>>,
 		handle: AppHandle
 	) -> std::result::Result<(), Box<dyn std::error::Error + Sync + Send>> {
 		loop {
@@ -194,10 +201,11 @@ impl Auth {
 			if let Some(payload) = payload {
 				match payload {
 					Cos::Login { ticket, private_key } => {
-						match Self::login_mobile_auth(ticket, None, None).await.unwrap() {
+						let res = Self::login_mobile_auth(ticket, None, None).await?;
+						match res {
 							http_packets::auth::LoginResponse::Success { encrypted_token } => {
 								debug!("LoginResponse::Success");
-								let state = this.state.upgrade().unwrap(); //todo error handeling
+								let state = state.upgrade().ok_or("State was None")?;
 
 								let decoded = base64::engine::general_purpose::STANDARD.decode(&encrypted_token)?;
 								let decrypted = private_key.decrypt(
@@ -207,11 +215,23 @@ impl Auth {
 
 								let token = String::from_utf8(decrypted)?;
 
-								let user_id = token_utils::get_id(&token);
-								println!("id:{} \n token: {}",user_id, token);
-								state.add_new_user(user_id.clone(), token);
+								let user_id = token_utils
+									::get_id(&token)
+									.map_err(|e| format!("Failed to get user id: {}", e))?;
 
-								let gateway = this.gateway.read().await;
+								#[cfg(debug_assertions)]
+								println!("id:{} \n token: {}", user_id, token);
+
+								state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
+									state: crate::modules::user_manager::State::LoggedIn,
+									token: Some(token),
+									display_name: None,
+									avatar: None,
+								}).await;
+
+								let gateway = gateaway.upgrade().ok_or("gateway was None")?;
+
+								let gateway = gateway.read().await;
 								gateway.stop();
 
 								handle.emit_all("auth", webview_packets::auth::Auth::LoginSuccess {
@@ -227,7 +247,8 @@ impl Auth {
 								captcha_rqtoken,
 							} => {
 								let captcha_sitekey = captcha_sitekey.ok_or("captcha_sitekey is none")?;
-								this.captcha_data.write().await.replace(CaptchaData {
+								let captcha_data = captcha_data.upgrade().ok_or("captcha_data is none")?;
+								captcha_data.write().await.replace(CaptchaData {
 									captcha_data: captcha_rqdata.ok_or("captcha_rqdata is none")?,
 									captcha_token: captcha_rqtoken.ok_or("captcha_rqtoken is none")?,
 									captcha_sitekey: captcha_sitekey.clone(),
@@ -276,9 +297,8 @@ impl Auth {
 		}
 	}
 
-	pub async fn start_gateway(self, handle: AppHandle) -> std::result::Result<Arc<Self>, Box<dyn std::error::Error>> {
-		let this = Arc::new(self);
-		let mut gateway = this.gateway.write().await;
+	pub async fn start_gateway(&mut self, handle: AppHandle) -> std::result::Result<(), Box<dyn std::error::Error>> {
+		let mut gateway = self.gateway.write().await;
 
 		let (auth_sender, auth_reciver) = tokio::sync::mpsc::channel(1);
 
@@ -286,9 +306,10 @@ impl Auth {
 
 		{
 			let stop = gateway.stop_notifyer().ok_or("stop_notifyer is none")?;
-			let gateway = Arc::downgrade(&this.gateway);
+			let gateway = Arc::downgrade(&self.gateway);
+			let captcha_data = Arc::downgrade(&self.captcha_data);
 
-			let this = this.clone();
+			let state = self.state.clone();
 			let handle = handle.clone();
 
 			tokio::spawn(async move {
@@ -296,7 +317,7 @@ impl Auth {
 						_ = stop.notified() =>{
 							debug!("Stopping Auth Receiver thread");
 						},
-						_res = Self::receiver_thread(auth_reciver,this,handle) =>{
+						_res = Self::receiver_thread(auth_reciver,state,gateway.clone(),captcha_data,handle) =>{
 							if let Some(gateway) = gateway.upgrade(){
 								gateway.write().await.stop();
 							}
@@ -307,7 +328,7 @@ impl Auth {
 		}
 
 		let stop = gateway.stop_notifyer().unwrap();
-		let gateway = Arc::downgrade(&this.gateway);
+		let gateway = Arc::downgrade(&self.gateway);
 		let handle = handle;
 		tokio::spawn(async move {
 			#[derive(Debug)]
@@ -343,9 +364,9 @@ impl Auth {
 				if let SelectType::Error(e) = a {
 					// todo!("Error handeling");
 					println!("Error: {}", e);
-					// if (e == "ConnectionClosed"){
-
-					// }
+					if e == "ConnectionClosed" {
+						println!("Connection closed");
+					}
 					//TODO: Error handeling
 				}
 
@@ -365,7 +386,7 @@ impl Auth {
 				}
 			}
 		});
-		Ok(this.clone())
+		Ok(())
 	}
 
 	//TODO: check if works
@@ -376,7 +397,7 @@ impl Auth {
 	) -> std::result::Result<http_packets::auth::LoginResponse, Box<dyn std::error::Error + Sync + Send>> {
 		let client = reqwest::Client::new();
 		let mut request = client
-			.post(constants::MOBILE_AUTH_GET_TOKEN)
+			.post(constants::REMOTE_AUTH_LOGIN)
 			.header("Content-Type", "application/json")
 			.header("x-super-properties", Properties::default().base64().unwrap())
 			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket: ticket }))?);
@@ -464,21 +485,23 @@ impl Auth {
 		}
 	}
 
-	pub fn stop(&self) {
+	pub fn stop_sync(&self) {
 		debug!("Stopping Auth");
-		let gateway = self.gateway.clone();
 		tokio::task::block_in_place(move || {
 			Handle::current().block_on(async move {
-				let gateway = gateway.read().await;
-				gateway.stop();
+				self.stop().await;
 			});
 		});
+	}
+	pub async fn stop(&self) {
+		let gateway = self.gateway.read().await;
+		gateway.stop();
 	}
 }
 impl Drop for Auth {
 	fn drop(&mut self) {
 		debug!("Dropping Auth");
 
-		self.stop();
+		self.stop_sync();
 	}
 }

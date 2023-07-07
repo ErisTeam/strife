@@ -11,14 +11,14 @@ import { AppStateProvider, useAppState } from './AppState';
 // Components
 import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
 import Application from './Routes/App/Application';
-import Prev from './Prev';
+import Prev from './Routes/Dev/index/Prev';
 import Login from './Routes/Login/Login';
 import Main from './Routes/Main/Main';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import Error from './Routes/Error/Error';
 import Dev from './Components/Dev/Dev';
 import TranslationTest from './Routes/Dev/Translation/TranslationTest';
-import MessageTest from './Routes/Messages/MessageTest';
+import MessageTest from './Routes/Dev/MessageTest/MessageTest';
 
 // Style
 import './style.css';
@@ -63,7 +63,7 @@ const App: Component = () => {
 
 								<Route path="/login" element={<R state={'LoginScreen'} force={true} component={Login} />} />
 
-								<Route path="/" element={<R state={'LoginScreen'} force={true} component={Prev} />}></Route>
+								<Route path="/" element={<R state={'Dev'} force={true} component={Prev} />}></Route>
 
 								<Route path="/dev" element={<R state={'Dev'} force={true} component={Outlet} />}>
 									<Route path="/test" component={Test} />

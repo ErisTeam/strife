@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+package TNADC.discord.v1.FormatedGuilds;
+
+
+message FormatedGuilds{
+    repeated Guild guilds = 1;
+}
+
+message Guild{
+
+    
+}
+
+message Properties
+
+message Role{
+    //TODO: 
+}

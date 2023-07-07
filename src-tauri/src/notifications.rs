@@ -1,5 +1,7 @@
 use tauri::{ AppHandle, Manager, UserAttentionType };
 
+#[allow(dead_code)]
+//TODO: rewrite this
 pub async fn new_message(
 	message: crate::discord::types::message::Message,
 	handle: &AppHandle,

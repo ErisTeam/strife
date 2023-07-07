@@ -1,108 +1,108 @@
-use std::{ time::{ Duration, Instant }, sync::Arc };
-
-use futures_util::{ SinkExt, stream::{ SplitStream, SplitSink }, StreamExt };
-use log::{ debug, warn };
-use serde::Serialize;
+use std::{ time::{ Duration }, sync::Arc, fmt::Display };
 use tauri::AppHandle;
-use tokio_tungstenite::{ tungstenite::{ Error, Message }, WebSocketStream, connect_async_tls_with_config };
-
 use async_trait::async_trait;
 
-pub async fn send_heartbeat<T: Serialize>(
-	connection_info: &mut ConnectionInfo_old,
-	write: &mut futures_util::stream::SplitSink<
-		WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
-		tokio_tungstenite::tungstenite::Message
-	>,
-	data: Option<T>
-) -> Result<bool, Error> {
-	let authed = connection_info.authed;
-	let heartbeat_interval = connection_info.heartbeat_interval;
-	let since_last_hearbeat = &mut connection_info.since_last_hearbeat;
-	let ack_recived = &mut connection_info.ack_recived;
-
-	//println!("{} {} {}", authed, since_last_hearbeat.elapsed().as_millis(), heartbeat_interval);
-	if authed && since_last_hearbeat.elapsed() > heartbeat_interval {
-		if !*ack_recived {
-			warn!("not ack_recived");
-			return Ok(false);
-		}
-		*ack_recived = false;
-		connection_info.reset_since_last_hearbeat();
-		if let Some(data) = data {
-			let heartbeat = Message::Text(serde_json::to_string(&data).unwrap());
-			write.send(heartbeat).await?;
-			debug!("Heartbeat sent");
-		}
-	}
-	Ok(true)
+#[derive(Debug, Clone)]
+pub enum Errors {
+	ReadError,
 }
-#[derive(Debug)]
-#[deprecated]
-pub struct ConnectionInfo_old {
-	pub authed: bool,
-	pub ack_recived: bool,
-
-	pub since_last_hearbeat: Instant,
-
-	pub heartbeat_interval: Duration,
-
-	pub timeout_ms: u64,
-}
-impl Default for ConnectionInfo_old {
-	fn default() -> Self {
-		Self {
-			authed: false,
-			ack_recived: true,
-			since_last_hearbeat: Instant::now(),
-			heartbeat_interval: Duration::ZERO,
-			timeout_ms: 0,
+impl Display for Errors {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match self {
+			Self::ReadError => write!(f, "read error"),
 		}
 	}
 }
-impl ConnectionInfo_old {
-	pub fn reset(&mut self) {
-		self.authed = false;
-		self.ack_recived = true;
-		self.since_last_hearbeat = Instant::now();
-	}
-	pub fn reset_since_last_hearbeat(&mut self) {
-		self.since_last_hearbeat = Instant::now();
-	}
-}
+impl std::error::Error for Errors {}
 
 #[derive(Debug)]
-pub struct ConnectionInfo<T> {
-	pub authed: bool,
+pub struct ConnectionInfo<D, S> {
 	pub ack_recived: bool,
 
 	pub heartbeat_interval: Duration,
 
 	pub timeout_ms: u64,
 
-	pub start_hearbeat: Arc<tokio::sync::Notify>,
+	pub hearbeat_notify: Arc<tokio::sync::Notify>,
 
 	pub stop: Arc<tokio::sync::Notify>,
 
 	pub handle: tauri::AppHandle,
 
-	pub aditional_data: T,
+	pub sender: tokio::sync::mpsc::Sender<S>,
+
+	pub aditional_data: D,
 }
-impl<T> ConnectionInfo<T> {
-	pub fn new(aditional_data: T, app_handle: AppHandle) -> Self {
+impl<T, S> ConnectionInfo<T, S> {
+	pub fn new(aditional_data: T, app_handle: AppHandle, sender: tokio::sync::mpsc::Sender<S>) -> Self {
 		Self {
-			authed: false,
 			ack_recived: true,
 			heartbeat_interval: Duration::ZERO,
 			timeout_ms: 0,
-			start_hearbeat: Arc::new(tokio::sync::Notify::new()),
+			hearbeat_notify: Arc::new(tokio::sync::Notify::new()),
 			aditional_data,
 			stop: Arc::new(tokio::sync::Notify::new()),
 			handle: app_handle,
+			sender,
 		}
 	}
+	pub fn start_heartbeat(&self) {
+		self.hearbeat_notify.notify_waiters();
+	}
 }
+
+// #[macro_export]
+// macro_rules! create_thread {
+// 	(
+// 		$error_send:expr,
+// 		$stop:expr,
+// 		$function:expr,
+// 		$($params:tt)*
+// 	) => {
+//         tokio::spawn(async move {
+//             tokio::select! {
+//                 _ = $stop.notified() => {
+//                     debug!("Stopping thread");
+//                 },
+//                 e = $function($($$parms,)*) => {
+//                     error!("thread encountered an error: {:?}",e);
+//                     if let Err(e) = e {
+//                         let r = $error_sender.send(e.to_string());
+//                         println!("sending result: {:?}",r);
+//                     }
+//                 },
+//             }
+//         });
+// 	};
+// }
+
 #[async_trait]
-trait Gateway<T> where T: Send + Sync {
-	//TODO: implemnent
+trait Gateway<D, Se /*where T: Send + Sync*/> {
+	fn create_connection_info(&self, sender: tokio::sync::mpsc::Sender<Se>, handle: AppHandle) -> ConnectionInfo<D, Se>;
+
+	//pub async fn start(&mut self) {}
+
+	// fn create_thread<'a, F, Fr, Fd: Send + Sync>(
+	// 	&self,
+	// 	stop: tokio::sync::Notify,
+	// 	error_sender: tokio::sync::mpsc::Sender<()>,
+	// 	data: Fd,
+	// 	function: F
+	// )
+	// 	where
+	// 		Fd: 'static,
+	// 		F: FnOnce(Fd) -> Fr + Send + 'static,
+	// 		Fr: Future<Output = crate::Result<()>> + Send + Sync + 'static
+	// {
+	// 	tokio::spawn(async move {
+	// 		tokio::select! {
+	// 			_ = stop.notified() => {
+	// 				//
+	// 			},
+	// 			_ = function(data) => {
+
+	// 			},
+	// 		}
+	// 	});
+	// }
 }

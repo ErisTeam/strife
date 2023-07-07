@@ -1,14 +1,18 @@
 use std::{ fmt::Debug, sync::Arc };
 
-use log::{ debug, error, info };
+use log::{ error, info, warn };
 use serde::{ Deserialize };
-use tauri::{ Event, EventHandler, Manager };
+use tauri::{ Event, EventHandler, Manager, async_runtime::TokioHandle };
+use tokio::{ task::block_in_place };
 
 use crate::{
 	discord::types::relationship::Relationship,
-	main_app_state::{ self, MainState, User },
+	main_app_state::{ self, MainState },
 	webview_packets::General,
 };
+
+//TODO: make all main_app events commands
+
 #[derive(Debug, Deserialize)]
 struct GetUserData {
 	user_id: String,
@@ -16,100 +20,77 @@ struct GetUserData {
 fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
 		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
-		let user_data = state.users.lock().unwrap();
 
-		let data = user_data.get(&user_id);
-		if let Some(data) = data {
-			if let User::ActiveUser(data) = data {
-				handle
-					.emit_all("general", General::UserData {
-						user: data.user.clone(),
-						users: data.users.clone(),
-					})
-					.unwrap();
-				return;
-			}
-		} else {
-			println!("No user data for {}", user_id);
-		}
+		let state = state.clone();
+		let payload = block_in_place(move || {
+			TokioHandle::current().block_on(async move {
+				let state = state.state.read().await;
 
-		handle
-			.emit_all("general", General::Error {
-				_for: "getUserData".to_string(),
-				message: "No user data".to_string(),
+				let main_app = state.main_app().unwrap();
+
+				let users = main_app.users.read().await;
+
+				let mut res = General::Error {
+					_for: "getUserData".to_string(),
+					message: "No user data".to_string(),
+				};
+				if let Some(data) = users.get(&user_id) {
+					if let Some(user_data) = data.read_user_data().await.as_ref() {
+						res = General::UserData {
+							user: user_data.user.clone(),
+							users: user_data.users.clone(),
+						};
+					}
+				}
+				res
 			})
-			.unwrap();
+		});
+
+		handle.emit_all("general", payload).unwrap();
 	}
 }
 
 fn get_relationships(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
 	move |event| {
 		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
-		let user_data = state.users.lock().unwrap();
 
-		let data = user_data.get(&user_id);
-		if let Some(data) = data {
-			if let User::ActiveUser(data) = data {
-				let mut relationships = Vec::new();
-				for relationship in data.relationships.clone() {
-					let user = data.get_user(&relationship.user_id);
-					if let Some(user) = user {
-						relationships.push(Relationship::from_gateway_relationship(relationship, user.clone()));
+		let state = state.clone();
+		let payload = block_in_place(move || {
+			TokioHandle::current().block_on(async move {
+				let state = state.state.read().await;
+
+				let main_app = state.main_app().unwrap();
+
+				let users = main_app.users.read().await;
+
+				let mut res = General::Error {
+					_for: "getRelationships".to_string(),
+					message: "No user data".to_string(),
+				};
+				if let Some(data) = users.get(&user_id) {
+					if let Some(user_data) = data.read_user_data().await.as_ref() {
+						let mut relationships = Vec::new();
+						for relationship in &user_data.relationships {
+							let user = user_data.get_user(&relationship.user_id);
+							if let Some(user) = user {
+								relationships.push(
+									Relationship::from_gateway_relationship(relationship.clone(), user.clone())
+								);
+							} else {
+								warn!("User with {:?} id not Found!", relationship.user_id);
+							}
+						}
+
+						res = General::Relationships {
+							relationships,
+						};
 					}
 				}
-
-				handle
-					.emit_all("general", General::Relationships {
-						relationships: relationships,
-					})
-					.unwrap();
-			}
-		} else {
-			println!("No user data for {}", user_id);
-		}
-		handle
-			.emit_all("general", General::Error {
-				_for: "getRelationships".to_string(),
-				message: "No user data".to_string(),
+				res
 			})
-			.unwrap();
-	}
-}
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct GetRelationships {
-	user_id: String,
-}
-impl EventTrait<General> for GetRelationships {
-	fn execute(&self, state: Arc<MainState>, _handle: tauri::AppHandle) -> Option<(&str, General)> {
-		let user_data = state.users.lock().unwrap();
+		});
 
-		let data = user_data.get(&self.user_id);
-		if let Some(data) = data {
-			if let User::ActiveUser(data) = data {
-				let mut relationships = Vec::new();
-				for relationship in data.relationships.clone() {
-					let user = data.get_user(&relationship.user_id);
-					if let Some(user) = user {
-						relationships.push(Relationship::from_gateway_relationship(relationship, user.clone()));
-					}
-				}
-
-				return Some((
-					"general",
-					General::Relationships {
-						relationships: relationships,
-					},
-				));
-			}
-		} else {
-			println!("No user data for {}", self.user_id);
-		}
-		None
-	}
-
-	fn get_name() -> String {
-		"getRelationships".to_string()
+		handle.emit_all("general", payload).unwrap();
 	}
 }
 
@@ -120,24 +101,27 @@ struct GetGuilds {
 }
 impl EventTrait<General> for GetGuilds {
 	fn execute(&self, state: Arc<MainState>, _handle: tauri::AppHandle) -> Option<(&str, General)> {
-		let user_data = state.users.lock().unwrap();
+		println!("get guilds");
+		let res: Result<General, String> = block_in_place(move || {
+			TokioHandle::current().block_on(async move {
+				let app_state = state.state.read().await;
+				let main_app = app_state.main_app().ok_or("No main app")?;
 
-		let data = user_data.get(&self.user_id);
-		if let Some(data) = data {
-			debug!("checking if user is active");
-			if let User::ActiveUser(data) = data {
-				info!("Sending guilds");
-				return Some((
-					"general",
-					General::Guilds {
-						guilds: data.guilds.clone(),
-					},
-				));
-			}
+				let users = main_app.users.read().await;
+				let user = users.get(&self.user_id).ok_or("No user data")?;
+				let userdata = user.read_user_data().await;
+				let userdata = userdata.as_ref().ok_or("No user data")?;
+				return Ok(General::Guilds {
+					guilds: userdata.guilds.clone(),
+				});
+			})
+		});
+		if let Ok(res) = res {
+			return Some(("general", res));
 		} else {
-			error!("No user data for {}", self.user_id);
-			//TODO: emit error
+			error!("Error getting guilds {:?}", res);
 		}
+
 		None
 	}
 
@@ -172,7 +156,6 @@ pub fn get_all_events(state: Arc<main_app_state::MainState>, handle: tauri::AppH
 		handle.listen_global("getUserData", get_user_data(state.clone(), h.clone())),
 		handle.listen_global("getRelationships", get_relationships(state.clone(), h.clone())),
 		// GetUserData::register(&state, &handle),
-		// GetRelationships::register(&state, &handle),
 		GetGuilds::register(&state, &handle)
 	]
 }

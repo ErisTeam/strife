@@ -35,6 +35,7 @@ pub struct Guild {
 	pub discovery_splash: Option<String>,
 	pub owner: Option<bool>,
 	pub owner_id: String,
+	///only when https://discord.com/developers/docs/resources/user#get-current-user-guilds is used
 	pub permissions: Option<String>,
 	pub region: Option<String>,
 	pub afk_channel_id: Option<String>,
@@ -70,7 +71,6 @@ pub struct Guild {
 	pub stickers: Vec<PartialSticker>, //TODO: create sticker struct
 	pub premium_progress_bar_enabled: bool,
 	pub safety_alerts_channel_id: Option<String>,
-
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

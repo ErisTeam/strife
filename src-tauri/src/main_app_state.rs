@@ -1,41 +1,16 @@
-use std::{ collections::HashMap, sync::{ Arc, Mutex } };
-
-use log::{ debug, info, error };
+use std::{ sync::{ Arc } };
+use log::{ error };
 use tauri::AppHandle;
-
-use crate::{ discord::{ user::UserData }, event_manager::{ EventManager }, modules::{ auth::Auth, main_app::MainApp } };
-
-//TODO move
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub enum User {
-	LoggedOut {
-		discriminator: String,
-		display_name: String,
-		image: Option<String>,
-	},
-	ActiveUser(UserData),
-	InactiveUser {
-		token: String,
-	},
-}
-impl User {
-	pub fn get_token(&self) -> Option<&str> {
-		match self {
-			Self::LoggedOut { .. } => None,
-			Self::ActiveUser(UserData { token, .. }) => Some(token),
-			Self::InactiveUser { token } => Some(token),
-		}
-	}
-}
+use tokio::sync::Mutex;
+use crate::{ event_manager::{ EventManager }, modules::{ auth::Auth, main_app::MainApp, user_manager::UserManager } };
 
 #[derive(Debug)]
 #[allow(dead_code)]
 pub enum State {
 	None,
 	Dev,
-	LoginScreen(Arc<Auth>),
-	MainApp(Arc<MainApp>),
+	LoginScreen(Auth),
+	MainApp(MainApp),
 }
 #[allow(dead_code)]
 impl State {
@@ -52,16 +27,24 @@ impl State {
 		}
 	}
 
-	pub fn login(&self) -> Option<&Arc<Auth>> {
+	pub fn login(&self) -> Option<&Auth> {
 		match self {
 			Self::LoginScreen(auth) => Some(auth),
 			_ => None,
 		}
 	}
-	pub fn stop(&self) {
+
+	pub fn main_app(&self) -> Option<&MainApp> {
 		match self {
-			Self::LoginScreen(auth) => auth.stop(),
-			Self::MainApp(app) => app.stop(),
+			Self::MainApp(app) => Some(app),
+			_ => None,
+		}
+	}
+
+	pub async fn stop(&self) {
+		match self {
+			Self::LoginScreen(auth) => auth.stop().await,
+			Self::MainApp(app) => app.stop().await,
 			_ => (),
 		}
 	}
@@ -69,97 +52,40 @@ impl State {
 
 #[derive(Debug)]
 pub struct MainState {
-	pub tokens: Mutex<HashMap<String, String>>,
-
-	pub state: Arc<Mutex<State>>,
+	pub state: Arc<tokio::sync::RwLock<State>>,
 
 	pub event_manager: Mutex<EventManager>,
 
-	pub last_id: Mutex<Option<String>>,
+	pub last_id: std::sync::Mutex<Option<String>>,
 
-	pub users: Mutex<HashMap<String, User>>,
+	pub user_manager: UserManager,
+
 	//TODO: pub system_info: Mutex<SystemInfo>
 }
 #[allow(dead_code)]
 impl MainState {
 	pub fn new(event_manager: EventManager) -> Self {
 		Self {
-			tokens: Mutex::new(HashMap::new()),
-
-			state: Arc::new(Mutex::new(State::None)),
+			state: Arc::new(tokio::sync::RwLock::new(State::None)),
 
 			event_manager: Mutex::new(event_manager),
 
-			users: Mutex::new(HashMap::new()),
+			last_id: std::sync::Mutex::new(None),
 
-			last_id: Mutex::new(None),
+			user_manager: UserManager::new(),
 		}
 	}
 
-	#[allow(dead_code)]
-	pub fn get_users(&self) -> Vec<(String, User)> {
-		let user_data = self.users.lock().unwrap();
-		let mut users = Vec::new();
-		for (id, user) in user_data.iter() {
-			users.push((id.clone(), user.clone()));
-		}
-		users
-	}
-	pub fn get_users_ids(&self) -> Vec<String> {
-		let user_data = self.users.lock().unwrap();
-		let mut users = Vec::new();
-		for (id, _) in user_data.iter() {
-			users.push(id.clone());
-		}
-		users
-	}
-
-	pub fn get_user_data(&self, user_id: String) -> Option<UserData> {
-		let user_data = self.users.lock().unwrap();
-		if let Some(user) = user_data.get(&user_id).cloned() {
-			debug!("user: {:?}", user);
-			if let User::ActiveUser(user_data) = user {
-				let mut u = user_data.clone();
-				u.token = "Access Denied".to_string();
-				return Some(u);
-			}
-		}
-		None
-	}
-
-	/// adds a new **InactiveUser** to the user_data
-	pub fn add_new_user(&self, user_id: String, token: String) {
-		let mut user_data = self.users.lock().unwrap();
-		user_data.insert(user_id.clone(), User::InactiveUser { token });
-		let mut last_id = self.last_id.lock().unwrap();
-		*last_id = Some(user_id.clone());
-		info!("added new user: {}", user_id);
-	}
-	#[allow(dead_code)]
-	pub fn remove_user(&self, user_id: String) {
-		let mut user_data = self.users.lock().unwrap();
-		user_data.remove(&user_id);
-	}
-
-	pub fn get_token(&self, user_id: &str) -> Option<String> {
-		let users = self.users.lock().unwrap();
-		if let Some(user) = users.get(user_id) {
-			if let Some(token) = user.get_token().clone() {
-				return Some(token.to_string());
-			}
-		}
-		None
-	}
-	pub fn reset_state(&self) {
-		let mut state = self.state.lock().unwrap();
-		state.stop();
+	pub async fn reset_state(&self) {
+		let mut state = self.state.write().await;
+		state.stop().await;
 		*state = State::None;
 	}
 	pub async fn change_state(&self, new_state: State, handle: AppHandle) -> crate::Result<()> {
-		let mut state = self.state.lock().unwrap();
-		let event_manager = self.event_manager.lock().unwrap();
+		let mut state = self.state.write().await;
+		let mut event_manager = self.event_manager.lock().await;
 
-		state.stop();
+		state.stop().await;
 
 		*state = new_state;
 

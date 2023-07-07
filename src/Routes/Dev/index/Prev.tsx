@@ -8,17 +8,18 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { emit } from '@tauri-apps/api/event';
 
 // API
-import API from './API';
-import { changeState, useTaurListener, useTaurListenerOld } from './test';
-import { useAppState } from './AppState';
+import API from '../../../API';
+import { changeState, useTaurListener, useTaurListenerOld } from '../../../test';
+import { useAppState } from '../../../AppState';
 import qrcode from 'qrcode';
 
 // Style
 import style from './prev.module.css';
-import buttons from './Styles/Buttons.module.css';
+import buttons from '../../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
 import { info } from 'tauri-plugin-log-api';
-import SplashText from './Components/Dev/SplashText';
+import SplashText from '../../../Components/Dev/SplashText';
+import { AppState } from '../../../types';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -29,6 +30,8 @@ function Prev() {
 	console.log('Prev');
 
 	const [image, setImage] = createSignal('');
+
+	const [state, setState] = createSignal<AppState>('Dev');
 
 	const AppState = useAppState();
 
@@ -68,6 +71,7 @@ function Prev() {
 				<div>
 					<h2>Buttons</h2>
 					<button
+						style={{ 'margin-top': '0.5rem' }}
 						class={buttons.default}
 						onClick={async () => {
 							changeState('Application');
@@ -75,7 +79,8 @@ function Prev() {
 					>
 						change state to main
 					</button>
-					<SplashText text="REQUIRED (In future)">
+
+					<SplashText text="REQUIRED">
 						<button
 							class={buttons.default + ' ' + style.fill}
 							onClick={async (e) => {
@@ -147,6 +152,29 @@ function Prev() {
 					>
 						Get Users
 					</button>
+					<div>
+						<h2>States</h2>
+						<select
+							class={buttons.default}
+							style={{ width: '100%' }}
+							onchange={(e) => {
+								setState(e.currentTarget.value as AppState);
+							}}
+						>
+							<option value="Application">Main app</option>
+							<option value="LoginScreen">Login</option>
+							<option value="Dev">Dev</option>
+							<option value="fdhkmffh">Error Test</option>
+						</select>
+						<button
+							onclick={() => {
+								changeState(state());
+							}}
+							class={buttons.default}
+						>
+							Change to Selected
+						</button>
+					</div>
 				</div>
 			</div>
 			<Show when={image() == 'aa'}>

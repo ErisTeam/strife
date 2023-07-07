@@ -4,6 +4,7 @@ mod tests;
 
 mod discord;
 mod events;
+mod commands;
 mod notifications;
 
 mod main_app_state;
@@ -14,85 +15,26 @@ mod modules;
 mod token_utils;
 mod webview_packets;
 
+#[allow(unused)]
 mod dev;
 
 extern crate tokio;
 
 use std::sync::Arc;
 
-use log::{ debug, error, warn };
 use serde::Deserialize;
 use tauri::{ Manager, State, UserAttentionType };
 use tauri_plugin_log::LogTarget;
 
-use crate::{ main_app_state::MainState, modules::{ auth::Auth, main_app::MainApp } };
+use crate::{ main_app_state::MainState };
 
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
-
-#[tauri::command]
-async fn set_state(
-	new_state: String,
-	force: Option<bool>,
-	state: State<'_, Arc<MainState>>,
-	handle: tauri::AppHandle
-) -> std::result::Result<i32, String> {
-	debug!("Change state {}", new_state);
-	let force = force.unwrap_or(false);
-	if !force && state.state.lock().unwrap().get_name() == new_state {
-		warn!("State already set to {}", new_state);
-		debug!("USE force=true to force change state");
-		return Ok(0);
-	}
-	state.reset_state();
-	match new_state.as_str() {
-		"Application" => {
-			let m = MainApp::new();
-			let id = state.last_id.lock().unwrap().as_ref().unwrap().clone();
-			let token = state.get_token(&id);
-			m.start_gateway(state.inner().clone(), handle.clone(), token.unwrap(), id);
-			let s = crate::main_app_state::State::MainApp(m);
-			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
-		}
-		"LoginScreen" => {
-			let auth = Auth::new(Arc::downgrade(&state));
-			let auth = auth.start_gateway(handle.clone()).await.or_else(|e| Err(e.to_string()))?;
-			let s = crate::main_app_state::State::LoginScreen(auth);
-
-			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
-		}
-		"Dev" => {
-			let s = crate::main_app_state::State::Dev;
-			state.change_state(s, handle).await.or_else(|e| Err(e.to_string()))?;
-		}
-		_ => {
-			error!("Unknown state {}", new_state);
-			return Err("Unknown state".to_string());
-		}
-	}
-	println!("SUCCESS");
-	Ok(1)
-}
-
-#[tauri::command]
-fn get_token(user_id: String, state: State<Arc<MainState>>) -> Option<String> {
-	state.get_token(&user_id)
-}
+pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
 #[tauri::command]
 fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
 	println!("get_last_user");
 	println!("{:?}", state.last_id.lock().unwrap());
 	state.last_id.lock().unwrap().clone()
-}
-#[tauri::command]
-async fn close_splashscreen(window: tauri::Window) {
-	// Close splashscreen
-	if let Some(splashscreen) = window.get_window("splashscreen") {
-		splashscreen.close().unwrap();
-	}
-	// Show main window
-	window.get_window("main").unwrap().show().unwrap();
-	println!("Closing Loading Screen");
 }
 
 #[derive(Debug, Deserialize)]
@@ -135,7 +77,7 @@ fn main() {
 
 	let main_state = Arc::new(MainState::new(event_manager));
 
-	main_state.event_manager.lock().unwrap().set_state(Arc::downgrade(&main_state));
+	main_state.event_manager.blocking_lock().set_state(Arc::downgrade(&main_state));
 
 	let m = main_state.clone();
 
@@ -154,11 +96,21 @@ fn main() {
 			#[cfg(debug_assertions)]
 			dev::add_token(&m, app_handle.clone());
 
-			//close_loading(app)?;
+			close_loading(app)?;
 
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![get_token, set_state, get_last_user, close_splashscreen, test])
+		.invoke_handler(
+			tauri::generate_handler![
+				commands::general::close_splashscreen,
+				commands::general::set_state,
+				commands::general::get_token,
+				commands::general::get_users,
+				commands::main_app::activate_user,
+				get_last_user,
+				test
+			]
+		)
 		.run(tauri::generate_context!())
 		.expect("Error while running tauri application.");
 }

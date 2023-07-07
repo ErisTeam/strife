@@ -1,42 +1,41 @@
 #[cfg(test)]
 mod tests {
+	mod gateway {
+		use std::fs;
 
-    mod gateway {
-        use std::fs;
+		use crate::discord::{ gateway_packets::{ IncomingPacket, IncomingPacketsData, DispatchedEvents } };
+		#[test]
+		fn hello() {
+			let json: IncomingPacket = serde_json::from_reader(fs::File::open("../tests/hello.json").unwrap()).unwrap();
 
-        use crate::discord::gateway_packets::GatewayIncomingPacket;
-        #[test]
-        fn hello() {
-            let json: GatewayIncomingPacket =
-                serde_json::from_reader(fs::File::open("../tests/hello.json").unwrap()).unwrap();
+			assert!(matches!(json.data, IncomingPacketsData::Hello(_)));
+		}
 
-            assert!(matches!(
-                json.d,
-                crate::discord::gateway_packets::GatewayPacketsData::Hello { .. }
-            ));
-        }
+		#[test]
+		fn ready() {
+			let json: IncomingPacket = serde_json::from_reader(fs::File::open("../tests/ready.json").unwrap()).unwrap();
 
-        #[test]
-        fn ready() {
-            let json: GatewayIncomingPacket =
-                serde_json::from_reader(fs::File::open("../tests/ready.json").unwrap()).unwrap();
+			match json.data {
+				IncomingPacketsData::DispatchedEvent(data) => { assert!(matches!(data, DispatchedEvents::Ready(_))) }
+				d => {
+					panic!("json.data was {}", d.to_string());
+				}
+			}
+		}
+		#[test]
+		fn ready_supplemental() {
+			let json: IncomingPacket = serde_json
+				::from_reader(fs::File::open("../tests/ready supplemental.json").unwrap())
+				.unwrap();
 
-            assert!(matches!(
-                json.d,
-                crate::discord::gateway_packets::GatewayPacketsData::Ready(_)
-            ));
-        }
-        #[test]
-        fn ready_supplemental() {
-            let json: GatewayIncomingPacket = serde_json::from_reader(
-                fs::File::open("../tests/ready supplemental.json").unwrap(),
-            )
-            .unwrap();
-
-            assert!(matches!(
-                json.d,
-                crate::discord::gateway_packets::GatewayPacketsData::ReadySupplemental { .. }
-            ));
-        }
-    }
+			match json.data {
+				IncomingPacketsData::DispatchedEvent(data) => {
+					assert!(matches!(data, DispatchedEvents::ReadySupplemental(_)))
+				}
+				d => {
+					panic!("json.data was {}", d.to_string());
+				}
+			}
+		}
+	}
 }

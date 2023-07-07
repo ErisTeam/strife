@@ -4,7 +4,7 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::{ discord::{ types::guild::PartialGuild } };
+use crate::{ discord::{ types::{ guild::PartialGuild, gateway::packets_data::MessageEvent } } };
 pub mod auth {
 	use serde::{ Deserialize, Serialize };
 
@@ -70,7 +70,7 @@ pub mod auth {
 		fn from(value: crate::modules::auth::MFAResponse) -> Self {
 			match value {
 				crate::modules::auth::MFAResponse::Success { token, user_settings } =>
-					Self::VerifySuccess { user_id: token_utils::get_id(&token), user_settings },
+					Self::VerifySuccess { user_id: token_utils::get_id(&token).unwrap(), user_settings },
 				crate::modules::auth::MFAResponse::Error { message, .. } => Self::VerifyError { message },
 			}
 		}
@@ -83,20 +83,9 @@ pub mod auth {
 #[serde(tag = "type", content = "data")]
 #[serde(rename_all = "camelCase")]
 pub enum Gateway {
-	MessageCreate {
-		#[serde(flatten)]
-		message: crate::discord::types::message::Message,
-		member: crate::discord::types::guild::GuildMember,
-		guild_id: String,
-		mentions: Vec<crate::discord::types::guild::GuildMember>,
-	},
-	MessageUpdate {
-		#[serde(flatten)]
-		message: crate::discord::types::message::Message,
-		member: crate::discord::types::guild::GuildMember,
-		guild_id: String,
-		mentions: Vec<crate::discord::types::guild::GuildMember>,
-	},
+	MessageCreate(MessageEvent),
+
+	MessageUpdate(MessageEvent),
 	Error {
 		message: String,
 	},

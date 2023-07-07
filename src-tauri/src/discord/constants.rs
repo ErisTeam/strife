@@ -2,8 +2,8 @@ use const_format::concatcp;
 
 const DISCORD_API: &str = "https://discord.com/api/v9";
 
-pub const MOBILE_AUTH: &str = "wss://remote-auth-gateway.discord.gg/?v=2";
-pub const MOBILE_AUTH_GET_TOKEN: &str = concatcp!(DISCORD_API, "/users/@me/remote-auth/login");
+pub const REMOTE_AUTH_CONNECT: &str = "wss://remote-auth-gateway.discord.gg/?v=2";
+pub const REMOTE_AUTH_LOGIN: &str = concatcp!(DISCORD_API, "/users/@me/remote-auth/login");
 
 pub const LOGIN: &str = concatcp!(DISCORD_API, "/auth/login");
 

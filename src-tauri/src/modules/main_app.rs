@@ -1,52 +1,231 @@
-use std::sync::{ Arc, RwLock };
+use std::collections::HashMap;
+use std::sync::{ Arc, Weak };
 
-use log::debug;
-use tauri::AppHandle;
-use websocket::OwnedMessage;
+use log::{ debug, error, warn };
+use tauri::{ AppHandle, Manager };
+use tokio::runtime::Handle;
+use tokio::sync::RwLock;
 
-use crate::main_app_state::{ MainState };
-use crate::Result;
+use crate::discord::gateway_packets::DispatchedEvents;
+use crate::discord::types::gateway::packets_data::MessageEvent;
+use crate::discord::user::UserData;
+use crate::{ Result, webview_packets, token_utils };
+
+use super::gateway::Gateway;
+
+/// Messages send from gateway
+#[derive(Debug)]
+#[allow(unused)]
+pub enum GatewayMessages {
+	NewMessage(MessageEvent),
+	EditedMessage(MessageEvent),
+	DeletedMessage(),
+	StartedTyping(),
+	Ready(UserData),
+}
+impl From<DispatchedEvents> for GatewayMessages {
+	fn from(value: DispatchedEvents) -> Self {
+		match value {
+			DispatchedEvents::Ready(data) => Self::Ready(UserData::from(data)),
+			DispatchedEvents::ReadySupplemental(_) => todo!(),
+			DispatchedEvents::SessionReplace(_) => todo!(),
+			DispatchedEvents::MessageCreate(data) => Self::NewMessage(data),
+			DispatchedEvents::MessageUpdate(data) => Self::EditedMessage(data),
+			DispatchedEvents::MessageDelete(_) => todo!(),
+			DispatchedEvents::StartTyping(_) => todo!(),
+			DispatchedEvents::BurstCreditBalanceUpdate(_) => todo!(),
+			DispatchedEvents::Unknown(_) => panic!("Unknown event!"),
+		}
+	}
+}
+
+#[derive(Debug)]
+pub struct ActiveUser {
+	userdata: Arc<RwLock<Option<UserData>>>,
+
+	#[allow(dead_code)]
+	token: String,
+
+	pub gateway: Arc<RwLock<Gateway>>,
+}
+impl ActiveUser {
+	pub fn new(token: String, gateway: Arc<RwLock<Gateway>>) -> Self {
+		Self {
+			userdata: Arc::new(RwLock::new(None)),
+			gateway,
+			token,
+		}
+	}
+	pub async fn read_user_data(&self) -> tokio::sync::RwLockReadGuard<'_, Option<UserData>> {
+		self.userdata.read().await
+	}
+}
 
 #[derive(Debug)]
 pub struct MainApp {
-	#[deprecated]
-	sender: RwLock<Option<tokio::sync::mpsc::Sender<OwnedMessage>>>,
+	pub users: RwLock<HashMap<String, Arc<ActiveUser>>>,
 }
 impl MainApp {
-	pub fn new() -> Arc<Self> {
-		Arc::new(Self {
-			sender: RwLock::new(None),
-		})
+	pub fn new() -> Self {
+		Self {
+			users: RwLock::new(HashMap::new()),
+		}
 	}
 
-	#[deprecated]
-	pub fn start_gateway(
-		&self,
-		state: Arc<MainState>,
-		handle: AppHandle,
-		token: String,
-		user_id: String
-	) -> Result<()> {
-		let (sender, receiver) = tokio::sync::mpsc::channel::<OwnedMessage>(10);
-		let mut gateway = super::gateway_old::Gateway::new(state, handle, receiver, token, user_id);
+	pub async fn activate_user(&self, handle: AppHandle, token: String) -> Result<Arc<tokio::sync::Notify>> {
+		let user_id = token_utils::get_id(&token)?;
+		let (gateway, message_receiver) = self.start_gateway(handle.clone(), token.clone()).await?;
 
-		tauri::async_runtime::spawn(async move {
-			gateway.run().await;
+		let stop = gateway.read().await.stop_notifyer.as_ref().unwrap().clone();
+
+		println!("token: {}", token);
+
+		let user = Arc::new(ActiveUser::new(token, gateway.clone()));
+
+		let mut users = self.users.write().await;
+
+		let user_data = Arc::downgrade(&user.userdata);
+		let gateway = Arc::downgrade(&gateway);
+
+		let ready_notifyer = Arc::new(tokio::sync::Notify::new());
+
+		let weak_notifyer = Arc::downgrade(&ready_notifyer);
+
+		println!("Starting message handler thread");
+
+		tokio::spawn(async move {
+			tokio::select! {
+				_ = stop.notified() => {
+					debug!("Stopping Message Handler Thread");
+				},
+				e = Self::message_handler_thread(message_receiver,handle, gateway,user_data,weak_notifyer) => {
+					error!("Message handler thread error: {:?}", e);
+				},
+			}
 		});
 
-		self.sender.write().unwrap().replace(sender);
-
-		Ok(())
+		if users.insert(user_id, user).is_some() {
+			warn!("User already existed");
+		}
+		Ok(ready_notifyer)
 	}
-	pub fn stop(&self) {
-		debug!("Stopping Gateway");
-		let mut sender = self.sender.write().unwrap();
-		if let Some(sender) = sender.take() {
-			tokio::task::block_in_place(move || {
-				tokio::runtime::Handle::current().block_on(async move {
-					let _ = sender.send(OwnedMessage::Close(None)).await;
-				})
+
+	async fn error_handler_thread(
+		mut error_receiver: tokio::sync::broadcast::Receiver<String>,
+		gateway: Weak<RwLock<Gateway>>
+	) -> Result<()> {
+		loop {
+			let error = error_receiver.recv().await?;
+			debug!("Gateway error: {}", error);
+			if let Some(gateway) = gateway.upgrade() {
+				let gateway = gateway.read().await;
+				gateway.stop();
+				//TODO send message to webview
+			} else {
+				error!("Gateway is no longer available");
+				return Err("Gateway is no longer available".into());
+			}
+		}
+	}
+
+	#[allow(unused_variables)]
+	async fn message_handler_thread(
+		mut message_receiver: tokio::sync::mpsc::Receiver<GatewayMessages>,
+		handle: AppHandle,
+		gateway: Weak<RwLock<Gateway>>,
+		user_data: Weak<RwLock<Option<UserData>>>,
+		ready_notify: Weak<tokio::sync::Notify>
+	) -> Result<()> {
+		while let Some(message) = message_receiver.recv().await {
+			match message {
+				GatewayMessages::NewMessage(data) => {
+					let user_id = {
+						let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
+						let user_data = user_data.read().await;
+						let user_data = user_data.as_ref().unwrap();
+						user_data.user.id.clone()
+					};
+
+					//TODO: Show Notification
+
+					handle.emit_all("gateway", webview_packets::GatewayEvent {
+						event: webview_packets::Gateway::MessageCreate(data),
+						user_id,
+					})?;
+				}
+				GatewayMessages::EditedMessage(data) => {
+					let user_id = {
+						let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
+						let user_data = user_data.read().await;
+						let user_data = user_data.as_ref().unwrap();
+						user_data.user.id.clone()
+					};
+
+					handle.emit_all("gateway", webview_packets::GatewayEvent {
+						event: webview_packets::Gateway::MessageUpdate(data),
+						user_id,
+					})?;
+				}
+				GatewayMessages::DeletedMessage() => todo!("Deleted Message"),
+				GatewayMessages::StartedTyping() => todo!("Started Typing"),
+				GatewayMessages::Ready(data) => {
+					let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
+					user_data.write().await.replace(data);
+					if let Some(ready_notify) = ready_notify.upgrade() {
+						ready_notify.notify_waiters();
+					}
+				}
+			}
+		}
+		Err("Message receiver channel closed".into())
+	}
+
+	async fn start_gateway(
+		&self,
+		handle: AppHandle,
+		token: String
+	) -> Result<(Arc<RwLock<Gateway>>, tokio::sync::mpsc::Receiver<GatewayMessages>)> {
+		let gateway = Gateway::new();
+
+		let (sender, receiver) = tokio::sync::mpsc::channel::<GatewayMessages>(5);
+
+		let mut gateway_w = gateway.write().await;
+
+		let error_receiver = gateway_w.start(handle, sender, token).await?;
+
+		{
+			let stop = gateway_w.stop_notifyer.clone().unwrap();
+			let gateway = Arc::downgrade(&gateway);
+			tokio::spawn(async move {
+				tokio::select! {
+				_ = stop.notified() => {
+					debug!("Stopping Error Handler Thread");
+				},
+				_ = Self::error_handler_thread(error_receiver, gateway.clone()) => {
+					error!("Error handler thread closed");
+				},
+
+			}
+			});
+		}
+
+		drop(gateway_w);
+
+		Ok((gateway, receiver))
+	}
+
+	#[allow(dead_code)]
+	pub fn stop_sync(&self) {
+		tokio::task::block_in_place(move || {
+			Handle::current().block_on(async move {
+				self.stop().await;
 			})
+		});
+	}
+	pub async fn stop(&self) {
+		let users = self.users.write().await;
+		for (_, user) in users.iter() {
+			user.gateway.read().await.stop();
 		}
 	}
 }

@@ -15,6 +15,19 @@ pub struct ClientState {
 	pub private_channels_version: String,
 	pub api_code_version: i64,
 }
+impl Default for ClientState {
+	fn default() -> Self {
+		Self {
+			guild_versions: HashMap::new(),
+			highest_last_message_id: "0".to_string(),
+			read_state_version: 0,
+			user_guild_settings_version: -1,
+			user_settings_version: -1,
+			private_channels_version: "0".to_string(),
+			api_code_version: 0,
+		}
+	}
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Presence {
@@ -88,16 +101,26 @@ pub struct SessionReplaceData {
 pub mod packets_data {
 	use serde::{ Deserialize, Serialize };
 
-	use crate::discord::types::{
-		guild::{ GuildMember, PartialGuild },
-		message::Message,
-		user::{ PublicUser, CurrentUser, GuildSettings },
-		relationship::GatewayRelationship,
+	use crate::{
+		discord::types::{
+			guild::{ GuildMember, PartialGuild },
+			message::Message,
+			user::{ PublicUser, CurrentUser, GuildSettings },
+			relationship::GatewayRelationship,
+		},
 	};
 
 	use super::{ Properties, Presence, ClientState, ReadState };
 
 	#[derive(Deserialize, Debug)]
+	pub struct ReadySupplemental {
+		merged_presences: serde_json::Value,
+		merged_members: serde_json::Value,
+		lazy_private_channels: serde_json::Value,
+		guilds: serde_json::Value,
+	}
+
+	#[derive(Deserialize, Debug, Serialize, Clone)]
 	pub struct MessageEvent {
 		#[serde(flatten)]
 		pub message: Message,
@@ -130,8 +153,20 @@ pub mod packets_data {
 
 	#[derive(Deserialize, Serialize, Debug)]
 	pub struct Heartbeat {
-		pub d: Option<u64>,
+		#[serde(rename = "d")]
+		pub sequence_number: Option<u64>,
 	}
+
+	#[derive(Serialize, Debug)]
+	pub struct LazyGuilds {
+		guild_id: String,
+		channels: Vec<serde_json::Value>,
+		members: bool,
+		threads: bool,
+		activities: bool,
+		typing: bool,
+	}
+
 	#[derive(Serialize, Debug)]
 	pub struct Identify {
 		pub token: String,
@@ -141,9 +176,21 @@ pub mod packets_data {
 		pub compress: bool,
 		pub client_state: ClientState,
 	}
+	impl Default for Identify {
+		fn default() -> Self {
+			Self {
+				token: String::new(),
+				capabilities: Self::default_capabilities(),
+				properties: Properties::default(),
+				presence: Presence::default(),
+				compress: false,
+				client_state: ClientState::default(),
+			}
+		}
+	}
 	impl Identify {
 		pub fn default_capabilities() -> u64 {
-			4093
+			16381
 		}
 	}
 	#[derive(Deserialize, Debug)]

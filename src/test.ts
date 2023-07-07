@@ -4,6 +4,7 @@ import { createEffect, getOwner, onCleanup } from 'solid-js';
 // Tauri
 import { listen, Event, UnlistenFn, emit, TauriEvent } from '@tauri-apps/api/event';
 import { invoke, tauri } from '@tauri-apps/api';
+import { AppState } from './types';
 
 type Listener = {
 	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
@@ -70,8 +71,8 @@ function startListener<T extends { type: string }>(
 			clean_up();
 		},
 		events: {
-			onMessageCreate: (channelId:string) => onMessageCreate({} as Listener,channelId) //todo
-		}
+			onMessageCreate: (channelId: string) => onMessageCreate({} as Listener, channelId), //todo
+		},
 	} as Listener;
 }
 
@@ -118,7 +119,7 @@ async function oneTimeListener<T extends { type: string }>(
 	});
 }
 
-async function changeState(newState: 'LoginScreen' | 'Application') {
+async function changeState(newState: AppState) {
 	await invoke('set_state', { newState });
 }
 
@@ -136,7 +137,6 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 	});
 }
 
-
 type GatewayEvents = 'messageCreate' | 'userData';
 
 export {
@@ -148,7 +148,6 @@ export {
 	startGatewayListener,
 	startGateway,
 	gatewayOneTimeListener,
-
 };
 
 export type { Listener };
