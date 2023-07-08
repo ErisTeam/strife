@@ -30,14 +30,6 @@ use crate::{ main_app_state::MainState };
 
 pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
-#[tauri::command]
-#[deprecated]
-fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
-	println!("get_last_user");
-	println!("{:?}", state.last_id.lock().unwrap());
-	state.last_id.lock().unwrap().clone()
-}
-
 #[derive(Debug, Deserialize)]
 struct TestData {}
 
@@ -108,7 +100,6 @@ async fn main() {
 				commands::general::get_token,
 				commands::general::get_users,
 				commands::main_app::activate_user,
-				get_last_user,
 				test
 			]
 		)

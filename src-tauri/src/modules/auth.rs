@@ -1,7 +1,7 @@
 use std::sync::{ Weak, Arc };
 use base64::Engine;
 use log::{ info, error, debug };
-use rsa::PaddingScheme;
+use rsa::Oaep;
 use serde::{ Deserialize, Serialize };
 use serde_json::json;
 use tauri::{ AppHandle, Manager };
@@ -208,10 +208,7 @@ impl Auth {
 								let state = state.upgrade().ok_or("State was None")?;
 
 								let decoded = base64::engine::general_purpose::STANDARD.decode(&encrypted_token)?;
-								let decrypted = private_key.decrypt(
-									PaddingScheme::new_oaep::<sha2::Sha256>(),
-									&decoded
-								)?;
+								let decrypted = private_key.decrypt(Oaep::new::<sha2::Sha256>(), &decoded)?;
 
 								let token = String::from_utf8(decrypted)?;
 

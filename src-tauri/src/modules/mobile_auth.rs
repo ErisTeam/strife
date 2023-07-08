@@ -3,7 +3,7 @@ use std::{ sync::Arc, time::Duration, error::Error, fmt::Display };
 use base64::{ engine::general_purpose, Engine };
 use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
 use log::{ error, debug };
-use rsa::{ RsaPublicKey, RsaPrivateKey, PaddingScheme, pkcs8::EncodePublicKey };
+use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, Oaep };
 use sha2::{ Sha256, Digest };
 use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex } };
@@ -35,7 +35,7 @@ pub struct MobileAuthConnectionData {
 }
 impl MobileAuthConnectionData {
 	fn decrypt(&self, bytes: Vec<u8>) -> Result<Vec<u8>, rsa::errors::Error> {
-		let padding = PaddingScheme::new_oaep::<sha2::Sha256>();
+		let padding = Oaep::new::<sha2::Sha256>();
 		self.private_key.decrypt(padding, &bytes)
 	}
 
