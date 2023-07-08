@@ -9,8 +9,6 @@ import buttons from './../../Styles/Buttons.module.css';
 /* Solid */
 import { createSignal } from 'solid-js';
 import { useTrans } from '../../Translation';
-const [name, setName] = createSignal('');
-const [password, setPassword] = createSignal('');
 
 interface LoginBoxProps {
 	class?: string;
@@ -19,6 +17,8 @@ interface LoginBoxProps {
 
 function LoginBox(prop: LoginBoxProps) {
 	const [t] = useTrans();
+	const [name, setName] = createSignal('');
+	const [password, setPassword] = createSignal('');
 
 	return (
 		<form

@@ -7,6 +7,7 @@
 		"tdev": "tauri dev",
 		"devv": "tauri dev",
 		"tauri": "tauri",
+		"build": "vite build",
 		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\""
 	},
 	"license": "MIT",

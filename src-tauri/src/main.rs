@@ -23,7 +23,7 @@ extern crate tokio;
 use std::sync::Arc;
 
 use serde::Deserialize;
-use tauri::{ Manager, State, UserAttentionType };
+use tauri::{ Manager, UserAttentionType };
 use tauri_plugin_log::LogTarget;
 
 use crate::{ main_app_state::MainState };

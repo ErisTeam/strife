@@ -34,6 +34,7 @@ function Prev() {
 	const [state, setState] = createSignal<AppState>('Dev');
 
 	const AppState = useAppState();
+	console.log('appState', AppState);
 
 	return (
 		<div class={style.container}>
@@ -50,22 +51,23 @@ function Prev() {
 					<A class={buttons.default} href="/messagetest">
 						message test
 					</A>
+					<A class={buttons.default} href="/shugsgsrolfdghdflgddid">
+						Error Page
+					</A>
+					<h2>Dev</h2>
 					<A class={buttons.default} href="/dev/loadingtest">
 						Loading Test
 					</A>
-					<SplashText text="Check It Out" settings={{ noWrap: true }}>
-						<A class={buttons.default} href="/dev/test">
-							Context Menu Test
-						</A>
-					</SplashText>
+
+					<A class={buttons.default} href="/dev/test">
+						Context Menu Test
+					</A>
+
 					<A class={buttons.default} href="/dev/translationtest">
 						Translation Test
 					</A>
 					<A class={buttons.default} href="/dev/guildtest">
 						Guild Test
-					</A>
-					<A class={buttons.default} href="/shugsgsrolfdghdflgddid">
-						Error Page
 					</A>
 				</div>
 				<div>

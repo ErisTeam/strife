@@ -9,7 +9,6 @@ import { emit } from '@tauri-apps/api/event';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-const [code, setCode] = createSignal('');
 
 interface MFABoxProps {
 	class?: string;
@@ -18,6 +17,7 @@ interface MFABoxProps {
 
 function MFABox(prop: MFABoxProps) {
 	const [t] = useTrans();
+	const [code, setCode] = createSignal('');
 
 	return (
 		<form
@@ -40,7 +40,7 @@ function MFABox(prop: MFABoxProps) {
 				<button
 					type="button"
 					onclick={() => {
-						emit('send_sms', {});
+						emit('send_sms', {}); //TODO: wait for response and add response on rust side
 					}}
 				>
 					{t.LoginPage.sendSMS()}

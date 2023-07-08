@@ -78,9 +78,9 @@ default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
 
 #! Remove For Production
-# [profile.release.package.wry]
-# debug = true
-# debug-assertions = true
+[profile.release.package.wry]
+debug = true
+debug-assertions = true
 #! -----------------------------
 [profile.release]
 panic = "abort" # Strip expensive panic clean-up logic

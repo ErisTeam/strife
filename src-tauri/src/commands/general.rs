@@ -1,4 +1,4 @@
-use std::{ sync::Arc, collections::HashMap };
+use std::{ sync::Arc };
 
 use log::{ debug, warn, error, info };
 use serde::Serialize;
@@ -12,11 +12,11 @@ type Result<T, E = GeneralError> = std::result::Result<T, E>;
 #[derive(Debug, Serialize)]
 pub enum GeneralResponse {
 	Ok,
+	StateIsAlreadySet(String),
 }
 
 #[derive(Debug, Serialize, Error)]
 pub enum GeneralError {
-	#[error("State is already set to {0}")] StateIsAlreadySet(String),
 	#[error("User not found")]
 	UserNotFound,
 	#[error("Token not found")]
@@ -38,7 +38,7 @@ pub async fn set_state(
 	if !force && state.state.read().await.get_name() == new_state {
 		warn!("State already set to {}", new_state);
 		debug!("USE force=true to force change state");
-		return Err(GeneralError::StateIsAlreadySet(new_state));
+		return Ok(GeneralResponse::StateIsAlreadySet(new_state));
 	}
 	state.reset_state().await;
 	match new_state.as_str() {
