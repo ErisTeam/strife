@@ -20,31 +20,32 @@ const Channel = (props: ChannelProps) => {
 	const [displayName, setDisplayName] = createSignal(props.data.name);
 	function handleClick(e: MouseEvent) {
 		console.log('clicked on', props.data.name, href);
-		if (e.button === 0) {
-			console.log('left click', e.button);
-			if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
-				navigate(href);
-				return;
-			}
-			if (AppState.tabs.length === 0) {
+		switch (e.button) {
+			case 0:
+				console.log('left click', e.button);
+				if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
+					navigate(href);
+					return;
+				}
+				if (AppState.tabs.length === 0) {
+					API.addTab(props.data);
+					navigate(href);
+					return;
+				} else {
+					API.replaceCurrentTab(props.data, params.channelId);
+					navigate(href);
+				}
+				break;
+			case 1:
+				console.log('middle click', e.button);
+				if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
+					console.error('Tab already exists!');
+					navigate(href);
+					return;
+				}
 				API.addTab(props.data);
 				navigate(href);
-				return;
-			} else {
-				API.replaceCurrentTab(props.data, params.channelId);
-				navigate(href);
-			}
-		}
-
-		if (e.button === 1) {
-			console.log('middle click', e.button);
-			if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
-				console.error('Tab already exists!');
-				navigate(href);
-				return;
-			}
-			API.addTab(props.data);
-			navigate(href);
+				break;
 		}
 	}
 

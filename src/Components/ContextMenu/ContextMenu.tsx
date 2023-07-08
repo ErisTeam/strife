@@ -76,16 +76,17 @@ export default function ContextMenu<T>(props: ContexMenuProps<T>) {
 		props.openRef.removeEventListener('contextmenu', openMenu);
 		document.removeEventListener('mousedown', closeMenu);
 	});
+	console.log(document.getElementById('ContextMenu'));
 
 	return (
-		<Portal mount={document.getElementById('ContexMenu')}>
-			<Show when={show()}>
+		<Show when={show()}>
+			<Portal mount={document.getElementById('ContextMenu')}>
 				<ol style={{ position: 'absolute', left: `${pos().x}px`, top: `${pos().y}px`, background: 'red' }} ref={ref}>
 					<MenuProvider data={props.data} closeMenu={c}>
 						{props.children}
 					</MenuProvider>
 				</ol>
-			</Show>
-		</Portal>
+			</Portal>
+		</Show>
 	);
 }

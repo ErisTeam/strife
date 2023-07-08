@@ -1,6 +1,6 @@
 // SolidJS
 import { Outlet } from '@solidjs/router';
-import { Show, createEffect, createSignal } from 'solid-js';
+import { Show, createEffect, createSignal, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../Channels/ChannelList';
 // Components
@@ -9,6 +9,9 @@ import Tabs from '../Tabs/Tabs';
 
 // Style
 import style from './ApplicationWrapper.module.css';
+import { Portal } from 'solid-js/web';
+
+//TODO: move to routes
 
 const ApplicationWrapper = () => {
 	const AppState: any = useAppState();
@@ -27,6 +30,7 @@ const ApplicationWrapper = () => {
 
 	return (
 		<div class={style.wrapper + ' ' + wrapperStyle()}>
+			<div id="ContextMenu"></div>
 			<GuildList className={style.guilds} />
 			<Show when={AppState.tabs.length > 0}>
 				<Tabs className={style.tabs} />

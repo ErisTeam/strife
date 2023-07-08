@@ -23,25 +23,18 @@ import MessageTest from './Routes/Dev/MessageTest/MessageTest';
 // Style
 import './style.css';
 
-import Redirect from './Redirect';
-import API from './API';
-
 import { invoke } from '@tauri-apps/api';
-import { useRoute } from '@solidjs/router/dist/routing';
 import R from './R';
-import ChangeState from './Components/ChangeState/ChangeState';
-import DevTools from './Components/DevTools/DevTools';
 import Loading from './Components/Loading/Loading';
 import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
 
 const App: Component = () => {
-	const AppState: any = useAppState();
+	const AppState = useAppState();
 	const [id] = createResource(async () => {
-		const id: string = await invoke('get_last_user', {});
-		console.log(id);
-		AppState.setUserID(id);
+		const users: { userId: string }[] = await invoke('get_users', {});
+		console.log(users);
+		AppState.setUserID(users[0].userId);
 		invoke('close_splashscreen');
-		return id;
 	});
 
 	console.log(DEV);

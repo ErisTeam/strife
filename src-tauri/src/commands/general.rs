@@ -92,6 +92,24 @@ pub async fn get_token(user_id: String, state: State<'_, Arc<MainState>>) -> Res
 }
 
 #[tauri::command]
-pub async fn get_users(state: State<'_, Arc<MainState>>) -> Result<HashMap<String, user_manager::User>> {
-	Ok(state.user_manager.get_all_users().await)
+pub async fn get_users(state: State<'_, Arc<MainState>>) -> Result<serde_json::Value> {
+	#[derive(Serialize)]
+	#[serde(rename_all = "camelCase")]
+	struct BasicUserInfo {
+		state: user_manager::State,
+		user_id: String,
+		display_name: Option<String>,
+		avatar: Option<String>,
+	}
+	let mut users = Vec::new();
+	for (user_id, data) in &state.user_manager.get_all_users().await {
+		let user = BasicUserInfo {
+			state: data.state.clone(),
+			user_id: user_id.clone(),
+			display_name: data.display_name.clone(),
+			avatar: data.avatar.clone(),
+		};
+		users.push(user);
+	}
+	Ok(serde_json::to_value(users).unwrap())
 }

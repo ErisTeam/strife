@@ -31,6 +31,7 @@ use crate::{ main_app_state::MainState };
 pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
 #[tauri::command]
+#[deprecated]
 fn get_last_user(state: State<Arc<MainState>>) -> Option<String> {
 	println!("get_last_user");
 	println!("{:?}", state.last_id.lock().unwrap());
@@ -69,15 +70,15 @@ fn close_loading(app: &mut tauri::App) -> Result<()> {
 	main_window.show()?;
 	Ok(())
 }
-
-fn main() {
+#[tokio::main]
+async fn main() {
 	println!("Starting");
 
 	let event_manager = event_manager::EventManager::new();
 
 	let main_state = Arc::new(MainState::new(event_manager));
 
-	main_state.event_manager.blocking_lock().set_state(Arc::downgrade(&main_state));
+	main_state.event_manager.lock().await.set_state(Arc::downgrade(&main_state));
 
 	let m = main_state.clone();
 
