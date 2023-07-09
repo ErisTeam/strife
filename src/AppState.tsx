@@ -18,7 +18,6 @@ const [contextMenuData, setContextMenuData] = createStore<ContextMenuData>({
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
-const [t, a] = useTrans();
 
 const AppState = createContext({
 	userGuilds,
@@ -34,8 +33,6 @@ const AppState = createContext({
 	setTabs,
 	currentGuild,
 	setCurrentGuild,
-	t,
-	translation: a,
 });
 
 export function AppStateProvider({ children }: { children: JSX.Element[] | JSX.Element }) {

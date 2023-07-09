@@ -10,7 +10,8 @@ import Guild from '../Guild/Guild';
 
 // Style
 import style from './Tabs.module.css';
-import { Accessor, For, Index, createEffect, createSignal } from 'solid-js';
+import { Accessor, For, Index, createEffect, createMemo, createSignal } from 'solid-js';
+import { useTrans } from '../../Translation';
 
 interface TabsProps {
 	className?: string;
@@ -33,16 +34,15 @@ interface TabProps {
 }
 const TabItem = ({ className, tabIndex }: TabProps) => {
 	const AppState = useAppState();
+	const [t] = useTrans();
 	const params = useParams();
 
 	const location = useLocation();
 	console.log(AppState.tabs[tabIndex]);
 	const navigate = useNavigate();
-	const [href, setHref] = createSignal('');
-
-	createEffect(() => {
-		setHref(`/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`);
-	}, [AppState.tabs[tabIndex].guildId, AppState.tabs[tabIndex].channelId]);
+	const href = createMemo(() => {
+		return `/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`;
+	});
 
 	return (
 		<li class={[className, style.tab].join(' ')}>
@@ -54,7 +54,7 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 			>
 				<img
 					src={AppState.tabs[tabIndex].guildIcon}
-					alt={AppState.t.guild.logoAlt({ guildName: AppState.tabs[tabIndex].guildName })}
+					alt={t.guild.logoAlt({ guildName: AppState.tabs[tabIndex].guildName })}
 				/>
 				{/* TODO: Add translation string to alt text */}
 				<span>{AppState.tabs[tabIndex].channelName}</span>

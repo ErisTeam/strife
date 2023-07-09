@@ -1,4 +1,5 @@
 // API
+import { JSX } from 'solid-js';
 import { Channel as ChannelType } from '../../discord';
 
 // Components
@@ -9,7 +10,7 @@ interface ChannelCategoryProps {
 	id: string;
 	className?: string;
 	data: ChannelType;
-	children: any[];
+	children: JSX.Element | JSX.Element[];
 }
 
 const ChannelCategory = (props: ChannelCategoryProps) => {

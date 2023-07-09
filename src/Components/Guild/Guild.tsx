@@ -7,6 +7,7 @@ import { useAppState } from '../../AppState';
 // Style
 import style from './css.module.css';
 import API from '../../API';
+import { useTrans } from '../../Translation';
 
 interface GuildProps {
 	index: number;
@@ -15,6 +16,7 @@ interface GuildProps {
 
 const Guild = (props: GuildProps) => {
 	const AppState = useAppState();
+	const [t] = useTrans();
 	let spanRef: HTMLSpanElement | undefined;
 	let liRef: HTMLLIElement | undefined;
 	let beforeRef: HTMLDivElement | undefined;
@@ -61,11 +63,11 @@ const Guild = (props: GuildProps) => {
 						src={
 							'https://variety.com/wp-content/uploads/2021/07/Rick-Astley-Never-Gonna-Give-You-Up.png?w=681&h=383&crop=1'
 						}
-						alt={AppState.t.friendsAlt()}
+						alt={t.friendsAlt()}
 					/>
 				</button>
 				<span ref={spanRef} class={style.span}>
-					{AppState.t.friends()}
+					{t.friends()}
 				</span>
 			</li>
 		);
@@ -87,7 +89,7 @@ const Guild = (props: GuildProps) => {
 					when={guild.properties.icon}
 					fallback={<h1 class={style.fallbackText}>{API.getInitials(guild.properties.name)}</h1>}
 				>
-					<img src={guild.properties.icon} alt={AppState.t.guild.logoAlt({ guildName: guild.properties.name })} />
+					<img src={guild.properties.icon} alt={t.guild.logoAlt({ guildName: guild.properties.name })} />
 				</Show>
 			</button>
 			<span ref={spanRef} class={style.span}>

@@ -26,7 +26,7 @@ function LoginBox(prop: LoginBoxProps) {
 			onsubmit={(e) => {
 				e.preventDefault();
 				prop.login(name(), password()).catch((e) => {
-					console.log(e);
+					console.log(e); //TODO: handle error
 				});
 			}}
 		>

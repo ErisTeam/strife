@@ -13,9 +13,9 @@ interface SwitchProps {
 
 function Switch(prop: SwitchProps) {
 	return (
-		<label class={[style.switch, prop.rounded ? style.rounded : ''].join(' ')}>
-			<input type='checkbox' disabled={prop.disabled} />
-			<span class={[style.slider, prop.rounded ? style.rounded : ''].join(' ')} />
+		<label class={style.switch} classList={{ [style.rounded]: prop.rounded }}>
+			<input type="checkbox" disabled={prop.disabled} />
+			<span class={style.slider} classList={{ [style.rounded]: prop.rounded }} />
 		</label>
 	);
 }

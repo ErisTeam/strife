@@ -20,9 +20,12 @@ import inputs from './Styles/Inputs.module.css';
 import { info } from 'tauri-plugin-log-api';
 import SplashText from '../../../Components/Dev/SplashText';
 import { AppState } from '../../../types';
+import { useTrans } from '../../../Translation';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
+	const [t, { setLocale }] = useTrans();
+
 	const [a] = createResource(async () => {
 		throw new Error('test');
 	});
@@ -176,6 +179,21 @@ function Prev() {
 						>
 							Change to Selected
 						</button>
+					</div>
+					<div>
+						<h2>Set locale</h2>
+						<span>{t.hello({ name: 'Test' })}</span>
+						<select
+							class={buttons.default}
+							style={{ width: '100%' }}
+							onchange={(e) => {
+								// @ts-ignore
+								setLocale(e.currentTarget.value);
+							}}
+						>
+							<option value="en_US">en_US</option>
+							<option value="pl_PL">pl_PL</option>
+						</select>
 					</div>
 				</div>
 			</div>

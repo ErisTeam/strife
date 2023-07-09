@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api';
-import { Component, ErrorBoundary, Show, createEffect, createResource, createSignal } from 'solid-js';
+import { Component, ErrorBoundary, Show, Suspense, createEffect, createResource, createSignal } from 'solid-js';
 import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
 import { useTrans } from './Translation';

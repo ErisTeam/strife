@@ -1,9 +1,8 @@
-import { For, JSX, Match, createMemo, createSignal, getOwner, runWithOwner } from 'solid-js';
+import { For, JSX, createMemo } from 'solid-js';
 import { dictionaries, useTrans } from '../../../Translation';
 
 import style from './TranslationTest.module.css';
 import inputs from '../../../Styles/Inputs.module.css';
-import { useI18n } from '@solid-primitives/i18n';
 
 export default () => {
 	const [t, { locale, setLocale, getDictionary }] = useTrans();

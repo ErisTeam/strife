@@ -13,7 +13,6 @@ import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapp
 import Application from './Routes/App/Application';
 import Prev from './Routes/Dev/index/Prev';
 import Login from './Routes/Login/Login';
-import Main from './Routes/Main/Main';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import Error from './Routes/Error/Error';
 import Dev from './Components/Dev/Dev';

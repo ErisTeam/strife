@@ -53,11 +53,11 @@ export default function ContextMenu<T>(props: ContexMenuProps<T>) {
 		}
 		if (!ref.contains(ev.target as Node)) {
 			console.log('close');
-			c();
+			close();
 		}
 	};
 
-	function c() {
+	function close() {
 		setShow(false);
 		document.removeEventListener('mousedown', closeMenu);
 	}
@@ -76,13 +76,12 @@ export default function ContextMenu<T>(props: ContexMenuProps<T>) {
 		props.openRef.removeEventListener('contextmenu', openMenu);
 		document.removeEventListener('mousedown', closeMenu);
 	});
-	console.log(document.getElementById('ContextMenu'));
 
 	return (
 		<Show when={show()}>
 			<Portal mount={document.getElementById('ContextMenu')}>
 				<ol style={{ position: 'absolute', left: `${pos().x}px`, top: `${pos().y}px`, background: 'red' }} ref={ref}>
-					<MenuProvider data={props.data} closeMenu={c}>
+					<MenuProvider data={props.data} closeMenu={close}>
 						{props.children}
 					</MenuProvider>
 				</ol>

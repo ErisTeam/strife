@@ -1,5 +1,5 @@
 // SolidJS
-import { createSignal, onMount, For, createEffect, Show, JSXElement } from 'solid-js';
+import { createSignal, onMount, For, createEffect, Show, JSXElement, JSX, createMemo } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -11,6 +11,8 @@ import ChannelCategory from './ChannelCategory';
 //Style
 import style from './css.module.css';
 import Channel from './Channel';
+import { Guild } from '../../discord';
+import List from '../List/List';
 
 interface ChannelListProps {
 	className?: string;
@@ -19,44 +21,38 @@ interface ChannelListProps {
 const ChannelList = (props: ChannelListProps) => {
 	const AppState = useAppState();
 
-	const [channelsRenderReady, setChannelsRenderReady] = createSignal([] as any[]);
-
-	createEffect(() => {
+	const channels = createMemo(() => {
 		console.log('rendering channels');
-		const channelsRender: any[] = [];
+		const channelsRender: JSX.Element[] = [];
 
-		let children: any[] = [];
-		for (let i = AppState.currentGuild().channels.length - 1; i >= 0; i--) {
-			if (AppState.currentGuild().channels[i].type === 4) {
+		let children: JSX.Element[] = [];
+
+		const currentGuild = AppState.currentGuild() as Guild;
+
+		for (let i = currentGuild.channels.length - 1; i >= 0; i--) {
+			//TODO: replace magic number
+			if (currentGuild.channels[i].type === 4) {
 				channelsRender.push(
-					(
-						<ChannelCategory id={AppState.currentGuild().channels[i].id} data={AppState.currentGuild().channels[i]}>
-							{children}
-						</ChannelCategory>
-					) as Element
+					<ChannelCategory id={currentGuild.channels[i].id} data={currentGuild.channels[i]}>
+						{children}
+					</ChannelCategory>
 				);
 				children = [];
 			} else {
-				if (AppState.currentGuild().channels[i].parent_id) {
-					children.push((<Channel data={AppState.currentGuild().channels[i]} />) as Element);
+				if (currentGuild.channels[i].parent_id) {
+					children.push((<Channel data={currentGuild.channels[i]} />) as Element);
 				} else {
-					channelsRender.push((<Channel data={AppState.currentGuild().channels[i]} />) as Element);
+					channelsRender.push((<Channel data={currentGuild.channels[i]} />) as Element);
 				}
 			}
 		}
-		setChannelsRenderReady(channelsRender.toReversed());
-	}, [AppState.currentGuild()]);
+		return channelsRender.reverse();
+	});
 
 	return (
-		<nav class={[props.className, style.channelList].join(' ')}>
-			<h1>{AppState.currentGuild().properties.name}</h1>
-			<ol>
-				<Show when={AppState.currentGuild() !== 'friends'}>{channelsRenderReady()}</Show>
-				<Show when={AppState.currentGuild() === 'friends'}>
-					<For each={AppState.relationships}>{(relationship) => <Relationship relationship={relationship} />}</For>
-				</Show>
-			</ol>
-		</nav>
+		<List title={(AppState.currentGuild() as Guild).properties.name} className={props.className}>
+			{channels()}
+		</List>
 	);
 };
 export default ChannelList;

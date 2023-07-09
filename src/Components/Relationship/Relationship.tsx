@@ -4,17 +4,15 @@ import { onMount, For } from 'solid-js';
 // API
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { Relationship as RelationshipT } from '../../types';
+import { Relationship as RelationshipType } from '../../discord';
 
 // Style
 import style from './Relationship.module.css';
 interface RelationshipProps {
 	className?: string;
-	relationship: RelationshipT;
+	relationship: RelationshipType;
 }
 const Relationship = (props: RelationshipProps) => {
-	const AppState: any = useAppState();
-
 	return (
 		<li>
 			<img
