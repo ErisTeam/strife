@@ -12,7 +12,7 @@
 }
 .background::before {
 	content: '';
-	background-image: url('LoginPage/BackgroundDoodle.png');
+	background-image: url('/LoginPage/BackgroundDoodle.png');
 	background-size: cover;
 	position: absolute;
 	top: 0px;
