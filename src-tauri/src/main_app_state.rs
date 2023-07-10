@@ -56,8 +56,6 @@ pub struct MainState {
 
 	pub event_manager: Mutex<EventManager>,
 
-	pub last_id: std::sync::Mutex<Option<String>>,
-
 	pub user_manager: UserManager,
 
 	//TODO: pub system_info: Mutex<SystemInfo>
@@ -69,8 +67,6 @@ impl MainState {
 			state: Arc::new(tokio::sync::RwLock::new(State::None)),
 
 			event_manager: Mutex::new(event_manager),
-
-			last_id: std::sync::Mutex::new(None),
 
 			user_manager: UserManager::new(),
 		}

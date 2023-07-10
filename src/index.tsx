@@ -11,7 +11,7 @@ import { AppStateProvider, useAppState } from './AppState';
 // Components
 import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
 import Application from './Routes/App/Application';
-import Prev from './Routes/Dev/index/Prev';
+import Prev from './Routes/Dev/Prev';
 import Login from './Routes/Login/Login';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import Error from './Routes/Error/Error';

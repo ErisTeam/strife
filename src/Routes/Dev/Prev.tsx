@@ -8,19 +8,19 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { emit } from '@tauri-apps/api/event';
 
 // API
-import API from '../../../API';
-import { changeState, useTaurListener, useTaurListenerOld } from '../../../test';
-import { useAppState } from '../../../AppState';
+import API from '../../API';
+import { changeState, useTaurListener, useTaurListenerOld } from '../../test';
+import { useAppState } from '../../AppState';
 import qrcode from 'qrcode';
 
 // Style
 import style from './prev.module.css';
-import buttons from '../../../Styles/Buttons.module.css';
+import buttons from '../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
 import { info } from 'tauri-plugin-log-api';
-import SplashText from '../../../Components/Dev/SplashText';
-import { AppState } from '../../../types';
-import { useTrans } from '../../../Translation';
+import SplashText from '../../Components/Dev/SplashText';
+import { AppState } from '../../types';
+import { useTrans } from '../../Translation';
 
 // TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
@@ -182,7 +182,6 @@ function Prev() {
 					</div>
 					<div>
 						<h2>Set locale</h2>
-						<span>{t.hello({ name: 'Test' })}</span>
 						<select
 							class={buttons.default}
 							style={{ width: '100%' }}
@@ -194,6 +193,7 @@ function Prev() {
 							<option value="en_US">en_US</option>
 							<option value="pl_PL">pl_PL</option>
 						</select>
+						<span>{t.hello({ name: 'Test' })}</span>
 					</div>
 				</div>
 			</div>

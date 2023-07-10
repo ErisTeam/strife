@@ -65,7 +65,7 @@ pub enum VerificationMethod {
 }
 
 #[derive(Debug, Clone)]
-pub enum Cos { //TODO change name
+pub enum RemoteAuthMessages {
 	Login {
 		ticket: String,
 		private_key: rsa::RsaPrivateKey,
@@ -190,7 +190,7 @@ impl Auth {
 	}
 
 	async fn receiver_thread(
-		mut auth_receiver: tokio::sync::mpsc::Receiver<Cos>,
+		mut auth_receiver: tokio::sync::mpsc::Receiver<RemoteAuthMessages>,
 		state: Weak<MainState>,
 		gateaway: Weak<RwLock<MobileAuth>>,
 		captcha_data: Weak<RwLock<Option<CaptchaData>>>,
@@ -200,7 +200,7 @@ impl Auth {
 			let payload = auth_receiver.recv().await;
 			if let Some(payload) = payload {
 				match payload {
-					Cos::Login { ticket, private_key } => {
+					RemoteAuthMessages::Login { ticket, private_key } => {
 						let res = Self::login_mobile_auth(ticket, None, None).await?;
 						match res {
 							http_packets::auth::LoginResponse::Success { encrypted_token } => {
@@ -265,7 +265,7 @@ impl Auth {
 							}
 						}
 					}
-					Cos::UpdateQrUserData { user_id, discriminator, avatar_hash, username } => {
+					RemoteAuthMessages::UpdateQrUserData { user_id, discriminator, avatar_hash, username } => {
 						handle.emit_all("auth", webview_packets::auth::Auth::MobileTicketData {
 							user_id,
 							discriminator,
@@ -274,13 +274,13 @@ impl Auth {
 						})?;
 						debug!("Sent ticket data");
 					}
-					Cos::UpdateQrCode { fingerprint } => {
+					RemoteAuthMessages::UpdateQrCode { fingerprint } => {
 						handle.emit_all("auth", webview_packets::auth::Auth::MobileQrcode {
 							qrcode: Some(format!("https://discordapp.com/ra/{}", fingerprint)),
 						})?;
 						debug!("Sent qrcode");
 					}
-					Cos::CancelQrCode => {
+					RemoteAuthMessages::CancelQrCode => {
 						handle.emit_all("auth", webview_packets::auth::Auth::MobileQrcode {
 							qrcode: None,
 						})?;

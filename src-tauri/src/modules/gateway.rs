@@ -196,14 +196,16 @@ impl Gateway {
 								crate::discord::gateway_packets::DispatchedEvents::SessionReplace(_) => {
 									//TODO: implement
 								}
-								crate::discord::gateway_packets::DispatchedEvents::MessageDelete(_) =>
-									todo!("Message delete"),
+								crate::discord::gateway_packets::DispatchedEvents::MessageDelete(_) => {
+									//TODO: Message delete
+								}
 								crate::discord::gateway_packets::DispatchedEvents::StartTyping(data) => {
 									println!("Start typing {:?}", data);
 									//TODO: implement
 								}
-								crate::discord::gateway_packets::DispatchedEvents::BurstCreditBalanceUpdate(_) =>
-									todo!("Burst credit balance update"),
+								crate::discord::gateway_packets::DispatchedEvents::BurstCreditBalanceUpdate(_) => {
+									//TODO: Burst credit balance update
+								}
 								crate::discord::gateway_packets::DispatchedEvents::Unknown(value) => {
 									println!("Unknown packet {:?}", value);
 								}

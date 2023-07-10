@@ -11,7 +11,7 @@ use tokio_tungstenite::{ MaybeTlsStream, connect_async_tls_with_config, WebSocke
 
 use crate::discord::{ constants, mobile_auth_packets::{ OutGoingPackets, IncomingPackets } };
 
-use super::{ gateway_utils::ConnectionInfo, auth::Cos };
+use super::{ gateway_utils::ConnectionInfo, auth::RemoteAuthMessages };
 
 #[derive(Debug, Clone)]
 pub enum Errors {
@@ -87,9 +87,9 @@ impl MobileAuth {
 
 	fn create_connection_info(
 		&self,
-		auth_sender: tokio::sync::mpsc::Sender<Cos>,
+		auth_sender: tokio::sync::mpsc::Sender<RemoteAuthMessages>,
 		app_handle: AppHandle
-	) -> crate::Result<ConnectionInfo<MobileAuthConnectionData, Cos>> {
+	) -> crate::Result<ConnectionInfo<MobileAuthConnectionData, RemoteAuthMessages>> {
 		let (public_key, private_key) = self.generate_keys()?;
 		Ok(
 			ConnectionInfo::new(
@@ -130,7 +130,7 @@ impl MobileAuth {
 				>
 			>
 		>,
-		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, Cos>>>
+		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, RemoteAuthMessages>>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		loop {
 			let read = reader.next().await;
@@ -179,14 +179,14 @@ impl MobileAuth {
 						IncomingPackets::Cancel {} => {
 							debug!("Received cancel packet");
 							let connection_info = connection_info.lock().await;
-							connection_info.sender.send(Cos::CancelQrCode).await?;
+							connection_info.sender.send(RemoteAuthMessages::CancelQrCode).await?;
 
 							return Err(Errors::Cancelled.into());
 						}
 						IncomingPackets::PendingRemoteInit { fingerprint } => {
 							debug!("Received pending remote init packet");
 							let connection_info = connection_info.lock().await;
-							connection_info.sender.send(Cos::UpdateQrCode { fingerprint }).await?;
+							connection_info.sender.send(RemoteAuthMessages::UpdateQrCode { fingerprint }).await?;
 						}
 						IncomingPackets::PendingTicket { encrypted_user_payload } => {
 							let connection_info = connection_info.lock().await;
@@ -207,7 +207,7 @@ impl MobileAuth {
 							let avatar_hash = splited.get(2).unwrap_or(&String::new()).clone();
 							let username = splited.get(3).unwrap_or(&String::new()).clone();
 
-							connection_info.sender.send(Cos::UpdateQrUserData {
+							connection_info.sender.send(RemoteAuthMessages::UpdateQrUserData {
 								user_id,
 								discriminator,
 								avatar_hash,
@@ -219,7 +219,7 @@ impl MobileAuth {
 
 							let private_key = connection_info.aditional_data.private_key.clone();
 
-							connection_info.sender.send(Cos::Login {
+							connection_info.sender.send(RemoteAuthMessages::Login {
 								ticket,
 								private_key,
 							}).await?;
@@ -243,7 +243,7 @@ impl MobileAuth {
 				>
 			>
 		>,
-		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, Cos>>>
+		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo<MobileAuthConnectionData, RemoteAuthMessages>>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		let should_start = {
 			let connection_info = connection_info.lock().await;
@@ -275,7 +275,7 @@ impl MobileAuth {
 	pub async fn start(
 		&mut self,
 		handle: AppHandle,
-		auth_sender: tokio::sync::mpsc::Sender<Cos>
+		auth_sender: tokio::sync::mpsc::Sender<RemoteAuthMessages>
 	) -> std::result::Result<tokio::sync::broadcast::Receiver<String>, Box<dyn std::error::Error>> {
 		let (error_sender, error_reciver) = tokio::sync::broadcast::channel::<String>(1);
 

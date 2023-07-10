@@ -19,7 +19,7 @@ interface messageCreate extends i {
 	};
 }
 
-import style from '../index/prev.module.css';
+import style from '../prev.module.css';
 import Dev from '../../../Components/Dev/Dev';
 
 function MessageTest(props: { channelId?: string; guildId?: string }) {

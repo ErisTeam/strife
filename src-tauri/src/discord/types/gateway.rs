@@ -66,7 +66,7 @@ impl Default for Properties {
 	fn default() -> Self {
 		Self {
 			os: "Windows".to_string(),
-			browser: "Discord Client".to_string(), //or Discord Client
+			browser: "TNADC".to_string(), //or Discord Client
 			device: String::new(),
 			system_locale: "en-US".to_string(),
 			browser_user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36".to_string(),

@@ -10,7 +10,6 @@ import Guild from './Guild';
 
 // Style
 import style from './css.module.css';
-import { A } from '@solidjs/router';
 
 interface GuildListProps {
 	className?: string;
