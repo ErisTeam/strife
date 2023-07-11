@@ -123,6 +123,7 @@ pre {
 
 	--round-medium: 6px;
 	--round-large: 12px;
+	--round-xlarge: 24px;
 
 	--default-padding: 0.5rem;
 	/* TODO: Find a better font (numbers are looking kinda... funky. As well as all of the text that has a bigger weight than normal) */

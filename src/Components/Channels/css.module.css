@@ -9,6 +9,7 @@
 		font-weight: bold;
 	}
 }
+
 .channel {
 	button {
 		display: flex;
@@ -18,10 +19,21 @@
 		color: #ffffff;
 		width: 100%;
 		margin: 0.3em;
+		background: linear-gradient(to right, var(--depth1) 33%, transparent 55%, transparent 55%);
+		background-size: 300% 100%;
+		background-position: right bottom;
+		transition: all 0.5s ease-in-out;
+
+		border-radius: var(--round-xlarge);
 		svg {
 			padding: 0.3em;
 			fill: var(--disabled-text);
 			height: 100%;
+		}
+	}
+	&:hover {
+		button {
+			background-position: left bottom;
 		}
 	}
 }
