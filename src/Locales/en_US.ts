@@ -12,6 +12,7 @@ export default {
 		sendSMS: 'Send code via SMS',
 		password: 'Password',
 		rememberMe: 'Remember me:',
+		captchaHeader: 'Confirm that you are not a robot',
 	},
 	guild: {
 		logoAlt: 'Logo for {{ guildName }}',

@@ -74,7 +74,7 @@ const LoginPage = () => {
 			}
 			case 'requireAuth': {
 				if (input.captcha_key?.includes('captcha-required')) {
-					setCaptchaSiteKey(input.captcha_sitekey as string);
+					setCaptchaSiteKey(input.captcha_sitekey);
 					setPanel('captcha');
 					console.log('captcha required');
 				}
@@ -193,6 +193,7 @@ const LoginPage = () => {
 			</div>
 			<div class={[style.container, classes().captcha].join(' ')}>
 				<div class={style.hcaptchaContainer}>
+					<h1 class={style.header}>{t.LoginPage.captchaHeader()}</h1>
 					<HCaptcha sitekey="" />
 				</div>
 			</div>

@@ -35,8 +35,26 @@
 }
 
 .hcaptchaContainer {
+	width: fit-content;
+	height: 20rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	background-color: var(--depth2);
 	border-radius: var(--round-large);
+	padding: 1.6rem;
+	filter: var(--drop-shadow);
+	max-width: min(80%, 50ch);
+	h1 {
+		font-size: 3rem;
+		font-weight: 600;
+		text-align: center;
+	}
+
+	& > *:not(:last-child) {
+		margin-bottom: 1.6rem;
+	}
 }
 
 .fromLeft {

@@ -22,9 +22,11 @@ function MFABox(prop: MFABoxProps) {
 	return (
 		<form
 			class={[style.MFABox, prop.class].join(' ')}
-			onsubmit={async (e) => {
+			onsubmit={(e) => {
 				e.preventDefault();
-				prop.verify(code());
+				prop.verify(code()).catch((e) => {
+					console.error(e);
+				});
 			}}
 		>
 			<h1 class={style.header}>{t.LoginPage.MFATitle()}</h1>

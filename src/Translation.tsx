@@ -11,7 +11,6 @@ export const dictionaries = {
 
 const [I18nProvider, useI18nContext] = createChainedI18nContext(
 	{
-		//@ts-ignore
 		dictionaries: dictionaries,
 		locale: 'en_US', // Starting locale
 	},
