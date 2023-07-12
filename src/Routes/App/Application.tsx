@@ -7,6 +7,7 @@ import { Listener, startGateway, startGatewayListener } from '../../test';
 import { useParams } from '@solidjs/router';
 import Dev from '../../Components/Dev/Dev';
 import { emit } from '@tauri-apps/api/event';
+import Message from '../../Components/Messages/Message';
 interface i {
 	type: string;
 }
@@ -27,10 +28,12 @@ const Application = () => {
 	const params = useParams();
 
 	const [messages, setMessages] = createSignal<any[]>([], { equals: false });
-
+	const [message, setMessage] = createSignal('');
+	const [reference, setReference] = createSignal<null | any>(null);
+	const [editing, setEditing] = createSignal<null | any>(null);
 	const AppState = useAppState();
 
-	startGateway(AppState.userId() as string);
+	startGateway(AppState.userId());
 
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
@@ -61,7 +64,7 @@ const Application = () => {
 
 	fetchMessages();
 
-	const listener = startGatewayListener(AppState.userId() as string);
+	const listener = startGatewayListener(AppState.userId());
 
 	listener.on<messageCreate>('messageCreate', (msg) => {
 		console.log('Listener gateway', msg, msg, msg.type);
@@ -112,7 +115,7 @@ const Application = () => {
 		fetch(`https://discord.com/api/v9/channels/${params.channelId}/typing`, {
 			method: 'POST',
 			headers: {
-				Authorization: (await API.getToken(AppState.userId() as string)) as string,
+				Authorization: await API.getToken(AppState.userId()),
 			},
 		});
 		setTimeout(async () => {
@@ -120,10 +123,6 @@ const Application = () => {
 			setShouldSendTyping(true);
 		}, 3000);
 	}
-
-	const [message, setMessage] = createSignal('');
-	const [reference, setReference] = createSignal<null | any>(null);
-	const [editing, setEditing] = createSignal<null | any>(null);
 
 	return (
 		<div>
@@ -149,73 +148,16 @@ const Application = () => {
 			</Dev>
 			<ol style={{ 'overflow-y': 'auto', height: '60rem' }}>
 				<For each={messages()} fallback={<h1>loading</h1>}>
-					{(val, index) => {
-						let embed;
-
-						if (val.embeds && val.embeds[0]) {
-							console.log(val);
-							switch (val.embeds[0].type) {
-								case 'gifv':
-									embed = (
-										<video
-											src={val.embeds[0].video.proxy_url}
-											autoplay={true}
-											loop={true}
-											width={val.embeds[0].video.width}
-											height={val.embeds[0].video.height}
-										></video>
-									);
-									break;
-								case 'video':
-									embed = (
-										<img
-											src={val.embeds[0].video.proxy_url}
-											width={val.embeds[0].video.width}
-											height={val.embeds[0].video.height}
-										></img>
-									);
-									break;
-								default:
-									embed = <h2>{JSON.stringify(val.embeds[0])}</h2>;
-									break;
-							}
-						}
+					{(val) => {
 						return (
-							<li>
-								{intl.format(val.timestamp)} <br /> {val.author.username}: {val.content}
-								{!!embed && embed}
-								{val.author.id == AppState.userId() && (
-									<button
-										onClick={() => {
-											if (editing()?.id == val.id) {
-												setEditing(null);
-												setMessage('');
-												return;
-											}
-											setEditing(val);
-											setMessage(val.content);
-											//setReference(val.)
-										}}
-									>
-										edit
-									</button>
-								)}
-								<button
-									onClick={() => {
-										if (reference()?.message_id == val.id) {
-											setReference(null);
-											return;
-										}
-										setReference({
-											channel_id: val.channel_id,
-											message_id: val.id,
-											guild_id: params.guildId,
-										});
-									}}
-								>
-									reply
-								</button>
-							</li>
+							<Message
+								msg={val}
+								setEditing={setEditing}
+								setMessage={setMessage}
+								editing={editing}
+								reference={reference}
+								setReference={setReference}
+							/>
 						);
 					}}
 				</For>

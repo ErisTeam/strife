@@ -48,10 +48,10 @@ pub async fn gami_to_furras(token: String, gami: bool) {
 	status_settings.status = Some("online".to_string());
 	let mut status = CustomStatus::default();
 	if gami {
-		status.text = "I'm a furry".to_string();
-		status.emoji_name = "🐶".to_string();
+		status.text = "yo".to_string();
+		status.emoji_name = "💀".to_string();
 	} else {
-		status.text = "Gami to Furras".to_string();
+		status.text = "yoyo".to_string();
 	}
 
 	status_settings.custom_status = Some(status);

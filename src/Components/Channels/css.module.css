@@ -11,6 +11,7 @@
 }
 
 .channel {
+	width: 100%;
 	button {
 		display: flex;
 		justify-content: flex-start;
@@ -29,6 +30,15 @@
 			padding: 0.3em;
 			fill: var(--disabled-text);
 			height: 100%;
+		}
+
+		/*cant be in % or ellipsis wont work*/
+		span {
+			width: 18ch;
+			white-space: nowrap;
+			display: inline-block;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 	}
 	&:hover {

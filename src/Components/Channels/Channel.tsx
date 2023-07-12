@@ -98,7 +98,7 @@ const Channel = (props: ChannelProps) => {
 				}}
 			>
 				<div class={style.icon}>{chosenIcon()}</div>
-				{displayName()}
+				<span>{displayName()}</span>
 			</button>
 			<ContextMenu data={{ channel: props.data }} openRef={openRef}>
 				<OpenInNewTab />
