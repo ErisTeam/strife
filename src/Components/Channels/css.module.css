@@ -1,15 +1,58 @@
 .category {
-	h1 {
+	& > button {
+		background: linear-gradient(to right, var(--depth1) 33%, transparent 55%, transparent 55%);
+		background-size: 300% 100%;
+		background-position: right bottom;
+		border-top-left-radius: var(--round-xlarge);
+		border-bottom-left-radius: var(--round-xlarge);
+
+		border-bottom-right-radius: var(--round-large);
+		border-top-right-radius: var(--round-large);
+		transition: background-position 300ms ease-in-out;
 		display: flex;
-		justify-content: flex-start;
+		justify-content: space-between;
 		align-items: center;
-		color: #a0a0a0;
-		margin: 0.4em;
-		font-size: 0.7em;
-		font-weight: bold;
+		padding: 0.25em 0.2em;
+		margin: 0 0.2em;
+		width: 100%;
+		h1 {
+			text-align: left;
+			vertical-align: middle;
+			color: var(--channel-category-text);
+			margin: 0.4em;
+			font-size: 0.9em;
+			font-weight: 600;
+			height: 100%;
+			width: 85%;
+		}
+		svg {
+			transition: rotate 300ms;
+			stroke: var(--channel-category-text);
+			height: 100%;
+			width: 15%;
+		}
+		&:hover {
+			background-position: left bottom;
+			border-radius: 0;
+
+			border-top-left-radius: var(--round-xlarge);
+			border-bottom-left-radius: var(--round-xlarge);
+		}
+	}
+	ol {
+		transition: height 300ms ease-in-out;
+		height: 0px;
+		overflow: hidden;
+	}
+	ol.expand {
+		/* because you cant animate fit-content or auto height we need to calucate it, the formula is, (channel height+margin)*channelCount + margin    you only multiply one margin due to margin collapse*/
+		height: calc(2.3em * var(--childCount) + 0.3em) !important;
+		height: fit-content;
 	}
 }
-
+.rotate {
+	rotate: -180deg;
+}
 .channel {
 	width: 100%;
 	button {
@@ -26,11 +69,6 @@
 		transition: all 0.5s ease-in-out;
 
 		border-radius: var(--round-xlarge);
-		svg {
-			padding: 0.3em;
-			fill: var(--disabled-text);
-			height: 100%;
-		}
 
 		/*cant be in % or ellipsis wont work*/
 		span {
@@ -43,6 +81,10 @@
 	}
 	&:hover {
 		button {
+			border-radius: 0;
+
+			border-top-left-radius: var(--round-xlarge);
+			border-bottom-left-radius: var(--round-xlarge);
 			background-position: left bottom;
 		}
 	}
@@ -56,4 +98,15 @@
 	justify-content: center;
 	align-items: center;
 	margin-right: 0.5em;
+	color: var(--channel-icon-color);
+	svg {
+		height: 100%;
+		background-color: transparent;
+		fill: transparent;
+
+		padding: 0.2em;
+		stroke: var(--channel-icon-color);
+
+		height: 100%;
+	}
 }

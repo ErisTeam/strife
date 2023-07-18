@@ -17,6 +17,9 @@ dependencies:
   '@tauri-apps/api':
     specifier: ^1.4.0
     version: 1.4.0
+  lucide-solid:
+    specifier: ^0.261.0
+    version: 0.261.0(solid-js@1.7.6)
   postcss-nested:
     specifier: ^6.0.1
     version: 6.0.1(postcss@8.4.24)
@@ -34,7 +37,7 @@ dependencies:
     version: 1.7.6
   tauri-plugin-log-api:
     specifier: github:tauri-apps/tauri-plugin-log
-    version: github.com/tauri-apps/tauri-plugin-log/21921031d74f871180381317a338559f588ad8e9
+    version: github.com/tauri-apps/tauri-plugin-log/fbbb126e6d7fba7a7e6772d33f99c0fb689f32b6
 
 devDependencies:
   '@solid-devtools/overlay':
@@ -2317,6 +2320,14 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /lucide-solid@0.261.0(solid-js@1.7.6):
+    resolution: {integrity: sha512-FNsdXC+LGRDYI3vYtdcNvYiHkpX5RRFpxsNoOjpov3G/RMOPVytRXdf7UpfnJKau6HsJ9AMy+MXD6FSdebObTg==}
+    peerDependencies:
+      solid-js: ^1.4.7
+    dependencies:
+      solid-js: 1.7.6
+    dev: false
+
   /magic-string@0.30.0:
     resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
     engines: {node: '>=12'}
@@ -3137,8 +3148,8 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  github.com/tauri-apps/tauri-plugin-log/21921031d74f871180381317a338559f588ad8e9:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/21921031d74f871180381317a338559f588ad8e9}
+  github.com/tauri-apps/tauri-plugin-log/fbbb126e6d7fba7a7e6772d33f99c0fb689f32b6:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/fbbb126e6d7fba7a7e6772d33f99c0fb689f32b6}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:

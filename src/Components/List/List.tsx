@@ -6,11 +6,10 @@ interface ListProps {
 	children?: JSX.Element | JSX.Element[];
 }
 export default (props: ListProps) => {
-	const c = children(() => props.children);
 	return (
-		<nav class={[props.className, style.channelList].join(' ')}>
+		<nav class={[props.className, style.list].join(' ')}>
 			<h1>{props.title}</h1>
-			<ol>{c()}</ol>
+			<ol>{props.children}</ol>
 		</nav>
 	);
 };

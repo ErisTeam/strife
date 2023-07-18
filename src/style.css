@@ -130,6 +130,10 @@ pre {
 	--default-font: 'Atkinson Hyperlegible', sans-serif;
 
 	--drop-shadow: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
+
+	/* CHANNELS */
+	--channel-category-text: #a0a0a0;
+	--channel-icon-color: #bdbdbd;
 }
 
 * {
