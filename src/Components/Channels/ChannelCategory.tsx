@@ -22,7 +22,7 @@ const ChannelCategory = (props: ChannelCategoryProps) => {
 					setIsExpanded(!isExpanded());
 				}}
 			>
-				<h1>{props.data.name}</h1>
+				<span>{props.data.name}</span>
 				<ChevronDown class={isExpanded() == true ? style.rotate : null} />
 			</button>
 			<ol classList={{ [style.expand]: isExpanded() }} style={`--childCount: ${props.children.length}`}>
