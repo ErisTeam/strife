@@ -82,12 +82,24 @@ const LoginPage = () => {
 					console.log('mfa required');
 
 					setRequireCode(true);
-					setPanel('mfa');
+					switchTo('mfa');
 
 					if (input.sms) {
-						emit('send_sms', {});
+						emit('send_sms', {}).catch((e) => {
+							setDidSendSMS(true);
+							console.log(e);
+						});
 					}
 				}
+				break;
+			}
+			case 'verifySuccess': {
+				appState.setUserID(input.userId);
+
+				console.log(appState.userId());
+				console.log('verify success');
+				navigate('/');
+
 				break;
 			}
 		}
@@ -105,9 +117,12 @@ const LoginPage = () => {
 		console.log(
 			await emit('verifyLogin', {
 				code: code,
+				method: didSendSMS() ? 'Sms' : 'Mfa',
 			})
 		);
-		API.updateCurrentUserID();
+		API.updateCurrentUserID().catch((e) => {
+			console.log(e);
+		});
 	}
 
 	const [classes, setClasses] = createSignal<{ login: string; mfa: string; captcha: string }>({
