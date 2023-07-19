@@ -114,7 +114,9 @@ pre {
 	--depth3: hsl(205, 0%, 26%);
 	--depth4: hsl(205, 0%, 32%);
 
-	--primary: hsl(205, 100%, 50%);
+	--primary: hsl(18, 86%, 50%); 
+	--secondary: hsl(205, 100%, 50%);
+	--tertiary: hsl(161, 100%, 40%);
 	--darken: brightness(93%);
 	--darken-for-active: brightness(80%);
 

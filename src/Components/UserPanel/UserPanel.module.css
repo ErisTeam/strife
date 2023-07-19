@@ -1,0 +1,31 @@
+.userPanelInner {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+
+	gap: 1em;
+
+	width: fit-content;
+	height: 100%;
+}
+.userButtons {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: row;
+
+	gap: 0.5em;
+
+	width: fit-content;
+}
+.userButtons button {
+	display: grid;
+	place-items: center;
+
+	aspect-ratio: 1;
+	width: 2em;
+
+	background-color: var(--depth1);
+	font-size: 1em;
+}

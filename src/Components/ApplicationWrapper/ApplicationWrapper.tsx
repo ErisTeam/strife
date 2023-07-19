@@ -6,11 +6,14 @@ import ChannelList from '../Channels/ChannelList';
 // Components
 import GuildList from '../Guild/GuildList';
 import Tabs from '../Tabs/Tabs';
+import ServerPanel from '../ServerPanel/ServerPanel';
+import UserPanel from '../UserPanel/UserPanel';
 
 // Style
 import style from './ApplicationWrapper.module.css';
 import { Portal } from 'solid-js/web';
 import FriendsList from '../Friends/FriendsList';
+import { User } from 'lucide-solid';
 
 //TODO: move to routes
 
@@ -52,6 +55,11 @@ const ApplicationWrapper = () => {
 			</Show>
 			<div class={style.outlet}>
 				<Outlet />
+			</div>
+			<div class={style.panel + ' ' + wrapperStyle()}>
+				<UserPanel></UserPanel>
+				<div class={style.panelDivider}></div>
+				<ServerPanel></ServerPanel>
 			</div>
 		</div>
 	);

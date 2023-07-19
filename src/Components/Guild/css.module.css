@@ -86,7 +86,7 @@
 .guildList {
 	display: flex;
 	width: 4.5em;
-	height: 100vh;
+	height: calc(100vh - 3em);
 	position: fixed;
 	top: 0;
 	left: 0;
