@@ -31,6 +31,8 @@ pub fn add_token(m: &MainState, handle: tauri::AppHandle) {
 				display_name: None,
 				avatar: None,
 			}).await;
+
+			m.user_manager.save_to_file().await.unwrap();
 		})
 	})
 }
@@ -44,8 +46,10 @@ pub async fn gami_to_furras(token: String, gami: bool) {
 		preloaded_user_settings::{ StatusSettings, CustomStatus },
 	};
 	let mut settings = PreloadedUserSettings::default();
-	let mut status_settings = StatusSettings::default();
-	status_settings.status = Some("online".to_string());
+	let mut status_settings = StatusSettings {
+		status: Some("online".to_string()),
+		..Default::default()
+	};
 	let mut status = CustomStatus::default();
 	if gami {
 		status.text = "yo".to_string();

@@ -1,13 +1,15 @@
 use std::{ sync::Arc, io::Write, time::Duration };
 
 use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
-use log::{ debug, error, warn };
+use log::{ debug, error, warn, trace };
 use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex, RwLock } };
 use tokio_tungstenite::{ WebSocketStream, MaybeTlsStream, connect_async_tls_with_config };
 
-use crate::{
-	discord::{ constants, gateway_packets::{ OutGoingPacket, IncomingPacket }, types::gateway::packets_data::Identify },
+use crate::discord::{
+	constants,
+	gateway_packets::{ OutGoingPacket, IncomingPacket },
+	types::gateway::packets_data::{ Identify, LazyGuilds },
 };
 
 use super::{ main_app::GatewayMessages, gateway_utils::Errors };
@@ -15,10 +17,7 @@ use super::{ main_app::GatewayMessages, gateway_utils::Errors };
 #[derive(Debug, Clone)]
 #[allow(unused)]
 pub enum Messages {
-	RequestLazyGuilds {
-		guild_id: String,
-		//TODO add more
-	},
+	RequestLazyGuilds(LazyGuilds),
 }
 
 type ConnectionInfo = super::gateway_utils::ConnectionInfo<ConnectionData, GatewayMessages>;
@@ -261,7 +260,7 @@ impl Gateway {
 
 			let mut writer = writer.lock().await;
 			writer.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;
-			debug!("Sent heartbeat packet");
+			trace!("Sent heartbeat packet");
 		}
 	}
 	#[allow(unused)]
@@ -284,8 +283,10 @@ impl Gateway {
 			}
 			let message = res.unwrap();
 			match message {
-				Messages::RequestLazyGuilds { guild_id } => {
-					//TODO: implement lazy guilds
+				Messages::RequestLazyGuilds(payload) => {
+					let mut writer = writer.lock().await;
+					let payload = OutGoingPacket::lazy_guilds(payload).to_json()?;
+					writer.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 			}
 		}

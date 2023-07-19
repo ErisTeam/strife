@@ -4,7 +4,7 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::{ discord::{ types::{ guild::PartialGuild, gateway::packets_data::MessageEvent } } };
+use crate::discord::types::{ guild::PartialGuild, gateway::packets_data::MessageEvent };
 pub mod auth {
 	use serde::{ Deserialize, Serialize };
 
@@ -104,7 +104,7 @@ pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
 #[serde(rename_all = "camelCase")]
 pub enum General {
 	UserData {
-		user: crate::discord::types::user::CurrentUser,
+		user: Box<crate::discord::types::user::CurrentUser>,
 		users: Vec<crate::discord::types::user::PublicUser>,
 	},
 	Relationships {

@@ -5,7 +5,7 @@ pub struct CurrentUser {
 	pub verified: bool,
 	pub username: String,
 	pub purchased_flags: u64,
-	pub premium_type: u64,
+	pub premium_type: Option<u64>,
 	pub premium: bool,
 	pub phone: Option<String>,
 	pub nsfw_allowed: bool,

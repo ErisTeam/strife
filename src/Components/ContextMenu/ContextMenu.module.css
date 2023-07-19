@@ -1,0 +1,15 @@
+.contexMenu {
+	position: absolute;
+	background: red;
+	transform-origin: top;
+	animation: open 100ms;
+}
+
+@keyframes open {
+	0% {
+		transform: scaleY(0);
+	}
+	100% {
+		transform: scaleY(100%);
+	}
+}

@@ -17,7 +17,7 @@ pub async fn activate_user(
 	let state = state.state.read().await;
 	let main_app = state.main_app().ok_or("Not in main app")?;
 
-	let is_ready = main_app.activate_user(handle, token).await.or_else(|e| Err(e.to_string()))?;
+	let is_ready = main_app.activate_user(handle, token).await.map_err(|e| e.to_string())?;
 	is_ready.notified().await; //TODO: add timeout maybe?
 
 	Ok(())

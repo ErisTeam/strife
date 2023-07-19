@@ -1,9 +1,9 @@
 use std::{ fmt::Debug, sync::Arc };
 
 use log::{ error, info, warn };
-use serde::{ Deserialize };
+use serde::Deserialize;
 use tauri::{ Event, EventHandler, Manager, async_runtime::TokioHandle };
-use tokio::{ task::block_in_place };
+use tokio::task::block_in_place;
 
 use crate::{
 	discord::types::relationship::Relationship,
@@ -17,7 +17,7 @@ use crate::{
 struct GetUserData {
 	user_id: String,
 }
-fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) {
 	move |event| {
 		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
 
@@ -37,7 +37,7 @@ fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 				if let Some(data) = users.get(&user_id) {
 					if let Some(user_data) = data.read_user_data().await.as_ref() {
 						res = General::UserData {
-							user: user_data.user.clone(),
+							user: Box::new(user_data.user.clone()),
 							users: user_data.users.clone(),
 						};
 					}
@@ -50,7 +50,7 @@ fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 	}
 }
 
-fn get_relationships(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) -> () {
+fn get_relationships(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) {
 	move |event| {
 		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
 
@@ -111,9 +111,9 @@ impl EventTrait<General> for GetGuilds {
 				let user = users.get(&self.user_id).ok_or("No user data")?;
 				let userdata = user.read_user_data().await;
 				let userdata = userdata.as_ref().ok_or("No user data")?;
-				return Ok(General::Guilds {
+				Ok(General::Guilds {
 					guilds: userdata.guilds.clone(),
-				});
+				})
 			})
 		});
 		if let Ok(res) = res {
@@ -141,7 +141,7 @@ trait EventTrait<T: serde::Serialize + Sized + Clone + Debug>: serde::de::Deseri
 		let state = state.clone();
 		handle.listen_global(Self::get_name(), move |event: Event| {
 			info!("got event with payload {} {:?}", Self::get_name(), event.payload());
-			let json: Self = serde_json::from_str(&event.payload().unwrap()).unwrap();
+			let json: Self = serde_json::from_str(event.payload().unwrap()).unwrap();
 			let res = json.execute(state.clone(), h.clone());
 			if let Some((name, data)) = res {
 				h.emit_all(name, data).unwrap();

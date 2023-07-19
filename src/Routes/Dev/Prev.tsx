@@ -22,7 +22,6 @@ import SplashText from '../../Components/Dev/SplashText';
 import { AppState } from '../../types';
 import { useTrans } from '../../Translation';
 
-// TODO: Clean up this mess, also, Gami to Furras
 function Prev() {
 	const [t, { setLocale }] = useTrans();
 

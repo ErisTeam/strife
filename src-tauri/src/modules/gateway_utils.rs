@@ -1,4 +1,4 @@
-use std::{ time::{ Duration }, sync::Arc, fmt::Display };
+use std::{ time::Duration, sync::Arc, fmt::Display };
 use tauri::AppHandle;
 use async_trait::async_trait;
 

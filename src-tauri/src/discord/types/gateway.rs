@@ -101,13 +101,11 @@ pub struct SessionReplaceData {
 pub mod packets_data {
 	use serde::{ Deserialize, Serialize };
 
-	use crate::{
-		discord::types::{
-			guild::{ GuildMember, PartialGuild },
-			message::Message,
-			user::{ PublicUser, CurrentUser, GuildSettings },
-			relationship::GatewayRelationship,
-		},
+	use crate::discord::types::{
+		guild::{ GuildMember, PartialGuild },
+		message::Message,
+		user::{ PublicUser, CurrentUser, GuildSettings },
+		relationship::GatewayRelationship,
 	};
 
 	use super::{ Properties, Presence, ClientState, ReadState };
@@ -157,7 +155,7 @@ pub mod packets_data {
 		pub sequence_number: Option<u64>,
 	}
 
-	#[derive(Serialize, Debug)]
+	#[derive(Serialize, Debug, Clone)]
 	pub struct LazyGuilds {
 		guild_id: String,
 		channels: Vec<serde_json::Value>,

@@ -1,5 +1,3 @@
-//TODO: move discord types to diffrent file
-
 import { Channel, Guild } from './discord';
 
 type AppState = 'LoginScreen' | 'Application' | 'Dev';
@@ -18,8 +16,6 @@ type Tab = {
 	channelType: number;
 };
 
-type Sticker = {};
-
 type ContextMenuData = {
 	type: 'channel' | 'message' | 'user' | 'guild' | 'guildMember' | 'image' | 'video' | 'audio' | 'file' | 'other';
 	channel?: Channel;
@@ -32,4 +28,4 @@ type ContextMenuData = {
 	y: number;
 	isShow: boolean;
 };
-export type { Input, Button, TextArea, Tab, AppState, Sticker, ContextMenuData };
+export type { Input, Button, TextArea, Tab, AppState, ContextMenuData };

@@ -1,8 +1,8 @@
-use std::{ sync::{ Arc } };
-use log::{ error };
+use std::{ sync::Arc, path::PathBuf };
+use log::error;
 use tauri::AppHandle;
 use tokio::sync::Mutex;
-use crate::{ event_manager::{ EventManager }, modules::{ auth::Auth, main_app::MainApp, user_manager::UserManager } };
+use crate::{ event_manager::EventManager, modules::{ auth::Auth, main_app::MainApp, user_manager::UserManager } };
 
 #[derive(Debug)]
 #[allow(dead_code)]
@@ -70,6 +70,10 @@ impl MainState {
 
 			user_manager: UserManager::new(),
 		}
+	}
+
+	pub async fn update_user_manager_dir(&self, path: PathBuf) {
+		self.user_manager.update_save_dir(path).await;
 	}
 
 	pub async fn reset_state(&self) {

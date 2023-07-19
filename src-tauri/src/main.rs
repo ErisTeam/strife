@@ -86,9 +86,15 @@ async fn main() {
 		.setup(move |app| {
 			let app_handle = app.handle();
 
+			let path = app_handle.path_resolver().app_data_dir().unwrap();
+			let main_state = m.clone();
+			tokio::spawn(async move {
+				main_state.update_user_manager_dir(path).await;
+				main_state.user_manager.load_from_file().await.unwrap();
+			});
+
 			#[cfg(debug_assertions)]
 			dev::add_token(&m, app_handle.clone());
-
 			close_loading(app)?;
 
 			Ok(())

@@ -1,4 +1,3 @@
-import { A } from '@tauri-apps/api/cli-373e13ed';
 import {
 	Accessor,
 	Context,
@@ -12,6 +11,7 @@ import {
 	useContext,
 } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import style from './ContextMenu.module.css';
 let MenuContext = createContext<any>(null);
 
 interface MenuProviderData {
@@ -80,7 +80,7 @@ export default function ContextMenu<T>(props: ContexMenuProps<T>) {
 	return (
 		<Show when={show()}>
 			<Portal mount={document.getElementById('ContextMenu')}>
-				<ol style={{ position: 'absolute', left: `${pos().x}px`, top: `${pos().y}px`, background: 'red' }} ref={ref}>
+				<ol style={{ left: `${pos().x}px`, top: `${pos().y}px` }} class={style.contexMenu} ref={ref}>
 					<MenuProvider data={props.data} closeMenu={close}>
 						{props.children}
 					</MenuProvider>

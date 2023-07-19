@@ -1,4 +1,4 @@
-use std::{ sync::Arc };
+use std::sync::Arc;
 
 use log::{ debug, warn, error, info };
 use serde::Serialize;
@@ -45,18 +45,18 @@ pub async fn set_state(
 		"Application" => {
 			let main_app = MainApp::new();
 			let new_state = crate::main_app_state::State::MainApp(main_app);
-			state.change_state(new_state, handle).await.or_else(|e| Err(GeneralError::Other(e.to_string())))?;
+			state.change_state(new_state, handle).await.map_err(|e| GeneralError::Other(e.to_string()))?;
 		}
 		"LoginScreen" => {
 			let mut auth = Auth::new(Arc::downgrade(&state));
-			auth.start_gateway(handle.clone()).await.or_else(|e| Err(GeneralError::Other(e.to_string())))?;
+			auth.start_gateway(handle.clone()).await.map_err(|e| GeneralError::Other(e.to_string()))?;
 			let new_state = crate::main_app_state::State::LoginScreen(auth);
 
-			state.change_state(new_state, handle).await.or_else(|e| Err(GeneralError::Other(e.to_string())))?;
+			state.change_state(new_state, handle).await.map_err(|e| GeneralError::Other(e.to_string()))?;
 		}
 		"Dev" => {
 			let new_state = crate::main_app_state::State::Dev;
-			state.change_state(new_state, handle).await.or_else(|e| Err(GeneralError::Other(e.to_string())))?;
+			state.change_state(new_state, handle).await.map_err(|e| GeneralError::Other(e.to_string()))?;
 		}
 		_ => {
 			error!("Unknown state {}", new_state);

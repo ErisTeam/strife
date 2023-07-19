@@ -3,7 +3,7 @@ pub mod auth;
 
 pub mod gateway_utils;
 
-pub mod mobile_auth;
+pub mod remote_auth;
 
 pub mod main_app;
 

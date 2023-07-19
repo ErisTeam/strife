@@ -56,15 +56,25 @@ impl OutGoingPacket {
 	pub fn identify(i: Identify) -> Self {
 		Self::new(OutGoingPacketsData::Identify(i)).unwrap()
 	}
+	pub fn lazy_guilds(l: LazyGuilds) -> Self {
+		Self::new(OutGoingPacketsData::LazyGuilds(l)).unwrap()
+	}
+	pub fn to_json(&self) -> crate::Result<String> {
+		Ok(serde_json::to_string(self)?)
+	}
 }
 ///TODO: Description
 /// opcode: `0`
 #[derive(Debug)]
 pub enum DispatchedEvents {
-	///TODO: Description
+	///Sent after [Identify] contains user data
+	///
+	/// [`Identify`]: self::OutGoingPacketsData#variant.Identify
 	Ready(Ready),
 
-	///TODO: Description
+	///Sent after [Ready] contains additional data
+	///
+	/// [`Ready`]: self::DispatchedEvents#variant.Ready
 	ReadySupplemental(ReadySupplemental),
 
 	///TODO: Description
@@ -80,7 +90,7 @@ pub enum DispatchedEvents {
 	MessageDelete(MessageDelete),
 
 	///Sent when user starts typing
-	StartTyping(TypingStart),
+	StartTyping(Box<TypingStart>),
 
 	///Fallback for unknown packets
 	Unknown(serde_json::Value),
@@ -107,16 +117,16 @@ impl ToString for DispatchedEvents {
 #[derive(Debug)]
 pub enum IncomingPacketsData {
 	Hello(Hello),
-	/// Discord documentation states that this send and received by client
+	/// Discord documentation states that this send and received by client<br>
 	/// opcode: `1`
 	Heartbeat(Heartbeat),
-	///Sent in response to receiving a heartbeat to acknowledge that it has been received.
+	///Sent in response to receiving a heartbeat to acknowledge that it has been received.<br>
 	/// opcode: `11`
 	HeartbeatAck,
 
-	///TODO: Description
+	///Event dispatched by Discord<br>
 	/// opcode: `0`
-	DispatchedEvent(DispatchedEvents), //TODO: Change name
+	DispatchedEvent(DispatchedEvents),
 }
 impl ToString for IncomingPacketsData {
 	fn to_string(&self) -> String {

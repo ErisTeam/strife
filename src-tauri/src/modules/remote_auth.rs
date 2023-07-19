@@ -2,14 +2,14 @@ use std::{ sync::Arc, time::Duration, error::Error, fmt::Display };
 
 use base64::{ engine::general_purpose, Engine };
 use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
-use log::{ error, debug };
+use log::{ error, debug, trace };
 use rsa::{ RsaPublicKey, RsaPrivateKey, pkcs8::EncodePublicKey, Oaep };
 use sha2::{ Sha256, Digest };
 use tauri::AppHandle;
-use tokio::{ net::TcpStream, sync::{ Mutex } };
+use tokio::{ net::TcpStream, sync::Mutex };
 use tokio_tungstenite::{ MaybeTlsStream, connect_async_tls_with_config, WebSocketStream };
 
-use crate::discord::{ constants, mobile_auth_packets::{ OutGoingPackets, IncomingPackets } };
+use crate::discord::{ constants, remote_auth_packets::{ OutGoingPackets, IncomingPackets } };
 
 use super::{ gateway_utils::ConnectionInfo, auth::RemoteAuthMessages };
 
@@ -31,7 +31,7 @@ impl Error for Errors {}
 
 pub struct MobileAuthConnectionData {
 	pub public_key: RsaPublicKey,
-	private_key: RsaPrivateKey,
+	private_key: Arc<RsaPrivateKey>,
 }
 impl MobileAuthConnectionData {
 	fn decrypt(&self, bytes: Vec<u8>) -> Result<Vec<u8>, rsa::errors::Error> {
@@ -39,9 +39,10 @@ impl MobileAuthConnectionData {
 		self.private_key.decrypt(padding, &bytes)
 	}
 
+	//TODO: change name
 	fn tak(&self, data: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-		let decoded = base64::engine::general_purpose::STANDARD.decode(&data)?;
-		return Ok(self.decrypt(decoded)?);
+		let decoded = base64::engine::general_purpose::STANDARD.decode(data)?;
+		Ok(self.decrypt(decoded)?)
 	}
 }
 
@@ -95,7 +96,7 @@ impl MobileAuth {
 			ConnectionInfo::new(
 				MobileAuthConnectionData {
 					public_key,
-					private_key,
+					private_key: Arc::new(private_key),
 				},
 				app_handle,
 				auth_sender
@@ -163,7 +164,7 @@ impl MobileAuth {
 							let mut hasher = Sha256::new();
 							hasher.update(&decrypted);
 							let hash = hasher.finalize();
-							let proof = general_purpose::URL_SAFE_NO_PAD.encode(&hash);
+							let proof = general_purpose::URL_SAFE_NO_PAD.encode(hash);
 
 							let packet = serde_json::to_string(&(OutGoingPackets::NonceProof { proof }))?;
 
@@ -196,7 +197,7 @@ impl MobileAuth {
 							let user_payload = String::from_utf8(decrypted).unwrap();
 
 							let splited = user_payload
-								.split(":")
+								.split(':')
 								.collect::<Vec<&str>>()
 								.iter()
 								.map(|x| x.to_string())
@@ -268,7 +269,7 @@ impl MobileAuth {
 
 			let mut writer = writer.lock().await;
 			writer.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;
-			debug!("Sent heartbeat packet");
+			trace!("Sent heartbeat packet");
 		}
 	}
 

@@ -1,13 +1,13 @@
-use std::{ collections::HashMap };
-use serde::Serialize;
+use std::{ collections::HashMap, path::PathBuf };
+use serde::{ Serialize, Deserialize };
 use tokio::sync::RwLock;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum State {
 	LoggedIn,
 	LoggedOut,
 }
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
 	pub state: State,
 	pub token: Option<String>,
@@ -35,10 +35,13 @@ enum UserManagerError {
 pub struct UserManager {
 	/// A map of user IDs to their respective user data.
 	pub users: RwLock<HashMap<String, User>>,
+
+	save_dir: RwLock<PathBuf>,
 }
 impl UserManager {
 	pub fn new() -> Self {
 		Self {
+			save_dir: RwLock::new(PathBuf::new()),
 			users: RwLock::new(HashMap::new()),
 		}
 	}
@@ -72,5 +75,38 @@ impl UserManager {
 	pub async fn get_all_users(&self) -> HashMap<String, User> {
 		let users = self.users.read().await;
 		users.clone()
+	}
+
+	pub async fn update_save_dir(&self, new_path: PathBuf) {
+		let mut path = self.save_dir.write().await;
+		*path = new_path;
+	}
+
+	pub async fn save_to_file(&self) -> crate::Result<()> {
+		let users = self.users.read().await;
+		let users = serde_json::to_string(&*users)?;
+		let path = self.save_dir.read().await;
+		let mut path = path.clone();
+		path.push("users.json");
+		std::fs::write(path, users)?;
+		Ok(())
+	}
+
+	pub async fn load_from_file(&self) -> crate::Result<()> {
+		let path = self.save_dir.read().await;
+		let mut path = path.clone();
+		path.push("users.json");
+
+		match std::fs::read(path) {
+			Ok(data) => {
+				let new_users: HashMap<String, User> = serde_json::from_slice(&data)?;
+				let mut users = self.users.write().await;
+				*users = new_users;
+			}
+			Err(e) => {
+				log::warn!("Failed to load users from file: {}", e);
+			}
+		}
+		Ok(())
 	}
 }

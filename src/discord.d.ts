@@ -8,7 +8,7 @@ type UsersResponse = {
 };
 
 // Represents a Relationship User
-type User = {
+type RelationshipUser = {
 	id: string;
 	username: string;
 	avatar?: string;
@@ -41,7 +41,7 @@ type Relationship = {
 	id: string;
 	nickname?: string;
 	type: RelationshipType;
-	user: User;
+	user: RelationshipUser;
 };
 
 type Role = {
@@ -129,4 +129,27 @@ declare enum ChannelType {
 	GuildForum = 15,
 }
 
-export type { GuildsResponse, UsersResponse, Role, Guild, Channel, User, Relationship, ChannelType };
+type Message = {
+	id: Required<string>;
+	channel_id: string;
+
+	content: string;
+
+	timestamp: number;
+
+	embeds: any[];
+
+	author: Partial<any>; //TODO: add user type
+};
+
+export type {
+	GuildsResponse,
+	UsersResponse,
+	Role,
+	Guild,
+	Channel,
+	RelationshipUser,
+	Relationship,
+	ChannelType,
+	Message,
+};

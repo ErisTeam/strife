@@ -1,4 +1,4 @@
-pub mod mobile_auth_packets;
+pub mod remote_auth_packets;
 pub mod gateway_packets;
 pub mod http_packets;
 

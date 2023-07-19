@@ -12,7 +12,7 @@ use crate::discord::types::gateway::Properties;
 use crate::{ Result, webview_packets, token_utils };
 use crate::discord::{ constants, http_packets };
 use crate::main_app_state::MainState;
-use super::mobile_auth::MobileAuth;
+use super::remote_auth::MobileAuth;
 
 //-----------------------
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -68,7 +68,7 @@ pub enum VerificationMethod {
 pub enum RemoteAuthMessages {
 	Login {
 		ticket: String,
-		private_key: rsa::RsaPrivateKey,
+		private_key: Arc<rsa::RsaPrivateKey>,
 	},
 	UpdateQrUserData {
 		user_id: String,
@@ -157,6 +157,8 @@ impl Auth {
 					avatar: None,
 				}).await;
 
+				state.user_manager.save_to_file().await?;
+
 				response = webview_packets::auth::Auth::LoginSuccess { user_id, user_settings: Some(user_settings) };
 			}
 			LoginResponse::RequireAuth {
@@ -201,7 +203,7 @@ impl Auth {
 			if let Some(payload) = payload {
 				match payload {
 					RemoteAuthMessages::Login { ticket, private_key } => {
-						let res = Self::login_mobile_auth(ticket, None, None).await?;
+						let res = Self::login_remote_auth(ticket, None, None).await?;
 						match res {
 							http_packets::auth::LoginResponse::Success { encrypted_token } => {
 								debug!("LoginResponse::Success");
@@ -226,13 +228,17 @@ impl Auth {
 									avatar: None,
 								}).await;
 
+								state.user_manager
+									.save_to_file().await
+									.map_err(|e| format!("Failed to save user manager: {}", e))?;
+
 								let gateway = gateaway.upgrade().ok_or("gateway was None")?;
 
 								let gateway = gateway.read().await;
 								gateway.stop();
 
 								handle.emit_all("auth", webview_packets::auth::Auth::LoginSuccess {
-									user_id: user_id,
+									user_id,
 									user_settings: None,
 								})?;
 							}
@@ -387,7 +393,7 @@ impl Auth {
 	}
 
 	//TODO: check if works
-	pub async fn login_mobile_auth(
+	pub async fn login_remote_auth(
 		ticket: String,
 		rqtoken: Option<String>,
 		captcha_key: Option<String>
@@ -397,7 +403,7 @@ impl Auth {
 			.post(constants::REMOTE_AUTH_LOGIN)
 			.header("Content-Type", "application/json")
 			.header("x-super-properties", Properties::default().base64().unwrap())
-			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket: ticket }))?);
+			.body(serde_json::to_string(&(http_packets::auth::mobile_auth::Login { ticket }))?);
 		if let Some(rqtoken) = rqtoken {
 			request = request.header("x-captcha-rqtoken", rqtoken);
 		}
@@ -444,7 +450,7 @@ impl Auth {
 			.send().await?;
 		let text = res.text().await?;
 		println!("verify sms res: {}", text);
-		return Ok(serde_json::from_str::<MFAResponse>(&text)?);
+		Ok(serde_json::from_str::<MFAResponse>(&text)?)
 	}
 	pub async fn verify_totp(ticket: String, code: String) -> Result<MFAResponse> {
 		let client = reqwest::Client::new();
@@ -473,12 +479,8 @@ impl Auth {
 		}
 
 		match method {
-			VerificationMethod::Sms => {
-				return Ok(Self::verify_sms(t, code).await?);
-			}
-			VerificationMethod::Mfa => {
-				return Ok(Self::verify_totp(t.clone(), code).await?);
-			}
+			VerificationMethod::Sms => { Self::verify_sms(t, code).await }
+			VerificationMethod::Mfa => { Self::verify_totp(t.clone(), code).await }
 		}
 	}
 

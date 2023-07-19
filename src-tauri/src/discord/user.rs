@@ -71,12 +71,7 @@ impl UserData {
 		None
 	}
 	pub fn get_user(&self, id: &str) -> Option<&PublicUser> {
-		for user in &self.users {
-			if user.id == id {
-				return Some(user);
-			}
-		}
-		None
+		self.users.iter().find(|user| user.id == id)
 	}
 }
 
