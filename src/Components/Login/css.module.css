@@ -1,4 +1,3 @@
-/* TODO: clean duplicates and stuff, hard to do on small laptop screen */
 .header {
 	font-size: 3rem;
 	font-weight: 600;
@@ -22,13 +21,7 @@
 	--default-padding: 0.5rem 2rem;
 	font-size: 1.2rem;
 }
-.bottomPart {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-}
+
 .inputs {
 	display: flex;
 	flex-direction: column;

@@ -25,7 +25,6 @@ const GuildList = (props: GuildListProps) => {
 		return AppState.userGuilds;
 	});
 
-	//TODO: Switch friends tab to use the guild component
 	return (
 		<nav class={[props.className, style.guildList].join(' ')}>
 			<ul>

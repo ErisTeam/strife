@@ -19,7 +19,7 @@ export default {
 			navigator(`/app/${tab.guildId}/${tab.channelId}`);
 		},
 		addNewTab(channel: Channel, navigator?: Navigator): [number, Tab?] {
-			let t = AppState.tabs.find((tab) => tab.channelId == channel.id);
+			const t = AppState.tabs.find((tab) => tab.channelId == channel.id);
 			if (t) {
 				console.log('tab already exists');
 				return [1, t];
@@ -159,15 +159,15 @@ export default {
 				content: content,
 			}),
 		});
-		const resData = await res.json();
-		return resData;
+
+		return await res.json();
 	},
 
 	/**
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(userId: string = AppState.userId() as string): Promise<string | null> {
+	async getToken(userId: string = AppState.userId()): Promise<string | null> {
 		return await invoke('get_token', { userId });
 	},
 
