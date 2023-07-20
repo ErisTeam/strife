@@ -114,7 +114,7 @@ pre {
 	--depth3: hsl(205, 0%, 26%);
 	--depth4: hsl(205, 0%, 32%);
 
-	--primary: hsl(18, 86%, 50%); 
+	--primary: hsl(18, 86%, 50%);
 	--secondary: hsl(205, 100%, 50%);
 	--tertiary: hsl(161, 100%, 40%);
 	--darken: brightness(93%);
@@ -136,6 +136,13 @@ pre {
 	/* CHANNELS */
 	--channel-category-text: #a0a0a0;
 	--channel-icon-color: #bdbdbd;
+
+	/* Control Panel */
+	--control-panel-bgc: var(--depth1);
+	--control-panel-hover-bgc: var(--depth2);
+	--control-panel-text: var(--text);
+	--control-panel-text-secondary: var(--disabled-text);
+	--control-panel-roundness: 16px;
 }
 
 * {

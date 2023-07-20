@@ -86,10 +86,8 @@
 .guildList {
 	display: flex;
 	width: 4.5em;
-	height: calc(100vh - 3em);
-	position: fixed;
-	top: 0;
-	left: 0;
+	height: 100%;
+
 	overflow-y: auto;
 	overflow-x: hidden;
 	ul {

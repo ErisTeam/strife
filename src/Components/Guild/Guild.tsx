@@ -24,11 +24,11 @@ const Guild = (props: GuildProps) => {
 
 	function updateRelativeYPositon() {
 		console.log('updating relative position');
-		const boundingRect = ref.getBoundingClientRect();
+		let boundingRect = ref.getBoundingClientRect();
 		toolTipRef.style.top = `${boundingRect.top + window.scrollY + boundingRect.height / 2}px`;
 	}
 	onMount(() => {
-		const boundingRect = ref.getBoundingClientRect();
+		let boundingRect = ref.getBoundingClientRect();
 		updateRelativeYPositon();
 		toolTipRef.style.left = `${boundingRect.width}px`;
 

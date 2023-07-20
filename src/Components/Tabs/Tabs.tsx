@@ -56,7 +56,7 @@ const TabItem = ({ className, tabIndex }: TabProps) => {
 					src={AppState.tabs[tabIndex].guildIcon}
 					alt={t.guild.logoAlt({ guildName: AppState.tabs[tabIndex].guildName })}
 				/>
-
+				{/* TODO: Add translation string to alt text */}
 				<span>{AppState.tabs[tabIndex].channelName}</span>
 			</A>
 			<button

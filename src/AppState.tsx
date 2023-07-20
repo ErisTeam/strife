@@ -15,6 +15,7 @@ const [contextMenuData, setContextMenuData] = createStore<ContextMenuData>({
 	y: 0,
 	isShow: false,
 });
+const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
@@ -33,6 +34,8 @@ const AppState = createContext({
 	setTabs,
 	currentGuild,
 	setCurrentGuild,
+	currentState,
+	setCurrentState,
 });
 
 export function AppStateProvider({ children }: { children: JSX.Element[] | JSX.Element }) {
