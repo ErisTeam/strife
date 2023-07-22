@@ -13,6 +13,7 @@ import style from './css.module.css';
 import Channel from './Channel';
 import { Guild } from '../../discord';
 import List from '../List/List';
+import ChannelTitle from './ChannelTitle';
 
 interface ChannelListProps {
 	className?: string;
@@ -50,9 +51,10 @@ const ChannelList = (props: ChannelListProps) => {
 	});
 
 	return (
-		<List title={(AppState.currentGuild() as Guild).properties.name} className={props.className}>
-			{channels()}
-		</List>
+		<nav class={[props.className, style.list].join(' ')}>
+			<ChannelTitle guild={AppState.currentGuild() as Guild} />
+			<ol>{channels()}</ol>
+		</nav>
 	);
 };
 export default ChannelList;
