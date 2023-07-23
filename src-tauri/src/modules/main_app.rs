@@ -7,11 +7,11 @@ use tokio::runtime::Handle;
 use tokio::sync::RwLock;
 
 use crate::discord::gateway_packets::DispatchedEvents;
-use crate::discord::types::gateway::packets_data::MessageEvent;
+use crate::discord::types::gateway::packets_data::{ MessageEvent, VoiceStateUpdate, VoiceServerUpdate };
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
-use super::gateway::Gateway;
+use super::gateway::{ Gateway, Messages };
 
 /// Messages send from gateway
 #[derive(Debug)]
@@ -22,6 +22,7 @@ pub enum GatewayMessages {
 	DeletedMessage(),
 	StartedTyping(),
 	Ready(UserData),
+	VoiceServerUpdate(VoiceServerUpdate),
 }
 impl From<DispatchedEvents> for GatewayMessages {
 	fn from(value: DispatchedEvents) -> Self {
@@ -35,6 +36,7 @@ impl From<DispatchedEvents> for GatewayMessages {
 			DispatchedEvents::StartTyping(_) => todo!(),
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => todo!(),
 			DispatchedEvents::Unknown(_) => panic!("Unknown event!"),
+			DispatchedEvents::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
 		}
 	}
 }
@@ -135,6 +137,18 @@ impl MainApp {
 		Ok(ready_notifyer)
 	}
 
+	pub async fn send_to_gateway(&self, user_id: &str, message: Messages) -> Result<()> {
+		let users = self.users.read().await;
+
+		//TODO: make return result
+		if let ActivationState::Activated(user) = users.get(user_id).unwrap() {
+			user.gateway.write().await.send_message(message).await?;
+		} else {
+			return Err("User not activated".into());
+		}
+		Ok(())
+	}
+
 	async fn error_handler_thread(
 		mut error_receiver: tokio::sync::broadcast::Receiver<String>,
 		gateway: Weak<RwLock<Gateway>>
@@ -194,6 +208,12 @@ impl MainApp {
 					if let Some(ready_notify) = ready_notify.upgrade() {
 						ready_notify.notify_waiters();
 					}
+				}
+				GatewayMessages::VoiceServerUpdate(data) => {
+					handle.emit_all("gateway", webview_packets::GatewayEvent {
+						event: webview_packets::Gateway::VoiceServerUpdate(data),
+						user_id: user_id.clone(),
+					})?;
 				}
 			}
 		}

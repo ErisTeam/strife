@@ -112,6 +112,7 @@ async fn main() {
 				commands::general::get_users,
 				commands::main_app::activate_user,
 				commands::main_app::get_user_info,
+				commands::main_app::send_voice_state_update,
 				test
 			]
 		)

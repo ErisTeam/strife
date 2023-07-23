@@ -9,7 +9,7 @@ use tokio_tungstenite::{ WebSocketStream, MaybeTlsStream, connect_async_tls_with
 use crate::discord::{
 	constants,
 	gateway_packets::{ OutGoingPacket, IncomingPacket },
-	types::gateway::packets_data::{ Identify, LazyGuilds },
+	types::gateway::packets_data::{ Identify, LazyGuilds, VoiceStateUpdate },
 };
 
 use super::{ main_app::GatewayMessages, gateway_utils::Errors };
@@ -18,6 +18,7 @@ use super::{ main_app::GatewayMessages, gateway_utils::Errors };
 #[allow(unused)]
 pub enum Messages {
 	RequestLazyGuilds(LazyGuilds),
+	UpdateVoiceState(VoiceStateUpdate),
 }
 
 type ConnectionInfo = super::gateway_utils::ConnectionInfo<ConnectionData, GatewayMessages>;
@@ -286,6 +287,11 @@ impl Gateway {
 				Messages::RequestLazyGuilds(payload) => {
 					let mut writer = writer.lock().await;
 					let payload = OutGoingPacket::lazy_guilds(payload).to_json()?;
+					writer.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
+				}
+				Messages::UpdateVoiceState(payload) => {
+					let mut writer = writer.lock().await;
+					let payload = OutGoingPacket::voice_state_update(payload).to_json()?;
 					writer.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 			}

@@ -13,6 +13,8 @@ use super::types::gateway::{
 		TypingStart,
 		ReadySupplemental,
 		LazyGuilds,
+		VoiceStateUpdate,
+		VoiceServerUpdate,
 	},
 	SessionReplaceData,
 };
@@ -31,6 +33,10 @@ pub enum OutGoingPacketsData {
 	/// opcode: `14`
 	#[allow(unused)]
 	LazyGuilds(LazyGuilds),
+
+	///TODO: Description
+	/// opcode: `4`
+	VoiceStateUpdate(VoiceStateUpdate),
 }
 #[derive(Serialize, Debug)]
 pub struct OutGoingPacket {
@@ -44,12 +50,14 @@ impl OutGoingPacket {
 			OutGoingPacketsData::Heartbeat(_) => 1,
 			OutGoingPacketsData::Identify(_) => 2,
 			OutGoingPacketsData::LazyGuilds(_) => 14,
+			OutGoingPacketsData::VoiceStateUpdate(_) => 4,
 			_ => {
 				return Err("Invalid OutGoingPacketsData".into());
 			}
 		};
 		Ok(Self { op: op_code, d })
 	}
+	//TODO: move to impl OutGoingPacketsData
 	pub fn heartbeat(sequence_number: Option<u64>) -> Self {
 		Self::new(OutGoingPacketsData::Heartbeat(Heartbeat { sequence_number })).unwrap()
 	}
@@ -59,6 +67,10 @@ impl OutGoingPacket {
 	pub fn lazy_guilds(l: LazyGuilds) -> Self {
 		Self::new(OutGoingPacketsData::LazyGuilds(l)).unwrap()
 	}
+	pub fn voice_state_update(v: VoiceStateUpdate) -> Self {
+		Self::new(OutGoingPacketsData::VoiceStateUpdate(v)).unwrap()
+	}
+
 	pub fn to_json(&self) -> crate::Result<String> {
 		Ok(serde_json::to_string(self)?)
 	}
@@ -92,11 +104,14 @@ pub enum DispatchedEvents {
 	///Sent when user starts typing
 	StartTyping(Box<TypingStart>),
 
-	///Fallback for unknown packets
-	Unknown(serde_json::Value),
+	//Sent when a guild's voice server is updated. This is sent when initially connecting to voice, and when the current voice instance fails over to a new server.
+	VoiceServerUpdate(VoiceServerUpdate),
 
 	///BURST_CREDIT_BALANCE_UPDATE {"replenished_today":false,"amount":2}
 	BurstCreditBalanceUpdate(serde_json::Value), //TODO implement
+
+	///Fallback for unknown packets
+	Unknown(serde_json::Value),
 }
 impl ToString for DispatchedEvents {
 	fn to_string(&self) -> String {
@@ -110,6 +125,7 @@ impl ToString for DispatchedEvents {
 			DispatchedEvents::ReadySupplemental(_) => "ReadySupplemental".to_string(),
 			DispatchedEvents::MessageUpdate(_) => "MessageUpdated".to_string(),
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => "BurstCreditBalanceUpdate".to_string(),
+			DispatchedEvents::VoiceServerUpdate(_) => "VoiceServerUpdate".to_string(),
 		}
 	}
 }
@@ -265,6 +281,17 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 									)?
 							),
 						"BURST_CREDIT_BALANCE_UPDATE" => DispatchedEvents::BurstCreditBalanceUpdate(inner.d), //TODO: Implement
+
+						"VOICE_SERVER_UPDATE" =>
+							DispatchedEvents::VoiceServerUpdate(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng {} Packet {:?}", t, x)
+										)
+									)?
+							),
 
 						_ => DispatchedEvents::Unknown(inner.d),
 					};

@@ -4,7 +4,11 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::discord::types::{ guild::PartialGuild, gateway::packets_data::MessageEvent, user::CurrentUser };
+use crate::discord::types::{
+	guild::PartialGuild,
+	gateway::packets_data::{ MessageEvent, VoiceServerUpdate },
+	user::CurrentUser,
+};
 pub mod auth {
 	use serde::{ Deserialize, Serialize };
 
@@ -88,6 +92,9 @@ pub enum Gateway {
 	UserInfo(CurrentUser),
 
 	MessageUpdate(MessageEvent),
+
+	VoiceServerUpdate(VoiceServerUpdate),
+
 	Error {
 		message: String,
 	},

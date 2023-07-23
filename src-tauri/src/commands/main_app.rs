@@ -3,7 +3,10 @@ use std::sync::Arc;
 use log::{ debug, warn };
 use tauri::State;
 
-use crate::{ main_app_state::MainState, discord::types::user::CurrentUser };
+use crate::{
+	main_app_state::MainState,
+	discord::types::{ user::CurrentUser, gateway::packets_data::VoiceStateUpdate },
+};
 
 #[tauri::command]
 pub async fn activate_user(
@@ -50,6 +53,29 @@ pub async fn get_user_info(
 		return Ok(user_data.user.clone());
 	}
 	Err("No user data".into())
+}
+
+#[tauri::command]
+pub async fn send_voice_state_update(
+	user_id: String,
+	guild_id: String,
+	channel_id: String,
+	state: State<'_, Arc<MainState>>
+) -> std::result::Result<(), String> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().expect("Not in main app");
+
+	main_app
+		.send_to_gateway(
+			&user_id,
+			crate::modules::gateway::Messages::UpdateVoiceState(VoiceStateUpdate {
+				guild_id,
+				channel_id,
+				..Default::default()
+			})
+		).await
+		.map_err(|e| e.to_string())?;
+	Ok(())
 }
 
 //TODO: make all main_app events commands

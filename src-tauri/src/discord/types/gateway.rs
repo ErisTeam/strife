@@ -157,12 +157,55 @@ pub mod packets_data {
 
 	#[derive(Serialize, Debug, Clone)]
 	pub struct LazyGuilds {
-		guild_id: String,
-		channels: Vec<serde_json::Value>,
-		members: bool,
-		threads: bool,
-		activities: bool,
-		typing: bool,
+		pub guild_id: String,
+		pub channels: Vec<serde_json::Value>,
+		pub members: bool,
+		pub threads: bool,
+		pub activities: bool,
+		pub typing: bool,
+	}
+	#[derive(Serialize, Deserialize, Debug, Clone)]
+	pub struct VoiceStateUpdate {
+		pub guild_id: String,
+		pub channel_id: String,
+		pub self_mute: bool,
+		pub self_deaf: bool,
+	}
+	impl Default for VoiceStateUpdate {
+		fn default() -> Self {
+			Self {
+				guild_id: String::new(),
+				channel_id: String::new(),
+				self_mute: false,
+				self_deaf: false,
+			}
+		}
+	}
+
+	#[derive(Deserialize, Debug, Clone)]
+	struct VoiceState {
+		guild_id: Option<String>,
+		channel_id: Option<String>,
+		user_id: String,
+
+		member: Option<GuildMember>,
+
+		session_id: String,
+		deaf: bool,
+		mute: bool,
+		self_deaf: bool,
+		self_mute: bool,
+		self_stream: Option<bool>,
+		self_video: bool,
+		suppress: bool,
+		request_to_speak_timestamp: Option<String>,
+	}
+
+	#[derive(Deserialize, Serialize, Debug, Clone)]
+	pub struct VoiceServerUpdate {
+		pub token: String,
+		pub guild_id: String,
+		pub endpoint: String,
 	}
 
 	#[derive(Serialize, Debug)]
