@@ -20,8 +20,8 @@ function UserPanel() {
 				alt="User"
 			></img>
 			<div class={style.user}>
-				<span>Username - {userInfo()?.username}</span>
-				<h2>@nickname - asldkjkhaasdfasdfasdfgsdfkjgasjdgfakjshdgf</h2>
+				<span>Display name</span>
+				<h2>@{userInfo()?.username}</h2>
 				<p>status - asldkjkhagsdfkjasdfasdfasdfasdfasdfasdfasdfgasjdgfakjshdgf</p>
 			</div>
 		</main>
