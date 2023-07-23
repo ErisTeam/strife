@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // SolidJS
 import { createResource, createSignal, Match, onCleanup, onMount, Show } from 'solid-js';
 import { A, Link, useBeforeLeave } from '@solidjs/router';
@@ -78,7 +79,7 @@ function Prev() {
 						style={{ 'margin-top': '0.5rem' }}
 						class={buttons.default}
 						onClick={async () => {
-							changeState('Application');
+							await changeState('Application');
 						}}
 					>
 						change state to main
@@ -126,15 +127,6 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(AppState.userId());
-							console.log(await API.getUserData(AppState.userId() as string));
-						}}
-					>
-						Get User Data
-					</button>
-					<button
-						class={buttons.default}
-						onclick={async (e) => {
 							console.log(await API.getRelationships(AppState.userId() as string));
 						}}
 					>
@@ -143,14 +135,14 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(API.updateGuilds());
+							console.log(await API.updateGuilds());
 						}}
 					>
 						Update Guilds
 					</button>
 					<button
 						class={buttons.default}
-						onclick={async (e) => {
+						onclick={async () => {
 							console.log(await invoke('get_users', {}));
 						}}
 					>

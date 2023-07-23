@@ -47,10 +47,9 @@ const Channel = (props: ChannelProps) => {
 				console.log('middle click', e.button);
 				if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
 					console.error('Tab already exists!');
-					navigate(href);
-					return;
+				} else {
+					API.addTab(props.data);
 				}
-				API.addTab(props.data);
 				navigate(href);
 				break;
 		}
@@ -92,7 +91,7 @@ const Channel = (props: ChannelProps) => {
 					handleClick(e);
 				}}
 			>
-				<div class={style.icon}>{chosenIcon()}</div>
+				<div class={style.channelIcon}>{chosenIcon()}</div>
 				<span>{displayName()}</span>
 			</button>
 			<ContextMenu data={{ channel: props.data }} openRef={openRef}>

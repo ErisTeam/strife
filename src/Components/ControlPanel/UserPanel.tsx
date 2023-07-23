@@ -1,5 +1,18 @@
+import { createResource, onMount } from 'solid-js';
+import { useAppState } from '../../AppState';
 import style from './css.module.css';
+import API from '../../API';
 function UserPanel() {
+	const appState = useAppState();
+
+	const [userInfo] = createResource(async () => {
+		const res = await API.getUserInfo(appState.userId());
+		console.log(res);
+		return res;
+	});
+
+	console.log(userInfo());
+
 	return (
 		<main class={style.userPanel}>
 			<img
@@ -7,7 +20,7 @@ function UserPanel() {
 				alt="User"
 			></img>
 			<div class={style.user}>
-				<span>Username - asldkjkhagsdfkjgasjdgfakjshdgf</span>
+				<span>Username - {userInfo()?.username}</span>
 				<h2>@nickname - asldkjkhaasdfasdfasdfgsdfkjgasjdgfakjshdgf</h2>
 				<p>status - asldkjkhagsdfkjasdfasdfasdfasdfasdfasdfasdfgasjdgfakjshdgf</p>
 			</div>

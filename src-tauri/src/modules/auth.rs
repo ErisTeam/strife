@@ -10,7 +10,7 @@ use tokio::sync::RwLock;
 use crate::discord::http_packets::auth::{ ErrorTypes, LoginRequest };
 use crate::discord::types::gateway::Properties;
 use crate::{ Result, webview_packets, token_utils };
-use crate::discord::{ constants, http_packets };
+use crate::discord::{ constants, http_packets, idk };
 use crate::main_app_state::MainState;
 use super::remote_auth::MobileAuth;
 
@@ -149,12 +149,13 @@ impl Auth {
 		match res {
 			LoginResponse::Success { token, user_id, user_settings } => {
 				println!("token: {}", token);
+				let user_info = idk::get_user_info(token.clone()).await?;
 
 				state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
 					state: crate::modules::user_manager::State::LoggedIn,
 					token: Some(token),
-					display_name: None,
-					avatar: None,
+					display_name: Some(user_info.get_name()),
+					avatar_hash: user_info.avatar,
 				}).await;
 
 				state.user_manager.save_to_file().await?;
@@ -198,6 +199,8 @@ impl Auth {
 		captcha_data: Weak<RwLock<Option<CaptchaData>>>,
 		handle: AppHandle
 	) -> std::result::Result<(), Box<dyn std::error::Error + Sync + Send>> {
+		let mut avatar_hash = None;
+		let mut display_name = None;
 		loop {
 			let payload = auth_receiver.recv().await;
 			if let Some(payload) = payload {
@@ -224,8 +227,8 @@ impl Auth {
 								state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
 									state: crate::modules::user_manager::State::LoggedIn,
 									token: Some(token),
-									display_name: None,
-									avatar: None,
+									display_name: display_name.clone(),
+									avatar_hash: avatar_hash.clone(),
 								}).await;
 
 								state.user_manager
@@ -271,11 +274,14 @@ impl Auth {
 							}
 						}
 					}
-					RemoteAuthMessages::UpdateQrUserData { user_id, discriminator, avatar_hash, username } => {
+					RemoteAuthMessages::UpdateQrUserData { user_id, discriminator, avatar_hash: avatar, username } => {
+						display_name = Some(username.clone());
+						avatar_hash = Some(avatar.clone());
+
 						handle.emit_all("auth", webview_packets::auth::Auth::MobileTicketData {
 							user_id,
 							discriminator,
-							avatar_hash,
+							avatar_hash: avatar,
 							username,
 						})?;
 						debug!("Sent ticket data");

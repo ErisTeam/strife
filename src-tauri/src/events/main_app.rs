@@ -17,6 +17,7 @@ use crate::{
 struct GetUserData {
 	user_id: String,
 }
+#[deprecated]
 fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Event) {
 	move |event| {
 		let user_id = serde_json::from_str::<GetUserData>(event.payload().unwrap()).unwrap().user_id;
@@ -34,7 +35,7 @@ fn get_user_data(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn(Eve
 					_for: "getUserData".to_string(),
 					message: "No user data".to_string(),
 				};
-				if let Some(data) = users.get(&user_id) {
+				if let Some(crate::modules::main_app::ActivationState::Activated(data)) = users.get(&user_id) {
 					if let Some(user_data) = data.read_user_data().await.as_ref() {
 						res = General::UserData {
 							user: Box::new(user_data.user.clone()),
@@ -67,7 +68,7 @@ fn get_relationships(state: Arc<MainState>, handle: tauri::AppHandle) -> impl Fn
 					_for: "getRelationships".to_string(),
 					message: "No user data".to_string(),
 				};
-				if let Some(data) = users.get(&user_id) {
+				if let Some(crate::modules::main_app::ActivationState::Activated(data)) = users.get(&user_id) {
 					if let Some(user_data) = data.read_user_data().await.as_ref() {
 						let mut relationships = Vec::new();
 						for relationship in &user_data.relationships {
@@ -109,11 +110,14 @@ impl EventTrait<General> for GetGuilds {
 
 				let users = main_app.users.read().await;
 				let user = users.get(&self.user_id).ok_or("No user data")?;
-				let userdata = user.read_user_data().await;
-				let userdata = userdata.as_ref().ok_or("No user data")?;
-				Ok(General::Guilds {
-					guilds: userdata.guilds.clone(),
-				})
+				if let crate::modules::main_app::ActivationState::Activated(user) = user {
+					let userdata = user.read_user_data().await;
+					let userdata = userdata.as_ref().ok_or("No user data")?;
+					return Ok(General::Guilds {
+						guilds: userdata.guilds.clone(),
+					});
+				}
+				Err("No user data".to_string())
 			})
 		});
 		if let Ok(res) = res {

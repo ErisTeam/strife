@@ -62,8 +62,20 @@ impl ActiveUser {
 }
 
 #[derive(Debug)]
+pub enum ActivationState {
+	InProgress,
+	Activated(Arc<ActiveUser>),
+}
+impl ActivationState {
+	pub async fn stop(&self) {
+		if let Self::Activated(user) = self {
+			user.gateway.read().await.stop();
+		}
+	}
+}
+#[derive(Debug)]
 pub struct MainApp {
-	pub users: RwLock<HashMap<String, Arc<ActiveUser>>>,
+	pub users: RwLock<HashMap<String, ActivationState>>,
 }
 impl MainApp {
 	pub fn new() -> Self {
@@ -72,8 +84,21 @@ impl MainApp {
 		}
 	}
 
+	pub async fn get_user(&self, user_id: &str) -> Option<Arc<ActiveUser>> {
+		let users = self.users.read().await;
+		if let Some(ActivationState::Activated(user)) = users.get(user_id) {
+			return Some(user.clone());
+		}
+		None
+	}
+
 	pub async fn activate_user(&self, handle: AppHandle, token: String) -> Result<Arc<tokio::sync::Notify>> {
 		let user_id = token_utils::get_id(&token)?;
+
+		let mut users = self.users.write().await;
+		users.insert(user_id.clone(), ActivationState::InProgress);
+		drop(users);
+
 		let (gateway, message_receiver) = self.start_gateway(handle.clone(), token.clone()).await?;
 
 		let stop = gateway.read().await.stop_notifyer.as_ref().unwrap().clone();
@@ -104,7 +129,7 @@ impl MainApp {
 			}
 		});
 
-		if users.insert(user_id, user).is_some() {
+		if users.insert(user_id, ActivationState::Activated(user)).is_some() {
 			warn!("User already existed");
 		}
 		Ok(ready_notifyer)
@@ -136,40 +161,35 @@ impl MainApp {
 		user_data: Weak<RwLock<Option<UserData>>>,
 		ready_notify: Weak<tokio::sync::Notify>
 	) -> Result<()> {
+		let mut user_id = String::new();
 		while let Some(message) = message_receiver.recv().await {
 			match message {
 				GatewayMessages::NewMessage(data) => {
-					let user_id = {
-						let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
-						let user_data = user_data.read().await;
-						let user_data = user_data.as_ref().unwrap();
-						user_data.user.id.clone()
-					};
-
 					//TODO: Show Notification
 
 					handle.emit_all("gateway", webview_packets::GatewayEvent {
 						event: webview_packets::Gateway::MessageCreate(data),
-						user_id,
+						user_id: user_id.clone(),
 					})?;
 				}
 				GatewayMessages::EditedMessage(data) => {
-					let user_id = {
-						let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
-						let user_data = user_data.read().await;
-						let user_data = user_data.as_ref().unwrap();
-						user_data.user.id.clone()
-					};
-
 					handle.emit_all("gateway", webview_packets::GatewayEvent {
 						event: webview_packets::Gateway::MessageUpdate(data),
-						user_id,
+						user_id: user_id.clone(),
 					})?;
 				}
 				GatewayMessages::DeletedMessage() => todo!("Deleted Message"),
 				GatewayMessages::StartedTyping() => todo!("Started Typing"),
 				GatewayMessages::Ready(data) => {
 					let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
+					user_id = data.user.id.clone();
+
+					let display_name = if let Some(display_name) = &data.user.display_name {
+						display_name.clone()
+					} else {
+						data.user.username.clone()
+					};
+
 					user_data.write().await.replace(data);
 					if let Some(ready_notify) = ready_notify.upgrade() {
 						ready_notify.notify_waiters();
@@ -225,7 +245,7 @@ impl MainApp {
 	pub async fn stop(&self) {
 		let users = self.users.write().await;
 		for (_, user) in users.iter() {
-			user.gateway.read().await.stop();
+			user.stop().await;
 		}
 	}
 }

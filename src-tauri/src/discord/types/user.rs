@@ -1,5 +1,7 @@
 use serde::{ Deserialize, Serialize };
 
+//TODO: clean this file
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CurrentUser {
 	pub verified: bool,
@@ -26,6 +28,39 @@ pub struct CurrentUser {
 	pub avatar: Option<String>,
 	pub accent_color: Option<u64>,
 }
+impl CurrentUser {
+	pub fn get_name(&self) -> String {
+		if let Some(name) = &self.display_name { name.clone() } else { self.username.clone() }
+	}
+}
+///https://discord.com/developers/docs/resources/user#user-object
+/// TODO: change name
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserA {
+	pub id: String,
+	pub username: String,
+	pub discriminator: String,
+	pub global_name: Option<String>,
+	pub avatar: Option<String>,
+	pub bot: Option<bool>,
+	pub system: Option<bool>,
+	pub mfa_enabled: Option<bool>,
+	pub banner: Option<String>,
+	pub accent_color: Option<u64>,
+	pub locale: Option<String>,
+	pub verified: Option<bool>,
+	pub email: Option<String>,
+	pub flags: Option<UserFlags>,
+	pub premium_type: Option<u64>,
+	pub public_flags: Option<UserFlags>,
+	pub avatar_decoration: Option<String>,
+}
+impl UserA {
+	pub fn get_name(&self) -> String {
+		if let Some(name) = &self.global_name { name.clone() } else { self.username.clone() }
+	}
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PublicUser {
 	pub username: String,

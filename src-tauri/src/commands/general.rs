@@ -107,7 +107,7 @@ pub async fn get_users(state: State<'_, Arc<MainState>>) -> Result<serde_json::V
 			state: data.state.clone(),
 			user_id: user_id.clone(),
 			display_name: data.display_name.clone(),
-			avatar: data.avatar.clone(),
+			avatar: data.avatar_hash.clone(),
 		};
 		users.push(user);
 	}

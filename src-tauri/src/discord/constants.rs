@@ -18,3 +18,5 @@ pub const GATEWAY_CONNECT: &str = "wss://gateway.discord.gg/?encoding=json&v=9&c
 pub const GET_CHANNEL: &str = concatcp!(DISCORD_API, "/channels/");
 
 pub const GET_RELATIONSHIPS: &str = concatcp!(DISCORD_API, "/users/@me/relationships");
+
+pub const GET_USER_INFO: &str = concatcp!(DISCORD_API, "/users/@me");

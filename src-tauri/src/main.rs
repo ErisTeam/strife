@@ -26,7 +26,7 @@ use serde::Deserialize;
 use tauri::{ Manager, UserAttentionType };
 use tauri_plugin_log::LogTarget;
 
-use crate::{ main_app_state::MainState };
+use crate::main_app_state::MainState;
 
 pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
@@ -73,6 +73,7 @@ async fn main() {
 	main_state.event_manager.lock().await.set_state(Arc::downgrade(&main_state));
 
 	let m = main_state.clone();
+	let m2 = main_state.clone();
 
 	tauri::Builder
 		::default()
@@ -95,6 +96,10 @@ async fn main() {
 
 			#[cfg(debug_assertions)]
 			dev::add_token(&m, app_handle.clone());
+
+			#[cfg(debug_assertions)]
+			dev::clear_gateway_logs(app_handle.clone());
+
 			close_loading(app)?;
 
 			Ok(())
@@ -106,9 +111,11 @@ async fn main() {
 				commands::general::get_token,
 				commands::general::get_users,
 				commands::main_app::activate_user,
+				commands::main_app::get_user_info,
 				test
 			]
 		)
 		.run(tauri::generate_context!())
 		.expect("Error while running tauri application.");
+	m2.user_manager.save_to_file().await.unwrap();
 }

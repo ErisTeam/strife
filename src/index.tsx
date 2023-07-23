@@ -1,8 +1,8 @@
 // SolidJS
 import { render } from 'solid-js/web';
-import { Routes, Route, Router, Link, A, Outlet } from '@solidjs/router';
-import { Component, createResource, DEV, Match, onMount, Show, Suspense, Switch } from 'solid-js';
-import { useTrans, TransProvider } from './Translation';
+import { Routes, Route, Router, Outlet } from '@solidjs/router';
+import { Component, createResource, DEV, Show } from 'solid-js';
+import { TransProvider } from './Translation';
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
 
 // API
@@ -26,6 +26,7 @@ import { invoke } from '@tauri-apps/api';
 import R from './R';
 import Loading from './Components/Loading/Loading';
 import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
+import Channel from './Components/Messages/Channel';
 
 const App: Component = () => {
 	const AppState = useAppState();
@@ -33,7 +34,8 @@ const App: Component = () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
 		console.log(users);
 		AppState.setUserID(users[0].userId);
-		invoke('close_splashscreen');
+
+		await invoke('close_splashscreen');
 	});
 
 	console.log(DEV);
@@ -67,9 +69,9 @@ const App: Component = () => {
 								<Route path="/login" component={Login} />
 
 								<Route path="/app" element={<R state={'Application'} force={true} component={ApplicationWrapper} />}>
-									<Route path="/" component={Application} />
-									<Route path="/:guildId" component={Application}>
-										<Route path="/:channelId" component={Application} />
+									<Route path="/" component={Channel} />
+									<Route path="/:guildId" component={Channel}>
+										<Route path="/:channelId" component={Channel} />
 									</Route>
 								</Route>
 								<Route path="*" component={Error} />
@@ -84,4 +86,4 @@ const App: Component = () => {
 
 attachDevtoolsOverlay();
 
-render(() => <App />, document.getElementById('root') as HTMLElement);
+render(() => <App />, document.getElementById('root'));

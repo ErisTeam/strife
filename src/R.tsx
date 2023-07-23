@@ -4,6 +4,7 @@ import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
 import { useTrans } from './Translation';
 import Dev from './Components/Dev/Dev';
+import API from './API';
 
 interface Props {
 	state: AppState;
@@ -23,6 +24,9 @@ const R = (props: Props) => {
 		const res = await invoke('set_state', { newState: props.state, force: props.force });
 		console.log('bbbbbbbbbb');
 		console.log('res', res);
+		if (props.state === 'Application') {
+			await API.activateUser();
+		}
 		return res;
 	});
 	const [timeLeft, setTimeLeft] = createSignal(0);

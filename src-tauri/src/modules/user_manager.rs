@@ -1,4 +1,5 @@
 use std::{ collections::HashMap, path::PathBuf };
+use log::debug;
 use serde::{ Serialize, Deserialize };
 use tokio::sync::RwLock;
 
@@ -12,7 +13,7 @@ pub struct User {
 	pub state: State,
 	pub token: Option<String>,
 	pub display_name: Option<String>,
-	pub avatar: Option<String>,
+	pub avatar_hash: Option<String>,
 }
 impl Default for User {
 	fn default() -> Self {
@@ -20,7 +21,7 @@ impl Default for User {
 			state: State::LoggedOut,
 			token: None,
 			display_name: None,
-			avatar: None,
+			avatar_hash: None,
 		}
 	}
 }
@@ -83,12 +84,16 @@ impl UserManager {
 	}
 
 	pub async fn save_to_file(&self) -> crate::Result<()> {
+		debug!("Saving users to file");
 		let users = self.users.read().await;
 		let users = serde_json::to_string(&*users)?;
 		let path = self.save_dir.read().await;
 		let mut path = path.clone();
 		path.push("users.json");
+
+		debug!("users: {:?}", users);
 		std::fs::write(path, users)?;
+
 		Ok(())
 	}
 

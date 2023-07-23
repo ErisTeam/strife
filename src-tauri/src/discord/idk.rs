@@ -1,6 +1,8 @@
 //TODO: change name of file
 
 use crate::discord::types::{ channel::Channel, relationship::Relationship };
+
+use super::types::user::UserA;
 pub async fn get_channel(id: String, token: String) -> Result<Channel, reqwest::Error> {
 	use reqwest::Client;
 	use crate::discord::constants::GET_CHANNEL;
@@ -26,4 +28,15 @@ pub async fn get_relationships(token: String) -> Result<Vec<Relationship>, reqwe
 	let relationships = res.json::<Vec<Relationship>>().await?;
 	println!("{:?}", relationships);
 	Ok(relationships)
+}
+
+//TODO: change name
+pub async fn get_user_info(token: String) -> Result<UserA, reqwest::Error> {
+	use reqwest::Client;
+	use crate::discord::constants::GET_USER_INFO;
+	let client = Client::new();
+	let res = client.get(GET_USER_INFO).header("Authorization", token).send().await?;
+	let user_info = res.json::<UserA>().await?;
+	println!("{:?}", user_info);
+	Ok(user_info)
 }

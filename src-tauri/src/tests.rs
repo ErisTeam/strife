@@ -3,7 +3,7 @@ mod tests {
 	mod gateway {
 		use std::fs;
 
-		use crate::discord::{ gateway_packets::{ IncomingPacket, IncomingPacketsData, DispatchedEvents } };
+		use crate::discord::gateway_packets::{ IncomingPacket, IncomingPacketsData, DispatchedEvents };
 		#[test]
 		fn hello() {
 			let json: IncomingPacket = serde_json::from_reader(fs::File::open("../tests/hello.json").unwrap()).unwrap();

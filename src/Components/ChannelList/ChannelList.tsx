@@ -6,11 +6,11 @@ import { useAppState } from '../../AppState';
 ``;
 import Relationship from '../Relationship/Relationship';
 // Components
-import ChannelCategory from './ChannelCategory';
+import ChannelCategory from './ChannelListCategory';
 
 //Style
 import style from './css.module.css';
-import Channel from './Channel';
+import Channel from './ChannelListElement';
 import { Guild } from '../../discord';
 import List from '../List/List';
 import ChannelTitle from './ChannelTitle';

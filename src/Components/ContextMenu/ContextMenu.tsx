@@ -1,18 +1,7 @@
-import {
-	Accessor,
-	Context,
-	JSX,
-	Setter,
-	Show,
-	createContext,
-	createSignal,
-	onCleanup,
-	onMount,
-	useContext,
-} from 'solid-js';
+import { Context, JSX, Show, createContext, createSignal, onCleanup, onMount, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import style from './ContextMenu.module.css';
-let MenuContext = createContext<any>(null);
+const MenuContext = createContext<unknown>(null);
 
 interface MenuProviderData {
 	closeMenu: () => void;

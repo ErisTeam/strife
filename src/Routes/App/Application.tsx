@@ -151,7 +151,7 @@ const Application = () => {
 					{(val) => {
 						return (
 							<Message
-								msg={val}
+								message={val}
 								setEditing={setEditing}
 								setMessage={setMessage}
 								editing={editing}

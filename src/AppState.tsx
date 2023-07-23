@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // SolidJS
-import { createSignal, createContext, useContext, Accessor, JSX } from 'solid-js';
+import { createSignal, createContext, useContext, JSX } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
 import { Guild, Relationship } from './discord';
 import { ContextMenuData, Tab } from './types';
-import { useTrans } from './Translation';
 
 const [userId, setUserId] = createSignal<string | null>(null);
+const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
 
 const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [contextMenuData, setContextMenuData] = createStore<ContextMenuData>({

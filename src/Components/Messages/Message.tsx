@@ -1,20 +1,32 @@
+import { Accessor, For } from 'solid-js';
 import { useAppState } from '../../AppState';
-interface IMessage {
-	msg: any;
-	setEditing: (val: any) => void;
-	setMessage: (val: string) => void;
-	editing: () => any;
-	reference: () => any;
-	setReference: (val: any) => void;
+import ContextMenu from '../ContextMenu/ContextMenu';
+import { Message as MessageType } from '../../discord';
+interface MessageProps {
+	message: MessageType;
+	updateMessage: (val: Partial<MessageType>) => void;
+	setReference?: (id: string) => void;
 }
-const Message = ({ msg, setEditing, setMessage, editing, reference, setReference }: IMessage) => {
-	const AppState = useAppState();
+const Message = ({ message, updateMessage, setReference }: MessageProps) => {
 	let embed;
-	const val = msg;
+
+	const val = message;
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
 		timeStyle: 'medium',
 	});
+
+	function formatContent(content: string) {
+		const mention = /<@!?(\d+)>/gm;
+		console.log(content, content.match(mention), message);
+		content.match(mention)?.forEach((element) => {
+			console.log(element);
+		});
+	}
+	formatContent(message.content);
+
+	function formatEmbed(embed: any) {}
+
 	if (val.embeds && val.embeds[0]) {
 		console.log(val);
 		switch (val.embeds[0].type) {
@@ -43,41 +55,18 @@ const Message = ({ msg, setEditing, setMessage, editing, reference, setReference
 				break;
 		}
 	}
+	let ref: HTMLElement;
 	return (
-		<li>
-			{intl.format(val.timestamp)} <br /> {val.author.username}: {val.content}
-			{!!embed && embed}
-			{val.author.id == AppState.userId() && (
-				<button
-					onClick={() => {
-						if (editing()?.id == val.id) {
-							setEditing(null);
-							setMessage('');
-							return;
-						}
-						setEditing(val);
-						setMessage(val.content);
-						//setReference(val.)
-					}}
-				>
-					edit
-				</button>
-			)}
-			<button
-				onClick={() => {
-					if (reference()?.message_id == val.id) {
-						setReference(null);
-						return;
-					}
-					setReference({
-						channel_id: val.channel_id,
-						message_id: val.id,
-						guild_id: params.guildId,
-					});
-				}}
-			>
-				reply
-			</button>
+		<li style={{ display: 'flex', 'flex-direction': 'column' }}>
+			<span>
+				<button>{message.author.display_name}</button>
+				{intl.format(new Date(message.timestamp))}
+			</span>
+			<span ref={ref}>{message.content}</span>
+			{/* <For></For> */}
+			<ContextMenu data={{}} openRef={ref}>
+				<button>edit</button>
+			</ContextMenu>
 		</li>
 	);
 };

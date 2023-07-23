@@ -5,7 +5,7 @@ import { emit } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 // API
 import { Tab } from './types';
-import { Channel, Guild, Relationship } from './discord';
+import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
 import { Navigator, useNavigate } from '@solidjs/router';
@@ -19,7 +19,7 @@ export default {
 			navigator(`/app/${tab.guildId}/${tab.channelId}`);
 		},
 		addNewTab(channel: Channel, navigator?: Navigator): [number, Tab?] {
-			let t = AppState.tabs.find((tab) => tab.channelId == channel.id);
+			const t = AppState.tabs.find((tab) => tab.channelId == channel.id);
 			if (t) {
 				console.log('tab already exists');
 				return [1, t];
@@ -51,28 +51,26 @@ export default {
 	},
 
 	async activateUser(userId: string = AppState.userId()) {
+		console.log('activating user', userId);
 		return await invoke('activate_user', { userId });
 	},
-
-	//TODO: Handle awaiting in wrapper functions not here
-	async getUserData(userId: string) {
-		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'userData');
-		await emit('getUserData', { userId });
-		console.log('getUserData', await res);
-		return (await res).data;
-	},
 	async getRelationships(userId: string = AppState.userId()) {
-		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'relationships');
+		const res = oneTimeListener<{ type: string; user_id: string; data: Relationship[] }>('general', 'relationships');
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
 		return (await res).data;
 	},
 	async getGuilds(userId: string = AppState.userId()) {
 		console.log('getGuilds', userId);
-		const res = oneTimeListener<{ type: string; user_id: string; data: any }>('general', 'guilds');
+		const res = oneTimeListener<{ type: string; user_id: string; data: { guilds: Guild[] } }>('general', 'guilds');
 		await emit('getGuilds', { userId });
-		const guilds = (await res).data.guilds as Guild[];
+		const guilds = (await res).data.guilds;
+		console.log(res, guilds);
 		return guilds;
+	},
+
+	async getUserInfo(userId: string = AppState.userId()) {
+		return (await invoke('get_user_info', { userId })) as any;
 	},
 
 	/**
@@ -95,7 +93,7 @@ export default {
 			},
 		});
 
-		const resData = await resDataponse.json();
+		const resData = (await resDataponse.json()) as Message[];
 
 		return resData;
 	},
@@ -206,8 +204,6 @@ export default {
 
 	async updateGuilds() {
 		AppState.setUserGuilds([]);
-
-		await this.activateUser();
 
 		const guilds: Guild[] = await this.getGuilds();
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘

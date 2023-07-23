@@ -56,7 +56,7 @@ pub struct MainState {
 
 	pub event_manager: Mutex<EventManager>,
 
-	pub user_manager: UserManager,
+	pub user_manager: Arc<UserManager>,
 
 	//TODO: pub system_info: Mutex<SystemInfo>
 }
@@ -68,7 +68,7 @@ impl MainState {
 
 			event_manager: Mutex::new(event_manager),
 
-			user_manager: UserManager::new(),
+			user_manager: Arc::new(UserManager::new()),
 		}
 	}
 
