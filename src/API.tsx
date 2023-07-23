@@ -165,7 +165,7 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(userId: string = AppState.userId() as string): Promise<string | null> {
+	async getToken(userId: string = AppState.userId()): Promise<string | null> {
 		return await invoke('get_token', { userId });
 	},
 
@@ -309,5 +309,19 @@ export default {
 			.split(' ')
 			.map((w) => w[0])
 			.join('');
+	},
+	getChannelById(guildId: string, channelId: string): Channel | undefined {
+		const guild = AppState.userGuilds.find((g) => g.properties.id === guildId);
+		if (!guild) {
+			console.error('Guild not found!');
+			return;
+		}
+		const channel = guild.channels.find((c) => c.id === channelId);
+		if (!channel) {
+			console.error('Channel not found!');
+			return;
+		}
+
+		return channel;
 	},
 };
