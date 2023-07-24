@@ -64,6 +64,7 @@ pub async fn send_voice_state_update(
 ) -> std::result::Result<(), String> {
 	let state = state.state.read().await;
 	let main_app = state.main_app().expect("Not in main app");
+	println!("Sending voice state update, user_id: {}, guild_id: {}, channel_id: {}", user_id, guild_id, channel_id);
 
 	main_app
 		.send_to_gateway(
