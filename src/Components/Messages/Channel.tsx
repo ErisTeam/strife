@@ -5,10 +5,13 @@ import { Message as MessageType } from '../../discord';
 import API from '../../API';
 import { useParams } from '@solidjs/router';
 import { CONSTANTS } from '../../Constants';
+import { useAppState } from '../../AppState';
+import { invoke } from '@tauri-apps/api/tauri';
 
 export default () => {
 	const [messages, setMessages] = createStore<MessageType[]>([]);
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
+	const AppState = useAppState();
 
 	const params = useParams();
 
@@ -30,11 +33,20 @@ export default () => {
 		}
 		fetchMessages().catch(console.error);
 	}, [params.channelId]);
+	async function startVoice() {
+		const voice_state = invoke('send_voice_state_update', {
+			userId: AppState.userId(),
+			guildId: params.guildId,
+			channelId: params.channelId,
+		});
+		await voice_state;
+		console.log('voice_state', voice_state);
+	}
 	return (
 		<ol>
 			<For each={messages}>{(message) => <Message message={message} updateMessage={updateMessage} />}</For>
 			<Show when={isVoiceChannel()}>
-				<button>Join Voice Channel</button>
+				<button onclick={startVoice}>Join Voice Channel</button>
 			</Show>
 		</ol>
 	);
