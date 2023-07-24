@@ -55,18 +55,20 @@ export default {
 		return await invoke('activate_user', { userId });
 	},
 	async getRelationships(userId: string = AppState.userId()) {
-		const res = oneTimeListener<{ type: string; user_id: string; data }>('general', 'relationships');
+		const res = oneTimeListener<{ type: string; user_id: string; data: { relationships: Relationship[] } }>(
+			'general',
+			'relationships',
+		);
 		console.log("getting user's relationships");
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
-		return await res;
+		return (await res).data.relationships;
 	},
 	async getGuilds(userId: string = AppState.userId()) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: { guilds: Guild[] } }>('general', 'guilds');
 		await emit('getGuilds', { userId });
-		const guilds = (await res).data.guilds;
-		console.log(res, guilds);
-		return guilds;
+	
+		return (await res).data.guilds;
 	},
 
 	async getUserInfo(userId: string = AppState.userId()) {
