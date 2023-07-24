@@ -5,7 +5,7 @@ use tauri::State;
 
 use crate::{
 	main_app_state::MainState,
-	discord::types::{ user::CurrentUser, gateway::packets_data::VoiceStateUpdate },
+	discord::types::{ user::CurrentUser, gateway::packets_data::VoiceStateUpdateSend },
 };
 
 #[tauri::command]
@@ -68,7 +68,7 @@ pub async fn send_voice_state_update(
 	main_app
 		.send_to_gateway(
 			&user_id,
-			crate::modules::gateway::Messages::UpdateVoiceState(VoiceStateUpdate {
+			crate::modules::gateway::Messages::UpdateVoiceState(VoiceStateUpdateSend {
 				guild_id,
 				channel_id,
 				..Default::default()

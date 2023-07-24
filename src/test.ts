@@ -1,9 +1,9 @@
 // SolidJS
-import { createEffect, getOwner, onCleanup } from 'solid-js';
+import { getOwner, onCleanup } from 'solid-js';
 
 // Tauri
-import { listen, Event, UnlistenFn, emit, TauriEvent } from '@tauri-apps/api/event';
-import { invoke, tauri } from '@tauri-apps/api';
+import { listen, Event, emit, TauriEvent } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api';
 import { AppState } from './types';
 
 type Listener = {
@@ -13,18 +13,6 @@ type Listener = {
 
 const tryOnCleanup: typeof onCleanup = (fn) => (getOwner() ? onCleanup(fn) : fn);
 
-/**
- * @deprecated
- */
-function useTaurListenerOld<T>(eventName: string, on_event: (event: Event<T>) => void) {
-	createEffect(() => {
-		const unlist = listen(eventName, on_event);
-		onCleanup(async () => {
-			console.log('cleanup');
-			(await unlist)();
-		});
-	});
-}
 function useTaurListener<T>(eventName: string | TauriEvent, on_event: (event: Event<T>) => void) {
 	const unlist = listen(eventName, on_event);
 	return tryOnCleanup(async () => {
@@ -68,7 +56,7 @@ function startListener<T extends { type: string }>(
 		},
 		cleanup: () => {
 			console.log('a', clean_up);
-			clean_up();
+			clean_up().catch((e) => console.error(e));
 		},
 		events: {
 			onMessageCreate: (channelId: string) => onMessageCreate({} as Listener, channelId), //todo
@@ -123,6 +111,10 @@ async function changeState(newState: AppState) {
 	await invoke('set_state', { newState });
 }
 
+/**
+ *
+ * @deprecated
+ */
 async function startGateway(userId: string) {
 	await emit('startGateway', { userId });
 }
@@ -140,7 +132,6 @@ async function gatewayOneTimeListener<T>(userId: string, eventName: string) {
 type GatewayEvents = 'messageCreate' | 'userData';
 
 export {
-	useTaurListenerOld,
 	useTaurListener,
 	oneTimeListener,
 	startListener,

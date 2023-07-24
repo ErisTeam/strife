@@ -164,14 +164,14 @@ pub mod packets_data {
 		pub activities: bool,
 		pub typing: bool,
 	}
-	#[derive(Serialize, Deserialize, Debug, Clone)]
-	pub struct VoiceStateUpdate {
+	#[derive(Serialize, Debug, Clone)]
+	pub struct VoiceStateUpdateSend {
 		pub guild_id: String,
 		pub channel_id: String,
 		pub self_mute: bool,
 		pub self_deaf: bool,
 	}
-	impl Default for VoiceStateUpdate {
+	impl Default for VoiceStateUpdateSend {
 		fn default() -> Self {
 			Self {
 				guild_id: String::new(),
@@ -180,6 +180,22 @@ pub mod packets_data {
 				self_deaf: false,
 			}
 		}
+	}
+	#[derive(Deserialize, Serialize, Debug, Clone)]
+	pub struct VoiceStateUpdate {
+		guild_id: Option<String>,
+		channel_id: Option<String>,
+		user_id: String,
+		member: Option<GuildMember>,
+		session_id: Option<String>,
+		deaf: bool,
+		mute: bool,
+		self_deaf: bool,
+		self_mute: bool,
+		self_stream: Option<bool>,
+		self_video: bool,
+		suppress: bool,
+		request_to_speak_timestamp: Option<String>,
 	}
 
 	#[derive(Deserialize, Debug, Clone)]

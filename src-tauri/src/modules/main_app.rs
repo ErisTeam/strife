@@ -7,7 +7,7 @@ use tokio::runtime::Handle;
 use tokio::sync::RwLock;
 
 use crate::discord::gateway_packets::DispatchedEvents;
-use crate::discord::types::gateway::packets_data::{ MessageEvent, VoiceStateUpdate, VoiceServerUpdate };
+use crate::discord::types::gateway::packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate };
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
@@ -23,6 +23,7 @@ pub enum GatewayMessages {
 	StartedTyping(),
 	Ready(UserData),
 	VoiceServerUpdate(VoiceServerUpdate),
+	VoiceStateUpdate(VoiceStateUpdate),
 }
 impl From<DispatchedEvents> for GatewayMessages {
 	fn from(value: DispatchedEvents) -> Self {
@@ -37,6 +38,7 @@ impl From<DispatchedEvents> for GatewayMessages {
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => todo!(),
 			DispatchedEvents::Unknown(_) => panic!("Unknown event!"),
 			DispatchedEvents::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
+			DispatchedEvents::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
 		}
 	}
 }
@@ -212,6 +214,12 @@ impl MainApp {
 				GatewayMessages::VoiceServerUpdate(data) => {
 					handle.emit_all("gateway", webview_packets::GatewayEvent {
 						event: webview_packets::Gateway::VoiceServerUpdate(data),
+						user_id: user_id.clone(),
+					})?;
+				}
+				GatewayMessages::VoiceStateUpdate(data) => {
+					handle.emit_all("gateway", webview_packets::GatewayEvent {
+						event: webview_packets::Gateway::VoiceStateUpdate(data),
 						user_id: user_id.clone(),
 					})?;
 				}

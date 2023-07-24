@@ -13,8 +13,9 @@ use super::types::gateway::{
 		TypingStart,
 		ReadySupplemental,
 		LazyGuilds,
-		VoiceStateUpdate,
+		VoiceStateUpdateSend,
 		VoiceServerUpdate,
+		VoiceStateUpdate,
 	},
 	SessionReplaceData,
 };
@@ -36,7 +37,7 @@ pub enum OutGoingPacketsData {
 
 	///TODO: Description
 	/// opcode: `4`
-	VoiceStateUpdate(VoiceStateUpdate),
+	VoiceStateUpdate(VoiceStateUpdateSend),
 }
 #[derive(Serialize, Debug)]
 pub struct OutGoingPacket {
@@ -67,7 +68,7 @@ impl OutGoingPacket {
 	pub fn lazy_guilds(l: LazyGuilds) -> Self {
 		Self::new(OutGoingPacketsData::LazyGuilds(l)).unwrap()
 	}
-	pub fn voice_state_update(v: VoiceStateUpdate) -> Self {
+	pub fn voice_state_update(v: VoiceStateUpdateSend) -> Self {
 		Self::new(OutGoingPacketsData::VoiceStateUpdate(v)).unwrap()
 	}
 
@@ -107,6 +108,9 @@ pub enum DispatchedEvents {
 	//Sent when a guild's voice server is updated. This is sent when initially connecting to voice, and when the current voice instance fails over to a new server.
 	VoiceServerUpdate(VoiceServerUpdate),
 
+	//
+	VoiceStateUpdate(VoiceStateUpdate),
+
 	///BURST_CREDIT_BALANCE_UPDATE {"replenished_today":false,"amount":2}
 	BurstCreditBalanceUpdate(serde_json::Value), //TODO implement
 
@@ -126,6 +130,7 @@ impl ToString for DispatchedEvents {
 			DispatchedEvents::MessageUpdate(_) => "MessageUpdated".to_string(),
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => "BurstCreditBalanceUpdate".to_string(),
 			DispatchedEvents::VoiceServerUpdate(_) => "VoiceServerUpdate".to_string(),
+			DispatchedEvents::VoiceStateUpdate(_) => "VoiceStateUpdate".to_string(),
 		}
 	}
 }
@@ -292,6 +297,17 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 										)
 									)?
 							),
+
+						"VOICE_STATE_UPDATE" =>
+							DispatchedEvents::VoiceStateUpdate(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng {} Packet {:?}", t, x)
+										)
+									)?
+							), //TODO: Implement
 
 						_ => DispatchedEvents::Unknown(inner.d),
 					};

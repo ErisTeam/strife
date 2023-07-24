@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // SolidJS
-import { createResource, createSignal, Match, onCleanup, onMount, Show } from 'solid-js';
-import { A, Link, useBeforeLeave } from '@solidjs/router';
-import HCaptcha from 'solid-hcaptcha';
+import { createResource, createSignal, Show } from 'solid-js';
+import { A } from '@solidjs/router';
 
 // Tauri
 import { invoke } from '@tauri-apps/api/tauri';
@@ -10,15 +9,13 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from '../../API';
-import { changeState, useTaurListener, useTaurListenerOld } from '../../test';
+import { changeState } from '../../test';
 import { useAppState } from '../../AppState';
-import qrcode from 'qrcode';
 
 // Style
 import style from './prev.module.css';
 import buttons from '../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
-import { info } from 'tauri-plugin-log-api';
 import SplashText from '../../Components/Dev/SplashText';
 import { AppState } from '../../types';
 import { useTrans } from '../../Translation';

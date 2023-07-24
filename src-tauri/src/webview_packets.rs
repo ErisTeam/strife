@@ -6,7 +6,7 @@ use serde::{ Deserialize, Serialize };
 
 use crate::discord::types::{
 	guild::PartialGuild,
-	gateway::packets_data::{ MessageEvent, VoiceServerUpdate },
+	gateway::packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate },
 	user::CurrentUser,
 };
 pub mod auth {
@@ -94,6 +94,8 @@ pub enum Gateway {
 	MessageUpdate(MessageEvent),
 
 	VoiceServerUpdate(VoiceServerUpdate),
+
+	VoiceStateUpdate(VoiceStateUpdate),
 
 	Error {
 		message: String,

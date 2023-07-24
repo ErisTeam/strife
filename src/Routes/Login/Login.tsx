@@ -7,7 +7,7 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import API from './../../API';
-import { useTaurListener, useTaurListenerOld } from './../../test';
+import { useTaurListener } from './../../test';
 import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
 import { UserData } from '../../Components/Login/QRCode';
