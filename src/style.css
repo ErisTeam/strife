@@ -127,22 +127,78 @@ pre {
 	--round-large: 12px;
 	--round-xlarge: 24px;
 
-	--default-padding: 0.5rem;
+	--default-padding: 0.5em;
 	/* TODO: Find a better font (numbers are looking kinda... funky. As well as all of the text that has a bigger weight than normal) */
 	--default-font: 'Atkinson Hyperlegible', sans-serif;
 
 	--drop-shadow: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
 
+	/* LOGIN PANEL */
+	--MFA-bgc: var(--depth2);
+	--MFA-roundness: var(--round-large);
+	--login-bgc: var(--depth2);
+	--login-roundness: var(--round-large);
+	--qr-bgc: var(--depth2);
+	--qr-roundness: var(--round-large);
+	--captcha-bgc: var(--depth2);
+	--captcha-roundness: var(--round-large);
+
+	/* GUILDS  */
+	/* --guilds-scale:1rem;  doesnt work currently*/
+	--guilds-bgc: transparent;
+	--guilds-fallback-bgc: var(--depth2);
+	--guilds-divider-color: var(--depth3);
+	--guilds-tooltip-bgc: var(--depth2);
+	--guilds-before-bgc: var(--text);
+
 	/* CHANNELS */
 	--channel-category-text: #a0a0a0;
 	--channel-icon-color: #bdbdbd;
-
-	/* Control Panel */
+	--channel-icon-bgc: var(--depth2);
+	--channel-category-roundness: var(--round-xlarge);
+	--channel-category-hover-one: var(--depth1);
+	--channel-category-hover-two: transparent;
+	--channel-text-color: var(--text);
+	--channel-list-title-bgc: var(--depth1);
+	--channel-list-title-text: var(--text);
+	--channel-list-title-icon: var(--disabled-text);
+	/* CONTROL PANEL */
 	--control-panel-bgc: var(--depth1);
 	--control-panel-hover-bgc: var(--depth2);
 	--control-panel-text: var(--text);
 	--control-panel-text-secondary: var(--disabled-text);
 	--control-panel-roundness: 16px;
+
+	/* TABS */
+	--tab-bgc: var(--depth1);
+	--tab-text: var(--text);
+	--tab-active-bgc: var(--primary);
+
+	/* LIST */
+	--list-bgc: var(--depth1);
+
+	/* Misc */
+	--loading-bgc: var(--depth1);
+
+	--switch-bgc: var(--depth2);
+	--switch-active-bgc: var(--primary);
+	--switch-knob: var(--text);
+	--switch-roundness: 2.4em;
+
+	--button-bgc: var(--depth3);
+	--button-hover-bgc: var(--depth2);
+	--button-active-bgc: var(--primary);
+	--button-padding: var(--default-padding);
+	--button-roundness: var(--round-medium);
+
+	--checkbox-bgc: var(--depth3);
+	--checkbox-hover-bgc: var(--depth2);
+	--checkbox-active-bgc: var(--primary);
+
+	--input-bgc: var(--depth3);
+	--input-roundness: var(--round-medium);
+	--input-padding: var(--default-padding);
+	--input-placeholder: var(--disabled-text);
 }
 
 * {

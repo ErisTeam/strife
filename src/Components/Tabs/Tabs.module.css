@@ -21,7 +21,7 @@
 	align-items: center;
 	flex-shrink: 0;
 	justify-content: center;
-	background-color: var(--depth1);
+	background-color: var(--tab-bgc);
 
 	height: 2.21em;
 	border-radius: 6px 6px 0px 0px;
@@ -44,7 +44,7 @@
 			border-radius: 16px;
 		}
 		span {
-			color: white;
+			color: var(--tab-text);
 			text-align: center;
 		}
 	}
@@ -53,6 +53,6 @@
 	}
 
 	&:has(a.active) {
-		background-color: blue;
+		background-color: var(--tab-active-bgc);
 	}
 }

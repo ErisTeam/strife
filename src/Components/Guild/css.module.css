@@ -27,7 +27,7 @@
 		content: '';
 		width: 0.2em;
 		height: 1.5em;
-		background-color: var(--text);
+		background-color: var(--guilds-before-bgc);
 		opacity: 0;
 		position: absolute;
 		left: 0;
@@ -37,7 +37,9 @@
 		border-top-right-radius: 1em;
 		border-bottom-right-radius: 1em;
 
-		transition: opacity 300ms, scale 300ms;
+		transition:
+			opacity 300ms,
+			scale 300ms;
 		scale: 0.3;
 	}
 	&:hover::before {
@@ -46,11 +48,13 @@
 	}
 	& aside {
 		position: fixed;
-		transition: opacity 100ms, scale 300ms;
+		transition:
+			opacity 100ms,
+			scale 300ms;
 
-		transform: translateY(-50%);
+		translate: 0 -50%;
 
-		background-color: var(--depth2);
+		background-color: var(--guilds-tooltip-bgc);
 		padding: 0.5em;
 		border-radius: 0.65em;
 		height: fit-content;
@@ -80,14 +84,14 @@
 	font-size: 2em;
 	aspect-ratio: 1/1;
 	line-height: 100%;
-	background-color: var(--depth2);
+	background-color: var(--guilds-fallback-bgc);
 }
 
 .guildList {
 	display: flex;
 	width: 4.5em;
 	height: 100%;
-
+	background-color: var(--guilds-bgc);
 	overflow-y: auto;
 	overflow-x: hidden;
 	ul {
@@ -96,7 +100,7 @@
 	}
 	.divider {
 		width: 80%;
-		background-color: var(--depth4);
+		background-color: var(--guilds-divider-color);
 		margin: 0 auto;
 		margin-top: 0.4em;
 		margin-bottom: 0.4em;

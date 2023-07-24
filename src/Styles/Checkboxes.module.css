@@ -6,7 +6,7 @@
 	margin: 0;
 	padding: 0;
 	border-radius: 2px;
-	background-color: var(--depth3);
+	background-color: var(--checkbox-bgc);
 	vertical-align: middle;
 	cursor: pointer;
 }
@@ -14,17 +14,17 @@
 .default:hover,
 .default:focus-visible,
 .default:active {
-	filter: var(--darken);
+	background-color: var(--checkbox-hover-bgc);
 }
 
 .default:active:hover,
 .default:active:focus-visible,
 .default:checked:hover,
 .default:checked:focus-visible {
-	filter: var(--darken-for-active);
+	background-color: var(--checkbox-hover-bgc);
 }
 
 .default:checked {
-	background-color: var(--primary);
+	background-color: var(--checkbox-active-bgc);
 	content: url(/ComponentSVGs/Checkmark.svg);
 }

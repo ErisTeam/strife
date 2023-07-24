@@ -19,6 +19,7 @@ import inputs from './Styles/Inputs.module.css';
 import SplashText from '../../Components/Dev/SplashText';
 import { AppState } from '../../types';
 import { useTrans } from '../../Translation';
+import Switch from '../../Components/Switch/Switch';
 
 function Prev() {
 	const [t, { setLocale }] = useTrans();
@@ -124,7 +125,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.getRelationships(AppState.userId() as string));
+							console.log(await API.getRelationships(AppState.userId()));
 						}}
 					>
 						Get Relationships

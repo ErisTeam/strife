@@ -1,9 +1,9 @@
 .default {
-	padding: var(--default-padding);
-	background-color: var(--depth3);
-	border-radius: var(--round-medium);
+	padding: var(--input-padding);
+	background-color: var(--input-bgc);
+	border-radius: var(--input-roundness);
 }
 
 .default::placeholder {
-	color: var(--disabled-text);
+	color: var(--input-placeholder);
 }

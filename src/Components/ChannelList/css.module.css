@@ -1,9 +1,14 @@
 .category {
 	& > button {
-		background: linear-gradient(to right, var(--depth1) 33%, transparent 55%, transparent 55%);
+		background: linear-gradient(
+			to right,
+			var(--channel-category-hover-one) 33%,
+			var(--channel-category-hover-two) 55%,
+			var(--channel-category-hover-two) 55%
+		);
 		background-size: 300% 100%;
 		background-position: right bottom;
-		border-radius: var(--round-xlarge);
+		border-radius: var(--channel-category-roundness);
 
 		transition: background-position 300ms ease-in-out;
 		display: flex;
@@ -54,7 +59,7 @@
 		justify-content: flex-start;
 		align-items: center;
 		height: 2em;
-		color: #ffffff;
+		color: var(--channel-text-color);
 		width: 100%;
 		margin: 0.4em 0;
 		background: linear-gradient(to right, var(--depth1) 33%, transparent 55%, transparent 55%);
@@ -83,7 +88,7 @@
 .channelIcon {
 	aspect-ratio: 1/1;
 	height: 100%;
-	background-color: var(--depth2);
+	background-color: var(--channel-icon-bgc);
 	border-radius: 50%;
 	display: flex;
 	justify-content: center;
@@ -116,16 +121,18 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.6em;
-		background-color: var(--depth1);
+		background-color: var(--channel-list-title-bgc);
 		width: 100%;
 		h1 {
 			text-align: center;
 			margin: 0 0 0em 0em;
 			font-size: 1.3em;
+			color: var(--channel-list-title-text);
 		}
 		svg {
 			transition: rotate 300ms;
 			height: 100%;
+			stroke: var(--channel-list-title-icon);
 			width: 14%;
 		}
 	}
@@ -133,7 +140,7 @@
 	ol {
 		position: absolute;
 		top: 2.5em;
-		right: 1em;
+		right: 0.5em;
 		transition: height 300ms ease-in-out;
 		height: calc(var(--elementCount) * 2em);
 		overflow-y: hidden;

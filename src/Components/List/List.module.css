@@ -1,6 +1,6 @@
 .list {
 	& > h1 {
-		background-color: var(--depth1);
+		background-color: var(--list-bgc);
 		text-align: center;
 		padding: 1em 0;
 		margin: 0 0 0.5em 0em;

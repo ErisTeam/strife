@@ -41,8 +41,8 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--depth2);
-	border-radius: var(--round-large);
+	background-color: var(--captcha-bgc);
+	border-radius: var(--captcha-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
 	max-width: min(80%, 50ch);

@@ -50,8 +50,8 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--depth2);
-	border-radius: var(--round-large);
+	background-color: var(--MFA-bgc);
+	border-radius: var(--MFA-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
 
@@ -67,8 +67,8 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--depth2);
-	border-radius: var(--round-large);
+	background-color: var(--login-bgc);
+	border-radius: var(--login-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
 	& > *:not(:last-child) {
@@ -97,13 +97,13 @@
 	width: min-content;
 	min-width: calc(12rem + 1.6rem * 2);
 	height: 20rem;
-	background-color: var(--depth2);
+	background-color: var(--qr-bgc);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	padding: 1.6rem;
-	border-radius: var(--round-large);
+	border-radius: var(--qr-roundness);
 	filter: var(--drop-shadow);
 
 	& > *:first-child {

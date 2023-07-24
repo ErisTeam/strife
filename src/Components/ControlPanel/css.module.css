@@ -6,7 +6,7 @@
 	grid-template-rows: 100%;
 	column-gap: 10%;
 	padding: 0.5em;
-	background-color: var(--depth1);
+	background-color: var(--control-panel-bgc);
 }
 .contextPanelVoice {
 	border-radius: var(--control-panel-roundness);

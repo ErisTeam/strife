@@ -1,19 +1,19 @@
 .default {
-	padding: var(--default-padding);
-	background-color: var(--depth3);
-	border-radius: var(--round-medium);
+	padding: var(--button-padding);
+	background-color: var(--button-bgc);
+	border-radius: var(--button-roundness);
 }
 
 .default:hover,
 .default:focus-visible {
-	filter: var(--darken);
+	background-color: var(--button-hover-bgc);
 }
 
 .default:active:hover,
 .default:active:focus-visible {
-	filter: var(--darken-for-active);
+	background-color: var(--button-hover-bgc);
 }
 
 .default:active {
-	background-color: var(--primary);
+	background-color: var(--button-active-bgc);
 }
