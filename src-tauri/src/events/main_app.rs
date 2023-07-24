@@ -14,6 +14,7 @@ use crate::{
 //TODO: make all main_app events commands
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct GetUserData {
 	user_id: String,
 }
