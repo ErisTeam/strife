@@ -4,7 +4,7 @@ import { createSignal, onMount, For, createEffect, Show, JSXElement, JSX, create
 // API
 import { useAppState } from '../../AppState';
 ``;
-import Relationship from '../Relationship/Relationship';
+import Relationship from '../Friends/Friend';
 // Components
 import ChannelCategory from './ChannelListCategory';
 
@@ -36,7 +36,7 @@ const ChannelList = (props: ChannelListProps) => {
 				channelsRender.push(
 					<ChannelCategory id={currentGuild.channels[i].id} data={currentGuild.channels[i]}>
 						{children}
-					</ChannelCategory>
+					</ChannelCategory>,
 				);
 				children = [];
 			} else {

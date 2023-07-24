@@ -1,0 +1,22 @@
+.list {
+	& > ol {
+		padding: 0 0.5em;
+	}
+}
+.title {
+	margin-bottom: 1em;
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.6em;
+	background-color: var(--channel-list-title-bgc);
+	width: 100%;
+
+	h1 {
+		text-align: center;
+		margin: 0 0 0em 0em;
+		font-size: 1.3em;
+		color: var(--channel-list-title-text);
+	}
+}

@@ -1,15 +1,25 @@
-import { For } from 'solid-js';
+import { For, createResource } from 'solid-js';
 import { useAppState } from '../../AppState';
-import { useTrans } from '../../Translation';
-import List from '../List/List';
-import Relationship from '../Relationship/Relationship';
+import style from './css.module.css';
+import Friend from './Friend';
+import FriendsTitle from './FriendsTitle';
+import API from '../../API';
 
-export default ({ className }: { className?: string }) => {
-	const [t] = useTrans();
+function FriendsList(props: { className?: string }) {
+	const [friends] = createResource(async () => {
+		console.log('updating relationships');
+		await API.updateRelationships();
+		return AppState.relationships;
+	});
 	const AppState = useAppState();
 	return (
-		<List title={t.friends()} className={className}>
-			<For each={AppState.relationships}>{(relationship) => <Relationship relationship={relationship} />}</For>
-		</List>
+		<nav class={[props.className, style.list].join(' ')}>
+			<FriendsTitle />
+			<ol>
+				<For each={friends()}>{(friend) => <Friend relationship={friend} />}</For>
+			</ol>
+		</nav>
 	);
-};
+}
+
+export default FriendsList;

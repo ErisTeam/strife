@@ -55,13 +55,13 @@ export default {
 		return await invoke('activate_user', { userId });
 	},
 	async getRelationships(userId: string = AppState.userId()) {
-		const res = oneTimeListener<{ type: string; user_id: string; data: Relationship[] }>('general', 'relationships');
+		const res = oneTimeListener<{ type: string; user_id: string; data }>('general', 'relationships');
+		console.log("getting user's relationships");
 		await emit('getRelationships', { userId });
 		console.log('getRelationships', await res);
-		return (await res).data;
+		return await res;
 	},
 	async getGuilds(userId: string = AppState.userId()) {
-		console.log('getGuilds', userId);
 		const res = oneTimeListener<{ type: string; user_id: string; data: { guilds: Guild[] } }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 		const guilds = (await res).data.guilds;
@@ -231,7 +231,6 @@ export default {
 				}
 			});
 
-			console.log('guild' + guild.properties.name, guild);
 			if (guild.properties.icon) {
 				guild.properties.icon = `https://cdn.discordapp.com/icons/${guild.properties.id}/${guild.properties.icon}.webp?size=96`;
 			}
@@ -242,7 +241,8 @@ export default {
 
 	async updateRelationships() {
 		AppState.setRelationships([]);
-		const relationships: Relationship[] = (await this.getRelationships()).relationships;
+		console.warn('updating relationships');
+		const relationships = await this.getRelationships();
 		console.log(relationships);
 		AppState.setRelationships(relationships);
 	},
