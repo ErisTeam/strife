@@ -1,6 +1,9 @@
 .list {
 	& > ol {
 		padding: 0 0.5em;
+		li {
+			margin-bottom: 0.5em;
+		}
 	}
 }
 .title {
@@ -53,8 +56,8 @@
 			flex-direction: column;
 			justify-content: space-around;
 			height: 100%;
-			padding-bottom: 0.15em;
-			padding-top: 0.15em;
+			padding-bottom: 0.1em;
+			padding-top: 0.1em;
 
 			span {
 				width: 95%;
