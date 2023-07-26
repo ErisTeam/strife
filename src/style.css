@@ -162,6 +162,15 @@ pre {
 	--channel-list-title-bgc: var(--depth1);
 	--channel-list-title-text: var(--text);
 	--channel-list-title-icon: var(--disabled-text);
+	--channel-gradient-hover-one: var(--depth1);
+	--channel-gradient-hover-two: transparent;
+
+	/* FRIENDS */
+	--friend-gradient-hover-one: var(--depth1);
+	--friend-gradient-hover-two: transparent;
+	--friend-status-color: var(--disabled-text);
+	--friend-name-color: var(--text);
+
 	/* CONTROL PANEL */
 	--control-panel-bgc: var(--depth1);
 	--control-panel-hover-bgc: var(--depth2);

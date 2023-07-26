@@ -3,8 +3,11 @@
 // API
 
 // Style
+import { Show } from 'solid-js';
 import { Relationship } from '../../discord';
 import style from './css.module.css';
+import fallback from './fallback.png';
+//fallback icon provided by Lemony
 interface FriendProps {
 	className?: string;
 	relationship: Relationship;
@@ -12,12 +15,25 @@ interface FriendProps {
 const Friend = (props: FriendProps) => {
 	return (
 		<li class={style.friend}>
-			<img
-				src={`https://cdn.discordapp.com/avatars/${props.relationship.user.id}/${props.relationship.user.avatar}.webp?size=32`}
-				alt={props.relationship.user.username}
-			/>
-			<span>{props.relationship.user.username}</span>
-			<span>#{props.relationship.user.discriminator}</span>
+			<button>
+				<Show
+					when={props.relationship.user.avatar}
+					fallback={<img src={fallback} alt={props.relationship.user.username} />}
+				>
+					<img
+						src={`https://cdn.discordapp.com/avatars/${props.relationship.user.id}/${props.relationship.user.avatar}.webp?size=32`}
+						alt={props.relationship.user.username}
+					/>
+				</Show>
+
+				<main>
+					<span>{props.relationship.user.username}</span>
+					<p>
+						Super duper long status because i am a stupid little nerd that cant fit his funny little text in less than
+						50 characters
+					</p>
+				</main>
+			</button>
 		</li>
 	);
 };

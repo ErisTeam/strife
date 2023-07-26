@@ -20,3 +20,74 @@
 		color: var(--channel-list-title-text);
 	}
 }
+
+.friend {
+	height: fit-content;
+	width: 100%;
+	button {
+		height: 2.5em;
+		color: var(--channel-text-color);
+		width: 100%;
+		/* padding: 0 1em; */
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		column-gap: 0.5em;
+		margin: 0.4em 0;
+		background: linear-gradient(
+			to right,
+			var(--friend-gradient-hover-one) 33%,
+			var(--friend-gradient-hover-two) 55%,
+			var(--friend-gradient-hover-two) 55%
+		);
+		background-size: 300% 100%;
+		background-position: right bottom;
+		transition: all 300ms ease-in-out;
+
+		border-radius: var(--round-xlarge);
+
+		/*cant be in % or ellipsis wont work*/
+		main {
+			width: calc(100% - (2.5em + 0.5em));
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			height: 100%;
+			padding-bottom: 0.15em;
+			padding-top: 0.15em;
+
+			span {
+				width: 95%;
+				white-space: nowrap;
+				display: inline-block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				font-size: 1.1em;
+				color: var(--friend-name-color);
+			}
+			p {
+				width: 95%;
+				white-space: nowrap;
+				display: inline-block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				font-size: 0.8em;
+
+				color: var(--friend-status-color);
+			}
+		}
+
+		img {
+			height: 2.5em;
+			width: 2.5em;
+			border-radius: 100%;
+		}
+	}
+	&:hover {
+		button {
+			background-position: left bottom;
+		}
+	}
+}

@@ -62,7 +62,12 @@
 		color: var(--channel-text-color);
 		width: 100%;
 		margin: 0.4em 0;
-		background: linear-gradient(to right, var(--depth1) 33%, transparent 55%, transparent 55%);
+		background: linear-gradient(
+			to right,
+			var(--channel-gradient-hover-one) 33%,
+			var(--channel-gradient-hover-two) 55%,
+			var(--channel-gradient-hover-two) 55%
+		);
 		background-size: 300% 100%;
 		background-position: right bottom;
 		transition: all 300ms ease-in-out;
