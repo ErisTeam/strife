@@ -67,7 +67,7 @@ export default {
 	async getGuilds(userId: string = AppState.userId()) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: { guilds: Guild[] } }>('general', 'guilds');
 		await emit('getGuilds', { userId });
-	
+
 		return (await res).data.guilds;
 	},
 
@@ -249,29 +249,13 @@ export default {
 		AppState.setRelationships(relationships);
 	},
 
-	addTab(channel: Channel) {
-		if (AppState.tabs.find((tab) => tab.channelId == channel.id)) {
-			console.log('tab already exists');
+	addTab(tab: Tab) {
+		if (AppState.tabs.find((t) => t.channelId == tab.channelId)) {
+			console.error('tab already exists');
 			return;
 		}
 
-		console.log('channel', channel);
-		const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
-
-		if (!guild) {
-			console.error('Guild not found!');
-			return;
-		}
-		const tab: Tab = {
-			guildId: channel.guild_id,
-			channelId: channel.id,
-			channelName: channel.name,
-			channelType: channel.type,
-			guildIcon: guild.properties.icon,
-			guildName: guild.properties.name,
-		};
-
-		AppState.setTabs((prev) => [...prev, tab]);
+		AppState.setTabs([...AppState.tabs, tab]);
 		console.log(AppState.tabs);
 	},
 	removeTab(tabIndex: number) {
@@ -279,7 +263,7 @@ export default {
 		AppState.setTabs(produce((draft) => draft.splice(tabIndex, 1)));
 	},
 
-	replaceCurrentTab(channel: Channel, currentChannelId: string) {
+	replaceCurrentTab(tab: Tab, currentChannelId: string) {
 		const currentTabIndex = AppState.tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
 
 		if (!(currentTabIndex + 1)) {
@@ -288,20 +272,6 @@ export default {
 			console.log(currentChannelId);
 			return;
 		}
-		const guild = AppState.userGuilds.find((g: Guild) => g.properties.id === channel.guild_id);
-
-		if (!guild) {
-			console.error('Guild not found!');
-			return;
-		}
-		const tab: Tab = {
-			guildId: channel.guild_id,
-			channelId: channel.id,
-			channelName: channel.name,
-			channelType: channel.type,
-			guildIcon: guild.properties.icon,
-			guildName: guild.properties.name,
-		};
 
 		console.warn('replacing tab with index', currentTabIndex, 'with');
 		AppState.setTabs(currentTabIndex, tab);

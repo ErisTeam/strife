@@ -78,9 +78,9 @@ type Guild = {
 
 type Channel = {
 	id: string;
-	type: ChannelType;
+	type: (typeof CONSTANTS.CHANNEL_TYPES)[keyof typeof CONSTANTS.CHANNEL_TYPES];
 	guild_id: string; // if it's a dm channel, set to @me
-	position: number | 0;
+	position: number;
 	permission_overwrites?: any[];
 	name: string; //or user name if it's a dm channel
 	topic?: string;
@@ -114,20 +114,22 @@ type Channel = {
 };
 type Sticker = {};
 
-declare enum ChannelType {
-	GuildText = 0,
-	DM = 1,
-	GuildVoice = 2,
-	GroupDM = 3,
-	GuildCategory = 4,
-	GuildAnnouncement = 5,
-	AnnouncementThread = 10,
-	PublicThread = 11,
-	PrivateThread = 12,
-	GuildStageVoice = 13,
-	GuildDirectory = 14,
-	GuildForum = 15,
-}
+export const CONSTANTS = {
+	CHANNEL_TYPES: {
+		GUILD_TEXT: 0,
+		DM: 1,
+		GUILD_VOICE: 2,
+		GROUP_DM: 3,
+		GUILD_CATEGORY: 4,
+		GUILD_ANNOUNCEMENT: 5,
+		ANNOUNCEMENT_THREAD: 10,
+		PUBLIC_THREAD: 11,
+		PRIVATE_THREAD: 12,
+		GUILD_STAGE_VOICE: 13,
+		GUILD_DIRECTORY: 14,
+		GUILD_FORUM: 15,
+	},
+};
 
 type Message = {
 	id: Required<string>;
@@ -142,14 +144,4 @@ type Message = {
 	author: Partial<any>; //TODO: add user type
 };
 
-export type {
-	GuildsResponse,
-	UsersResponse,
-	Role,
-	Guild,
-	Channel,
-	RelationshipUser,
-	Relationship,
-	ChannelType,
-	Message,
-};
+export type { GuildsResponse, UsersResponse, Role, Guild, Channel, RelationshipUser, Relationship, Message };

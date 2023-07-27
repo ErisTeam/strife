@@ -22,7 +22,15 @@ const Channel = (props: ChannelProps) => {
 	const navigate = useNavigate();
 	const params = useParams();
 	const href = `/app/${props.data.guild_id}/${props.data.id}`;
-
+	const guild = AppState.userGuilds.find((g) => g.properties.id === props.data.guild_id);
+	const tab: Tab = {
+		guildId: props.data.guild_id,
+		channelId: props.data.id,
+		channelName: props.data.name,
+		channelType: props.data.type,
+		guildIcon: guild.properties.icon,
+		guildName: guild.properties.name,
+	};
 	const [displayName, setDisplayName] = createSignal(props.data.name);
 
 	function handleClick(e: MouseEvent) {
@@ -35,21 +43,19 @@ const Channel = (props: ChannelProps) => {
 					return;
 				}
 				if (AppState.tabs.length === 0) {
-					API.addTab(props.data);
+					API.addTab(tab);
 					navigate(href);
 					return;
 				} else {
-					API.replaceCurrentTab(props.data, params.channelId);
+					API.replaceCurrentTab(tab, params.channelId);
 					navigate(href);
 				}
 				break;
 			case 1:
 				console.log('middle click', e.button);
-				if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
-					console.error('Tab already exists!');
-				} else {
-					API.addTab(props.data);
-				}
+
+				API.addTab(tab);
+
 				navigate(href);
 				break;
 		}
