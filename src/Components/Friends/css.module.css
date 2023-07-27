@@ -5,6 +5,7 @@
 			margin-bottom: 0.5em;
 		}
 	}
+	background-color: var(--friend-list-bgc);
 }
 .title {
 	margin-bottom: 1em;
@@ -15,10 +16,9 @@
 	padding: 0.6em;
 	background-color: var(--channel-list-title-bgc);
 	width: 100%;
-
+	border-bottom: 0.125em solid var(--friend-list-separator);
 	h1 {
 		text-align: center;
-		margin: 0 0 0em 0em;
 		font-size: 1.3em;
 		color: var(--channel-list-title-text);
 	}

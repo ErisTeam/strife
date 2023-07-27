@@ -108,11 +108,22 @@ pre {
 	--depth3: #2d2f31;
 	--depth4: #343438; */
 
-	--depth0: hsl(205, 0%, 8%);
+	/* PREVIOUS PREV--depth0: hsl(205, 0%, 8%);
 	--depth1: hsl(205, 0%, 12%);
 	--depth2: hsl(205, 0%, 20%);
 	--depth3: hsl(205, 0%, 26%);
-	--depth4: hsl(205, 0%, 32%);
+	--depth4: hsl(205, 0%, 32%); */
+	/* CSS HSL */
+	--depth9: hsl(240, 3%, 35%);
+	--depth8: hsl(240, 3%, 32%);
+	--depth7: hsl(240, 3%, 29%);
+	--depth6: hsl(240, 2%, 26%);
+	--depth5: hsl(240, 3%, 23%);
+	--depth4: hsl(240, 3%, 19%);
+	--depth3: hsl(240, 4%, 16%);
+	--depth2: hsl(240, 1%, 13%);
+	--depth1: hsl(240, 2%, 10%);
+	--depth0: hsl(240, 3%, 7%);
 
 	--primary: hsl(18, 86%, 50%);
 	--secondary: hsl(205, 100%, 50%);
@@ -154,26 +165,30 @@ pre {
 	/* CHANNELS */
 	--channel-category-text: #a0a0a0;
 	--channel-icon-color: #bdbdbd;
-	--channel-icon-bgc: var(--depth2);
+	--channel-icon-bgc: var(--depth3);
 	--channel-category-roundness: var(--round-xlarge);
-	--channel-category-hover-one: var(--depth1);
+	--channel-category-hover-one: var(--depth2);
 	--channel-category-hover-two: transparent;
+	--channel-list-bgc: var(--depth1);
 	--channel-text-color: var(--text);
-	--channel-list-title-bgc: var(--depth1);
+	--channel-list-title-bgc: var(--depth1`);
 	--channel-list-title-text: var(--text);
 	--channel-list-title-icon: var(--disabled-text);
-	--channel-gradient-hover-one: var(--depth1);
+	--channel-gradient-hover-one: var(--depth2);
 	--channel-gradient-hover-two: transparent;
+	--channel-list-separator: var(--depth3);
 
 	/* FRIENDS */
-	--friend-gradient-hover-one: var(--depth1);
+	--friend-list-bgc: var(--depth1);
+	--friend-gradient-hover-one: var(--depth2);
 	--friend-gradient-hover-two: transparent;
 	--friend-status-color: var(--disabled-text);
 	--friend-name-color: var(--text);
+	--friend-list-separator: var(--depth3);
 
 	/* CONTROL PANEL */
-	--control-panel-bgc: var(--depth1);
-	--control-panel-hover-bgc: var(--depth2);
+	--control-panel-bgc: transparent;
+	--control-panel-hover-bgc: var(--depth1);
 	--control-panel-text: var(--text);
 	--control-panel-text-secondary: var(--disabled-text);
 	--control-panel-roundness: 16px;
@@ -185,6 +200,9 @@ pre {
 
 	/* LIST */
 	--list-bgc: var(--depth1);
+
+	/* CHAT */
+	--chat-bgc: var(--depth3);
 
 	/* Misc */
 	--loading-bgc: var(--depth1);

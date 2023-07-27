@@ -5,7 +5,7 @@
 	overflow-y: auto;
 	display: grid;
 	grid-template-columns: 4.5em 15em 1fr;
-	grid-template-rows: 3em 1fr 4.5em;
+	grid-template-rows: 3em 1fr 3.5em;
 	.guilds {
 		overflow-y: scroll;
 		grid-row: 1/3;

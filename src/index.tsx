@@ -27,6 +27,7 @@ import R from './R';
 import Loading from './Components/Loading/Loading';
 import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
 import Channel from './Components/Messages/Chat';
+import LayoutTest from './Routes/Dev/LayoutTest/LayoutTest';
 
 const App: Component = () => {
 	const AppState = useAppState();

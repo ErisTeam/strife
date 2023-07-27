@@ -5,7 +5,7 @@
 	grid-template-columns: 20% 40% 20%;
 	grid-template-rows: 100%;
 	column-gap: 10%;
-	padding: 0.5em;
+	padding: 0.25em;
 	background-color: var(--control-panel-bgc);
 }
 .contextPanelVoice {
@@ -96,7 +96,7 @@
 	img {
 		margin-left: 0.25em;
 		display: block;
-		width: 3em;
+		width: 2.75em;
 
 		border-radius: 100%;
 		border: 2px solid var(--depth2);

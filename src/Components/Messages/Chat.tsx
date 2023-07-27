@@ -2,7 +2,7 @@ import { createStore } from 'solid-js/store';
 
 import Message from './Message';
 import { For, Show, createEffect, createSignal, onMount } from 'solid-js';
-import {  ChannelType, Message as MessageType } from '../../discord';
+import { ChannelType, Message as MessageType } from '../../discord';
 import API from '../../API';
 import _sodium from 'libsodium-wrappers';
 import { useParams } from '@solidjs/router';
@@ -11,11 +11,9 @@ import { useAppState } from '../../AppState';
 import { invoke } from '@tauri-apps/api/tauri';
 import { gatewayOneTimeListener } from '../../test';
 import { CONSTANTS } from '../../Constants';
-
+import style from './css.module.css';
 
 export default () => {
-
-
 	const [messages, setMessages] = createStore<MessageType[]>([]);
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 	const AppState = useAppState();
@@ -31,14 +29,13 @@ export default () => {
 	function updateMessage(updated: Partial<MessageType>) {
 		setMessages((message) => message.id === updated.id, updated);
 	}
-	async function generateNonce(RTPHeader: number[]){
+	async function generateNonce(RTPHeader: number[]) {
 		await _sodium.ready;
 		const sodium = _sodium;
 		const nonce = new Uint8Array(24);
 		nonce.set(RTPHeader.slice(0, 12));
 		nonce.set(sodium.randombytes_buf(12), 12);
 		return nonce;
-
 	}
 	createEffect(() => {
 		const channel = API.getChannelById(params.guildId, params.channelId);
@@ -93,7 +90,6 @@ export default () => {
 		});
 
 		socket.addEventListener('message', (event) => {
-			
 			const data = JSON.parse(event.data);
 			console.log('data', data);
 			if (data.op == 8) {
@@ -107,7 +103,7 @@ export default () => {
 						JSON.stringify({
 							op: 3,
 							d: nonce,
-						})
+						}),
 					);
 				}, heartbeatInterval);
 			}
@@ -118,7 +114,6 @@ export default () => {
 				ssrc = data.d.ssrc;
 				streams = data.d.streams;
 				console.log('ip', ip, 'modes', modes, 'port', port, 'ssrc', ssrc, 'streams', streams);
-				
 
 				socket.send(
 					JSON.stringify({
@@ -131,26 +126,21 @@ export default () => {
 								mode: modes[modes.length - 1],
 							},
 						},
-					})
+					}),
 				);
 			}
 			if (data.op == 4) {
-				console.log("event", event);
+				console.log('event', event);
 				audio_codec = data.d.audio_codec;
 				media_session_id = data.d.media_session_id;
 				mode = data.d.mode;
 				secret_key = data.d.secret_key;
 				video_codec = data.d.video_codec;
-
-				
-			
-				
-
 			}
 		});
 	}
 	return (
-		<ol>
+		<ol class={style.chat}>
 			<For each={messages}>{(message) => <Message message={message} updateMessage={updateMessage} />}</For>
 			<Show when={isVoiceChannel()}>
 				<button onclick={startVoice}>Join Voice Channel</button>

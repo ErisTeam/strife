@@ -117,10 +117,13 @@
 	& > ol {
 		padding: 0 0.5em;
 	}
+	background-color: var(--channel-list-bgc);
 }
 .title {
 	margin-bottom: 1em;
 	position: relative;
+	border-bottom: 0.125em solid var(--channel-list-separator);
+
 	button {
 		display: flex;
 		justify-content: space-between;
@@ -130,7 +133,6 @@
 		width: 100%;
 		h1 {
 			text-align: center;
-			margin: 0 0 0em 0em;
 			font-size: 1.3em;
 			color: var(--channel-list-title-text);
 		}
