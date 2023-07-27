@@ -35,7 +35,7 @@
 		grid-column: 2/3;
 		gap: 0.3em;
 		span {
-			line-height: 0.8em;
+			line-height: 1em;
 			text-align: center;
 			font-size: 1em;
 			color: var(--control-panel-text);
@@ -49,7 +49,7 @@
 			text-align: center;
 			color: var(--control-panel-text-secondary);
 			font-size: 0.8em;
-			line-height: 0.8em;
+			line-height: 1em;
 			width: 90%;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -106,9 +106,10 @@
 		height: 80%;
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		width: calc(100% - 3em);
 		span {
-			line-height: 0.8em;
+			line-height: 1em;
 			font-size: 1em;
 			color: var(--control-panel-text);
 			width: 90%;
@@ -120,7 +121,7 @@
 			color: var(--control-panel-text-secondary);
 
 			font-size: 0.8em;
-			line-height: 0.8em;
+			line-height: 1em;
 			width: 95%;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -129,7 +130,7 @@
 		p {
 			color: var(--control-panel-text-secondary);
 			font-size: 0.8em;
-			line-height: 0.8em;
+			line-height: 1em;
 			width: 97%;
 			overflow: hidden;
 			text-overflow: ellipsis;

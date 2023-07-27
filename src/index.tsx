@@ -26,7 +26,7 @@ import { invoke } from '@tauri-apps/api';
 import R from './R';
 import Loading from './Components/Loading/Loading';
 import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
-import Channel from './Components/Messages/Channel';
+import Channel from './Components/Messages/Chat';
 
 const App: Component = () => {
 	const AppState = useAppState();

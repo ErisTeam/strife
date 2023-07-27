@@ -22,7 +22,7 @@ function UserPanel() {
 			<div class={style.user}>
 				<span>Display name</span>
 				<h2>@{userInfo()?.username}</h2>
-				<p>status - asldkjkhagsdfkjasdfasdfasdfasdfasdfasdfasdfgasjdgfakjshdgf</p>
+				<p>status pp</p>
 			</div>
 		</main>
 	);
