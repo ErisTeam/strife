@@ -1,5 +1,5 @@
 // SolidJS
-import { Show, createEffect, onCleanup, onMount } from 'solid-js';
+import { Show, onCleanup, onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -9,15 +9,21 @@ import style from './css.module.css';
 import API from '../../API';
 import { useTrans } from '../../Translation';
 
+import { useDragDropContext } from '@thisbeyond/solid-dnd';
+import { createSortable } from '@thisbeyond/solid-dnd';
+
+import { Guild as TGuild } from '../../discord';
 interface GuildProps {
-	index: number;
+	// index: number;
 	className?: string;
+	guild: TGuild;
 }
 
 const Guild = (props: GuildProps) => {
+	const [state] = useDragDropContext();
+	const sortable = createSortable(props.guild.properties.id);
 	const AppState = useAppState();
 	const [t] = useTrans();
-	const guild = AppState.userGuilds[props.index];
 
 	let toolTipRef: HTMLElement;
 	let ref: HTMLLIElement;
@@ -38,52 +44,33 @@ const Guild = (props: GuildProps) => {
 		ref.parentElement.parentElement.removeEventListener('scroll', updateRelativeYPositon);
 	});
 
-	//TODO: rewrite data storing to use arrays to remove constant find calls
-
-	//TODO: move to seperate component
-	if (props.index === -1) {
-		return (
-			<li
-				class={style.guild}
-				role="button"
-				ref={ref}
-				onClick={() => {
-					if (AppState.currentGuild() !== 'friends') {
-						AppState.setCurrentGuild('friends');
+	return (
+		<li
+			use:sortable
+			class={style.guild}
+			classList={{
+				[style.opacity]: sortable.isActiveDraggable,
+				[style.transform]: !!state.active.draggable,
+			}}
+			ref={ref}
+		>
+			<button
+				onclick={() => {
+					if (AppState.currentGuild() !== props.guild) {
+						AppState.setCurrentGuild(props.guild);
 					} else {
 						AppState.setCurrentGuild(null);
 					}
 				}}
 			>
-				<img
-					src={
-						'https://variety.com/wp-content/uploads/2021/07/Rick-Astley-Never-Gonna-Give-You-Up.png?w=681&h=383&crop=1'
-					}
-				/>
-				<aside ref={toolTipRef}>Friends</aside>
-			</li>
-		);
-	}
-	return (
-		<li
-			class={style.guild}
-			role="button"
-			ref={ref}
-			onClick={() => {
-				if (AppState.currentGuild() !== guild) {
-					AppState.setCurrentGuild(guild);
-				} else {
-					AppState.setCurrentGuild(null);
-				}
-			}}
-		>
-			<Show
-				when={guild.properties.icon}
-				fallback={<h1 class={style.fallbackText}>{API.getInitials(guild.properties.name)}</h1>}
-			>
-				<img src={guild.properties.icon} alt={t.guild.logoAlt({ guildName: guild.properties.name })} />
-			</Show>
-			<aside ref={toolTipRef}>{guild.properties.name}</aside>
+				<Show
+					when={props.guild.properties.icon}
+					fallback={<h1 class={style.fallbackText}>{API.getInitials(props.guild.properties.name)}</h1>}
+				>
+					<img src={props.guild.properties.icon} alt={t.guild.logoAlt({ guildName: props.guild.properties.name })} />
+				</Show>
+			</button>
+			<aside ref={toolTipRef}>{props.guild.properties.name}</aside>
 		</li>
 	);
 };
