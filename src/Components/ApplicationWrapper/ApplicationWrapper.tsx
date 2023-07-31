@@ -41,20 +41,25 @@ const ApplicationWrapper = () => {
 
 	return (
 		<div class={style.wrapper + ' ' + wrapperStyle()}>
-			<div id="ContextMenu"></div>
-			<GuildList className={style.guilds} />
-			<Show when={AppState.tabs.length > 0}>
-				<Tabs className={style.tabs} />
-			</Show>
-			<Show when={!!AppState.currentGuild()}>
-				<Switch fallback={<ChannelList className={style.channels} />}>
-					<Match when={AppState.currentGuild() == 'friends'}>
-						<FriendsList className={style.channels} />
-					</Match>
-				</Switch>
-			</Show>
-			<div class={style.outlet}>
-				<Outlet />
+			<div class={style.outer}>
+				<div id="ContextMenu" />
+				<GuildList className={style.guilds} />
+
+				<Show when={!!AppState.currentGuild()}>
+					<Switch fallback={<ChannelList className={style.channels} />}>
+						<Match when={AppState.currentGuild() == 'friends'}>
+							<FriendsList className={style.channels} />
+						</Match>
+					</Switch>
+				</Show>
+				<div class={style.inner}>
+					<Show when={AppState.tabs.length > 0}>
+						<Tabs className={style.tabs} />
+					</Show>
+					<div class={style.outlet}>
+						<Outlet />
+					</div>
+				</div>
 			</div>
 			<ControlPanel className={style.controlPanel} />
 		</div>
