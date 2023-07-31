@@ -1,6 +1,6 @@
 // SolidJS
 import { Outlet } from '@solidjs/router';
-import { Match, Show, Switch, createEffect, createSignal, onMount } from 'solid-js';
+import { Match, Show, Switch } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../ChannelList/ChannelList';
 // Components
@@ -9,9 +9,7 @@ import Tabs from '../Tabs/Tabs';
 
 // Style
 import style from './ApplicationWrapper.module.css';
-import { Portal } from 'solid-js/web';
 import FriendsList from '../Friends/FriendsList';
-import { User } from 'lucide-solid';
 
 import ControlPanel from '../ControlPanel/ControlPanel';
 
@@ -19,28 +17,11 @@ import ControlPanel from '../ControlPanel/ControlPanel';
 
 const ApplicationWrapper = () => {
 	const AppState = useAppState();
-	const [wrapperStyle, setWrapperStyle] = createSignal<string>('');
-	createEffect(() => {
-		if (!AppState.currentGuild()) {
-			if (AppState.tabs.length == 0) {
-				setWrapperStyle(style.withoutAll);
-			} else {
-				setWrapperStyle(style.withoutChannels);
-			}
-			return;
-		} else {
-			if (AppState.tabs.length == 0) {
-				setWrapperStyle(style.withoutTabs);
-			} else {
-				setWrapperStyle(style.withAll);
-			}
-		}
-	});
 
 	console.log('CurrentGuild', !AppState.currentGuild());
 
 	return (
-		<div class={style.wrapper + ' ' + wrapperStyle()}>
+		<div class={style.wrapper}>
 			<div class={style.outer}>
 				<div id="ContextMenu" />
 				<GuildList className={style.guilds} />
