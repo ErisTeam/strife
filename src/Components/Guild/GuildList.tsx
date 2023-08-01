@@ -1,5 +1,5 @@
 // SolidJS
-import { onMount, For, createResource } from 'solid-js';
+import { onMount, For, createResource, Show, createEffect } from 'solid-js';
 
 // API
 import API from '../../API';
@@ -14,28 +14,42 @@ import style from './css.module.css';
 import { DragDropProvider, DragDropSensors, DragOverlay, SortableProvider, closestCenter } from '@thisbeyond/solid-dnd';
 import { createSignal } from 'solid-js';
 import FriendsTab from './FriendsTab';
+import GuildShadow from './GuildShadow';
 
+import { Guild as TGuild } from '../../discord';
 interface GuildListProps {
 	className?: string;
 }
+type Item = {
+	id: number;
+	guild: TGuild;
+};
 
 const GuildList = (props: GuildListProps) => {
 	const AppState = useAppState();
 
-	const [guilds] = createResource(async () => {
-		console.log('updating guilds');
-		await API.updateGuilds();
-		console.log(AppState.userGuilds);
-		return AppState.userGuilds;
+	onMount(() => {
+		API.updateGuilds()
+			.then(() => {
+				const newItems = [];
+				for (let i = 1; i < AppState.userGuilds.length; i++) {
+					newItems.push({ id: i, guild: AppState.userGuilds[i] });
+				}
+				setItems(newItems);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	});
 
-	const [activeItem, setActiveItem] = createSignal(null);
-	const ids = () => guilds().map((guild) => guild.properties.id);
-	// const [items, setItems] = createSignal([1, 2, 3]);
-	// const ids = () => items();
+	const [items, setItems] = createSignal<Item[]>([]);
+
+	const [activeItemId, setActiveItem] = createSignal(null);
+	const ids = () => items().map((item) => item.id);
+
 	const onDragStart = ({ draggable }) => {
 		setActiveItem(draggable.id);
-		console.log(activeItem());
+		console.log(activeItemId());
 	};
 
 	const onDragEnd = ({ draggable, droppable }) => {
@@ -46,32 +60,37 @@ const GuildList = (props: GuildListProps) => {
 			if (fromIndex !== toIndex) {
 				const updatedItems = currentItems.slice();
 				updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-				const newGuilds = [];
-				console.warn('HERE');
+
+				const newItems = [];
 				for (let i = 0; i < updatedItems.length; i++) {
-					console.log(updatedItems[i]);
-					newGuilds.push(guilds().find((guild) => guild.properties.id === updatedItems[i]));
+					newItems.push(items().find((item) => item.id === updatedItems[i]));
 				}
+				setItems(newItems);
+				const newGuilds = [];
+				for (let i = 0; i < newItems.length; i++) {
+					newGuilds.push(newItems[i].guild);
+				}
+
 				AppState.setUserGuilds(newGuilds);
 			}
 		}
 	};
 
-	//TODO: Switch friends tab to use the guild component
 	return (
 		<DragDropProvider onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetector={closestCenter}>
 			<DragDropSensors />
 			<nav class={[props.className, style.guildList].join(' ')}>
-				<ul>
+				<ol>
 					<FriendsTab />
 					<li class={style.divider} />
 					<SortableProvider ids={ids()}>
-						<For each={guilds()}>{(guild) => <Guild guild={guild} />}</For>
+						<For each={items()}>{(item) => <Guild guild={item.guild} id={item.id} />}</For>
 					</SortableProvider>
-				</ul>
+				</ol>
 			</nav>
+
 			<DragOverlay>
-				<div class={style.guild}>{activeItem()}</div>
+				<GuildShadow guild={items().find((x) => x.id == activeItemId())?.guild} />
 			</DragOverlay>
 		</DragDropProvider>
 	);

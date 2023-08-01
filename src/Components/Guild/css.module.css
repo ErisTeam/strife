@@ -4,6 +4,7 @@
 	padding: 0.5em;
 	position: relative;
 	aspect-ratio: 1/1;
+	user-select: none;
 
 	height: fit-content;
 

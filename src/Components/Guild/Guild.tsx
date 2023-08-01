@@ -1,5 +1,5 @@
 // SolidJS
-import { Show, onCleanup, onMount } from 'solid-js';
+import { Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
@@ -13,26 +13,32 @@ import { useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
 import { Guild as TGuild } from '../../discord';
+
 interface GuildProps {
 	// index: number;
 	className?: string;
-	guild: TGuild;
+	guild?: TGuild;
+	id?: number;
 }
 
 const Guild = (props: GuildProps) => {
-	const [state] = useDragDropContext();
-	const sortable = createSortable(props.guild.properties.id);
 	const AppState = useAppState();
 	const [t] = useTrans();
 
 	let toolTipRef: HTMLElement;
 	let ref: HTMLLIElement;
+	const sortable = createSortable(props.id);
+	const [state, actions] = useDragDropContext();
 
 	function updateRelativeYPositon() {
 		console.log('updating relative position');
 		const boundingRect = ref.getBoundingClientRect();
 		toolTipRef.style.top = `${boundingRect.top + window.scrollY + boundingRect.height / 2}px`;
 	}
+
+	onCleanup(() => {
+		ref.parentElement.parentElement.removeEventListener('scroll', updateRelativeYPositon);
+	});
 	onMount(() => {
 		const boundingRect = ref.getBoundingClientRect();
 		updateRelativeYPositon();
@@ -40,8 +46,8 @@ const Guild = (props: GuildProps) => {
 
 		ref.parentElement.parentElement.addEventListener('scroll', updateRelativeYPositon);
 	});
-	onCleanup(() => {
-		ref.parentElement.parentElement.removeEventListener('scroll', updateRelativeYPositon);
+	actions.onDragEnd(() => {
+		updateRelativeYPositon();
 	});
 
 	return (
