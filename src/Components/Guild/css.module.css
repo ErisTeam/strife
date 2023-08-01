@@ -1,5 +1,5 @@
 .guild {
-	width: 100%;
+	width: 4em;
 	display: flex;
 	padding: 0.5em;
 	position: relative;
@@ -112,4 +112,16 @@
 		margin-bottom: 0.4em;
 		height: 2px;
 	}
+}
+.opacity {
+	opacity: 0.25;
+}
+.transform {
+	transition-property:
+		transform,
+		-webkit-transform;
+
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+	transition-duration: 0.15s;
 }

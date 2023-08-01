@@ -33,7 +33,10 @@ const GuildList = (props: GuildListProps) => {
 	const ids = () => guilds().map((guild) => guild.properties.id);
 	// const [items, setItems] = createSignal([1, 2, 3]);
 	// const ids = () => items();
-	const onDragStart = ({ draggable }) => setActiveItem(draggable.id);
+	const onDragStart = ({ draggable }) => {
+		setActiveItem(draggable.id);
+		console.log(activeItem());
+	};
 
 	const onDragEnd = ({ draggable, droppable }) => {
 		if (draggable && droppable) {
@@ -53,15 +56,7 @@ const GuildList = (props: GuildListProps) => {
 			}
 		}
 	};
-	{
-		/* 
-	
-	<div class="column self-stretch">
-		
-	</div>
 
-; */
-	}
 	//TODO: Switch friends tab to use the guild component
 	return (
 		<DragDropProvider onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetector={closestCenter}>
@@ -76,7 +71,7 @@ const GuildList = (props: GuildListProps) => {
 				</ul>
 			</nav>
 			<DragOverlay>
-				<div class="sortable">{activeItem()}</div>
+				<div class={style.guild}>{activeItem()}</div>
 			</DragOverlay>
 		</DragDropProvider>
 	);
