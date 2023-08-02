@@ -115,18 +115,18 @@
 	}
 }
 .list {
+	height: 100%;
 	& > ol {
 		padding: 0 0.5em;
-		overflow-y: scroll;
+
 		height: 100%;
 
 		scrollbar-gutter: stable;
 	}
 	border-bottom-left-radius: var(--round-large);
+	border-top-left-radius: var(--round-large);
 
 	background-color: var(--channel-list-bgc);
-
-	overflow: hidden;
 
 	position: relative;
 }

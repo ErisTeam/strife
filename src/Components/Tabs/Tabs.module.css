@@ -2,6 +2,8 @@
 	height: 3em;
 	max-width: 100%;
 	overflow-x: scroll;
+	background-color: var(--tabs-bgc);
+	border-top-left-radius: var(--round-large);
 
 	ul {
 		padding: 0 0.2em;

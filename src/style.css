@@ -144,6 +144,9 @@ pre {
 	--default-font: 'Atkinson Hyperlegible', sans-serif;
 
 	--drop-shadow: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
+	/* WINDOW DECORATIONS */
+	--window-decoration-height: 1.25em;
+	--window-decoration-bgc: var(--depth0);
 
 	/* LOGIN PANEL */
 	--MFA-bgc: var(--depth2);
@@ -157,7 +160,7 @@ pre {
 
 	/* GUILDS  */
 	/* --guilds-scale:1rem;  doesnt work currently*/
-	--guilds-bgc: transparent;
+	--guilds-bgc: var(--depth0);
 	--guilds-fallback-bgc: var(--depth2);
 	--guilds-divider-color: var(--depth3);
 	--guilds-tooltip-bgc: var(--depth2);
@@ -188,14 +191,15 @@ pre {
 	--friend-list-separator: var(--depth3);
 
 	/* CONTROL PANEL */
-	--control-panel-bgc: transparent;
+	--control-panel-bgc: var(--depth0);
 	--control-panel-hover-bgc: var(--depth1);
 	--control-panel-text: var(--text);
 	--control-panel-text-secondary: var(--disabled-text);
 	--control-panel-roundness: 16px;
 
 	/* TABS */
-	--tab-bgc: var(--depth1);
+	--tabs-bgc: var(--depth1);
+	--tab-bgc: var(--depth2);
 	--tab-text: var(--text);
 	--tab-active-bgc: var(--primary);
 

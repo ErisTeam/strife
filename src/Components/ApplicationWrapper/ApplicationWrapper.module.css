@@ -1,6 +1,7 @@
 .wrapper {
 	width: 100vw;
-	height: 100vh;
+	height: calc(100vh - var(--window-decoration-height));
+	background-color: var(--depth0);
 	display: flex;
 	flex-direction: column;
 
@@ -19,7 +20,8 @@
 			height: 100%;
 			max-width: 80%;
 			min-width: 10%;
-			overflow: hidden;
+			max-height: 100%;
+			overflow-y: scroll;
 		}
 		.inner {
 			height: 100%;
