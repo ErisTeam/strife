@@ -1,20 +1,20 @@
-import { JSX, children } from 'solid-js';
+import { JSX } from 'solid-js';
 
 import style from './SplashText.module.css';
 
-interface Props {
+type Props = {
 	children: JSX.Element;
 	text: string;
 	settings?: Settings;
-}
+};
 
-interface Settings {
+type Settings = {
 	noWrap?: boolean;
 	color?: string;
-}
+};
 
 export default (props: Props) => {
-	let s: JSX.CSSProperties = {};
+	const s: JSX.CSSProperties = {};
 	if (props.settings?.color) {
 		s['color'] = props.settings.color;
 	}

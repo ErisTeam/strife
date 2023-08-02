@@ -1,67 +1,77 @@
 // API
-import { useNavigate, useParams } from '@solidjs/router';
-import API from '../../API';
+import { useNavigate } from '@solidjs/router';
 import { Channel as ChannelType } from '../../discord';
 
 // Style
 import style from './css.module.css';
 import { useAppState } from '../../AppState';
-import { Tab } from '../../types';
+import { TextChannelTab } from '../../types';
 import { CONSTANTS } from '../../Constants';
-import { createMemo, createSignal, getOwner } from 'solid-js';
-import ContextMenu, { useMenu } from '../ContextMenu/ContextMenu';
+import { Component, JSX, Match, Switch, createMemo, createSignal } from 'solid-js';
+
 import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
 import { Volume2 } from 'lucide-solid';
+import { createContextMenu } from '../ContextMenuNew/ContextMenu';
+import Chat from '../Messages/Chat';
+import { Dynamic } from 'solid-js/web';
 
 interface ChannelProps {
 	data: ChannelType;
 }
 
-const Channel = (props: ChannelProps) => {
+export default (props: ChannelProps) => {
 	const AppState = useAppState();
-	const navigate = useNavigate();
-	const params = useParams();
-	const href = `/app/${props.data.guild_id}/${props.data.id}`;
-	const guild = AppState.userGuilds.find((g) => g.properties.id === props.data.guild_id);
-	const tab: Tab = {
-		guildId: props.data.guild_id,
-		channelId: props.data.id,
-		channelName: props.data.name,
-		channelType: props.data.type,
-		guildIcon: guild.properties.icon,
-		guildName: guild.properties.name,
-	};
+	// const guild = AppState.userGuilds.find((g) => g.properties.id === props.data.guild_id);
+
 	const [displayName, setDisplayName] = createSignal(props.data.name);
 
-	function handleClick(e: MouseEvent) {
-		console.log('clicked on', props.data.name, href);
+	const contextMenu = createContextMenu({ component: [OpenInNewTab], data: { channel: props.data } });
+
+	function onMouseDown(e: MouseEvent) {
+		e.preventDefault();
+		console.log('clicked on', props.data.name, e.button, AppState);
+		const tabS = AppState.Tabs.tabs.find(
+			(t: any) => t.type === 'textChannel' && t.tabData?.channelId === props.data.id,
+		);
+		console.log('tabS', tabS);
+		const tab: TextChannelTab = {
+			type: 'textChannel',
+			component: Chat,
+			title: props.data.name,
+			icon: channelIcon(),
+			tabData: {
+				channelId: props.data.id,
+				guildId: props.data.guild_id,
+			},
+		};
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
-				if (AppState.tabs.find((t: Tab) => t.channelId === props.data.id)) {
-					navigate(href);
+				console.log('tabS', tabS);
+				if (tabS) {
+					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
 					return;
 				}
-				if (AppState.tabs.length === 0) {
-					API.addTab(tab);
-					navigate(href);
-					return;
+				if (AppState.Tabs.currentTab() != -1) {
+					console.log(tab);
+					AppState.Tabs.replaceTab(AppState.Tabs.currentTab(), tab);
 				} else {
-					API.replaceCurrentTab(tab, params.channelId);
-					navigate(href);
+					AppState.Tabs.addTab(tab, true);
+					console.log(AppState.Tabs.currentTab());
 				}
 				break;
 			case 1:
 				console.log('middle click', e.button);
-
-				API.addTab(tab);
-
-				navigate(href);
+				if (tabS) {
+					console.error('Tab already exists!');
+					return;
+				}
+				AppState.Tabs.addTab(tab);
 				break;
 		}
 	}
 
-	const chosenIcon = createMemo(() => {
+	const channelIcon = createMemo((): string | Component => {
 		//extract emoji from name
 		const emoji = props.data.name.match(/\p{Extended_Pictographic}/gu);
 		if (emoji) {
@@ -74,7 +84,7 @@ const Channel = (props: ChannelProps) => {
 			case CONSTANTS.GUILD_TEXT:
 				return '#';
 			case CONSTANTS.GUILD_VOICE:
-				return <Volume2 />;
+				return Volume2;
 			case CONSTANTS.GUILD_CATEGORY:
 				return '📁';
 			case CONSTANTS.GUILD_ANNOUNCEMENT:
@@ -85,26 +95,27 @@ const Channel = (props: ChannelProps) => {
 				return '📰';
 			case CONSTANTS.GUILD_STAGE_VOICE:
 				return '🎤';
+			default:
+				return '❓';
 		}
 	});
 
 	let openRef;
 	return (
-		<li class={style.channel} ref={openRef}>
-			<button
-				onMouseDown={(e) => {
-					e.preventDefault();
-					handleClick(e);
-				}}
-			>
-				<div class={style.channelIcon}>{chosenIcon()}</div>
-				<span>{displayName()}</span>
-			</button>
-			<ContextMenu data={{ channel: props.data }} openRef={openRef}>
-				<OpenInNewTab />
-			</ContextMenu>
-		</li>
+		<>
+			<li class={style.channel} ref={openRef} use:contextMenu>
+				<button onMouseDown={onMouseDown}>
+					<div class={style.channelIcon}>
+						<Switch>
+							<Match when={typeof channelIcon() === 'function'}>
+								<Dynamic component={channelIcon()}></Dynamic>
+							</Match>
+							<Match when={typeof channelIcon() === 'string'}>{channelIcon() as string}</Match>
+						</Switch>
+					</div>
+					<span title={displayName()}>{displayName()}</span>
+				</button>
+			</li>
+		</>
 	);
 };
-
-export default Channel;

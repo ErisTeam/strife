@@ -3,6 +3,7 @@
 import { Show } from 'solid-js';
 import style from './css.module.css';
 
+//TODO: Remove or move
 interface UserData {
 	user_id: any | null;
 	discriminator: any | null;
@@ -10,7 +11,7 @@ interface UserData {
 	avatar_hash: any | null;
 }
 
-interface QRCodeProps {
+type QRCodeProps = {
 	qrcode_src: string;
 	header: string;
 	paragraph: string;
@@ -19,7 +20,7 @@ interface QRCodeProps {
 	user_data?: UserData;
 
 	fallback_src?: string;
-}
+};
 
 function QRCode(prop: QRCodeProps) {
 	return (

@@ -1,17 +1,17 @@
 // API
-import { JSX, children, createSignal } from 'solid-js';
+import { JSX, createSignal } from 'solid-js';
 import { Channel as ChannelType } from '../../discord';
 import { ChevronDown } from 'lucide-solid';
 // Components
 // Style
 import style from './css.module.css';
 
-interface ChannelCategoryProps {
+type ChannelCategoryProps = {
 	id: string;
 	className?: string;
 	data: ChannelType;
 	children: JSX.Element[];
-}
+};
 
 const ChannelCategory = (props: ChannelCategoryProps) => {
 	const [isExpanded, setIsExpanded] = createSignal(true);

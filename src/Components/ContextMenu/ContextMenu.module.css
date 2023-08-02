@@ -13,3 +13,8 @@
 		transform: scaleY(100%);
 	}
 }
+.contextMenuContainer {
+	z-index: 900000;
+	position: relative;
+	overflow: visible;
+}

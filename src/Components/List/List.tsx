@@ -1,10 +1,10 @@
 import style from './List.module.css';
-import { JSX, children } from 'solid-js';
-interface ListProps {
+import { JSX } from 'solid-js';
+type ListProps = {
 	title: string;
 	className?: string;
 	children?: JSX.Element | JSX.Element[];
-}
+};
 export default (props: ListProps) => {
 	return (
 		<nav class={[props.className, style.list].join(' ')}>

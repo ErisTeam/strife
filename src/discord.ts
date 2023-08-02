@@ -18,7 +18,7 @@ type RelationshipUser = {
 	public_flags: number;
 };
 
-declare enum RelationshipType {
+enum RelationshipType {
 	Friend = 1,
 	Block = 2,
 	IncomingFriendRequest = 3,
@@ -78,7 +78,7 @@ type Guild = {
 
 type Channel = {
 	id: string;
-	type: (typeof CONSTANTS.CHANNEL_TYPES)[keyof typeof CONSTANTS.CHANNEL_TYPES];
+	type: ChannelType;
 	guild_id: string; // if it's a dm channel, set to @me
 	position: number;
 	permission_overwrites?: any[];
@@ -114,22 +114,20 @@ type Channel = {
 };
 type Sticker = {};
 
-export const CONSTANTS = {
-	CHANNEL_TYPES: {
-		GUILD_TEXT: 0,
-		DM: 1,
-		GUILD_VOICE: 2,
-		GROUP_DM: 3,
-		GUILD_CATEGORY: 4,
-		GUILD_ANNOUNCEMENT: 5,
-		ANNOUNCEMENT_THREAD: 10,
-		PUBLIC_THREAD: 11,
-		PRIVATE_THREAD: 12,
-		GUILD_STAGE_VOICE: 13,
-		GUILD_DIRECTORY: 14,
-		GUILD_FORUM: 15,
-	},
-};
+export enum ChannelType {
+	GuildText = 0,
+	DirectMessage = 1,
+	GuildVoice = 2,
+	GroupDM = 3,
+	GuildCategory = 4,
+	GuildAnnouncement = 5,
+	AnnouncementThread = 10,
+	PublicThread = 11,
+	PrivateThread = 12,
+	GuildStageVoice = 13,
+	GuildDirectory = 14,
+	GuildForum = 15,
+}
 
 type Message = {
 	id: Required<string>;

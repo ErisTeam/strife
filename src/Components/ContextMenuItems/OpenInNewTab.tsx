@@ -9,12 +9,13 @@ export default () => {
 	return (
 		<button
 			onclick={() => {
-				const [result, tab] = API.Tabs.addNewTab(menu.channel, navigate);
-				if (API.Tabs.addNewTab(menu.channel, navigate)[0] == 1) {
+				console.log('open in new tab');
+				const [, tab] = API.Tabs.addNewTab(menu.channel, navigate);
+				if (API.Tabs.addNewTab(menu.channel, navigate)[0] == 'alreadyexists') {
 					API.Tabs.openTab(tab, navigate);
 				}
 
-				menu.closeMenu();
+				//menu.closeMenu();
 			}}
 		>
 			Open in new tab

@@ -5,7 +5,7 @@ use tauri::State;
 
 use crate::{
 	main_app_state::MainState,
-	discord::types::{ user::CurrentUser, gateway::packets_data::VoiceStateUpdateSend },
+	discord::types::{ user::CurrentUser, gateway::gateway_packets_data::VoiceStateUpdateSend },
 };
 
 #[tauri::command]
@@ -80,3 +80,42 @@ pub async fn send_voice_state_update(
 }
 
 //TODO: make all main_app events commands
+///TEMPORARY COMMAND
+#[tauri::command]
+pub async fn start_voice_gateway(
+	handle: tauri::AppHandle,
+	user_id: String,
+	guild_id: String,
+	endpoint: String,
+	session_id: String,
+	voice_token: String,
+	state: State<'_, Arc<MainState>>
+) -> std::result::Result<(), String> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().expect("Not in main app");
+	debug!("Starting voice gateway");
+	main_app
+		.start_voice_gateway(handle, user_id, guild_id, endpoint, session_id, voice_token).await
+		.map_err(|e| e.to_string())?;
+	debug!("Started voice gateway");
+	Ok(())
+}
+///TEMPORARY COMMAND
+#[tauri::command]
+pub async fn send_to_voice_gateway(
+	packet: String,
+	state: State<'_, Arc<MainState>>
+) -> std::result::Result<(), String> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().expect("Not in main app");
+
+	let voice_gateway = main_app.voice_gateway.write().await;
+	if let Some(voice_gateway) = voice_gateway.as_ref() {
+		voice_gateway
+			.send_message(crate::modules::main_app::VoiceGatewayMessages::Packet(packet)).await
+			.map_err(|e| e.to_string())?;
+	} else {
+		return Err("No voice gateway".into());
+	}
+	Ok(())
+}

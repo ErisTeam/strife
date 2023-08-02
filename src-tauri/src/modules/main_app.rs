@@ -1,17 +1,24 @@
 use std::collections::HashMap;
 use std::sync::{ Arc, Weak };
 
+use futures_util::future::ok;
 use log::{ debug, error, warn };
 use tauri::{ AppHandle, Manager };
 use tokio::runtime::Handle;
 use tokio::sync::RwLock;
 
 use crate::discord::gateway_packets::DispatchedEvents;
-use crate::discord::types::gateway::packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate };
+use crate::discord::types::gateway::gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate };
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
 use super::gateway::{ Gateway, Messages };
+use super::voice_gateway::VoiceGateway;
+#[derive(Debug)]
+pub enum VoiceGatewayMessages {
+	//TODO: add voice gateway messages
+	Packet(String),
+}
 
 /// Messages send from gateway
 #[derive(Debug)]
@@ -80,11 +87,14 @@ impl ActivationState {
 #[derive(Debug)]
 pub struct MainApp {
 	pub users: RwLock<HashMap<String, ActivationState>>,
+
+	pub voice_gateway: Arc<RwLock<Option<VoiceGateway>>>,
 }
 impl MainApp {
 	pub fn new() -> Self {
 		Self {
 			users: RwLock::new(HashMap::new()),
+			voice_gateway: Arc::new(RwLock::new(None)),
 		}
 	}
 
@@ -94,6 +104,24 @@ impl MainApp {
 			return Some(user.clone());
 		}
 		None
+	}
+
+	pub async fn start_voice_gateway(
+		&self,
+		handle: AppHandle,
+		user_id: String,
+		guild_id: String,
+		endpoint: String,
+		session_id: String,
+		voice_token: String
+	) -> crate::Result<()> {
+		let mut voice_gateway = VoiceGateway::new();
+		let (sender, receiver) = tokio::sync::mpsc::channel::<VoiceGatewayMessages>(5);
+		voice_gateway.start(endpoint, handle, sender, voice_token, guild_id, user_id, session_id).await?;
+		let mut v = self.voice_gateway.write().await;
+		*v = Some(voice_gateway);
+
+		Ok(())
 	}
 
 	pub async fn activate_user(&self, handle: AppHandle, token: String) -> Result<Arc<tokio::sync::Notify>> {

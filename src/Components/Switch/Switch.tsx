@@ -3,11 +3,11 @@
 import style from './Switch.module.css';
 import './Switch.module.css';
 
-interface SwitchProps {
+type SwitchProps = {
 	disabled?: boolean;
 
-	onChange?: (e: any) => void;
-}
+	onChange?: (e: Event) => void;
+};
 
 function Switch(prop: SwitchProps) {
 	return (

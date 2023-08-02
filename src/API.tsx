@@ -8,45 +8,51 @@ import { Tab } from './types';
 import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
-import { Navigator, useNavigate } from '@solidjs/router';
-import { Owner, runWithOwner } from 'solid-js';
+import { Navigator } from '@solidjs/router';
 
 const AppState = useAppState();
 
 export default {
 	Tabs: {
 		openTab(tab: Tab, navigator: Navigator) {
-			navigator(`/app/${tab.guildId}/${tab.channelId}`);
+			//navigator(`/app/${tab.guildId}/${tab.channelId}`);
 		},
-		addNewTab(channel: Channel, navigator?: Navigator): [number, Tab?] {
-			const t = AppState.tabs.find((tab) => tab.channelId == channel.id);
-			if (t) {
-				console.log('tab already exists');
-				return [1, t];
-			}
+		addNewTab(channel: Channel, navigator?: Navigator): ['alreadyexists' | 'guildnotfound' | null, Tab?] {
+			return ['guildnotfound'];
+			// const t = AppState.Tabs.find((tab) => tab.channelId == channel.id);
+			// if (t) {
+			// 	console.log('tab already exists');
+			// 	return ['alreadyexists', t];
+			// }
 
-			console.log('channel', channel);
-			const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
+			// console.log('channel', channel);
+			// const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
 
-			if (!guild) {
-				console.error('Guild not found!');
-				return [2];
-			}
-			const tab: Tab = {
-				guildId: channel.guild_id,
-				channelId: channel.id,
-				channelName: channel.name,
-				channelType: channel.type,
-				guildIcon: guild.properties.icon,
-				guildName: guild.properties.name,
-			};
+			// if (!guild) {
+			// 	console.error('Guild not found!');
+			// 	return ['guildnotfound'];
+			// }
+			// const tab: Tab = {
+			// 	guildId: channel.guild_id,
+			// 	channelId: channel.id,
+			// 	channelName: channel.name,
+			// 	channelType: channel.type,
+			// 	guildIcon: guild.properties.icon,
+			// 	guildName: guild.properties.name,
+			// };
 
-			AppState.setTabs(produce((tabs) => tabs.push(tab)));
-			console.log(AppState.tabs);
-			if (navigator) {
-				this.openTab(tab, navigator);
-			}
-			return [0, tab];
+			// AppState.setTabs(produce((tabs) => tabs.push(tab)));
+			// console.log(AppState.Tabs);
+			// if (navigator) {
+			// 	this.openTab(tab, navigator);
+			// }
+			// return [null, tab];
+		},
+	},
+
+	Voice: {
+		async joinVoiceChannel(guildId: string, channelId: string) {
+			//TODO: implement voice
 		},
 	},
 
@@ -71,9 +77,11 @@ export default {
 		return (await res).data.guilds;
 	},
 
-	async getUserInfo(userId: string = AppState.userId()) {
+	async getLocalUserInfo(userId: string = AppState.userId()) {
 		return (await invoke('get_user_info', { userId })) as any;
 	},
+
+	async getUserInfoNoFetch(userId: string) {},
 
 	/**
 	 * Get messages of the given channel.
@@ -250,31 +258,28 @@ export default {
 	},
 
 	addTab(tab: Tab) {
-		if (AppState.tabs.find((t) => t.channelId == tab.channelId)) {
-			console.error('tab already exists');
-			return;
-		}
-
-		AppState.setTabs([...AppState.tabs, tab]);
-		console.log(AppState.tabs);
+		// if (AppState.Tabs.find((t) => t.channelId == tab.channelId)) {
+		// 	console.error('tab already exists');
+		// 	return;
+		// }
+		// AppState.setTabs([...AppState.Tabs, tab]);
+		// console.log(AppState.Tabs);
 	},
 	removeTab(tabIndex: number) {
-		console.log('removing tab', tabIndex);
-		AppState.setTabs(produce((draft) => draft.splice(tabIndex, 1)));
+		// console.log('removing tab', tabIndex);
+		// AppState.setTabs(produce((tabs) => tabs.tabs.splice(tabIndex, 1)));
 	},
 
 	replaceCurrentTab(tab: Tab, currentChannelId: string) {
-		const currentTabIndex = AppState.tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
-
-		if (!(currentTabIndex + 1)) {
-			console.error('Current tab not found!');
-			console.log(AppState.tabs);
-			console.log(currentChannelId);
-			return;
-		}
-
-		console.warn('replacing tab with index', currentTabIndex, 'with');
-		AppState.setTabs(currentTabIndex, tab);
+		// const currentTabIndex = AppState.Tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
+		// if (!(currentTabIndex + 1)) {
+		// 	console.error('Current tab not found!');
+		// 	console.log(AppState.Tabs);
+		// 	console.log(currentChannelId);
+		// 	return;
+		// }
+		// console.warn('replacing tab with index', currentTabIndex, 'with');
+		// AppState.setTabs(currentTabIndex, tab);
 	},
 	getInitials(input: string): string {
 		return input

@@ -167,7 +167,7 @@ pub struct ChannelMentionObject {
 #[repr(u8)]
 pub enum ChannelType {
 	GuildText = 0,
-	DM = 1,
+	DirectMessage = 1,
 	GuildVoice = 2,
 	GroupDM = 3,
 	GuildCategory = 4,

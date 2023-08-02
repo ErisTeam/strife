@@ -1,10 +1,10 @@
 import { ChevronDown } from 'lucide-solid';
-import { Channel, Guild } from '../../discord';
+import { Guild } from '../../discord';
 import style from './css.module.css';
 import { createSignal } from 'solid-js';
-interface GuildTitleProps {
+type GuildTitleProps = {
 	guild: Guild;
-}
+};
 function ChannelTitle(props: GuildTitleProps) {
 	const [isFolded, setFolded] = createSignal(true);
 	const listElements = 14;

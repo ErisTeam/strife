@@ -98,7 +98,7 @@ pub struct SessionReplaceData {
 	client_info: serde_json::Value,
 	activities: Vec<serde_json::Value>,
 }
-pub mod packets_data {
+pub mod gateway_packets_data {
 	use serde::{ Deserialize, Serialize };
 
 	use crate::discord::types::{
@@ -164,6 +164,15 @@ pub mod packets_data {
 		pub activities: bool,
 		pub typing: bool,
 	}
+
+	#[derive(Serialize, Debug, Clone)]
+	pub struct Resume {
+		token: String,
+		session_id: String,
+		#[serde(rename = "seq")]
+		last_seq: u64,
+	}
+
 	#[derive(Serialize, Debug, Clone)]
 	pub struct VoiceStateUpdateSend {
 		pub guild_id: String,
@@ -294,5 +303,67 @@ pub mod packets_data {
 		pub analytics_token: String,
 
 		pub private_channels: Vec<serde_json::Value>,
+	}
+}
+pub mod voice_gateway_packets_data {
+	use serde::{ Deserialize, Serialize };
+
+	#[derive(Deserialize, Debug)]
+	pub struct Hello {
+		pub heartbeat_interval: u64,
+	}
+
+	#[derive(Serialize, Debug)]
+	pub struct Identify {
+		#[serde(rename = "server_id")]
+		pub guild_id: String,
+		pub user_id: String,
+		pub session_id: String,
+		#[serde(rename = "token")]
+		pub voice_token: String,
+	}
+
+	#[derive(Deserialize, Serialize, Debug, Clone)]
+	pub struct Ready {
+		ssrc: u64,
+		ip: String,
+		port: u64,
+		modes: Vec<String>,
+		experiments: Vec<String>,
+	}
+
+	#[derive(Serialize, Debug)]
+	pub struct Heartbeat {
+		pub nonce: u64,
+	}
+	#[derive(Deserialize, Debug)]
+	pub struct HeartbeatAck {
+		nonce: u64,
+	}
+	#[derive(Serialize, Debug)]
+	pub struct SelectProtocol {
+		protocol: Protocol,
+		data: SelectProtocolData,
+	}
+
+	#[derive(Serialize, Debug)]
+	#[serde(rename_all = "lowercase")]
+	enum Protocol {
+		Udp,
+		Webrtc,
+	}
+
+	#[derive(Serialize, Debug)]
+	pub struct SelectProtocolData {}
+
+	#[derive(Deserialize, Debug)]
+	pub struct UserInfo {
+		user_id: String,
+		flags: u64,
+	}
+	#[derive(Deserialize, Debug)]
+	pub struct UserInfo2 {
+		user_id: String,
+		platform: u64,
 	}
 }

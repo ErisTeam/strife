@@ -113,6 +113,8 @@ async fn main() {
 				commands::main_app::activate_user,
 				commands::main_app::get_user_info,
 				commands::main_app::send_voice_state_update,
+				commands::main_app::start_voice_gateway,
+				commands::main_app::send_to_voice_gateway,
 				test
 			]
 		)

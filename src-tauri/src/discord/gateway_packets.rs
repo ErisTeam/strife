@@ -3,7 +3,7 @@ use serde::{ Deserialize, Serialize };
 use serde_repr::Deserialize_repr;
 
 use super::types::gateway::{
-	packets_data::{
+	gateway_packets_data::{
 		Ready,
 		Heartbeat,
 		Identify,
@@ -16,6 +16,7 @@ use super::types::gateway::{
 		VoiceStateUpdateSend,
 		VoiceServerUpdate,
 		VoiceStateUpdate,
+		Resume,
 	},
 	SessionReplaceData,
 };
@@ -34,6 +35,10 @@ pub enum OutGoingPacketsData {
 	/// opcode: `14`
 	#[allow(unused)]
 	LazyGuilds(LazyGuilds),
+
+	///Resume a previous session that was disconnected.
+	/// opcode: `6`
+	Resume(Resume),
 
 	///TODO: Description
 	/// opcode: `4`
@@ -145,6 +150,10 @@ pub enum IncomingPacketsData {
 	/// opcode: `11`
 	HeartbeatAck,
 
+	///You should attempt to reconnect and resume immediately.
+	/// opcode: `6`
+	Reconnect,
+
 	///Event dispatched by Discord<br>
 	/// opcode: `0`
 	DispatchedEvent(DispatchedEvents),
@@ -156,6 +165,7 @@ impl ToString for IncomingPacketsData {
 			IncomingPacketsData::Heartbeat(_) => "Heartbeat".to_string(),
 			IncomingPacketsData::HeartbeatAck => "HeartbeatAck".to_string(),
 			IncomingPacketsData::DispatchedEvent(d) => d.to_string(),
+			IncomingPacketsData::Reconnect => "Reconnect".to_string(),
 		}
 	}
 }
@@ -175,9 +185,9 @@ pub enum OpCode {
 	//Used to join/leave or move between voice channels.
 	VoiceStateUpdate = 4,
 	///Resume a previous session that was disconnected.
-	Resume = 5,
+	Resume = 6,
 	///You should attempt to reconnect and resume immediately.
-	Reconnect = 6,
+	Reconnect = 7,
 	///Request information about offline guild members in a large guild.
 	RequestGuildMembers = 8,
 	///The session has been invalidated. You should reconnect and identify/resume accordingly.
@@ -325,6 +335,7 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 					serde_json::from_value(inner.d).map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?
 				),
 			OpCode::HeartbeatAck => IncomingPacketsData::HeartbeatAck,
+			OpCode::Reconnect => IncomingPacketsData::Reconnect,
 			a => {
 				debug!("Unknown OpCode: {:?}", a);
 				return Err(serde::de::Error::custom(format!("Unknown OpCode: {:?}", a)));
@@ -337,4 +348,77 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 			data: packet_data,
 		})
 	}
+}
+
+pub enum ErrorCodes {
+	///	We're not sure what went wrong. Try reconnecting?
+	///
+	/// reconnect: true
+	UnknownError = 4000,
+	/// You sent an invalid [`Gateway opcode`] or an invalid payload for an opcode. Don't do that!
+	///
+	/// reconnect: true
+	///
+	/// [`Gateway opcode`]: self::OpCode
+	UnknownOpCode = 4001,
+
+	///You sent an invalid [`payload`] to Discord. Don't do that!
+	///
+	/// reconnect: true
+	///
+	/// [`payload`]: self::OutGoingPacketsData
+	DecodeError = 4002,
+
+	///You sent us a payload prior to [`identifying`].
+	///
+	/// reconnect: true
+	///
+	/// [`identifying`]: self::OutGoingPacketsData#variant.Identify
+	NotAuthenticated = 4003,
+
+	///	The account token sent with your [`identify payload`] is incorrect.
+	///
+	/// reconnect: false
+	///
+	/// [`identify payload`]: self::OutGoingPacketsData#variant.Identify
+	AuthenticationFailed = 4004,
+
+	///You sent more than one [`identify payload`]. Don't do that!
+	///
+	/// reconnect: true
+	///
+	/// [`identify payload`]: self::OutGoingPacketsData#variant.Identify
+	AlreadyAuthenticated = 4005,
+
+	///The sequence sent when [`resuming`] the session was invalid. Reconnect and start a new session.
+	///
+	/// reconnect: true
+	///
+	/// [`resuming`]: self::OutGoingPacketsData#variant.Resume
+	InvalidSequence = 4007,
+
+	///Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+	///
+	/// reconnect: true
+	RateLimited = 4008,
+
+	///Your session timed out. Reconnect and start a new one.
+	///
+	/// reconnect: true
+	SessionTimedOut = 4009,
+
+	///You sent an invalid version for the gateway.
+	///
+	/// reconnect: false
+	InvalidApiVersion = 4012,
+
+	///You sent an invalid intent for a `Gateway Intent`. You may have incorrectly calculated the bitwise value.
+	///
+	/// reconnect: false
+	InvalidIntent = 4013,
+
+	///You sent a disallowed intent for a `Gateway Intent`. You may have tried to specify an intent that you have not enabled or are not whitelisted for.
+	///
+	/// reconnect: false
+	DisallowedIntent = 4014,
 }

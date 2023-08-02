@@ -1,8 +1,8 @@
 import { JSX } from 'solid-js';
 import style from './Loading.module.css';
-interface Props {
+type Props = {
 	message?: JSX.Element;
-}
+};
 export default (props: Props) => {
 	return (
 		<div class={style.main}>

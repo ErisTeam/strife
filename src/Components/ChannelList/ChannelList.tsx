@@ -1,26 +1,25 @@
 // SolidJS
-import { createSignal, onMount, For, createEffect, Show, JSXElement, JSX, createMemo } from 'solid-js';
+import { JSX, createMemo, onCleanup, onMount } from 'solid-js';
 
 // API
 import { useAppState } from '../../AppState';
-``;
-import Relationship from '../Friends/Friend';
 // Components
 import ChannelCategory from './ChannelListCategory';
 
 //Style
 import style from './css.module.css';
-import Channel from './ChannelListElement';
-import { Guild } from '../../discord';
-import List from '../List/List';
+import ChannelListElement from './ChannelListElement';
+import { ChannelType, Guild } from '../../discord';
 import ChannelTitle from './ChannelTitle';
 
 interface ChannelListProps {
 	className?: string;
+	guild: Guild;
 }
 
 const ChannelList = (props: ChannelListProps) => {
 	const AppState = useAppState();
+	console.log('test', props);
 
 	const channels = createMemo(() => {
 		console.log('rendering channels');
@@ -28,32 +27,63 @@ const ChannelList = (props: ChannelListProps) => {
 
 		let children: JSX.Element[] = [];
 
-		const currentGuild = AppState.currentGuild() as Guild;
+		const guild = props.guild;
 
-		for (let i = currentGuild.channels.length - 1; i >= 0; i--) {
+		for (let i = guild.channels.length - 1; i >= 0; i--) {
 			//TODO: replace magic number
-			if (currentGuild.channels[i].type === 4) {
+			if (guild.channels[i].type === ChannelType.GuildCategory) {
 				channelsRender.push(
-					<ChannelCategory id={currentGuild.channels[i].id} data={currentGuild.channels[i]}>
+					<ChannelCategory id={guild.channels[i].id} data={guild.channels[i]}>
 						{children}
 					</ChannelCategory>,
 				);
 				children = [];
 			} else {
-				if (currentGuild.channels[i].parent_id) {
-					children.push((<Channel data={currentGuild.channels[i]} />) as Element);
+				if (guild.channels[i].parent_id) {
+					children.push((<ChannelListElement data={guild.channels[i]} />) as Element);
 				} else {
-					channelsRender.push((<Channel data={currentGuild.channels[i]} />) as Element);
+					channelsRender.push((<ChannelListElement data={guild.channels[i]} />) as Element);
 				}
 			}
 		}
 		return channelsRender.reverse();
 	});
 
+	let resizeRef: HTMLDivElement;
+	let startX: number;
+	let startWidth: number;
+
+	function resize(e: MouseEvent) {
+		resizeRef.parentElement.style.width = `${startWidth + (e.clientX - startX)}px`;
+		window.getSelection().removeAllRanges();
+	}
+
+	function startResize(e: MouseEvent) {
+		console.log('start resize');
+		startX = e.clientX;
+
+		startWidth = parseInt(getComputedStyle(resizeRef.parentElement).width, 10);
+		document.addEventListener('mousemove', resize);
+		document.addEventListener('mouseup', stopResize);
+	}
+	function stopResize() {
+		console.log('stop resize');
+		document.removeEventListener('mousemove', resize);
+	}
+
+	onMount(() => {
+		resizeRef.parentElement.style.width = `${parseInt(getComputedStyle(resizeRef.parentElement).width, 10)}px`;
+	});
+
+	onCleanup(() => {
+		document.removeEventListener('mouseup', stopResize);
+	});
+
 	return (
 		<nav class={[props.className, style.list].join(' ')}>
-			<ChannelTitle guild={AppState.currentGuild() as Guild} />
+			<ChannelTitle guild={props.guild} />
 			<ol>{channels()}</ol>
+			<aside onmousedown={startResize} ref={resizeRef} class={style.resize} />
 		</nav>
 	);
 };

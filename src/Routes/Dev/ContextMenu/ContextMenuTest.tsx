@@ -1,9 +1,14 @@
-import { Accessor, Context, JSX, Setter, Show, createContext, createSignal, onMount, useContext } from 'solid-js';
+import { Accessor, Setter, Show, createSignal } from 'solid-js';
 import { Channel, Guild } from '../../../discord';
 import { Portal } from 'solid-js/web';
 import ContextMenu, { useMenu } from '../../../Components/ContextMenu/ContextMenu';
-import { TEST, useAppState } from '../../../AppState';
+
 import SplashText from '../../../Components/Dev/SplashText';
+import {
+	ContextMenusProvider,
+	createContextMenu as createContextMenu,
+} from '../../../Components/ContextMenuNew/ContextMenu';
+import { useAppState } from '../../../AppState';
 
 interface channelContextMenu {
 	channel: Accessor<Channel>;
@@ -26,11 +31,6 @@ function GuildTestElement() {
 function TestElement2() {
 	const appState = useAppState();
 	return <div>userId: {appState.userId()}</div>;
-}
-interface MenuProps {
-	children: JSX.Element[] | JSX.Element;
-	channel: Accessor<Channel>;
-	show: boolean;
 }
 
 function ContextChannel() {
@@ -102,9 +102,56 @@ function ContextGuild() {
 	);
 }
 
+function ContextMenuNewTest() {
+	const [channel, setChannel] = createSignal<Channel>({
+		id: '123467807654',
+		guild_id: '123456789',
+		name: 'test',
+		type: 0,
+		position: 0,
+		permission_overwrites: [],
+		rtc_region: null,
+		parent_id: null,
+		nsfw: false,
+		last_message_id: null,
+		bitrate: 0,
+	});
+	const [name, setName] = createSignal('test');
+
+	function TestElement3() {
+		const context = useMenu<{ name: Accessor<string>; setName: Setter<string> }>();
+		return (
+			<div>
+				{context.name()}
+				<input type="text" value={context.name()} oninput={(e) => context.setName(e.currentTarget.value)} />
+			</div>
+		);
+	}
+
+	const contextMenu = createContextMenu({
+		component: [TestElement3, ChannelTestElement],
+		data: { channel, name, setName },
+	});
+
+	return (
+		<>
+			<button
+				style={{ background: 'green', width: '5rem', height: '5rem' }}
+				oncontextmenu={(e) => {
+					e.preventDefault();
+					contextMenu.toggleVisibility({ x: e.clientX, y: e.clientY });
+				}}
+			>
+				Click here
+			</button>
+		</>
+	);
+}
+
 export default () => {
 	console.log('test');
 
+	const [show, setShow] = createSignal(false);
 	return (
 		<div style={{ display: 'flex', 'flex-direction': 'column', gap: '1rem' }}>
 			<Portal>
@@ -113,9 +160,17 @@ export default () => {
 			Test
 			<ContextGuild />
 			<ContextChannel />
-			<SplashText text="Fix this" settings={{ noWrap: true }}>
-				<div>UserId: {TEST()}</div>
-			</SplashText>
+			<div>
+				<button onclick={() => setShow(!show())}>Toggle</button>
+
+				<SplashText text="New ContextMenu">ContextMenu</SplashText>
+
+				<ContextMenusProvider>
+					<Show when={show()}>
+						<ContextMenuNewTest />
+					</Show>
+				</ContextMenusProvider>
+			</div>
 		</div>
 	);
 };

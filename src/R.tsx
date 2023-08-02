@@ -1,16 +1,16 @@
 import { invoke } from '@tauri-apps/api';
-import { Component, ErrorBoundary, Show, Suspense, createEffect, createResource, createSignal } from 'solid-js';
+import { Component, Show, createEffect, createResource, createSignal } from 'solid-js';
 import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
 import { useTrans } from './Translation';
 import Dev from './Components/Dev/Dev';
 import API from './API';
 
-interface Props {
+type Props = {
 	state: AppState;
 	force?: boolean;
 	component: Component;
-}
+};
 
 const TimeLeft = 10;
 //TODO: change name
@@ -55,7 +55,7 @@ const R = (props: Props) => {
 	return (
 		<>
 			<Dev>
-				<h1>changeState response {a() as any}</h1>
+				<h1>changeState response {a() as string}</h1>
 			</Dev>
 			<Show
 				when={!a.loading && !a.error && error() == null}

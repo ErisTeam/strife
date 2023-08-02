@@ -6,7 +6,10 @@ use serde::{ Deserialize, Serialize };
 
 use crate::discord::types::{
 	guild::PartialGuild,
-	gateway::packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate },
+	gateway::{
+		gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate },
+		voice_gateway_packets_data,
+	},
 	user::CurrentUser,
 };
 pub mod auth {
@@ -108,6 +111,15 @@ pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
 	#[serde(flatten)]
 	pub event: T,
 	pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "type", content = "data")]
+#[serde(rename_all = "camelCase")]
+pub enum VoiceGateway {
+	Ready(voice_gateway_packets_data::Ready),
+
+	Packet(serde_json::Value),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

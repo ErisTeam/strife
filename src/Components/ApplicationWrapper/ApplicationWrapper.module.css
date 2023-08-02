@@ -17,18 +17,20 @@
 		}
 		.channels {
 			height: 100%;
-			max-width: 100%;
-			overflow-y: scroll;
-			resize: horizontal;
-			overflow-x: hidden;
+			max-width: 80%;
+			min-width: 10%;
+			overflow: hidden;
 		}
 		.inner {
 			height: 100%;
-			width: 100%;
-			max-width: 100%;
+			flex: 1 1 auto;
 			display: flex;
 			overflow: hidden;
-			flex-wrap: wrap;
+			flex-direction: column;
+
+			max-width: 100%;
+			min-width: 10%;
+
 			.tabs {
 				width: 100%;
 				overflow-y: hidden;

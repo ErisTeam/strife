@@ -6,10 +6,13 @@ use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex, RwLock } };
 use tokio_tungstenite::{ WebSocketStream, MaybeTlsStream, connect_async_tls_with_config };
 
-use crate::discord::{
-	constants,
-	gateway_packets::{ OutGoingPacket, IncomingPacket },
-	types::gateway::packets_data::{ Identify, LazyGuilds, VoiceStateUpdateSend },
+use crate::{
+	discord::{
+		constants,
+		gateway_packets::{ OutGoingPacket, IncomingPacket },
+		types::gateway::gateway_packets_data::{ Identify, LazyGuilds, VoiceStateUpdateSend },
+	},
+	modules::websocket::WebSocket,
 };
 
 use super::{ main_app::GatewayMessages, gateway_utils::Errors };
@@ -27,12 +30,18 @@ pub struct ConnectionData {
 	sequence_number: Option<u64>,
 
 	token: String,
+
+	is_recconecting: bool,
+
+	resume_url: Option<String>,
 }
 impl ConnectionData {
-	pub fn new(token: String) -> Self {
+	pub fn new(token: String, is_recconecting: bool) -> Self {
 		Self {
 			token,
 			sequence_number: None,
+			resume_url: None,
+			is_recconecting,
 		}
 	}
 }
@@ -40,6 +49,8 @@ impl ConnectionData {
 #[derive(Debug)]
 pub struct Gateway {
 	pub stop_notifyer: Option<Arc<tokio::sync::Notify>>,
+
+	#[deprecated]
 	resume_url: Option<String>,
 
 	message_sender: Option<tokio::sync::mpsc::Sender<Messages>>, //TODO: add type
@@ -55,16 +66,14 @@ impl Gateway {
 		)
 	}
 
-	async fn connect(
-		&self,
-		resume_url: &Option<String>
-	) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>, tokio_tungstenite::tungstenite::Error> {
+	async fn connect(&self, resume_url: &Option<String>) -> crate::Result<Arc<WebSocket>> {
 		let url = if let Some(resume_url) = resume_url {
 			resume_url.clone()
 		} else {
 			constants::GATEWAY_CONNECT.to_string()
 		};
 		println!("Connecting to {}", url);
+
 		// let req = tokio_tungstenite::tungstenite::handshake::client::Request
 		// 	::builder()
 		// 	.method("GET")
@@ -77,35 +86,29 @@ impl Gateway {
 		// 	.body(url.split('/').nth(3).unwrap_or_default().to_string())?
 		// 	.header("Origin", "https://discord.com")
 		// 	.body(())?;
-		let (stream, _) = connect_async_tls_with_config(url, None, false, None).await?;
-		Ok(stream)
+		let websocket = WebSocket::new(url).await?;
+		Ok(Arc::new(websocket))
 	}
 
 	fn create_connection_info(
 		&self,
 		sender: tokio::sync::mpsc::Sender<GatewayMessages>,
 		app_handle: AppHandle,
-		token: String
+		token: String,
+		is_recconecting: bool
 	) -> crate::Result<ConnectionInfo> {
-		Ok(ConnectionInfo::new(ConnectionData::new(token), app_handle, sender))
+		Ok(ConnectionInfo::new(ConnectionData::new(token, is_recconecting), app_handle, sender))
 	}
 
 	async fn logic_thread(
-		mut reader: SplitStream<WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>>,
-		writer: Arc<
-			tokio::sync::Mutex<
-				SplitSink<
-					WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
-					tokio_tungstenite::tungstenite::Message
-				>
-			>
-		>,
+		websocket: Arc<WebSocket>,
 		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		let mut message_buffer = Vec::<u8>::new();
 		let mut decoder = flate2::Decompress::new(true);
+		let reader = websocket.reader().await;
 		loop {
-			let message = reader.next().await.ok_or(Errors::ReadError)??;
+			let message = reader.lock().await.next().await.ok_or(Errors::ReadError)??;
 
 			match message {
 				tokio_tungstenite::tungstenite::Message::Binary(payload) => {
@@ -156,8 +159,6 @@ impl Gateway {
 							connection_info.heartbeat_interval = Duration::from_millis(data.heartbeat_interval);
 							connection_info.start_heartbeat();
 
-							let mut writer = writer.lock().await;
-
 							let p = OutGoingPacket::identify(Identify {
 								token: connection_info.aditional_data.token.clone(),
 								..Default::default()
@@ -165,16 +166,15 @@ impl Gateway {
 							// println!("leaves {:?}", p);
 							// println!("House {:?}", serde_json::to_string(&p)?);
 
-							writer.send(
+							websocket.send(
 								tokio_tungstenite::tungstenite::Message::Text(serde_json::to_string(&p)?)
 							).await?;
 							println!("Identify sent");
 						}
 						crate::discord::gateway_packets::IncomingPacketsData::Heartbeat(_) => {
-							let mut writer = writer.lock().await;
 							let connection_info = connection_info.lock().await;
 
-							writer.send(
+							websocket.send(
 								tokio_tungstenite::tungstenite::Message::Text(
 									serde_json::to_string(
 										&OutGoingPacket::heartbeat(connection_info.aditional_data.sequence_number)
@@ -212,6 +212,10 @@ impl Gateway {
 								data => connection_info.sender.send(GatewayMessages::from(data)).await?,
 							}
 						}
+						crate::discord::gateway_packets::IncomingPacketsData::Reconnect => {
+							//TODO: implement
+
+						}
 					}
 				}
 
@@ -224,14 +228,7 @@ impl Gateway {
 	}
 
 	async fn heartbeat_thread(
-		writer: Arc<
-			tokio::sync::Mutex<
-				SplitSink<
-					WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
-					tokio_tungstenite::tungstenite::Message
-				>
-			>
-		>,
+		websocket: Arc<WebSocket>,
 		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo>>
 	) -> std::result::Result<(), Box<dyn std::error::Error>> {
 		let should_start = {
@@ -242,10 +239,12 @@ impl Gateway {
 		should_start.notified().await;
 		debug!("Starting heartbeat");
 
-		let mut interval = {
+		let heartbeat_interval = {
 			let connection_info = connection_info.lock().await;
-			tokio::time::interval(connection_info.heartbeat_interval)
+			connection_info.heartbeat_interval
 		};
+
+		let mut interval = { tokio::time::interval(heartbeat_interval) };
 		loop {
 			interval.tick().await;
 			let mut connection_info = connection_info.lock().await;
@@ -255,26 +254,23 @@ impl Gateway {
 				warn!("Heartbeat ack not recived");
 				//todo!("return error");
 			}
+			if heartbeat_interval != connection_info.heartbeat_interval {
+				interval = tokio::time::interval(connection_info.heartbeat_interval);
+				continue;
+			}
+
 			let sequence_number = connection_info.aditional_data.sequence_number;
 
 			let packet = serde_json::to_string(&OutGoingPacket::heartbeat(sequence_number))?;
 
-			let mut writer = writer.lock().await;
-			writer.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;
+			websocket.send(tokio_tungstenite::tungstenite::Message::Text(packet)).await?;
 			trace!("Sent heartbeat packet");
 		}
 	}
 	#[allow(unused)]
 	async fn message_thread(
 		mut message_receiver: tokio::sync::mpsc::Receiver<Messages>,
-		writer: Arc<
-			tokio::sync::Mutex<
-				SplitSink<
-					WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
-					tokio_tungstenite::tungstenite::Message
-				>
-			>
-		>,
+		websocket: Arc<WebSocket>,
 		connection_info: Arc<tokio::sync::Mutex<ConnectionInfo>>
 	) -> crate::Result<()> {
 		loop {
@@ -285,14 +281,12 @@ impl Gateway {
 			let message = res.unwrap();
 			match message {
 				Messages::RequestLazyGuilds(payload) => {
-					let mut writer = writer.lock().await;
 					let payload = OutGoingPacket::lazy_guilds(payload).to_json()?;
-					writer.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
+					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 				Messages::UpdateVoiceState(payload) => {
-					let mut writer = writer.lock().await;
 					let payload = OutGoingPacket::voice_state_update(payload).to_json()?;
-					writer.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
+					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 			}
 		}
@@ -308,13 +302,9 @@ impl Gateway {
 
 		let (message_sender, message_reciver) = tokio::sync::mpsc::channel::<Messages>(1);
 
-		let connection = self.connect(&self.resume_url).await?;
+		let websocket = self.connect(&self.resume_url).await?;
 
-		let (write, read) = connection.split();
-
-		let write = Arc::new(Mutex::new(write));
-
-		let connection_info = Arc::new(Mutex::new(self.create_connection_info(sender, handle, token)?));
+		let connection_info = Arc::new(Mutex::new(self.create_connection_info(sender, handle, token, false)?));
 
 		let stop = connection_info.lock().await.stop.clone();
 		self.stop_notifyer = Some(stop.clone());
@@ -325,7 +315,7 @@ impl Gateway {
 
 			let stop = stop.clone();
 
-			let write = write.clone();
+			let websocket = websocket.clone();
 			let connection_info = connection_info.clone();
 
 			tokio::spawn(async move {
@@ -333,7 +323,7 @@ impl Gateway {
                     _ = stop.notified() => {
                         debug!("Stopping Logic Thread");
                     }
-                    e = Self::logic_thread(read,write,connection_info) => {
+                    e = Self::logic_thread(websocket,connection_info) => {
                         
 						if let Err(err) = &e{
 							let r = error_sender.send(err.to_string());
@@ -351,7 +341,7 @@ impl Gateway {
 
 			let stop = stop.clone();
 
-			let write = write.clone();
+			let websocket = websocket.clone();
 			let connection_info = connection_info.clone();
 
 			tokio::spawn(async move {
@@ -360,7 +350,7 @@ impl Gateway {
                         debug!("Stopping heartbeat thread");
                         
                     }
-                    e = Self::heartbeat_thread(write,connection_info) => {
+                    e = Self::heartbeat_thread(websocket,connection_info) => {
 						error!("heartbeat thread encountered an error: {:?}",e);
                         if let Err(e) = e {
                         	let r = error_sender.send(e.to_string());
@@ -377,7 +367,7 @@ impl Gateway {
 
 			let stop = stop.clone();
 
-			let write = write.clone();
+			let websocket = websocket.clone();
 			let connection_info = connection_info.clone();
 
 			tokio::spawn(async move {
@@ -386,7 +376,7 @@ impl Gateway {
                         debug!("Stopping message thread");
                         
                     }
-                    e = Self::message_thread(message_reciver,write,connection_info) => {
+                    e = Self::message_thread(message_reciver,websocket,connection_info) => {
 						error!("message thread encountered an error: {:?}",e);
                         if let Err(e) = e {
                         	let r = error_sender.send(e.to_string());

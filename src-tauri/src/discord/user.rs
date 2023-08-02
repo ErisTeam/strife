@@ -6,7 +6,7 @@ use super::types::{
 	user::{ CurrentUser, PublicUser, GuildSettingsEntry, GuildSettings },
 	guild::PartialGuild,
 	relationship::GatewayRelationship,
-	gateway::packets_data::Ready,
+	gateway::gateway_packets_data::Ready,
 };
 
 #[derive(Debug, Clone)]

@@ -9,20 +9,20 @@ import style from './css.module.css';
 import API from '../../API';
 import { useTrans } from '../../Translation';
 
-import { useDragDropContext } from '@thisbeyond/solid-dnd';
+import { Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
 import { Guild as TGuild } from '../../discord';
-
-interface GuildProps {
+type GuildProps = {
 	// index: number;
 	className?: string;
 	guild?: TGuild;
-	id?: number;
-}
+	id?: Id;
+};
 
 const Guild = (props: GuildProps) => {
 	const AppState = useAppState();
+	console.log(AppState);
 	const [t] = useTrans();
 
 	let toolTipRef: HTMLElement;
@@ -37,7 +37,7 @@ const Guild = (props: GuildProps) => {
 	}
 
 	onCleanup(() => {
-		ref.parentElement.parentElement.removeEventListener('scroll', updateRelativeYPositon);
+		ref.parentElement?.parentElement?.removeEventListener('scroll', updateRelativeYPositon);
 	});
 	onMount(() => {
 		const boundingRect = ref.getBoundingClientRect();
@@ -62,6 +62,7 @@ const Guild = (props: GuildProps) => {
 		>
 			<button
 				onclick={() => {
+					console.log(AppState.currentGuild(), props.guild, AppState.currentGuild() === props.guild);
 					if (AppState.currentGuild() !== props.guild) {
 						AppState.setCurrentGuild(props.guild);
 					} else {
@@ -70,7 +71,7 @@ const Guild = (props: GuildProps) => {
 				}}
 			>
 				<Show
-					when={props.guild.properties.icon}
+					when={props.guild?.properties?.icon}
 					fallback={<h1 class={style.fallbackText}>{API.getInitials(props.guild.properties.name)}</h1>}
 				>
 					<img src={props.guild.properties.icon} alt={t.guild.logoAlt({ guildName: props.guild.properties.name })} />

@@ -1,16 +1,10 @@
-// SolidJS
-
-// API
-
-// Style
-import { Show } from 'solid-js';
-import { CONSTANTS, Relationship } from '../../discord';
+import { ChannelType, Relationship } from '../../discord';
 
 import style from './css.module.css';
-import fallback from './fallback.png';
+
 import { useNavigate, useParams } from '@solidjs/router';
 import { useAppState } from '../../AppState';
-import { Tab } from '../../types';
+import { Tab, TextChannelTab } from '../../types';
 
 import API from '../../API';
 
@@ -25,46 +19,47 @@ const Friend = (props: FriendProps) => {
 	if (props.relationship.user.avatar) {
 		img = `https://cdn.discordapp.com/avatars/${props.relationship.user.id}/${props.relationship.user.avatar}.webp?size=32`;
 	} else {
-		img = fallback;
+		img = '/Friends/fallback.png';
 	}
 	const params = useParams();
 	const navigate = useNavigate();
 	const href = `/app/@me/${props.relationship.user.id}`;
 	const AppState = useAppState();
-	const tab = {
-		guildId: '@me',
-		channelId: props.relationship.user.id,
-		channelName: props.relationship.user.username, //TODO:figure out why display name is sometimes null then replace
-		channelType: CONSTANTS.CHANNEL_TYPES.DM,
-		guildIcon: img,
-		guildName: '@me',
+	const tab: TextChannelTab = {
+		type: 'textChannel',
+		component: null,
+		title: props.relationship.user.username,
+		icon: img,
+		tabData: {
+			channelId: props.relationship.user.id,
+			guildId: '@me',
+		},
 	};
 	function handleClick(e: MouseEvent) {
 		console.log('clicked on', props.relationship.user.username, href);
+		const tabS = AppState.Tabs.tabs.find(
+			(t: any) => t.type === 'textChannel' && t.tabData.channelId === tab.tabData.channelId,
+		);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
-				if (AppState.tabs.find((t: Tab) => t.channelId === tab.channelId)) {
-					navigate(href);
-					return;
+
+				if (tabS) {
+					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
 				}
-				if (AppState.tabs.length === 0) {
-					API.addTab(tab);
-					navigate(href);
-					return;
+				if (AppState.Tabs.currentTab() != -1) {
+					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
 				} else {
-					API.replaceCurrentTab(tab, params.channelId);
-					navigate(href);
+					AppState.Tabs.addTab(tab, true);
 				}
 				break;
 			case 1:
 				console.log('middle click', e.button);
-				if (AppState.tabs.find((t: Tab) => t.channelId === props.relationship.user.id)) {
+				if (tabS) {
 					console.error('Tab already exists!');
 				} else {
-					API.addTab(tab);
+					AppState.Tabs.addTab(tab, true);
 				}
-				navigate(href);
 				break;
 		}
 	}

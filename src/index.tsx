@@ -70,10 +70,10 @@ const App: Component = () => {
 								<Route path="/login" component={Login} />
 
 								<Route path="/app" element={<R state={'Application'} force={true} component={ApplicationWrapper} />}>
-									<Route path="/" component={Channel} />
+									{/* <Route path="/" component={Channel} />
 									<Route path="/:guildId" component={Channel}>
 										<Route path="/:channelId" component={Channel} />
-									</Route>
+									</Route> */}
 								</Route>
 								<Route path="*" component={Error} />
 							</Routes>

@@ -10,10 +10,10 @@ import buttons from './../../Styles/Buttons.module.css';
 import { createSignal } from 'solid-js';
 import { useTrans } from '../../Translation';
 
-interface LoginBoxProps {
+type LoginBoxProps = {
 	class?: string;
 	login: (name: string, password: string, captcha_token?: string) => Promise<void>;
-}
+};
 
 function LoginBox(prop: LoginBoxProps) {
 	const [t] = useTrans();

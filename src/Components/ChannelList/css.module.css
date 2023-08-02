@@ -17,7 +17,7 @@
 		padding: 0.25em 0.2em;
 
 		width: 100%;
-		span {
+		& span {
 			text-align: left;
 			vertical-align: middle;
 			color: var(--channel-category-text);
@@ -28,7 +28,7 @@
 			width: 85%;
 			padding-left: 0.5em;
 		}
-		svg {
+		& svg {
 			transition: rotate 300ms;
 			stroke: var(--channel-category-text);
 			height: 2em;
@@ -38,12 +38,12 @@
 			background-position: left bottom;
 		}
 	}
-	ol {
+	& ol {
 		transition: height 300ms ease-in-out;
 		height: 0px;
 		overflow: hidden;
 	}
-	ol.expand {
+	& ol.expand {
 		/* because you cant animate fit-content or auto height we need to calucate it, the formula is, (channel height+margin)*channelCount + margin    you only multiply one margin due to margin collapse*/
 		height: calc(2.4em * var(--childCount) + 0.4em) !important;
 		height: fit-content;
@@ -54,7 +54,7 @@
 }
 .channel {
 	width: 100%;
-	button {
+	& button {
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
@@ -75,9 +75,10 @@
 		border-radius: var(--round-xlarge);
 
 		/*cant be in % or ellipsis wont work*/
-		span {
+		& span {
 			padding-left: 0.5em;
-			width: 18ch;
+			width: 100%;
+
 			white-space: nowrap;
 			display: inline-block;
 			overflow: hidden;
@@ -102,7 +103,7 @@
 	vertical-align: middle;
 
 	color: var(--channel-icon-color);
-	svg {
+	& svg {
 		height: 100%;
 		background-color: transparent;
 		fill: transparent;
@@ -116,27 +117,45 @@
 .list {
 	& > ol {
 		padding: 0 0.5em;
+		overflow-y: scroll;
+		height: 100%;
+
+		scrollbar-gutter: stable;
 	}
 	background-color: var(--channel-list-bgc);
+
+	overflow: hidden;
+
+	position: relative;
 }
+.resize {
+	height: 100%;
+	width: 0.1em;
+	top: 0;
+	right: 0;
+	cursor: e-resize;
+
+	position: absolute;
+}
+
 .title {
 	margin-bottom: 1em;
 	position: relative;
 	border-bottom: 0.125em solid var(--channel-list-separator);
 
-	button {
+	& button {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.6em;
 		background-color: var(--channel-list-title-bgc);
 		width: 100%;
-		h1 {
+		& h1 {
 			text-align: center;
 			font-size: 1.3em;
 			color: var(--channel-list-title-text);
 		}
-		svg {
+		& svg {
 			transition: rotate 300ms;
 			height: 2em;
 			stroke: var(--channel-list-title-icon);
@@ -144,7 +163,7 @@
 		}
 	}
 
-	ol {
+	& ol {
 		position: absolute;
 		top: 2.5em;
 		right: 0.5em;
@@ -152,7 +171,7 @@
 		height: calc(var(--elementCount) * 2em);
 		overflow-y: hidden;
 		z-index: 10;
-		li {
+		& li {
 			padding: 0;
 			margin: 0;
 			button {

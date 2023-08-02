@@ -6,8 +6,9 @@ function UserPanel() {
 	const appState = useAppState();
 
 	const [userInfo] = createResource(async () => {
-		const res = await API.getUserInfo(appState.userId());
+		const res = await API.getLocalUserInfo(appState.userId());
 		console.log(res);
+		//TODO: store user info in app state
 		return res;
 	});
 

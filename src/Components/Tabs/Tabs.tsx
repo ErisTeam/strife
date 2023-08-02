@@ -1,83 +1,87 @@
-// API
-import { A, useLocation, useNavigate, useParams } from '@solidjs/router';
-import API from '../../API';
-import { useAppState } from '../../AppState';
-import { Tab } from '../../types';
-import { Guild as GuildType, Channel, Relationship } from '../../discord';
+import { tabStoreType, useAppState } from '../../AppState';
 
-// Components
-import Guild from '../Guild/Guild';
-
-// Style
 import style from './Tabs.module.css';
-import { Accessor, For, Index, createEffect, createMemo, createSignal } from 'solid-js';
+import { Accessor, Context, For, Match, Switch, createContext, createMemo, useContext } from 'solid-js';
 import { useTrans } from '../../Translation';
+import { Tab } from '../../types';
+import { Dynamic } from 'solid-js/web';
 
-interface TabsProps {
+type TabsProps = {
 	className?: string;
-}
+};
+
+const context = createContext<unknown>(null);
+
+type TabContext = {
+	getData: <T>() => T;
+};
+
+export const TabContextProvider = function (props: { children: any; tab: Tab }) {
+	const AppState = useAppState();
+	return <context.Provider value={props.tab}>{props.children}</context.Provider>;
+};
+
+export const useTabContext = function <T>() {
+	const c = useContext(context as Context<Tab<T>>);
+	return c;
+};
 
 const Tabs = (props: TabsProps) => {
 	const AppState = useAppState();
-
 	return (
 		<nav class={[props.className, style.tabs].join(' ')}>
 			<ul>
-				<Index each={AppState.tabs}>{(tab, index) => <TabItem tabIndex={index} />}</Index>
+				<For each={AppState.Tabs.tabs}>
+					{(tab, index) => {
+						console.log(tab, index());
+
+						return <TabItem tab={tab} tabIndex={index()} />;
+					}}
+				</For>
 			</ul>
 		</nav>
 	);
 };
-interface TabProps {
+type TabProps = {
 	className?: string;
 	tabIndex: number;
-}
-const TabItem = ({ className, tabIndex }: TabProps) => {
+	tab: tabStoreType;
+};
+const TabItem = (props: TabProps) => {
 	const AppState = useAppState();
 	const [t] = useTrans();
-	const params = useParams();
+	console.log(AppState.Tabs.tabs[props.tabIndex], props.tabIndex, AppState.Tabs.currentTab());
 
-	const location = useLocation();
-	console.log(AppState.tabs[tabIndex]);
-	const navigate = useNavigate();
-	const href = createMemo(() => {
-		return `/app/${AppState.tabs[tabIndex].guildId}/${AppState.tabs[tabIndex].channelId}`;
-	});
-
+	const tab = props.tab;
 	return (
-		<li class={[className, style.tab].join(' ')}>
-			<A
+		<li class={[props.className, style.tab].join(' ')}>
+			<button
 				classList={{
-					[style.active]: location.pathname == href(),
+					[style.active]: AppState.Tabs.currentTab() == props.tabIndex,
 				}}
-				href={href()}
+				onclick={() => {
+					console.log(props.tabIndex, props.tab);
+					AppState.Tabs.setCurrentTab(props.tabIndex);
+				}}
 			>
-				<img
-					src={AppState.tabs[tabIndex].guildIcon}
-					alt={t.guild.logoAlt({ guildName: AppState.tabs[tabIndex].guildName })}
-				/>
-				{/* TODO: Add translation string to alt text */}
-				<span>{AppState.tabs[tabIndex].channelName}</span>
-			</A>
+				<Switch fallback={'❓'}>
+					<Match when={typeof tab.icon === 'function'}>
+						<Dynamic component={tab.icon}></Dynamic>
+					</Match>
+					<Match when={typeof tab.icon === 'string' && tab.icon.startsWith('http')}>
+						{/* TODO: Add translation string to alt text */}
+						<img src={tab.icon as string} alt={t.guild.logoAlt({ guildName: tab.title })} />
+					</Match>
+					<Match when={typeof tab.icon === 'string'}>
+						<i>{tab.icon as string}</i>
+					</Match>
+				</Switch>
+
+				<span>{tab.title}</span>
+			</button>
 			<button
 				onClick={() => {
-					// 						navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
-
-					if (
-						AppState.tabs[tabIndex].guildId == params.guildId &&
-						AppState.tabs[tabIndex].channelId == params.channelId
-					) {
-						API.removeTab(tabIndex);
-						if (AppState.tabs.length == 0) {
-							navigate(`/app`);
-						} else if (AppState.tabs[tabIndex - 1]) {
-							navigate(`/app/${AppState.tabs[tabIndex - 1].guildId}/${AppState.tabs[tabIndex - 1].channelId}`);
-						} else if (AppState.tabs[0]) {
-							navigate(`/app/${AppState.tabs[0].guildId}/${AppState.tabs[0].channelId}`);
-						}
-					} else {
-						API.removeTab(tabIndex);
-					}
+					AppState.Tabs.removeTab(props.tabIndex);
 				}}
 			>
 				X

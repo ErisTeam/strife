@@ -20,3 +20,5 @@ pub const GET_CHANNEL: &str = concatcp!(DISCORD_API, "/channels/");
 pub const GET_RELATIONSHIPS: &str = concatcp!(DISCORD_API, "/users/@me/relationships");
 
 pub const GET_USER_INFO: &str = concatcp!(DISCORD_API, "/users/@me");
+
+pub const VOICE_VERSION: u8 = 7;
