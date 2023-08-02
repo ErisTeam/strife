@@ -6,6 +6,7 @@
 		}
 	}
 	background-color: var(--friend-list-bgc);
+	border-bottom-left-radius: var(--round-large);
 }
 .title {
 	margin-bottom: 1em;
