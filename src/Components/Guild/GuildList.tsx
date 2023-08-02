@@ -32,8 +32,8 @@ const GuildList = (props: GuildListProps) => {
 		API.updateGuilds()
 			.then(() => {
 				const newItems = [];
-				for (let i = 1; i < AppState.userGuilds.length; i++) {
-					newItems.push({ id: i, guild: AppState.userGuilds[i] });
+				for (let i = 1; i <= AppState.userGuilds.length; i++) {
+					newItems.push({ id: i, guild: AppState.userGuilds[i - 1] });
 				}
 				setItems(newItems);
 			})

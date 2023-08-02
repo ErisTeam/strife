@@ -22,18 +22,11 @@ interface GuildProps {
 
 const GuildShadow = (props: GuildProps) => {
 	const [t] = useTrans();
+
 	if (!props.guild) return null;
 	return (
 		<li class={style.guild}>
-			<button
-				onclick={() => {
-					if (AppState.currentGuild() !== props.guild) {
-						AppState.setCurrentGuild(props.guild);
-					} else {
-						AppState.setCurrentGuild(null);
-					}
-				}}
-			>
+			<button>
 				<Show
 					when={props.guild.properties.icon}
 					fallback={<h1 class={style.fallbackText}>{API.getInitials(props.guild.properties.name)}</h1>}
