@@ -1,5 +1,5 @@
 .guild {
-	width: 4em;
+	width: 4.2em;
 	display: flex;
 	padding: 0.5em;
 	position: relative;
@@ -97,10 +97,14 @@
 
 .guildList {
 	display: flex;
+	justify-content: center;
+	scrollbar-width: 0;
 	height: 100%;
 	background-color: var(--guilds-bgc);
 	overflow-y: auto;
+	scrollbar-gutter: stable both-edges;
 	overflow-x: hidden;
+
 	ul {
 		width: 100%;
 		position: relative;
@@ -112,6 +116,10 @@
 		margin-top: 0.4em;
 		margin-bottom: 0.4em;
 		height: 2px;
+	}
+	&::-webkit-scrollbar {
+		width: 0px;
+		height: 0px;
 	}
 }
 .opacity {
