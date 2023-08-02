@@ -1,21 +1,14 @@
 // SolidJS
-import { Show, onCleanup, onMount } from 'solid-js';
-
-// API
-import { useAppState } from '../../AppState';
+import { Show } from 'solid-js';
 
 // Style
 import style from './css.module.css';
 import API from '../../API';
 import { useTrans } from '../../Translation';
 
-import { useDragDropContext } from '@thisbeyond/solid-dnd';
-import { createSortable } from '@thisbeyond/solid-dnd';
-
 import { Guild as TGuild } from '../../discord';
 
 interface GuildProps {
-	// index: number;
 	className?: string;
 	guild?: TGuild;
 }
