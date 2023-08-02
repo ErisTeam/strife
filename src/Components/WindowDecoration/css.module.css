@@ -4,19 +4,29 @@
 
 	background-color: var(--window-decoration-bgc);
 	display: flex;
+
 	justify-content: space-between;
-	border-radius: 8px 8px 0px 0px;
+	padding: 0.25em;
+	position: relative;
 	h1 {
-		margin-left: 0.5em;
-		font-size: 1em;
+		margin-left: 0.25em;
+		font-size: 0.75em;
 		justify-self: flex-start;
+		user-select: none;
 	}
-	div {
+	.buttons {
 		button {
 			height: 100%;
 			svg {
 				height: 100%;
 			}
 		}
+	}
+	.grabbable {
+		position: absolute;
+		width: calc(100% - var(--window-decoration-height) * 3);
+		height: 80%;
+		bottom: 0;
+		left: 0;
 	}
 }

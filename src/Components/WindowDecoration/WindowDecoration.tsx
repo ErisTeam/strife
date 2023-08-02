@@ -14,9 +14,10 @@ const WindowDecoration = () => {
 		})
 		.catch((e) => console.log(e));
 	return (
-		<div data-tauri-drag-region class={style.decoration}>
+		<div class={style.decoration}>
 			<h1>PandaCord</h1>
-			<div>
+			<div class={style.grabbable} data-tauri-drag-region />
+			<div class={style.buttons}>
 				<button
 					onclick={() => {
 						appWindow.minimize().catch((e) => console.log(e));
