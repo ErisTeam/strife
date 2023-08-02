@@ -34,44 +34,6 @@ pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 struct TestData {}
 
 #[tauri::command]
-async fn close_app(handle: tauri::AppHandle) {
-	println!("Closing app");
-	handle.exit(0);
-}
-#[tauri::command]
-async fn minimize_app(handle: tauri::AppHandle) 
-{
-	let window = handle.get_window("main").unwrap();
-	 if window.is_minimized().unwrap(){
-		window.unminimize().unwrap();
-	println!("Unminimizing app");
-
-	 }
-	 else {
-	println!("Minimizing app");
-
-	window.minimize().unwrap();	
-		 
-	 }
-
-}
-#[tauri::command]
-async fn maximize_app(handle: tauri::AppHandle) {
-	let window = handle.get_window("main").unwrap();
-	 if window.is_maximized().unwrap(){
-	println!("Unmaximizing app");
-		window.unmaximize().unwrap();
-	 }
-	 else {
-	window.maximize().unwrap();	
-	println!("Maximizing app");
-
-		 
-	 }
-}
-
-
-#[tauri::command]
 async fn test(handle: tauri::AppHandle) {
 	println!("test");
 
@@ -153,10 +115,7 @@ async fn main() {
 				commands::main_app::send_voice_state_update,
 				commands::main_app::start_voice_gateway,
 				commands::main_app::send_to_voice_gateway,
-				close_app,
-				test,
-				minimize_app,
-				maximize_app
+				test
 			]
 		)
 		.run(tauri::generate_context!())

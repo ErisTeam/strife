@@ -1,25 +1,25 @@
-import { invoke } from '@tauri-apps/api';
+import { appWindow } from '@tauri-apps/api/window';
 
 const WindowDecoration = () => {
 	return (
 		<div data-tauri-drag-region>
 			<button
 				onclick={() => {
-					invoke('close_app').catch(console.error);
+					appWindow.close();
 				}}
 			>
 				Close
 			</button>
 			<button
 				onclick={() => {
-					invoke('minimize_app').catch(console.error);
+					appWindow.minimize();
 				}}
 			>
 				Minimize
 			</button>
 			<button
 				onclick={() => {
-					invoke('maximize_app').catch(console.error);
+					appWindow.toggleMaximize();
 				}}
 			>
 				Maximize
