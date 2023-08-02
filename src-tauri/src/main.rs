@@ -25,6 +25,17 @@ use std::sync::Arc;
 use serde::Deserialize;
 use tauri::{ Manager, UserAttentionType };
 use tauri_plugin_log::LogTarget;
+use windows::{
+	Win32::{
+		Graphics::Dwm::{ DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DwmExtendFrameIntoClientArea },
+		Foundation::HWND,
+		UI::{
+			WindowsAndMessaging::{ SetWindowLongA, GWL_STYLE, WS_POPUP, SetWindowLongPtrA, SetWindowLongPtrW },
+			Controls::MARGINS,
+		},
+	},
+	core::CanInto,
+};
 
 use crate::main_app_state::MainState;
 
@@ -62,6 +73,24 @@ fn close_loading(app: &mut tauri::App) -> Result<()> {
 	main_window.show()?;
 	Ok(())
 }
+
+fn enable_round_borders(window: tauri::Window) {
+	if cfg!(windows) {
+		let hwnd = windows::Win32::Foundation::HWND(window.hwnd().unwrap().0);
+		unsafe {
+			let margins = MARGINS {
+				cxLeftWidth: 8,
+				cxRightWidth: 8,
+				cyTopHeight: 8,
+				cyBottomHeight: 8,
+			};
+
+			let result = DwmExtendFrameIntoClientArea(hwnd, &margins);
+			println!("DwmSetWindowAttribute: {:?}", result);
+		}
+	}
+}
+
 #[tokio::main]
 async fn main() {
 	println!("Starting");
@@ -87,6 +116,8 @@ async fn main() {
 		.setup(move |app| {
 			let app_handle = app.handle();
 
+			enable_round_borders(app_handle.get_window("main").unwrap());
+
 			let path = app_handle.path_resolver().app_data_dir().unwrap();
 			let main_state = m.clone();
 			tokio::spawn(async move {
@@ -100,7 +131,7 @@ async fn main() {
 			#[cfg(debug_assertions)]
 			dev::clear_gateway_logs(app_handle.clone());
 
-			close_loading(app)?;
+			//close_loading(app)?;
 
 			Ok(())
 		})

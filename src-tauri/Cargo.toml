@@ -14,8 +14,10 @@ prost-build = "0.11.9"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.48.0", features = [
-    "Win32_UI_WindowsAndMessaging",
-    "Win32_Foundation",
+	"Win32_UI_WindowsAndMessaging",
+	"Win32_Foundation",
+	"Win32_Graphics_Dwm",
+	"Win32_UI_Controls",
 ] }
 
 [profile.dev.package.num-bigint-dig]
@@ -67,7 +69,7 @@ winrt-notification = "0.5.1"
 fern = "0.6.2"
 log = { version = "0.4.19", features = ["max_level_debug"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = [
-    "colored",
+	"colored",
 ] }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }
 
@@ -82,7 +84,7 @@ reqwest = { version = "0.11.18", features = ["json"] }
 
 #🕸socket
 tokio-tungstenite = { version = "0.20.0", features = [
-    "rustls-tls-webpki-roots",
+	"rustls-tls-webpki-roots",
 ] }
 
 
