@@ -1,6 +1,6 @@
 // SolidJS
-import { Outlet } from '@solidjs/router';
-import { For, Index, Match, Show, Switch, createMemo, getOwner, onMount, runWithOwner } from 'solid-js';
+
+import { For, Match, Show, Switch, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../ChannelList/ChannelList';
 // Components
@@ -18,6 +18,7 @@ import Dev from '../Dev/Dev';
 import { Guild } from '../../discord';
 import { unwrap } from 'solid-js/store';
 import WelcomeTab from '../Tabs/WelcomeTab';
+import { invoke } from '@tauri-apps/api';
 
 //TODO: move to routes
 const ApplicationWrapper = () => {
@@ -27,7 +28,7 @@ const ApplicationWrapper = () => {
 		// AppState.Tabs.addTab(
 		// 	{
 		// 		title: 'Welcome',
-		// 		// component: WelcomeTab,
+		// 		component: WelcomeTab,
 		// 		icon: '👋',
 		// 		type: 'other',
 		// 	},

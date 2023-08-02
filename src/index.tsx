@@ -28,6 +28,7 @@ import Loading from './Components/Loading/Loading';
 import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
 import Channel from './Components/Messages/Chat';
 import LayoutTest from './Routes/Dev/LayoutTest/LayoutTest';
+import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
 
 const App: Component = () => {
 	const AppState = useAppState();
@@ -43,6 +44,7 @@ const App: Component = () => {
 
 	return (
 		<Router>
+			<WindowDecoration />
 			<TransProvider>
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<Show when={!id.loading} fallback={<Loading />}>

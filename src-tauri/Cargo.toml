@@ -16,6 +16,7 @@ prost-build = "0.11.9"
 windows = { version = "0.48.0", features = [
 	"Win32_UI_WindowsAndMessaging",
 	"Win32_Foundation",
+
 ] }
 
 [profile.dev.package.num-bigint-dig]
@@ -49,6 +50,13 @@ tauri = { version = "1.4.1", features = [
 	"notification-all",
 	"shell-open",
 	"window-start-dragging",
+	"window-unmaximize",
+	"window-maximize",
+	"window-minimize",
+	"window-close",
+	"window-hide",
+	"window-show",
+	"window-unminimize",
 ] }
 
 

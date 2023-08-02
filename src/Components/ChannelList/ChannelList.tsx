@@ -11,6 +11,7 @@ import style from './css.module.css';
 import ChannelListElement from './ChannelListElement';
 import { ChannelType, Guild } from '../../discord';
 import ChannelTitle from './ChannelTitle';
+import { invoke } from '@tauri-apps/api';
 
 interface ChannelListProps {
 	className?: string;

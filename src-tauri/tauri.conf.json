@@ -25,6 +25,14 @@
 				"all": true
 			},
 			"window": {
+				"all": false,
+				"close": true,
+				"hide": true,
+				"show": true,
+				"maximize": true,
+				"minimize": true,
+				"unmaximize": true,
+				"unminimize": true,
 				"startDragging": true
 			}
 		},
@@ -69,7 +77,8 @@
 				"resizable": true,
 				"title": "PandaCord",
 				"visible": false,
-				"center": true
+				"center": true,
+				"decorations": false
 			},
 			{
 				"width": 200,
