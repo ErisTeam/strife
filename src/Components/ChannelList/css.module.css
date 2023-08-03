@@ -119,7 +119,7 @@
 	& > ol {
 		padding: 0 0.5em;
 
-		height: 100%;
+		overflow-y: scroll;
 
 		scrollbar-gutter: stable;
 	}
@@ -133,6 +133,9 @@
 .resize {
 	height: 100%;
 	width: 0.1em;
+
+	border-right: 1px solid var(--depth4);
+
 	top: 0;
 	right: 0;
 	cursor: e-resize;
