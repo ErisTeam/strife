@@ -55,7 +55,10 @@ const ChannelList = (props: ChannelListProps) => {
 	let startWidth: number;
 
 	function resize(e: MouseEvent) {
-		AppState.setChannelsSize(startWidth + (e.clientX - startX));
+		let endWidth = startWidth + (e.clientX - startX);
+		if (endWidth < 150) endWidth = 150;
+		if (endWidth > 600) endWidth = 600;
+		AppState.setChannelsSize(endWidth);
 
 		resizeRef.parentElement.style.width = `${AppState.channelsSize()}px`;
 		window.getSelection().removeAllRanges();

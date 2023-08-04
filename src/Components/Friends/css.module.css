@@ -1,5 +1,6 @@
 .list {
 	height: 100%;
+	min-width: 100px;
 	& > ol {
 		padding: 0 0.5em;
 		/* size of title */
