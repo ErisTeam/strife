@@ -1,16 +1,23 @@
 .list {
+	height: 100%;
 	& > ol {
 		padding: 0 0.5em;
+		/* size of title */
+		height: calc(100% - 4.75em);
+		overflow-y: scroll;
+
+		scrollbar-gutter: stable;
 		li {
 			margin-bottom: 0.5em;
 		}
 	}
 	background-color: var(--friend-list-bgc);
 	border-bottom-left-radius: var(--round-large);
+	position: relative;
 }
 .title {
-	margin-bottom: 1em;
-	position: relative;
+	height: 4.75em;
+
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -23,6 +30,7 @@
 		font-size: 1.3em;
 		color: var(--channel-list-title-text);
 	}
+	position: relative;
 }
 
 .friend {
@@ -94,4 +102,16 @@
 			background-position: left bottom;
 		}
 	}
+}
+.resize {
+	height: 100%;
+	width: 0.1em;
+
+	border-right: 1px solid var(--depth4);
+
+	top: 0;
+	right: 0;
+	cursor: e-resize;
+
+	position: absolute;
 }

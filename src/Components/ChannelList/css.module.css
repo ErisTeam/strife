@@ -118,6 +118,7 @@
 	height: 100%;
 	& > ol {
 		padding: 0 0.5em;
+		height: calc(100% - 4.75em);
 
 		overflow-y: scroll;
 
@@ -144,23 +145,24 @@
 }
 
 .title {
-	margin-bottom: 1em;
 	position: relative;
 	border-bottom: 0.125em solid var(--channel-list-separator);
+	height: 4.75em;
+	align-items: center;
+	display: flex;
 
-	& button {
+	& > button {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.6em;
 		background-color: var(--channel-list-title-bgc);
 		width: 100%;
-		& h1 {
-			text-align: center;
+		& > h1 {
 			font-size: 1.3em;
 			color: var(--channel-list-title-text);
 		}
-		& svg {
+		& > svg {
 			transition: rotate 300ms;
 			height: 2em;
 			stroke: var(--channel-list-title-icon);
@@ -171,19 +173,69 @@
 	& ol {
 		position: absolute;
 		top: 2.5em;
-		right: 0.5em;
+		right: 0.8em;
+		background-color: var(--channel-title-list-bgc);
 		transition: height 300ms ease-in-out;
-		height: calc(var(--elementCount) * 2em);
+		height: calc(var(--elementCount) * 2.4em + 0.4em);
 		overflow-y: hidden;
+		border-radius: var(--channel-title-list-roundness);
 		z-index: 10;
+
 		& li {
-			padding: 0;
-			margin: 0;
+			margin-top: 0.4em;
+			margin-bottom: 0.4em;
+			padding-left: 0.4em;
+			padding-right: 0.4em;
+
+			width: 24ch;
+			height: 2em;
+
+			&:hover {
+				button {
+					background-position: left bottom;
+				}
+			}
 			button {
-				height: 2em;
-				padding: 0.5em;
-				margin: 0;
-				border: 1px solid red;
+				height: 2.5em;
+				padding: 0;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				border-radius: var(--channel-title-list-element-roundness);
+
+				background: linear-gradient(
+					to right,
+					var(--channel-title-list-element-gradient-one) 33%,
+					var(--channel-title-list-element-gradient-two) 55%,
+					var(--channel-title-list-element-gradient-two) 55%
+				);
+				width: 100%;
+				background-size: 300% 100%;
+				background-position: right bottom;
+				transition: all 300ms ease-in-out;
+
+				.icon {
+					aspect-ratio: 1/1;
+					height: 100%;
+					background-color: var(--channel-title-list-icon-bgc);
+					border-radius: 50%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					margin-right: 0.5em;
+
+					vertical-align: middle;
+					padding: 0.4em;
+					& svg {
+						height: 100%;
+						background-color: transparent;
+						fill: transparent;
+
+						stroke: var(--channel-title-list-icon-color);
+
+						height: 100%;
+					}
+				}
 			}
 		}
 	}

@@ -55,7 +55,9 @@ const ChannelList = (props: ChannelListProps) => {
 	let startWidth: number;
 
 	function resize(e: MouseEvent) {
-		resizeRef.parentElement.style.width = `${startWidth + (e.clientX - startX)}px`;
+		AppState.setChannelsSize(startWidth + (e.clientX - startX));
+
+		resizeRef.parentElement.style.width = `${AppState.channelsSize()}px`;
 		window.getSelection().removeAllRanges();
 	}
 
@@ -63,7 +65,7 @@ const ChannelList = (props: ChannelListProps) => {
 		console.log('start resize');
 		startX = e.clientX;
 
-		startWidth = parseInt(getComputedStyle(resizeRef.parentElement).width, 10);
+		startWidth = AppState.channelsSize();
 		document.addEventListener('mousemove', resize);
 		document.addEventListener('mouseup', stopResize);
 	}
@@ -73,7 +75,7 @@ const ChannelList = (props: ChannelListProps) => {
 	}
 
 	onMount(() => {
-		resizeRef.parentElement.style.width = `${parseInt(getComputedStyle(resizeRef.parentElement).width, 10)}px`;
+		resizeRef.parentElement.style.width = `${AppState.channelsSize()}px`;
 	});
 
 	onCleanup(() => {

@@ -181,7 +181,13 @@ pre {
 	--channel-gradient-hover-one: var(--depth2);
 	--channel-gradient-hover-two: transparent;
 	--channel-list-separator: var(--depth3);
-
+	--channel-title-list-bgc: var(--depth0);
+	--channel-title-list-roundness: var(--round-large);
+	--channel-title-list-element-roundness: var(--round-xlarge);
+	--channel-title-list-icon-bgc: var(--depth2);
+	--channel-title-list-icon-color: var(--disabled-text);
+	--channel-title-list-element-gradient-one: var(--depth1);
+	--channel-title-list-element-gradient-two: transparent;
 	/* FRIENDS */
 	--friend-list-bgc: var(--depth1);
 	--friend-gradient-hover-one: var(--depth2);

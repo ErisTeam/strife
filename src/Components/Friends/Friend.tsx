@@ -71,7 +71,7 @@ const Friend = (props: FriendProps) => {
 					handleClick(e);
 				}}
 			>
-				<img src={img} alt={props.relationship.user.username} />
+				<img src={img} alt={props.relationship.user.display_name} />
 
 				<main>
 					<span>{props.relationship.user.username}</span>

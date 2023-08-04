@@ -13,6 +13,7 @@ const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 
 const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
+const [channelsSize, setChannelsSize] = createSignal<number>(250);
 
 export type tabStoreType<T = {}> = Tab<T>;
 
@@ -74,6 +75,8 @@ const contextValue = {
 	setCurrentGuild,
 	currentState,
 	setCurrentState,
+	channelsSize,
+	setChannelsSize,
 };
 
 const AppState = createContext(contextValue);
