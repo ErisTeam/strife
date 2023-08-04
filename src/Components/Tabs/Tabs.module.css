@@ -1,34 +1,42 @@
 .tabs {
 	height: 3em;
 	max-width: 100%;
-	overflow-x: scroll;
 	background-color: var(--tabs-bgc);
 	border-top-left-radius: var(--round-large);
+	transition: all 300ms;
 
 	ul {
-		padding: 0 0.2em;
+		transition: all 300ms;
+		padding-top: 0.4em;
+		height: 100%;
+		padding-left: 0.2em;
+		padding-right: 0.2em;
+		width: 100%;
 		display: flex;
+		overflow-x: auto;
+		scrollbar-gutter: stable;
 
 		flex-wrap: nowrap;
+
 		height: 100%;
 	}
 }
 
 .tab {
+	transition: all 300ms;
 	margin-right: 0.2em;
-	margin-top: 0.39em;
-	position: relative;
+
 	display: flex;
 	align-items: center;
 	flex-shrink: 0;
 	justify-content: center;
 	background-color: var(--tab-bgc);
 
-	height: 2.21em;
+	height: 100%;
 	border-radius: 6px 6px 0px 0px;
-	padding: 0.3em 0.5em;
+	padding: 0.3em;
 
-	a {
+	> button:first-child {
 		display: inline-flex;
 		margin-right: 0.5em;
 		justify-content: center;
@@ -49,8 +57,14 @@
 			text-align: center;
 		}
 	}
-	button {
-		text-align: center;
+	> button:last-child {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		svg {
+			height: 100%;
+			width: 100%;
+		}
 	}
 
 	&:has(.active) {

@@ -37,7 +37,7 @@ export default (props: ChannelProps) => {
 		const tab: TextChannelTab = {
 			type: 'textChannel',
 			component: Chat,
-			title: props.data.name,
+			title: displayName(),
 			icon: channelIcon(),
 			tabData: {
 				channelId: props.data.id,

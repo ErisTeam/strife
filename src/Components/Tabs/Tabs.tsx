@@ -5,6 +5,7 @@ import { Accessor, Context, For, Match, Switch, createContext, createMemo, useCo
 import { useTrans } from '../../Translation';
 import { Tab } from '../../types';
 import { Dynamic } from 'solid-js/web';
+import { X } from 'lucide-solid';
 
 type TabsProps = {
 	className?: string;
@@ -84,7 +85,7 @@ const TabItem = (props: TabProps) => {
 					AppState.Tabs.removeTab(props.tabIndex);
 				}}
 			>
-				X
+				<X />
 			</button>
 		</li>
 	);
