@@ -7,15 +7,24 @@
 .message {
 	width: 100%;
 	display: flex;
-	flex-wrap: wrap;
+
 	border: red solid 1px;
 	* {
 		border: red solid 1px;
 	}
 	> button {
+		width: 3em;
+		height: 3em;
+		img {
+			height: 100%;
+			width: 100%;
+		}
 	}
-	> div {
+	.messageInner {
 		width: 100%;
 		display: flex;
+		flex-wrap: wrap;
+		.details {
+		}
 	}
 }

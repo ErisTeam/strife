@@ -86,9 +86,11 @@ const Message = (props: MessageProps) => {
 			<button>
 				<img src={img} alt={message.author.global_name} />
 			</button>
-			<div>
-				<button>{message.author.global_name}</button>
-				<time>{intl.format(new Date(message.timestamp))}</time>
+			<div class={style.messageInner}>
+				<div class={style.details}>
+					<button>{message.author.global_name}</button>
+					<time>{intl.format(new Date(message.timestamp))}</time>
+				</div>
 				<p>{message.content}</p>
 			</div>
 
