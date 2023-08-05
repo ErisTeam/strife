@@ -25,21 +25,21 @@
 		}
 		.inner {
 			height: 100%;
-			flex: 1 1 auto;
+			width: 100%;
 			display: flex;
-			overflow: hidden;
+			flex: 0 1 auto;
+
 			flex-direction: column;
 
 			max-width: 100%;
-			min-width: 10%;
 
 			.tabs {
 				width: 100%;
 			}
 			.outlet {
-				height: 100%;
 				width: 100%;
-				overflow-y: scroll;
+				/* TODO: someone has to figure out why this stuff is always ignoring the top one */
+				height: calc(100% - 3em);
 			}
 		}
 	}

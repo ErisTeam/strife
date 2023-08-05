@@ -24,6 +24,7 @@ const Friend = (props: FriendProps) => {
 	const params = useParams();
 	const navigate = useNavigate();
 	const href = `/app/@me/${props.relationship.user.id}`;
+	const displayName = props.relationship.user.global_name || props.relationship.user.username;
 	const AppState = useAppState();
 	const tab: TextChannelTab = {
 		type: 'textChannel',
@@ -71,10 +72,10 @@ const Friend = (props: FriendProps) => {
 					handleClick(e);
 				}}
 			>
-				<img src={img} alt={props.relationship.user.display_name} />
+				<img src={img} alt={props.relationship.user.global_name} />
 
 				<main>
-					<span>{props.relationship.user.username}</span>
+					<span>{displayName}</span>
 					<p>
 						Super duper long status because i am a stupid little nerd that cant fit his funny little text in less than
 						50 characters

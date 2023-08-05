@@ -76,7 +76,7 @@ impl Message {
 				username: "?".to_string(),
 				public_flags: 0,
 				id: "362958640656941056".to_string(),
-				display_name: None,
+				global_name: None,
 				discriminator: "1234".to_string(),
 				bot: None,
 				avatar_decoration: None,

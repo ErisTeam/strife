@@ -18,7 +18,7 @@ pub struct CurrentUser {
 	pub flags: UserFlags,
 
 	pub email: Option<String>,
-	pub display_name: Option<String>,
+	pub global_name: Option<String>,
 	pub discriminator: String,
 	pub desktop: bool,
 	pub bio: Option<String>,
@@ -30,7 +30,7 @@ pub struct CurrentUser {
 }
 impl CurrentUser {
 	pub fn get_name(&self) -> String {
-		if let Some(name) = &self.display_name { name.clone() } else { self.username.clone() }
+		if let Some(name) = &self.global_name { name.clone() } else { self.username.clone() }
 	}
 }
 ///https://discord.com/developers/docs/resources/user#user-object
@@ -66,7 +66,7 @@ pub struct PublicUser {
 	pub username: String,
 	pub public_flags: u64,
 	pub id: String,
-	pub display_name: Option<String>,
+	pub global_name: Option<String>,
 	pub discriminator: String,
 	pub bot: Option<bool>,
 	pub avatar_decoration: Option<String>,

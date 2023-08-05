@@ -154,7 +154,7 @@ impl Auth {
 				state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
 					state: crate::modules::user_manager::State::LoggedIn,
 					token: Some(token),
-					display_name: Some(user_info.get_name()),
+					global_name: Some(user_info.get_name()),
 					avatar_hash: user_info.avatar,
 				}).await;
 
@@ -200,7 +200,7 @@ impl Auth {
 		handle: AppHandle
 	) -> std::result::Result<(), Box<dyn std::error::Error + Sync + Send>> {
 		let mut avatar_hash = None;
-		let mut display_name = None;
+		let mut global_name = None;
 		loop {
 			let payload = auth_receiver.recv().await;
 			if let Some(payload) = payload {
@@ -227,7 +227,7 @@ impl Auth {
 								state.user_manager.add_user(user_id.clone(), crate::modules::user_manager::User {
 									state: crate::modules::user_manager::State::LoggedIn,
 									token: Some(token),
-									display_name: display_name.clone(),
+									global_name: global_name.clone(),
 									avatar_hash: avatar_hash.clone(),
 								}).await;
 
@@ -275,7 +275,7 @@ impl Auth {
 						}
 					}
 					RemoteAuthMessages::UpdateQrUserData { user_id, discriminator, avatar_hash: avatar, username } => {
-						display_name = Some(username.clone());
+						global_name = Some(username.clone());
 						avatar_hash = Some(avatar.clone());
 
 						handle.emit_all("auth", webview_packets::auth::Auth::MobileTicketData {

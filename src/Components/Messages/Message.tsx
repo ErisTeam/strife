@@ -3,6 +3,8 @@ import { Message as MessageType } from '../../discord';
 import { JSX, createMemo } from 'solid-js';
 import API from '../../API';
 
+import style from './css.module.css';
+
 interface FormatedMessage extends MessageType {
 	formatedContent: JSX.Element[];
 }
@@ -69,19 +71,27 @@ const Message = (props: MessageProps) => {
 				break;
 		}
 	}
+
+	let img;
+
+	console.log(message);
+	if (message.author.avatar) {
+		img = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=32`;
+	} else {
+		img = '/Friends/aabcfkll.png';
+	}
 	let ref: HTMLElement;
 	return (
-		<li style={{ display: 'flex', 'flex-direction': 'column' }}>
-			<span>
-				<button>{message.author.display_name}</button>
-				{intl.format(new Date(message.timestamp))}
-			</span>
-			<span ref={ref}>
-				<span>{message.author.username}:</span>
+		<li ref={ref} class={style.message}>
+			<button>
+				<img src={img} alt={message.author.global_name} />
+			</button>
+			<div>
+				<button>{message.author.global_name}</button>
+				<time>{intl.format(new Date(message.timestamp))}</time>
+				<p>{message.content}</p>
+			</div>
 
-				{message.content}
-			</span>
-			{/* <For></For> */}
 			<ContextMenu data={{}} openRef={ref}>
 				<button>edit</button>
 			</ContextMenu>

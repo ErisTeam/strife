@@ -98,7 +98,7 @@ pub async fn get_users(state: State<'_, Arc<MainState>>) -> Result<serde_json::V
 	struct BasicUserInfo {
 		state: user_manager::State,
 		user_id: String,
-		display_name: Option<String>,
+		global_name: Option<String>,
 		avatar: Option<String>,
 	}
 	let mut users = Vec::new();
@@ -106,7 +106,7 @@ pub async fn get_users(state: State<'_, Arc<MainState>>) -> Result<serde_json::V
 		let user = BasicUserInfo {
 			state: data.state.clone(),
 			user_id: user_id.clone(),
-			display_name: data.display_name.clone(),
+			global_name: data.global_name.clone(),
 			avatar: data.avatar_hash.clone(),
 		};
 		users.push(user);

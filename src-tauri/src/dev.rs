@@ -30,7 +30,7 @@ pub fn add_token(m: &MainState, handle: tauri::AppHandle) {
 			m.user_manager.add_user(token.id, crate::modules::user_manager::User {
 				state: crate::modules::user_manager::State::LoggedIn,
 				token: Some(token.token),
-				display_name: Some(user_info.get_name()),
+				global_name: Some(user_info.get_name()),
 				avatar_hash: user_info.avatar,
 			}).await;
 

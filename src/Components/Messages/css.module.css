@@ -1,3 +1,21 @@
 .chat {
 	background-color: var(--chat-bgc);
+
+	overflow-y: scroll;
+	height: 100%;
+}
+.message {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	border: red solid 1px;
+	* {
+		border: red solid 1px;
+	}
+	> button {
+	}
+	> div {
+		width: 100%;
+		display: flex;
+	}
 }

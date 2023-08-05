@@ -228,8 +228,8 @@ impl MainApp {
 					let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
 					user_id = data.user.id.clone();
 
-					let display_name = if let Some(display_name) = &data.user.display_name {
-						display_name.clone()
+					let global_name = if let Some(global_name) = &data.user.global_name {
+						global_name.clone()
 					} else {
 						data.user.username.clone()
 					};

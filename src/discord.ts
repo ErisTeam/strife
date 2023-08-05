@@ -14,7 +14,7 @@ type RelationshipUser = {
 	avatar?: string;
 	avatar_decoration?: string;
 	discriminator: string;
-	display_name?: string;
+	global_name?: string;
 	public_flags: number;
 };
 

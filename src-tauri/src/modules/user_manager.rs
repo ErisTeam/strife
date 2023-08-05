@@ -12,7 +12,7 @@ pub enum State {
 pub struct User {
 	pub state: State,
 	pub token: Option<String>,
-	pub display_name: Option<String>,
+	pub global_name: Option<String>,
 	pub avatar_hash: Option<String>,
 }
 impl Default for User {
@@ -20,7 +20,7 @@ impl Default for User {
 		Self {
 			state: State::LoggedOut,
 			token: None,
-			display_name: None,
+			global_name: None,
 			avatar_hash: None,
 		}
 	}
