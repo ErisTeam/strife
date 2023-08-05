@@ -7,24 +7,73 @@
 .message {
 	width: 100%;
 	display: flex;
+	padding: 0 2em;
+	padding-bottom: 0;
 
-	border: red solid 1px;
-	* {
+	margin-top: 1em;
+
+	/* * {
 		border: red solid 1px;
-	}
+	} */
 	> button {
+		flex-shrink: 0;
 		width: 3em;
 		height: 3em;
 		img {
 			height: 100%;
 			width: 100%;
+			aspect-ratio: 1/1;
+			border-radius: 100%;
 		}
 	}
 	.messageInner {
 		width: 100%;
+		padding-right: 0.25em;
+		padding-top: 0.5em;
+		padding-bottom: 0;
+		padding-left: 0.5em;
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
+		justify-content: space-between;
+
 		.details {
+			display: flex;
+			align-items: flex-end;
+
+			gap: 0.5em;
+			button {
+				font-size: 1.2em;
+				line-height: 1em;
+			}
+			time {
+				font-size: 0.6em;
+				line-height: 1em;
+			}
+		}
+	}
+}
+
+.same {
+	margin-top: 0;
+	padding: 0;
+	> button {
+		display: none;
+		img {
+		}
+	}
+	.messageInner {
+		height: 100%;
+		padding: 0;
+		margin-left: 5.5em;
+		.details {
+			display: none;
+			button {
+			}
+			time {
+			}
+		}
+		p {
+			padding: 0;
 		}
 	}
 }

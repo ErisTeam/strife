@@ -160,9 +160,25 @@ export default () => {
 		// 	}
 		// });
 	}
+	const [renderableMessages, setRenderableMessages] = createSignal([]);
+	createEffect(() => {
+		const renMsgs = [];
+		let lastAuthor = '';
+
+		for (let i = 0; i < messages.length; i++) {
+			if (messages[i].author.id == lastAuthor) {
+				renMsgs.push(<Message class={style.same} message={messages[i]} updateMessage={updateMessage} />);
+			} else {
+				renMsgs.push(<Message message={messages[i]} updateMessage={updateMessage} />);
+				lastAuthor = messages[i].author.id;
+			}
+		}
+		setRenderableMessages(renMsgs);
+	});
+
 	return (
 		<ol class={style.chat}>
-			<For each={messages}>{(message) => <Message message={message} updateMessage={updateMessage} />}</For>
+			{renderableMessages()}
 			<Show when={isVoiceChannel()}>
 				<button onclick={startVoice}>Join Voice Channel</button>
 			</Show>

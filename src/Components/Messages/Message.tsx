@@ -13,6 +13,7 @@ type MessageProps = {
 	message: MessageType;
 	updateMessage?: (val: Partial<MessageType>) => void;
 	setReference?: (id: string) => void;
+	class?: string;
 };
 const Message = (props: MessageProps) => {
 	let embed;
@@ -80,9 +81,9 @@ const Message = (props: MessageProps) => {
 	} else {
 		img = '/Friends/aabcfkll.png';
 	}
-	let ref: HTMLElement;
+	let ref: HTMLLIElement;
 	return (
-		<li ref={ref} class={style.message}>
+		<li ref={ref} class={[style.message, props.class].join(' ')}>
 			<button>
 				<img src={img} alt={message.author.global_name} />
 			</button>
