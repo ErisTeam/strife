@@ -14,15 +14,15 @@ const WindowDecoration = () => {
 		})
 		.catch((e) => console.log(e));
 	return (
-		<div class={style.decoration}>
+		<div class={style.decoration} data-tauri-drag-region>
 			<h1>PandaCord</h1>
-			<div class={style.grabbable} data-tauri-drag-region />
+
 			<div class={style.buttons}>
 				<button
 					onclick={() => {
 						appWindow.minimize().catch((e) => console.log(e));
 					}}
-					title="Minimize window"
+					title="Minimize window" //TODO: Why this exists?
 				>
 					<Minus />
 				</button>
@@ -33,7 +33,7 @@ const WindowDecoration = () => {
 							.then()
 							.catch((e) => console.log(e));
 					}}
-					title="Toggle Maximiation of window"
+					title="Toggle Maximiation of window" //TODO: Why this exists?
 				>
 					<Show when={isMaxmized()} fallback={<Maximize />}>
 						<Minimize />
