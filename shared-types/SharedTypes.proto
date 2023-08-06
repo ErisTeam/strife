@@ -1,0 +1,391 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+package SharedTypes;
+
+//if field doesnt exist in the official documentation its marked as optional
+message Guild{
+	optional uint64 version=1;
+	repeated Channel threads=2;
+	repeated Sticker stickers=3;
+	repeated StageInstance stage_instances=4;
+	repeated Role roles=5;
+	GuildProperties properties=6;
+	optional uint64 premium_subscription_count=7;
+	uint64 member_count=8;
+	optional bool lazy=9;
+	optional bool large=10;
+	string joined_at=11;
+	string id=12;
+	repeated GuildScheduledEvent guild_scheduled_events =13;
+	repeated Emoji emojis=14;
+	optional string data_mode=15;
+	repeated Channel channels=16;
+	ApplicationCommandCounts application_command_counts=17;
+	
+
+
+	
+}
+
+message GuildProperties{
+	string id=1;
+	string owner_id=2;
+	optional string description = 3;
+	optional string icon=4;
+	string name = 5;
+
+	NSFWLevel nsfw_level=6;
+	bool nsfw=7;
+	uint64 explicit_content_filter=8;
+
+	uint32 system_channel_flags =9;
+	uint32 verification_level=10;
+	uint32 mfa_level=11;
+	string preferred_locale=12;
+
+	optional GuildHubType hub_type = 13;
+	optional string home_header =14;
+
+	optional string rules_channel_id=15;
+	optional string system_channel_id=16;
+	optional string public_updates_channel_id=17;
+	optional string safety_alerts_channel_id=18;
+
+	uint64 afk_timeout=19;
+	optional string afk_channel_id=20;
+
+	uint64 premium_tier=21;
+	bool premium_progress_bar_enabled=22;
+
+	optional string splash=23;
+	repeated string features=24;
+
+	uint64 default_message_notifications=25;
+
+	optional string banner=26;
+	optional string vanity_url_code=27;
+	optional string latest_onboarding_question_id =28;
+	
+	uint64 max_video_channel_users=29;
+	uint64 max_stage_video_channel_users=30;
+	uint64 max_members=31;
+
+	optional string application_id=32;
+
+
+
+}
+
+
+enum NSFWLevel{
+	DEFAULT =0;
+	EXPLICIT = 1;
+	SAFE= 2;
+	AGE_RESTRICTED =3;
+}
+enum GuildHubType{
+	DEFAULT =0;
+	HIGH_SCHOOL=1;
+	COLLEGE=2;
+}
+
+
+message Sticker{
+	string id=1;
+	optional string pack_id=2;
+	string name=3;
+	optional string description=4;
+	repeated string tags=5;
+	optional string asset=6;
+	StickerType type=7;
+	StickerFormatType format_type=8;
+	optional bool available=9;
+	optional string guild_id=10;
+	optional User user=11;
+	optional uint64 sort_value=12;
+
+	
+
+
+}
+message StageInstance{
+	string channel_id=1;
+	bool discoverable_disabled=2;
+	string guild_id=3;
+	optional string guild_scheduled_event_id=4;
+	string id=5;
+	StageInstancePrivacyLevel privacy_level=6;
+	string topic=7;
+
+
+}
+
+enum StageInstancePrivacyLevel{
+	PUBLIC=1;
+	GUILD_ONLY=2;
+
+}
+message Role{
+
+	optional string unicode_emoji=1;
+	RoleFlags flags=2;
+	bool hoist=3;
+	optional string icon=4;
+	string id=5;
+	bool managed=6;
+	bool mentionable=7;
+	string name=8;
+	string permissions=9;
+	uint64 position=10;
+	optional RoleTags tags=11;
+	uint64 color=12;
+	
+
+}
+enum RoleFlags{
+	IN_PROMPT=1;
+
+}
+message RoleTags{
+	optional bool available_for_purchase=1;
+	optional string bot_id=2;
+	optional bool guild_connections=3;
+	optional string integration_id=4;
+	optional bool premium_subscriber=5;
+	optional string subscription_listing_id=6;
+}
+message GuildScheduledEvent{
+	string id=1;
+	string guild_id=2;
+	optional string channel_id=3;
+	optional string creator_id=4;
+	string name=5;
+	optional string description=6;
+	string scheduled_start_time=7;
+	optional string scheduled_end_time=8;
+	StageInstancePrivacyLevel privacy_level=9;
+	GuildScheduledEventStatus status=10;
+	GuildScheduledEventType entity_type=11;
+	optional string entity_id=12;
+	optional GuildScheduledEventMetadata entity_metadata=13;
+	optional User creator=14;
+	optional uint64 user_count=15;
+	optional string image=16;
+}
+enum GuildScheduledEventPrivacyLevel{
+	GUILD_ONLY=2;
+
+}
+enum GuildScheduledEventStatus{
+	SCHEDULED=1;
+	ACTIVE=2;
+	COMPLETED=3;
+	CANCELED=4;
+
+}
+enum GuildScheduledEventType{
+	STAGE_INSTANCE=1;
+	VOICE=2;
+	EXTERNAL=3;
+}
+message GuildScheduledEventMetadata{
+	optional string location=1;
+}
+
+
+
+message Emoji{
+	string id=1;
+	optional string name=2;
+	repeated Role roles=3;
+	optional User user=4;
+	optional bool require_colons=5;
+	optional bool managed=6;
+	optional bool animated=7;
+	optional bool available=8;
+
+
+}
+message Channel{
+	string id=1;
+	ChannelType type=2;
+	optional string guild_id=3;
+	optional uint64 position=4;
+	repeated OverwriteObject permission_overwrites=5;
+	optional string name=6;
+	optional string topic=7;
+	optional bool nsfw=8;
+	optional string last_message_id=9;
+	optional uint64 bitrate=10;
+	optional uint64 user_limit=11;
+	optional uint64 rate_limit_per_user=12;
+	repeated User recipients=13;
+	optional string icon=14;
+	optional string owner_id=15;
+	optional string application_id=16;
+	optional bool managed=17;
+	optional string parent_id=18;
+	optional uint64 last_pin_timestamp=19;
+	optional string rtc_region=20;
+	optional VideoQualityMode video_quality_mode=21;
+	optional uint64 message_count=22;
+	optional uint64 member_count=23;
+	optional ThreadMetadata thread_metadata=24;
+	optional ThreadMember member=25;
+	optional uint64 default_auto_archive_duration=26;
+	optional string permissions=27;
+	optional uint64 flags=28;
+	optional uint64 total_message_sent=29;
+	repeated ForumTag available_tags=30;
+	repeated string applied_tags=31;
+	optional DefaultReaction default_reaction_emoji=32;
+	optional uint64 default_thread_rate_limit_per_user=33;
+	optional ChannelSortOrder default_sort_order=34;
+	optional ForumLayout default_forum_layout=35; 
+
+
+
+
+}
+enum ChannelSortOrder{
+	LATEST_ACTIVITY=1;
+	CREATION_DATE=2;
+}
+enum ForumLayout{
+	NOT_SET=0;
+	LIST_VIEW=1;
+	GALLERY_VIEW=2;
+}
+message DefaultReaction{
+	optional string emoji_id=1;
+	optional string emoji_name=2;
+
+}
+
+message ForumTag{
+	string id=1;
+	string name=2;
+	bool moderated=3;
+	optional string emoji_id=4;
+	optional string emoji_name=5;
+
+}
+
+message ThreadMetadata{
+	bool archived=1;
+	uint64 auto_archive_duration=2;
+	uint64 archive_timestamp=3;
+	bool locked=4;
+	optional bool invitable=5;
+	optional uint64 create_timestamp=6;
+
+}
+
+message ThreadMember{
+	optional string id=1;
+	optional string user_id=2;
+	uint64 join_timestamp=3;
+	uint64 flags=4;
+	optional GuildMember member=5;
+
+}
+
+enum ChannelType{
+	GUILD_TEXT=0;
+	GUILD_VOICE=1;
+	GROUP_DM=2;
+	GUILD_CATEGORY=3;
+	GUILD_ANNOUNCEMENT=4;
+	ANNOUNCEMENT_THREAD=5;
+	PUBLIC_THREAD=10;
+	PRIVATE_THREAD=11;
+	GUILD_STAGE_VOICE=12;
+	GUILD_DIRECTORY=13;
+	GUILD_FORUM=14;
+	GUILD_MEDIA=15;
+
+}
+enum VideoQualityMode{
+	AUTO=1;
+	FULL=2;
+
+}
+message OverwriteObject{
+	string id=1;
+	OverwriteType type=2;
+	string allow=3;
+	string deny=4;
+
+}
+enum OverwriteType{
+	ROLE=0;
+	MEMBER=1;
+
+}
+enum ApplicationComandTypes{
+	CHAT_INPUT=1;
+	USER=2;
+	MESSAGE=3;
+}
+
+message ApplicationCommandCounts{
+	optional uint64 messages=1;
+	optional uint64 users=2;
+	optional uint64 chat_inputs=3;
+
+}
+enum StickerType{
+	STANDARD=1;
+	GUILD=1;
+}
+enum StickerFormatType{
+	PNG=1;
+	APNG=2;
+	LOTTie=3;
+	GIF=4;
+}
+
+message User{
+	string id =1;
+	string username=2;
+	string discriminator=3;
+	optional string global_name=4;
+	optional string avatar=5;
+	optional bool bot=6;
+	optional bool system=7;
+	optional bool mfa_enabled=8;
+	optional string banner=9;
+	optional uint64 accent_color=10;
+	optional string locale=11;
+	optional bool verified=12;
+	optional string email=13;
+	optional uint64 flags=14;
+	optional PremiumType premium_type=15;
+	optional uint64 public_flags=16;
+	optional string avatar_decoration=17;
+
+}
+enum PremiumType{
+	NONE=0;
+	NITRO_CLASSIC=1;
+	NITRO=2;
+	NITRO_BASIC=3;
+}
+message GuildMember{
+	optional User user=1;
+	optional string nick=2;
+	optional string avatar=3;
+	repeated Role roles=4;
+	uint64 joined_at=5;
+	optional uint64 premium_since=6;
+	bool deaf=7;
+	bool mute=8;
+	uint64 flags=9;
+	optional bool pending=10;
+	optional string permissions=11;
+	optional uint64 communication_disabled_until=12;
+
+}
