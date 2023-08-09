@@ -64,7 +64,7 @@ const LoginPage = () => {
 				break;
 			}
 			case 'loginSuccess': {
-				appState.setUserID(input.userId);
+				appState.setUserId(input.userId);
 
 				console.log(appState.userId());
 
@@ -94,7 +94,7 @@ const LoginPage = () => {
 				break;
 			}
 			case 'verifySuccess': {
-				appState.setUserID(input.userId);
+				appState.setUserId(input.userId);
 
 				console.log(appState.userId());
 				console.log('verify success');
@@ -118,8 +118,9 @@ const LoginPage = () => {
 			await emit('verifyLogin', {
 				code: code,
 				method: didSendSMS() ? 'Sms' : 'Mfa',
-			})
+			}),
 		);
+		//TODO: check if correct usage
 		API.updateCurrentUserID().catch((e) => {
 			console.log(e);
 		});

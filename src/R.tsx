@@ -5,6 +5,7 @@ import { AppState } from './types';
 import { useTrans } from './Translation';
 import Dev from './Components/Dev/Dev';
 import API from './API';
+import { useAppState } from './AppState';
 
 type Props = {
 	state: AppState;
@@ -18,6 +19,7 @@ const R = (props: Props) => {
 	const [t] = useTrans();
 
 	const [error, setError] = createSignal<Error | null>(null);
+	const AppState = useAppState();
 
 	const [a, { refetch }] = createResource(async () => {
 		console.log('aaaaaaaaa');
@@ -25,7 +27,7 @@ const R = (props: Props) => {
 		console.log('bbbbbbbbbb');
 		console.log('res', res);
 		if (props.state === 'Application') {
-			await API.activateUser();
+			await API.activateUser(AppState.userId());
 		}
 		return res;
 	});

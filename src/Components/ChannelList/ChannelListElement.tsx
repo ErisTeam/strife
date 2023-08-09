@@ -5,7 +5,6 @@ import { Channel as ChannelType } from '../../discord';
 // Style
 import style from './css.module.css';
 import { useAppState } from '../../AppState';
-import { TextChannelTab } from '../../types';
 import { CONSTANTS } from '../../Constants';
 import { Component, JSX, Match, Switch, createMemo, createSignal } from 'solid-js';
 
@@ -14,6 +13,8 @@ import { Volume2 } from 'lucide-solid';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Chat from '../Messages/Chat';
 import { Dynamic } from 'solid-js/web';
+import API from '../../API';
+import { TextChannelTab as textChannelTab } from '../Tabs/Tabs';
 
 interface ChannelProps {
 	data: ChannelType;
@@ -34,16 +35,7 @@ export default (props: ChannelProps) => {
 			(t: any) => t.type === 'textChannel' && t.tabData?.channelId === props.data.id,
 		);
 		console.log('tabS', tabS);
-		const tab: TextChannelTab = {
-			type: 'textChannel',
-			component: Chat,
-			title: displayName(),
-			icon: channelIcon(),
-			tabData: {
-				channelId: props.data.id,
-				guildId: props.data.guild_id,
-			},
-		};
+		const tab = textChannelTab(props.data);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
@@ -72,32 +64,10 @@ export default (props: ChannelProps) => {
 	}
 
 	const channelIcon = createMemo((): string | Component => {
-		//extract emoji from name
-		const emoji = props.data.name.match(/\p{Extended_Pictographic}/gu);
-		if (emoji) {
-			//remove emoji from name
-			const regEx = new RegExp(emoji[0], 'g');
-			setDisplayName(props.data.name.replace(regEx, ''));
-			return emoji[0];
-		}
-		switch (props.data.type) {
-			case CONSTANTS.GUILD_TEXT:
-				return '#';
-			case CONSTANTS.GUILD_VOICE:
-				return Volume2;
-			case CONSTANTS.GUILD_CATEGORY:
-				return '📁';
-			case CONSTANTS.GUILD_ANNOUNCEMENT:
-				return '📢';
-			case CONSTANTS.GUILD_DIRECTORY:
-				return '📁';
-			case CONSTANTS.GUILD_FORUM:
-				return '📰';
-			case CONSTANTS.GUILD_STAGE_VOICE:
-				return '🎤';
-			default:
-				return '❓';
-		}
+		let { emoji, newName } = API.getChannelIcon(props.data);
+		setDisplayName(newName);
+
+		return emoji;
 	});
 
 	let openRef;

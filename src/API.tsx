@@ -9,58 +9,73 @@ import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
 import { Navigator } from '@solidjs/router';
-
-const AppState = useAppState();
+import { Volume2 } from 'lucide-solid';
+import { CONSTANTS } from './Constants';
+import { Component } from 'solid-js';
 
 export default {
-	Tabs: {
-		openTab(tab: Tab, navigator: Navigator) {
-			//navigator(`/app/${tab.guildId}/${tab.channelId}`);
-		},
-		addNewTab(channel: Channel, navigator?: Navigator): ['alreadyexists' | 'guildnotfound' | null, Tab?] {
-			return ['guildnotfound'];
-			// const t = AppState.Tabs.find((tab) => tab.channelId == channel.id);
-			// if (t) {
-			// 	console.log('tab already exists');
-			// 	return ['alreadyexists', t];
-			// }
-
-			// console.log('channel', channel);
-			// const guild = AppState.userGuilds.find((g: Guild) => g.properties.id == channel.guild_id);
-
-			// if (!guild) {
-			// 	console.error('Guild not found!');
-			// 	return ['guildnotfound'];
-			// }
-			// const tab: Tab = {
-			// 	guildId: channel.guild_id,
-			// 	channelId: channel.id,
-			// 	channelName: channel.name,
-			// 	channelType: channel.type,
-			// 	guildIcon: guild.properties.icon,
-			// 	guildName: guild.properties.name,
-			// };
-
-			// AppState.setTabs(produce((tabs) => tabs.push(tab)));
-			// console.log(AppState.Tabs);
-			// if (navigator) {
-			// 	this.openTab(tab, navigator);
-			// }
-			// return [null, tab];
-		},
-	},
-
 	Voice: {
 		async joinVoiceChannel(guildId: string, channelId: string) {
 			//TODO: implement voice
 		},
 	},
 
-	async activateUser(userId: string = AppState.userId()) {
+	channelFromRelationship(relationship: Relationship): Channel {
+		return {
+			...relationship,
+			id: relationship.user.id,
+			name: relationship.user.username,
+			type: CONSTANTS.GUILD_TEXT,
+			guild_id: '@me',
+		};
+	},
+
+	getChannelIcon(channel: Channel): { emoji: string | Component; newName: string } {
+		//extract emoji from name
+		const emojiReg = channel.name.match(/\p{Extended_Pictographic}/gu);
+
+		let emoji: string | Component = '#';
+		let newName = channel.name;
+		if (emojiReg) {
+			//remove emoji from name
+			const regEx = new RegExp(emojiReg[0], 'g');
+			newName = channel.name.replace(regEx, '');
+			emoji = emojiReg[0];
+		}
+		console.log(channel.type);
+		switch (channel.type) {
+			case CONSTANTS.GUILD_TEXT:
+				emoji = '#';
+				break;
+			case CONSTANTS.GUILD_VOICE:
+				emoji = Volume2;
+				break;
+			case CONSTANTS.GUILD_CATEGORY:
+				emoji = '📁';
+				break;
+			case CONSTANTS.GUILD_ANNOUNCEMENT:
+				emoji = '📢';
+				break;
+			case CONSTANTS.GUILD_DIRECTORY:
+				emoji = '📁';
+				break;
+			case CONSTANTS.GUILD_FORUM:
+				emoji = '📰';
+				break;
+			case CONSTANTS.GUILD_STAGE_VOICE:
+				emoji = '🎤';
+				break;
+			default:
+				emoji = '❓';
+		}
+		return { emoji, newName };
+	},
+
+	async activateUser(userId: string) {
 		console.log('activating user', userId);
 		return await invoke('activate_user', { userId });
 	},
-	async getRelationships(userId: string = AppState.userId()) {
+	async getRelationships(userId: string) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: { relationships: Relationship[] } }>(
 			'general',
 			'relationships',
@@ -70,18 +85,16 @@ export default {
 		console.log('getRelationships', await res);
 		return (await res).data.relationships;
 	},
-	async getGuilds(userId: string = AppState.userId()) {
+	async getGuilds(userId: string) {
 		const res = oneTimeListener<{ type: string; user_id: string; data: { guilds: Guild[] } }>('general', 'guilds');
 		await emit('getGuilds', { userId });
 
 		return (await res).data.guilds;
 	},
 
-	async getLocalUserInfo(userId: string = AppState.userId()) {
+	async getLocalUserInfo(userId: string) {
 		return (await invoke('get_user_info', { userId })) as any;
 	},
-
-	async getUserInfoNoFetch(userId: string) {},
 
 	/**
 	 * Get messages of the given channel.
@@ -175,13 +188,16 @@ export default {
 	 * Sends a request to the Rust API to get the user's token
 	 * @param user_id
 	 */
-	async getToken(userId: string = AppState.userId()): Promise<string | null> {
+	async getToken(userId: string = ''): Promise<string | null> {
+		const AppState = useAppState();
+		if (!userId) userId = AppState.userId();
 		return await invoke('get_token', { userId });
 	},
 
 	async updateCurrentUserID() {
 		const response = await invoke('get_last_user');
-		AppState.setUserID(response as string);
+		const AppState = useAppState();
+		AppState.setUserId(response as string);
 		return;
 	},
 
@@ -189,33 +205,11 @@ export default {
 		return str.replace(/(?!^)_(.)/g, (_, char) => char.toUpperCase());
 	},
 
-	toCamelCase(object: any) {
-		const obj = Object.assign({}, object);
-		const newObj: any = {};
-		for (const key in obj) {
-			const camelKey = this.snakeToCamel(key);
-			if (Array.isArray(obj[key])) {
-				newObj[camelKey] = [];
-				for (const item of obj[key]) {
-					if (item instanceof Object) {
-						newObj[camelKey].push(this.toCamelCase(item));
-					} else {
-						newObj[camelKey].push(item);
-					}
-				}
-			} else if (obj[key] instanceof Object) {
-				newObj[camelKey] = this.toCamelCase(obj[key]);
-			} else {
-				newObj[camelKey] = obj[key];
-			}
-		}
-		return newObj;
-	},
-
 	async updateGuilds() {
+		const AppState = useAppState();
 		AppState.setUserGuilds([]);
 
-		const guilds: Guild[] = await this.getGuilds();
+		const guilds: Guild[] = await this.getGuilds(AppState.userId());
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
 		guilds.forEach((guild) => {
 			guild.channels.forEach((channel) => {
@@ -250,36 +244,12 @@ export default {
 	},
 
 	async updateRelationships() {
+		const AppState = useAppState();
 		AppState.setRelationships([]);
 		console.warn('updating relationships');
-		const relationships = await this.getRelationships();
+		const relationships = await this.getRelationships(AppState.userId());
 		console.log(relationships);
 		AppState.setRelationships(relationships);
-	},
-
-	addTab(tab: Tab) {
-		// if (AppState.Tabs.find((t) => t.channelId == tab.channelId)) {
-		// 	console.error('tab already exists');
-		// 	return;
-		// }
-		// AppState.setTabs([...AppState.Tabs, tab]);
-		// console.log(AppState.Tabs);
-	},
-	removeTab(tabIndex: number) {
-		// console.log('removing tab', tabIndex);
-		// AppState.setTabs(produce((tabs) => tabs.tabs.splice(tabIndex, 1)));
-	},
-
-	replaceCurrentTab(tab: Tab, currentChannelId: string) {
-		// const currentTabIndex = AppState.Tabs.findIndex((t: Tab) => t.channelId === currentChannelId);
-		// if (!(currentTabIndex + 1)) {
-		// 	console.error('Current tab not found!');
-		// 	console.log(AppState.Tabs);
-		// 	console.log(currentChannelId);
-		// 	return;
-		// }
-		// console.warn('replacing tab with index', currentTabIndex, 'with');
-		// AppState.setTabs(currentTabIndex, tab);
 	},
 	getInitials(input: string): string {
 		return input
@@ -288,6 +258,7 @@ export default {
 			.join('');
 	},
 	getChannelById(guildId: string, channelId: string): Channel | undefined {
+		const AppState = useAppState();
 		const guild = AppState.userGuilds.find((g) => g.properties.id === guildId);
 		if (!guild) {
 			console.error('Guild not found!');

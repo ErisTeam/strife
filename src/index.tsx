@@ -10,7 +10,7 @@ import { AppStateProvider, useAppState } from './AppState';
 
 // Components
 import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
-import Application from './Routes/App/Application';
+
 import Prev from './Routes/Dev/Prev';
 import Login from './Routes/Login/Login';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
@@ -25,9 +25,8 @@ import './style.css';
 import { invoke } from '@tauri-apps/api';
 import R from './R';
 import Loading from './Components/Loading/Loading';
-import Test from './Routes/Dev/ContextMenu/ContextMenuTest';
+import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
 import Channel from './Components/Messages/Chat';
-import LayoutTest from './Routes/Dev/LayoutTest/LayoutTest';
 import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
 
 const App: Component = () => {
@@ -35,9 +34,9 @@ const App: Component = () => {
 	const [id] = createResource(async () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
 		console.log(users);
-		AppState.setUserID(users[0].userId);
 
 		await invoke('close_splashscreen');
+		return users[0].userId;
 	});
 
 	console.log(DEV);
@@ -48,7 +47,7 @@ const App: Component = () => {
 			<TransProvider>
 				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
 					<Show when={!id.loading} fallback={<Loading />}>
-						<AppStateProvider>
+						<AppStateProvider userId={id()}>
 							<Dev />
 
 							<Routes>
@@ -63,10 +62,11 @@ const App: Component = () => {
 								<Route path="/" element={<R state={'Dev'} force={true} component={Prev} />}></Route>
 
 								<Route path="/dev" element={<R state={'Dev'} force={true} component={Outlet} />}>
-									<Route path="/test" component={Test} />
+									<Route path="/contextmenutest" component={ContextMenuTest} />
 									<Route path="/messagetest" component={MessageTest} />
 									<Route path="/loadingtest" component={LoadingTest} />
 									<Route path="/login" component={Prev} />
+									<Route path="/test" component={ContextMenuTest} />
 								</Route>
 
 								<Route path="/login" component={Login} />

@@ -1,11 +1,11 @@
 // SolidJS
 
-import { For, Match, Show, Switch, onMount } from 'solid-js';
+import { For, Match, Show, Switch, createMemo, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../ChannelList/ChannelList';
 // Components
 import GuildList from '../Guild/GuildList';
-import Tabs, { TabContextProvider } from '../Tabs/Tabs';
+import TabBar, { TabContextProvider, Tabs } from '../Tabs/Tabs';
 
 // Style
 import style from './ApplicationWrapper.module.css';
@@ -18,23 +18,11 @@ import Dev from '../Dev/Dev';
 import { Guild } from '../../discord';
 import { unwrap } from 'solid-js/store';
 import WelcomeTab from '../Tabs/WelcomeTab';
-import { invoke } from '@tauri-apps/api';
+import { DragDropDebugger, DragDropProvider, DragDropSensors, SortableProvider } from '@thisbeyond/solid-dnd';
 
 //TODO: move to routes
 const ApplicationWrapper = () => {
 	const AppState = useAppState();
-
-	onMount(() => {
-		// AppState.Tabs.addTab(
-		// 	{
-		// 		title: 'Welcome',
-		// 		component: WelcomeTab,
-		// 		icon: '👋',
-		// 		type: 'other',
-		// 	},
-		// 	true,
-		// );
-	});
 
 	AppState.Tabs.addTab(
 		{
@@ -66,6 +54,13 @@ const ApplicationWrapper = () => {
 				>
 					Add test Tab
 				</button>
+				<button
+					onclick={() => {
+						AppState.Tabs.changeOrder(0, 1);
+					}}
+				>
+					Ordering Test
+				</button>
 			</Dev>
 
 			<div class={style.wrapper}>
@@ -81,25 +76,7 @@ const ApplicationWrapper = () => {
 						</Switch>
 					</Show>
 					<div class={style.inner}>
-						<Show when={AppState.Tabs.tabs.length > 0}>
-							<Tabs className={style.tabs} />
-
-							<For each={AppState.Tabs.tabs}>
-								{(tab, index) => {
-									console.log('tab', tab, index());
-									return (
-										<TabContextProvider tab={tab}>
-											<div
-												style={{ display: AppState.Tabs.currentTab() == index() ? null : 'none' }}
-												class={style.outlet}
-											>
-												<Dynamic component={tab.component} {...tab.tabData} />
-											</div>
-										</TabContextProvider>
-									);
-								}}
-							</For>
-						</Show>
+						<Tabs />
 					</div>
 				</div>
 				<ControlPanel className={style.controlPanel} />

@@ -11,7 +11,16 @@ import Guild from './Guild';
 // Style
 import style from './css.module.css';
 
-import { DragDropProvider, DragDropSensors, DragOverlay, SortableProvider, closestCenter } from '@thisbeyond/solid-dnd';
+import {
+	DragDropDebugger,
+	DragDropProvider,
+	DragDropSensors,
+	DragEvent,
+	DragOverlay,
+	Id,
+	SortableProvider,
+	closestCenter,
+} from '@thisbeyond/solid-dnd';
 import { createSignal } from 'solid-js';
 import FriendsTab from './FriendsTab';
 import GuildShadow from './GuildShadow';
@@ -21,7 +30,7 @@ interface GuildListProps {
 	className?: string;
 }
 type Item = {
-	id: number;
+	id: Id;
 	guild: TGuild;
 };
 
@@ -47,16 +56,16 @@ const GuildList = (props: GuildListProps) => {
 	const [activeItemId, setActiveItem] = createSignal(null);
 	const ids = () => items().map((item) => item.id);
 
-	const onDragStart = ({ draggable }) => {
-		setActiveItem(draggable.id);
+	const onDragStart = (event: DragEvent) => {
+		setActiveItem(event.draggable.id);
 		console.log(activeItemId());
 	};
 
-	const onDragEnd = ({ draggable, droppable }) => {
-		if (draggable && droppable) {
+	function onDragEnd(event: DragEvent) {
+		if (event.draggable && event.droppable) {
 			const currentItems = ids();
-			const fromIndex = currentItems.indexOf(draggable.id);
-			const toIndex = currentItems.indexOf(droppable.id);
+			const fromIndex = currentItems.indexOf(event.draggable.id);
+			const toIndex = currentItems.indexOf(event.droppable.id);
 			if (fromIndex !== toIndex) {
 				const updatedItems = currentItems.slice();
 				updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
@@ -74,7 +83,7 @@ const GuildList = (props: GuildListProps) => {
 				AppState.setUserGuilds(newGuilds);
 			}
 		}
-	};
+	}
 
 	return (
 		<DragDropProvider onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetector={closestCenter}>

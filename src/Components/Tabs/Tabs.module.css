@@ -3,16 +3,17 @@
 	max-width: 100%;
 	background-color: var(--tabs-bgc);
 	border-top-left-radius: var(--round-large);
-	transition: all 300ms;
 
 	ul {
-		transition: all 300ms;
 		padding-top: 0.4em;
 		height: 100%;
 		padding-left: 0.2em;
 		padding-right: 0.2em;
 		width: 100%;
 		display: flex;
+
+		gap: 0.2rem;
+
 		overflow-x: auto;
 		scrollbar-gutter: stable;
 
@@ -23,8 +24,7 @@
 }
 
 .tab {
-	transition: all 300ms;
-	margin-right: 0.2em;
+	transition: background 300ms;
 
 	display: flex;
 	align-items: center;
@@ -36,7 +36,7 @@
 	border-radius: 6px 6px 0px 0px;
 	padding: 0.3em;
 
-	> button:first-child {
+	& > button:first-child {
 		display: inline-flex;
 		margin-right: 0.5em;
 		justify-content: center;
@@ -57,7 +57,7 @@
 			text-align: center;
 		}
 	}
-	> button:last-child {
+	& > button:last-child {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -83,4 +83,10 @@
 		margin-top: 5rem;
 		font-size: 3em;
 	}
+}
+.outlet {
+	width: 100%;
+
+	height: 100%;
+	overflow-y: auto;
 }

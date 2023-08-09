@@ -76,6 +76,33 @@ type Guild = {
 	channels: Channel[];
 };
 
+type snowflake = string;
+
+//TODO: add the rest of channel types
+interface channel {
+	id: snowflake;
+	type: ChannelType;
+	guild_id?: snowflake;
+	name: string;
+}
+
+interface GroupDmChannel extends channel {
+	type: ChannelType.GroupDM;
+	guild_id: '@me';
+	recipients?: any[];
+	icon?: string;
+	owner_id: snowflake;
+	application_id?: snowflake;
+	managed?: boolean;
+}
+
+interface GuildChannel extends channel {
+	position?: number;
+	parent_id?: snowflake;
+	permission_overwrites?: any[];
+	nsfw?: boolean;
+}
+
 type Channel = {
 	id: string;
 	type: ChannelType;
@@ -129,6 +156,7 @@ export enum ChannelType {
 	GuildForum = 15,
 }
 
+//TODO: add the rest of fields https://discord.com/developers/docs/resources/channel#message-object
 type Message = {
 	id: Required<string>;
 	channel_id: string;
@@ -140,6 +168,14 @@ type Message = {
 	embeds: any[];
 
 	author: Partial<any>; //TODO: add user type
+
+	mentions: Partial<any>[];
+
+	mention_roles: Role[];
+
+	mention_channels?: channel[];
+
+	attachments: any[];
 };
 
 export type { GuildsResponse, UsersResponse, Role, Guild, Channel, RelationshipUser, Relationship, Message };

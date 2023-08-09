@@ -69,12 +69,22 @@ export const ContextMenusProvider = <D,>(props: { children: JSX.Element[] | JSX.
 				contextMenu.position = { x: 0, y: 0 };
 			}
 			const menu = Object.assign(contextMenu, { index: contextMenus.length });
-			setContextMenus([...contextMenus, menu]);
 
-			return contextMenus.length - 1;
+			let index = contextMenus.findIndex((c) => c == null);
+			if (index == -1) {
+				index = contextMenus.length;
+			}
+
+			setContextMenus(index, menu);
+
+			return index;
 		},
 		removeContextMenu: (index: number) => {
-			setContextMenus(produce((contextMenus) => contextMenus.splice(index, 1)));
+			if (index == contextMenus.length - 1) {
+				setContextMenus(produce((contextMenus) => contextMenus.splice(index, 1)));
+			} else {
+				setContextMenus(index, null);
+			}
 		},
 		setvisiblity: (index: number, state: boolean, position?: position) => {
 			if (position) {
@@ -179,6 +189,7 @@ export function createContextMenu<D>(contextMenu: ContextMenuData<D>) {
 	function onContextMenu(element: HTMLElement) {
 		const func = (e: MouseEvent) => {
 			e.preventDefault();
+			e.stopPropagation();
 			functions.toggleVisibility({ x: e.clientX, y: e.clientY });
 		};
 		element.addEventListener('contextmenu', func);
@@ -186,8 +197,16 @@ export function createContextMenu<D>(contextMenu: ContextMenuData<D>) {
 			element.removeEventListener('contextmenu', func);
 		});
 	}
+	const a = {};
+	Object.keys(functions).forEach((key) => {
+		// @ts-ignore
+		a[key] = {
+			// @ts-ignore
+			value: functions[key],
+		};
+	});
 
-	return Object.defineProperties(onContextMenu, functions) as typeof onContextMenu & typeof functions;
+	return Object.defineProperties(onContextMenu, a) as typeof onContextMenu & typeof functions;
 }
 
 interface ContextMenuProps<T> {
@@ -200,15 +219,25 @@ interface ContextMenuProps<T> {
 function ContextMenu<T>(props: ContextMenuProps<T>) {
 	const c = useContext(context as Context<ContextData<T>>);
 
+	let pos = { x: props.position.x, y: props.position.y };
+
 	let ref: HTMLOListElement;
 	onMount(() => {
 		props.updateRef(ref, props.index);
+		// const boundingRect = ref.getBoundingClientRect();
+		// let width = props.position.x + boundingRect.width;
+		// if (width > window.innerWidth) {
+		// 	pos.x -= width - window.innerWidth;
+		// }
+		// let height = props.position.y + boundingRect.height;
+		// if (height > window.innerHeight) {
+		// 	pos.y -= height - window.innerHeight;
+		// }
 	});
 
 	return (
-		<ol ref={ref} style={{ left: `${props.position.x}px`, top: `${props.position.y}px` }} class={style.contexMenu}>
+		<ol ref={ref} style={{ left: `${pos.x}px`, top: `${props.position.y}px` }} class={style.contexMenu}>
 			<MenuProvider closeMenu={() => c.setvisiblity(props.index, false)} data={props.data}>
-				{props.index}
 				{props.children}
 			</MenuProvider>
 		</ol>

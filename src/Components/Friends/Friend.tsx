@@ -31,15 +31,12 @@ const Friend = (props: FriendProps) => {
 		component: null,
 		title: props.relationship.user.username,
 		icon: img,
-		tabData: {
-			channelId: props.relationship.user.id,
-			guildId: '@me',
-		},
+		tabData: API.channelFromRelationship(props.relationship),
 	};
 	function handleClick(e: MouseEvent) {
 		console.log('clicked on', props.relationship.user.username, href);
 		const tabS = AppState.Tabs.tabs.find(
-			(t: any) => t.type === 'textChannel' && t.tabData.channelId === tab.tabData.channelId,
+			(t: any) => t.type === 'textChannel' && t.tabData.channelId === tab.tabData?.channelId,
 		);
 		switch (e.button) {
 			case 0:

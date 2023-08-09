@@ -125,13 +125,11 @@ async fn main() {
 				main_state.user_manager.load_from_file().await.unwrap();
 			});
 
-			#[cfg(debug_assertions)]
-			dev::add_token(&m, app_handle.clone());
-
-			#[cfg(debug_assertions)]
-			dev::clear_gateway_logs(app_handle.clone());
-
-			//close_loading(app)?;
+			if cfg!(debug_assertions) {
+				dev::add_token(&m, app_handle.clone());
+				dev::clear_gateway_logs(app_handle.clone());
+				close_loading(app)?;
+			}
 
 			Ok(())
 		})

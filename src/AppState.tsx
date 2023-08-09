@@ -1,91 +1,200 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // SolidJS
-import { createSignal, createContext, useContext, JSX } from 'solid-js';
-import { createStore, produce } from 'solid-js/store';
+import {
+	createSignal,
+	createContext,
+	useContext,
+	JSX,
+	Component,
+	createMemo,
+	Context,
+	Accessor,
+	Setter,
+} from 'solid-js';
+import { SetStoreFunction, StoreSetter, createStore, produce } from 'solid-js/store';
 // API
 import { Guild, Relationship } from './discord';
 import { Tab } from './types';
 
-const [userId, setUserId] = createSignal<string | null>(null);
-const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
+export type tabStoreType<T = {}> = Tab<T> & { visible?: boolean; order?: number };
 
-const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
+const AppState = createContext(null);
 
-const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
-const [relationships, setRelationships] = createStore<Relationship[]>([]);
-const [channelsSize, setChannelsSize] = createSignal<number>(250);
+type ContextValue = {
+	userId: Accessor<string | null>;
+	setUserId: Setter<string | null>;
 
-export type tabStoreType<T = {}> = Tab<T>;
+	// basicUserData: Accessor<any>;
+	// setBasicUserData: Setter<any>;
 
-const [tabs, setTabs] = createStore<tabStoreType<any>[]>([]);
-const [currentTab, setCurrentTab] = createSignal<number>(-1);
+	userGuilds: Guild[];
+	setUserGuilds: SetStoreFunction<Guild[]>;
+	currentGuild: Accessor<Guild | null | 'friends'>;
+	setCurrentGuild: Setter<Guild | null | 'friends'>;
 
-const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
+	currentState: Accessor<'text' | 'voice' | null>; //TODO: find a better way to do this
+	setCurrentState: Setter<'text' | 'voice' | null>; //TODO: find a better way to do this
 
-const Tabs = {
-	tabs,
-	currentTab,
+	relationships: Relationship[];
+	setRelationships: SetStoreFunction<Relationship[]>;
 
-	setCurrentTab,
-	removeTab: (index: number) => {
-		setTabs(produce((tabs) => tabs.splice(index, 1)));
-		if (index == currentTab()) {
-			if (tabs.length > 0) {
-				setCurrentTab(tabs.length - 1);
+	channelsSize: Accessor<number>; //TODO: find a better way to do this
+	setChannelsSize: Setter<number>;
+
+	Tabs: {
+		tabs: tabStoreType<any>[];
+		currentTab: Accessor<number>;
+
+		orderedTabs: () => tabStoreType<any>[];
+
+		changeOrder: (index1: number, index2: number) => void;
+
+		setCurrentTab: (tab: number | tabStoreType) => void;
+		removeTab: (index: number) => void;
+		addTab: (tab: tabStoreType) => void;
+	};
+	setTabs: SetStoreFunction<tabStoreType<any>[]>;
+};
+
+interface AppStateProviderProps {
+	children: JSX.Element[] | JSX.Element;
+
+	userId: string | null;
+}
+export function AppStateProvider(props: AppStateProviderProps) {
+	console.log('id: ', props.userId);
+	const [userId, setUserId] = createSignal<string | null>(props.userId);
+	const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
+
+	const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
+
+	const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
+	const [relationships, setRelationships] = createStore<Relationship[]>([]);
+	const [channelsSize, setChannelsSize] = createSignal<number>(250);
+
+	const [tabs, setTabs] = createStore<tabStoreType<any>[]>([]);
+	const [currentTab, setCurrentTab] = createSignal<number>(-1);
+
+	const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
+
+	const orderedTabs = createMemo(() =>
+		tabs
+			.map((t, index) => ({ order: t.order, index }))
+			.sort((a, b) => a.order - b.order)
+			.map((t) => tabs[t.index]),
+	);
+
+	const Tabs = {
+		tabs,
+		currentTab,
+
+		orderedTabs,
+
+		changeOrder(index1: number, index2: number) {
+			// setTabs(
+			// 	[index1, index2],
+			// 	produce((tab) => {
+			// 		tab.order = tab.order == tabs[index1].order ? tabs[index2].order : tabs[index1].order;
+			// 	}),
+			// );
+
+			const order1 = tabs[index1].order;
+			const order2 = tabs[index2].order;
+			setTabs(
+				index1,
+				produce((tab) => (tab.order = order2)),
+			);
+			setTabs(
+				index2,
+				produce((tab) => (tab.order = order1)),
+			);
+		},
+
+		setCurrentTab: (tab: number | tabStoreType) => {
+			if (typeof tab == 'number') {
+				setCurrentTab(tab);
+			} else {
+				setCurrentTab(tabs.indexOf(tab));
+			}
+		},
+		removeTab: (index: number) => {
+			const order = tabs[index].order;
+
+			const i = orderedTabs().findIndex((tab) => tab.order == order);
+			if (i != 0) {
+				setCurrentTab(i - 1);
+			} else if (tabs.length > 1) {
+				setCurrentTab(0);
 			} else {
 				setCurrentTab(-1);
 			}
-		} else if (currentTab() > index) {
-			setCurrentTab(currentTab() - 1);
-		}
-	},
-	addTab: function <T>(tab: Tab<T>, setAsCurrent?: boolean) {
-		console.log('adding tab', tab, tabs);
-		setTabs(tabs.length, tab);
-		if (setAsCurrent) {
-			setCurrentTab(tabs.length - 1);
-		}
-	},
-	replaceTab: function <T>(oldTab: number, newTab: Tab<T>) {
-		console.log(tabs, oldTab, newTab);
-		console.log(oldTab, newTab);
+			setTabs(produce((tabs) => tabs.splice(index, 1)));
+			// const tabBehind = tabs.findIndex((tab) => tab.order < order);
+			// if (index == currentTab()) {
+			// 	if (tabs.length > 0) {
+			// 		setCurrentTab(0);
+			// 	} else {
+			// 		setCurrentTab(-1);
+			// 	}
+			// } else if (currentTab() > index) {
+			// 	setCurrentTab(currentTab() - 1);
+			// }
+		},
+		addTab: function <T>(tab: Tab<T>, setAsCurrent?: boolean) {
+			console.log('adding tab', tab, tabs);
 
-		const tab = newTab as tabStoreType<T>;
+			const t = tab as tabStoreType<T>;
+			const orderedTabs = this.orderedTabs();
+			if (orderedTabs.length > 0) {
+				t.order = orderedTabs[tabs.length - 1].order + 1;
+			} else {
+				t.order = 0;
+			}
 
-		const c = currentTab();
+			if (setAsCurrent) {
+				setCurrentTab(t.order);
+				t.visible = true;
+			}
+			setTabs(tabs.length, t);
+		},
+		replaceTab: function <T>(oldTab: number, newTab: Tab<T>) {
+			console.log(tabs, oldTab, newTab);
+			console.log(oldTab, newTab);
 
-		this.removeTab(oldTab);
-		setTabs(oldTab, tab);
-		if (oldTab == c) {
-			setCurrentTab(oldTab);
-		}
-	},
-};
-const contextValue = {
-	userGuilds,
-	setUserGuilds,
+			const tab = newTab as tabStoreType<T>;
+			tab.order = tabs[oldTab].order;
+			const c = currentTab();
 
-	relationships,
-	setRelationships,
-	userId,
-	setUserID: setUserId,
-	Tabs,
-	setTabs,
-	currentGuild,
-	setCurrentGuild,
-	currentState,
-	setCurrentState,
-	channelsSize,
-	setChannelsSize,
-};
+			setTabs(produce((tabs) => tabs.splice(oldTab, 1)));
 
-const AppState = createContext(contextValue);
+			setTabs(tabs.length, tab);
+			console.log(tabs);
+			if (oldTab == c) {
+				setCurrentTab(tabs.length - 1);
+			}
+		},
+	};
+	const contextValue: ContextValue = {
+		userGuilds,
+		setUserGuilds,
 
-export function AppStateProvider({ children }: { children: JSX.Element[] | JSX.Element }) {
-	//@ts-ignore
-	return <AppState.Provider>{children}</AppState.Provider>;
+		relationships,
+		setRelationships,
+		userId,
+		setUserId,
+		Tabs,
+		setTabs,
+		currentGuild,
+		setCurrentGuild,
+		currentState,
+		setCurrentState,
+		channelsSize,
+		setChannelsSize,
+	};
+
+	return <AppState.Provider value={contextValue}>{props.children}</AppState.Provider>;
 }
 
 export function useAppState() {
-	return useContext(AppState);
+	return useContext(AppState as Context<ContextValue>);
 }

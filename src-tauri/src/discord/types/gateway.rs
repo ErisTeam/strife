@@ -167,10 +167,10 @@ pub mod gateway_packets_data {
 
 	#[derive(Serialize, Debug, Clone)]
 	pub struct Resume {
-		token: String,
-		session_id: String,
+		pub token: String,
+		pub session_id: String,
 		#[serde(rename = "seq")]
-		last_seq: u64,
+		pub last_seq: u64,
 	}
 
 	#[derive(Serialize, Debug, Clone)]

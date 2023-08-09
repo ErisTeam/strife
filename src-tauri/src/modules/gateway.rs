@@ -4,13 +4,19 @@ use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
 use log::{ debug, error, warn, trace };
 use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex, RwLock } };
-use tokio_tungstenite::{ WebSocketStream, MaybeTlsStream, connect_async_tls_with_config };
+use tokio_tungstenite::{
+	WebSocketStream,
+	MaybeTlsStream,
+	connect_async_tls_with_config,
+	tungstenite::{ protocol::frame::coding::CloseCode, Message },
+};
 
 use crate::{
 	discord::{
 		constants,
-		gateway_packets::{ OutGoingPacket, IncomingPacket },
-		types::gateway::gateway_packets_data::{ Identify, LazyGuilds, VoiceStateUpdateSend },
+		gateway_packets::{ OutGoingPacket, IncomingPacket, DispatchedEvents, OutGoingPacketsData },
+		types::gateway::gateway_packets_data::{ Identify, LazyGuilds, VoiceStateUpdateSend, Resume },
+		user::UserData,
 	},
 	modules::websocket::WebSocket,
 };
@@ -34,6 +40,8 @@ pub struct ConnectionData {
 	is_recconecting: bool,
 
 	resume_url: Option<String>,
+
+	session_id: Option<String>,
 }
 impl ConnectionData {
 	pub fn new(token: String, is_recconecting: bool) -> Self {
@@ -41,6 +49,7 @@ impl ConnectionData {
 			token,
 			sequence_number: None,
 			resume_url: None,
+			session_id: None,
 			is_recconecting,
 		}
 	}
@@ -157,6 +166,7 @@ impl Gateway {
 						crate::discord::gateway_packets::IncomingPacketsData::Hello(data) => {
 							let mut connection_info = connection_info.lock().await;
 							connection_info.heartbeat_interval = Duration::from_millis(data.heartbeat_interval);
+
 							connection_info.start_heartbeat();
 
 							let p = OutGoingPacket::identify(Identify {
@@ -188,7 +198,7 @@ impl Gateway {
 						}
 
 						crate::discord::gateway_packets::IncomingPacketsData::DispatchedEvent(data) => {
-							let connection_info = connection_info.lock().await;
+							let mut connection_info = connection_info.lock().await;
 							match data {
 								crate::discord::gateway_packets::DispatchedEvents::ReadySupplemental(_) => {
 									//TODO: implement
@@ -209,17 +219,56 @@ impl Gateway {
 								crate::discord::gateway_packets::DispatchedEvents::Unknown(value) => {
 									println!("Unknown packet {:?}", value);
 								}
+								DispatchedEvents::Ready(data) => {
+									connection_info.aditional_data.resume_url = Some(data.resume_gateway_url.clone());
+									connection_info.aditional_data.session_id = Some(data.session_id.clone());
+
+									connection_info.sender.send(GatewayMessages::Ready(UserData::from(data))).await?;
+								}
 								data => connection_info.sender.send(GatewayMessages::from(data)).await?,
 							}
 						}
 						crate::discord::gateway_packets::IncomingPacketsData::Reconnect => {
 							//TODO: implement
+							let connection_info = connection_info.lock().await;
 
+							websocket.reconnect(connection_info.aditional_data.resume_url.clone()).await?;
+
+							let session_id = connection_info.aditional_data.session_id.as_ref().unwrap().clone(); //TODO: check if None possible
+							let last_sequece_number = connection_info.aditional_data.sequence_number
+								.as_ref()
+								.unwrap()
+								.clone(); //TODO: check if None possible
+
+							let packet = OutGoingPacket::new(
+								OutGoingPacketsData::Resume(Resume {
+									token: connection_info.aditional_data.token.clone(),
+									session_id,
+									last_seq: last_sequece_number,
+								})
+							)?.to_json()?;
+
+							websocket.send(Message::Text(packet)).await?;
+
+							debug!("Reconnecting");
 						}
 					}
 				}
 
-				tokio_tungstenite::tungstenite::Message::Close(_) => {
+				tokio_tungstenite::tungstenite::Message::Close(frame) => {
+					if let Some(frame) = frame {
+						match frame.code {
+							CloseCode::Library(code) => {
+								//TODO: implement
+								debug!("Reconnecting because of close code {:?}", code);
+								websocket.reconnect(None).await?;
+							}
+							code => {
+								debug!("Reconnecting because of close code {:?}", code);
+								websocket.reconnect(None).await?;
+							}
+						}
+					}
 					return Err("Connection closed".into());
 				}
 				_ => {}

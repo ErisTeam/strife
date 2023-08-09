@@ -17,18 +17,8 @@ export interface Tab<T = object> {
 	tabData?: T;
 }
 
-export interface TextChannelTab extends Tab<{ channelId: string; guildId: string }> {
+export interface TextChannelTab extends Tab<Channel> {
 	type: 'textChannel';
 }
-
-// type Tab = {
-// 	guildId: string; // if it's a dm channel, set to null
-// 	guildName: string; // if it's a dm channel, set to @me or similar we will come up with
-// 	guildIcon?: string; // if it's a dm channel, set to user's avatar;
-
-// 	channelId: string;
-// 	channelName: string; // if it's a dm channel, set to the user's name;
-// 	channelType: number;
-// };
 
 export type { Input, Button, TextArea, AppState };

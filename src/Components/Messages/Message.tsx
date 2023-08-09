@@ -1,9 +1,11 @@
-import ContextMenu from '../ContextMenu/ContextMenu';
+import ContextMenu, { useMenu } from '../ContextMenu/ContextMenu';
 import { Message as MessageType } from '../../discord';
-import { JSX, createMemo } from 'solid-js';
+import { For, JSX, Show, createMemo } from 'solid-js';
 import API from '../../API';
 
 import style from './css.module.css';
+import { createContextMenu } from '../ContextMenuNew/ContextMenu';
+import UserMention from './UserMention';
 
 interface FormatedMessage extends MessageType {
 	formatedContent: JSX.Element[];
@@ -26,78 +28,95 @@ const Message = (props: MessageProps) => {
 	});
 
 	function formatContent(content: string) {
-		const mention = /<@!?(\d+)>/gm;
-		console.log(content, content.match(mention), message);
+		const userMentionRegex = '<@!?(\\d+)>';
+		const channelMentionRegex = '<#(\\d+)>';
+		const roleMentionRegex = '<@&(\\d+)>';
+		const commandMenionRegex = '<\\/(\\w+):(\\d+)>';
 
-		const formatedContent: JSX.Element[] = [];
+		const mentionsRegex = new RegExp(
+			`${userMentionRegex}|${channelMentionRegex}|${roleMentionRegex}|${commandMenionRegex}`,
+			'gm',
+		);
+		const mentions =
+			content.match(mentionsRegex)?.map((match, index) => {
+				let element;
+				if (match.match(userMentionRegex)) {
+					element = <UserMention mentioned_user={message.mentions.find((mention) => match.includes(mention.id))} />;
+				} else if (match.match(channelMentionRegex)) {
+					element = <span style={{ background: 'green' }}>{match}</span>;
+				} else if (match.match(roleMentionRegex)) {
+					element = <span style={{ background: 'yellow' }}>{match}</span>;
+				} else if (match.match(commandMenionRegex)) {
+					element = <span style={{ background: 'red' }}>{match}</span>;
+				} else {
+					element = <span style={{ background: 'black' }}>{match}</span>;
+				}
+				return { match: match, element: element };
+			}) || [];
 
-		content.match(mention)?.forEach((element) => {
-			console.log(element);
-			formatedContent.push(<span>{element}</span>);
-		});
-		return formatedContent;
+		let regex = mentions.map((e) => e.match).join('|');
+		//console.log(regex);
+		if (regex.length == 0) return <p>{content}</p>;
+		//console.log(regex, content.split(new RegExp(regex, 'gm')), mentions);
+		const splited = content.split(new RegExp(regex, 'gm'));
+		let a = [];
+		for (let i = 0; i < splited.length; i++) {
+			a.push(splited[i]);
+			if (i < mentions.length) {
+				a.push(mentions[i].element);
+			}
+		}
+
+		return <p>{...a}</p>;
 	}
 
 	const formatedMessage = createMemo(() => {
 		return formatContent(message.content);
 	});
 
+	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
-
-	if (val.embeds && val.embeds[0]) {
-		console.log(val);
-		switch (val.embeds[0].type) {
-			case 'gifv':
-				embed = (
-					<video
-						src={val.embeds[0].video.proxy_url}
-						autoplay={true}
-						loop={true}
-						width={val.embeds[0].video.width}
-						height={val.embeds[0].video.height}
-					></video>
-				);
-				break;
-			case 'video':
-				embed = (
-					<img
-						src={val.embeds[0].video.proxy_url}
-						width={val.embeds[0].video.width}
-						height={val.embeds[0].video.height}
-					></img>
-				);
-				break;
-			default:
-				embed = <h2>{JSON.stringify(val.embeds[0])}</h2>;
-				break;
+	const profileImage = createMemo(() => {
+		if (message.author.avatar) {
+			return `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=80`;
+		} else {
+			return '/Friends/fallback.png';
 		}
+	});
+
+	function Menu() {
+		const menu = useMenu<MessageType>();
+		return <button>edit</button>;
 	}
 
-	let img;
+	const contextMenu = createContextMenu({
+		component: [Menu],
+		data: message,
+	});
 
-	console.log(message);
-	if (message.author.avatar) {
-		img = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=32`;
-	} else {
-		img = '/Friends/aabcfkll.png';
-	}
-	let ref: HTMLLIElement;
+	const userName = createMemo(() => {
+		return message.author.global_name || message.author.username;
+	});
+
 	return (
-		<li ref={ref} class={[style.message, props.class].join(' ')}>
+		<li class={[style.message, props.class].join(' ')} use:contextMenu>
 			<button>
-				<img src={img} alt={message.author.global_name} />
+				<img src={profileImage()} alt={userName()} />
 			</button>
 			<div class={style.messageInner}>
 				<div class={style.details}>
-					<button>{message.author.global_name}</button>
+					<button>
+						{userName()}
+
+						<Show when={message.author.bot}>
+							<span style={{ color: 'violet' }}> Bot</span>
+						</Show>
+					</button>
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
-				<p>{message.content}</p>
+				{formatedMessage()}
+				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 			</div>
-
-			<ContextMenu data={{}} openRef={ref}>
-				<button>edit</button>
-			</ContextMenu>
 		</li>
 	);
 };
