@@ -1,4 +1,6 @@
 .list {
+	border-bottom-left-radius: var(channel-list-roundness);
+	border-top-left-radius: var(--channel-list-roundness);
 	height: 100%;
 	min-width: 100px;
 	& > ol {
@@ -13,7 +15,8 @@
 		}
 	}
 	background-color: var(--friend-list-bgc);
-	border-bottom-left-radius: var(--round-large);
+	border-bottom-left-radius: var(--channel-list-roundness);
+	border-top-left-radius: var(--channel-list-roundness);
 	position: relative;
 }
 .title {
@@ -105,12 +108,12 @@
 	}
 }
 .resize {
-	height: 100%;
+	height: calc(100% - 4.75em);
 	width: 0.1em;
 
 	border-right: 1px solid var(--depth4);
 
-	top: 0;
+	bottom: 0;
 	right: 0;
 	cursor: e-resize;
 

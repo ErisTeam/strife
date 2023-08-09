@@ -188,7 +188,7 @@ pre {
 	--channel-title-list-icon-color: var(--disabled-text);
 	--channel-title-list-element-gradient-one: var(--depth1);
 	--channel-title-list-element-gradient-two: transparent;
-	/* FRIENDS */
+	--channel-list-roundness: var(--round-large); /* FRIENDS */
 	--friend-list-bgc: var(--depth1);
 	--friend-gradient-hover-one: var(--depth2);
 	--friend-gradient-hover-two: transparent;

@@ -124,20 +124,20 @@
 
 		scrollbar-gutter: stable;
 	}
-	border-bottom-left-radius: var(--round-large);
-	border-top-left-radius: var(--round-large);
+	border-bottom-left-radius: var(--channel-list-roundness);
+	border-top-left-radius: var(--channel-list-roundness);
 
 	background-color: var(--channel-list-bgc);
 
 	position: relative;
 }
 .resize {
-	height: 100%;
+	height: calc(100% - 4.75em);
 	width: 0.1em;
 
 	border-right: 1px solid var(--depth4);
 
-	top: 0;
+	bottom: 0;
 	right: 0;
 	cursor: e-resize;
 
