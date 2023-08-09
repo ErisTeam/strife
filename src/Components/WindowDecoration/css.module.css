@@ -5,6 +5,8 @@
 	background-color: var(--window-decoration-bgc);
 	display: flex;
 
+	position: relative;
+
 	justify-content: space-between;
 	padding: 0.25em;
 	h1 {
@@ -13,11 +15,18 @@
 		pointer-events: none;
 	}
 	.buttons {
+		z-index: 2;
 		button {
 			height: 100%;
 			svg {
 				height: 100%;
 			}
 		}
+	}
+
+	.dragRegion {
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 }

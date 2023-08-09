@@ -14,8 +14,9 @@ const WindowDecoration = () => {
 		})
 		.catch((e) => console.log(e));
 	return (
-		<div class={style.decoration} data-tauri-drag-region>
+		<div class={style.decoration}>
 			<h1>PandaCord</h1>
+			<div class={style.dragRegion} data-tauri-drag-region />
 
 			<div class={style.buttons}>
 				<button
