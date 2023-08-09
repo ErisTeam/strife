@@ -14,22 +14,22 @@
   "devDependencies": {
     "@solid-devtools/overlay": "^0.27.7",
     "@tauri-apps/cli": "^1.4.0",
-    "@types/node": "^20.4.4",
+    "@types/node": "^20.4.8",
     "@types/qrcode": "^1.5.1",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.45.0",
     "postcss": "^8.4.27",
-    "solid-devtools": "^0.27.4",
+    "solid-devtools": "^0.27.7",
     "typescript": "^5.1.6",
-    "vite": "^4.4.6",
+    "vite": "^4.4.9",
     "vite-plugin-solid": "^2.7.0",
     "vitest": "^0.33.0"
   },
   "dependencies": {
-    "@solid-primitives/i18n": "^1.4.0",
-    "@solidjs/meta": "^0.28.5",
+    "@solid-primitives/i18n": "^1.4.1",
+    "@solidjs/meta": "^0.28.6",
     "@solidjs/router": "^0.8.2",
     "@tauri-apps/api": "^1.4.0",
     "@thisbeyond/solid-dnd": "^0.7.4",
@@ -37,10 +37,10 @@
     "lucide-solid": "^0.263.0",
     "opus-encdec": "^0.1.1",
     "postcss-nested": "^6.0.1",
-    "prettier": "^3.0.0",
+    "prettier": "^3.0.1",
     "qrcode": "^1.5.3",
     "solid-hcaptcha": "^0.2.6",
-    "solid-js": "^1.7.8",
+    "solid-js": "^1.7.9",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log"
   }
 }
