@@ -24,7 +24,7 @@
 }
 
 .tab {
-	transition: background 300ms;
+	transition: background-color 300ms;
 
 	display: flex;
 	align-items: center;
