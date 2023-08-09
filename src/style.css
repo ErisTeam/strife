@@ -214,8 +214,7 @@ pre {
 
 	/* CHAT */
 	--chat-bgc: var(--depth3);
-
-	/* Misc */
+	--chat-roundness: var(--round-large); /* Misc */
 	--loading-bgc: var(--depth1);
 
 	--switch-bgc: var(--depth2);

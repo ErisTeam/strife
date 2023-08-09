@@ -25,9 +25,6 @@ message Guild{
 	repeated Channel channels=16;
 	ApplicationCommandCounts application_command_counts=17;
 	
-
-
-	
 }
 
 message GuildProperties{

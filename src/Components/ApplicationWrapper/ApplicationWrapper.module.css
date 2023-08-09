@@ -37,15 +37,25 @@
 				width: 100%;
 			}
 			.outlet {
-				border-radius: var(--round-large);
 				width: 100%;
 				/* TODO: someone has to figure out why this stuff is always ignoring the top one */
 				height: calc(100% - 3em);
+				ol {
+					border-bottom-left-radius: var(--chat-roundness);
+				}
 			}
 		}
 
 		.channels + .inner {
-			background-color: var(--depth1) !important;
+			background-color: var(--depth1);
+
+			.outlet {
+				ol {
+					border-radius: 0;
+
+					border-top-left-radius: var(--chat-roundness);
+				}
+			}
 		}
 	}
 	.controlPanel {
