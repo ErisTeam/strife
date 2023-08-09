@@ -39,7 +39,15 @@
 		}
 
 		.channels + .inner {
-			background-color: var(--depth1) !important;
+			background-color: var(--depth1);
+
+			.outlet {
+				ol {
+					border-radius: 0;
+
+					border-top-left-radius: var(--chat-roundness);
+				}
+			}
 		}
 	}
 	.controlPanel {
