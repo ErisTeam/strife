@@ -27,7 +27,7 @@ const R = (props: Props) => {
 		console.log('bbbbbbbbbb');
 		console.log('res', res);
 		if (props.state === 'Application') {
-			await API.activateUser(AppState.userId());
+			await API.activateUser(AppState.userId);
 		}
 		return res;
 	});

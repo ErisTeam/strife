@@ -30,7 +30,7 @@ function GuildTestElement() {
 
 function TestElement2() {
 	const appState = useAppState();
-	return <div>userId: {appState.userId()}</div>;
+	return <div>userId: {appState.userId}</div>;
 }
 
 function ContextChannel() {

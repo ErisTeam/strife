@@ -12,22 +12,23 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { gatewayOneTimeListener, useTaurListener } from '../../test';
 import { CONSTANTS } from '../../Constants';
 import style from './css.module.css';
-import { useTabContext } from '../Tabs/Tabs';
+
 import { Dynamic } from 'solid-js/web';
+import { useTabContext } from '../Tabs/TabUtils';
+import { Tab } from '../../types';
 
 type ChatProps = {
-	channelId: string;
-	guildId: string;
+	tab: Tab;
 };
-export default () => {
-	const TabContext = useTabContext<Channel>();
+export default function Chat() {
+	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
 
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 	const AppState = useAppState();
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
-		const messages = await API.getMessages(TabContext.tabData.id);
+		const messages = await API.getMessages(TabContext.tab.id);
 		return messages.reverse();
 	});
 
@@ -40,7 +41,7 @@ export default () => {
 		});
 	}
 	onMount(() => {
-		const channel = API.getChannelById(TabContext.tabData.guild_id, TabContext.tabData.id); //TODO: Move VoiceChannels to their own component
+		const channel = API.getChannelById(TabContext.tab.guildId, TabContext.tab.id); //TODO: Move VoiceChannels to their own component
 		if (channel && channel.type == CONSTANTS.GUILD_VOICE) {
 			console.log('voice channel');
 			setIsVoiceChannel(true);
@@ -48,24 +49,24 @@ export default () => {
 	});
 	async function startVoice() {
 		await invoke('send_voice_state_update', {
-			userId: AppState.userId(),
-			guildId: TabContext.tabData.guild_id,
-			channelId: TabContext.tabData.id,
+			userId: AppState.userId,
+			guildId: TabContext.tab.guildId,
+			channelId: TabContext.tab.guildId,
 		});
 
 		const listener = useTaurListener('voice_gateway', (event) => {
 			console.log('event', event);
 		});
 
-		const voiceStateUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceStateUpdate');
+		const voiceStateUpdate = await gatewayOneTimeListener(AppState.userId, 'voiceStateUpdate');
 		console.log('voice_state', voiceStateUpdate);
-		const voiceServerUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceServerUpdate');
+		const voiceServerUpdate = await gatewayOneTimeListener(AppState.userId, 'voiceServerUpdate');
 		console.log('voice_server', voiceServerUpdate);
 
 		console.log(
 			await invoke('start_voice_gateway', {
-				userId: AppState.userId(),
-				guildId: TabContext.tabData.guild_id,
+				userId: AppState.userId,
+				guildId: TabContext.tab.guildId,
 				endpoint: voiceServerUpdate.data.endpoint,
 				voiceToken: voiceServerUpdate.data.token,
 				sessionId: voiceStateUpdate.data.session_id,
@@ -109,4 +110,4 @@ export default () => {
 			</Show>
 		</ol>
 	);
-};
+}

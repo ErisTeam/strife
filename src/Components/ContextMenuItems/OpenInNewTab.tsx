@@ -6,6 +6,7 @@ import { tabStoreType, useAppState } from '../../AppState';
 import Chat from '../Messages/Chat';
 import { unwrap } from 'solid-js/store';
 import { TextChannelTab } from '../Tabs/Tabs';
+import { createTextChannelTab } from '../Tabs/TabUtils';
 
 export default () => {
 	const menu = useMenu<{ channel: Channel }>();
@@ -23,7 +24,7 @@ export default () => {
 					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tab));
 				} else {
 					console.log(menu.channel);
-					AppState.Tabs.addTab(TextChannelTab(menu.channel), true);
+					AppState.Tabs.addTab(createTextChannelTab(menu.channel), true);
 				}
 
 				menu.closeMenu();

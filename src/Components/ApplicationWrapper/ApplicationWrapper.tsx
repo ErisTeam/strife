@@ -5,7 +5,7 @@ import { useAppState } from '../../AppState';
 import ChannelList from '../ChannelList/ChannelList';
 // Components
 import GuildList from '../Guild/GuildList';
-import TabBar, { TabContextProvider, Tabs } from '../Tabs/Tabs';
+import TabWindow from '../Tabs/TabWindow';
 
 // Style
 import style from './ApplicationWrapper.module.css';
@@ -19,17 +19,18 @@ import { Guild } from '../../discord';
 import { unwrap } from 'solid-js/store';
 import WelcomeTab from '../Tabs/WelcomeTab';
 import { DragDropDebugger, DragDropProvider, DragDropSensors, SortableProvider } from '@thisbeyond/solid-dnd';
+import API from '../../API';
 
 //TODO: move to routes
 const ApplicationWrapper = () => {
 	const AppState = useAppState();
 
-	AppState.Tabs.addTab(
+	API.Tabs.add(
 		{
 			title: 'Welcome',
-			component: WelcomeTab,
+			component: 'welcomeTab',
 			icon: '👋',
-			type: 'other',
+			id: 'welcome',
 		},
 		true,
 	);
@@ -76,7 +77,7 @@ const ApplicationWrapper = () => {
 						</Switch>
 					</Show>
 					<div class={style.inner}>
-						<Tabs />
+						<TabWindow />
 					</div>
 				</div>
 				<ControlPanel className={style.controlPanel} />

@@ -14,7 +14,8 @@ import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Chat from '../Messages/Chat';
 import { Dynamic } from 'solid-js/web';
 import API from '../../API';
-import { TextChannelTab as textChannelTab } from '../Tabs/Tabs';
+import { createTextChannelTab } from '../Tabs/TabUtils';
+import { Tab } from '../../types';
 
 interface ChannelProps {
 	data: ChannelType;
@@ -31,40 +32,43 @@ export default (props: ChannelProps) => {
 	function onMouseDown(e: MouseEvent) {
 		e.preventDefault();
 		console.log('clicked on', props.data.name, e.button, AppState);
-		const tabS = AppState.Tabs.tabs.find(
-			(t: any) => t.type === 'textChannel' && t.tabData?.channelId === props.data.id,
-		);
-		console.log('tabS', tabS);
-		const tab = textChannelTab(props.data);
+		console.log('props.data', props.data);
+		const inListIdx = AppState.tabs.findIndex((t: Tab) => t.id === props.data.id);
+		console.log('inListIdx', inListIdx);
+		const tab = createTextChannelTab(props.data);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
-				console.log('tabS', tabS);
-				if (tabS) {
-					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
+
+				if (inListIdx >= 0) {
+					('Is Already on the list');
+					API.Tabs.setAsCurrent(tab);
+
 					return;
 				}
-				if (AppState.Tabs.currentTab() != -1) {
-					console.log(tab);
-					AppState.Tabs.replaceTab(AppState.Tabs.currentTab(), tab);
+				if (AppState.tabs.length === 0) {
+					console.log('no tabs in list');
+					API.Tabs.add(tab, true);
 				} else {
-					AppState.Tabs.addTab(tab, true);
-					console.log(AppState.Tabs.currentTab());
+					console.log('else');
+					API.Tabs.add(tab, true);
 				}
 				break;
 			case 1:
 				console.log('middle click', e.button);
-				if (tabS) {
+				if (inListIdx >= 0) {
 					console.error('Tab already exists!');
+					API.Tabs.setAsCurrent(tab);
+
 					return;
 				}
-				AppState.Tabs.addTab(tab);
+				API.Tabs.add(tab);
 				break;
 		}
 	}
 
 	const channelIcon = createMemo((): string | Component => {
-		let { emoji, newName } = API.getChannelIcon(props.data);
+		const { emoji, newName } = API.getChannelIcon(props.data);
 		setDisplayName(newName);
 
 		return emoji;

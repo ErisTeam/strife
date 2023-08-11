@@ -66,7 +66,7 @@ const LoginPage = () => {
 			case 'loginSuccess': {
 				appState.setUserId(input.userId);
 
-				console.log(appState.userId());
+				console.log(appState.userId);
 
 				console.log('login success');
 				navigate('/');
@@ -96,7 +96,7 @@ const LoginPage = () => {
 			case 'verifySuccess': {
 				appState.setUserId(input.userId);
 
-				console.log(appState.userId());
+				console.log(appState.userId);
 				console.log('verify success');
 				navigate('/');
 

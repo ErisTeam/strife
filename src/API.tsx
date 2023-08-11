@@ -19,7 +19,70 @@ export default {
 			//TODO: implement voice
 		},
 	},
+	Tabs: {
+		swapOrder(tab1: Tab, tab2: Tab) {
+			console.log('swapOrder', tab1, tab2);
+		},
+		swapOrderByIdx(idx1: number, idx2: number) {
+			const AppState = useAppState();
+			const tabs = AppState.tabs;
+			const tab1 = tabs[idx1];
+			const tab2 = tabs[idx2];
+			AppState.setTabs(idx1, tab2);
+			AppState.setTabs(idx2, tab1);
+		},
+		setAsCurrent(tab: Tab) {
+			const AppState = useAppState();
+			const idx = AppState.tabs.findIndex((t) => t.id == tab.id);
+			AppState.setCurrentTabIdx(idx);
+		},
 
+		remove(tab: Tab) {
+			const AppState = useAppState();
+			const idx = AppState.tabs.findIndex((t) => t.id == tab.id);
+			if (idx == AppState.currentTabIdx()) {
+				if (AppState.tabs.length == 1) {
+					AppState.setTabs([]);
+					AppState.setCurrentTabIdx(-1);
+					return;
+				}
+				AppState.setCurrentTabIdx(idx - 1);
+
+				const newTabs = AppState.tabs.filter((t) => t.id != tab.id);
+
+				AppState.setTabs(newTabs);
+				return;
+			}
+			if (idx < AppState.currentTabIdx()) {
+				AppState.setCurrentTabIdx(AppState.currentTabIdx() - 1);
+			}
+
+			const newTabs = AppState.tabs.filter((t) => t.id != tab.id);
+
+			AppState.setTabs(newTabs);
+		},
+		add(tab: Tab, replaceCurrent: boolean = false) {
+			const AppState = useAppState();
+			console.log('appstate', AppState);
+			if (replaceCurrent) {
+				if (AppState.tabs.length == 0) {
+					AppState.setTabs([tab]);
+					AppState.setCurrentTabIdx(0);
+					return;
+				}
+				AppState.setTabs(
+					produce((draft) => {
+						draft[AppState.currentTabIdx()] = tab;
+					}),
+				);
+
+				return;
+			}
+
+			AppState.setTabs([...AppState.tabs, tab]);
+			AppState.setCurrentTabIdx(AppState.tabs.length - 1);
+		},
+	},
 	channelFromRelationship(relationship: Relationship): Channel {
 		return {
 			...relationship,
@@ -27,6 +90,7 @@ export default {
 			name: relationship.user.username,
 			type: CONSTANTS.GUILD_TEXT,
 			guild_id: '@me',
+			position: 0,
 		};
 	},
 
@@ -190,14 +254,15 @@ export default {
 	 */
 	async getToken(userId: string = ''): Promise<string | null> {
 		const AppState = useAppState();
-		if (!userId) userId = AppState.userId();
+		if (!userId) userId = AppState.userId;
 		return await invoke('get_token', { userId });
 	},
 
 	async updateCurrentUserID() {
 		const response = await invoke('get_last_user');
 		const AppState = useAppState();
-		AppState.setUserId(response as string);
+
+		AppState.userId = response as string;
 		return;
 	},
 
@@ -209,7 +274,7 @@ export default {
 		const AppState = useAppState();
 		AppState.setUserGuilds([]);
 
-		const guilds: Guild[] = await this.getGuilds(AppState.userId());
+		const guilds: Guild[] = await this.getGuilds(AppState.userId);
 		//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
 		guilds.forEach((guild) => {
 			guild.channels.forEach((channel) => {
@@ -247,7 +312,7 @@ export default {
 		const AppState = useAppState();
 		AppState.setRelationships([]);
 		console.warn('updating relationships');
-		const relationships = await this.getRelationships(AppState.userId());
+		const relationships = await this.getRelationships(AppState.userId);
 		console.log(relationships);
 		AppState.setRelationships(relationships);
 	},

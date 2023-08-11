@@ -39,7 +39,7 @@ function Prev() {
 
 	return (
 		<div class={style.container}>
-			<h1>{AppState.userId()}</h1>
+			<h1>{AppState.userId}</h1>
 			<div class={style.b}>
 				<div>
 					<h2>Links</h2>
@@ -87,8 +87,8 @@ function Prev() {
 						<button
 							class={buttons.default + ' ' + style.fill}
 							onClick={async (e) => {
-								console.log(`activating user ${AppState.userId()}`);
-								const r = await invoke('activate_user', { userId: AppState.userId() });
+								console.log(`activating user ${AppState.userId}`);
+								const r = await invoke('activate_user', { userId: AppState.userId });
 								console.log(r);
 							}}
 						>
@@ -114,7 +114,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onClick={async (e) => {
-							await emit('testReconnecting', { user_id: AppState.userId() });
+							await emit('testReconnecting', { user_id: AppState.userId });
 						}}
 					>
 						Test Reconnecting (Broken)
@@ -125,7 +125,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.getRelationships(AppState.userId()));
+							console.log(await API.getRelationships(AppState.userId));
 						}}
 					>
 						Get Relationships
