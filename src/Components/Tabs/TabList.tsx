@@ -52,9 +52,12 @@ function TabList(props: TabsProps) {
 	function onDragEnd(event: DragEvent) {
 		if (event.droppable) {
 			if (event.droppable.id == event.draggable.id) return;
-			const dropTabIndex = items().findIndex((t) => t.id == (event.droppable.id as number) - 1);
-			const dragTabIndex = items().findIndex((t) => t.id == (event.draggable.id as number) - 1);
-
+			let dropTabIndex: number;
+			let dragTabIndex: number;
+			for (let i = 0; i < items().length; i++) {
+				if (items()[i].id == (event.droppable.id as number) - 1) dropTabIndex = i;
+				if (items()[i].id == (event.draggable.id as number) - 1) dragTabIndex = i;
+			}
 			setItems((items) => {
 				const newItems = items.slice();
 				newItems.splice(dropTabIndex, 0, ...newItems.splice(dragTabIndex, 1));
