@@ -1,10 +1,10 @@
-import { ChannelType, Relationship } from '../../discord';
+import { Relationship } from '../../discord';
 
 import style from './css.module.css';
 
 import { useNavigate, useParams } from '@solidjs/router';
 import { useAppState } from '../../AppState';
-import { Tab, TextChannelTab } from '../../types';
+import { Tab } from '../../types';
 
 import API from '../../API';
 
@@ -26,38 +26,37 @@ const Friend = (props: FriendProps) => {
 	const href = `/app/@me/${props.relationship.user.id}`;
 	const displayName = props.relationship.user.global_name || props.relationship.user.username;
 	const AppState = useAppState();
-	const tab: TextChannelTab = {
-		type: 'textChannel',
-		component: null,
+	const tab: Tab = {
+		component: 'textChannel',
 		title: props.relationship.user.username,
 		icon: img,
-		tabData: API.channelFromRelationship(props.relationship),
+		channelId: props.relationship.user.id,
+		guildId: '@me',
 	};
 	function handleClick(e: MouseEvent) {
 		console.log('clicked on', props.relationship.user.username, href);
-		const tabS = AppState.Tabs.tabs.find(
-			(t: any) => t.type === 'textChannel' && t.tabData.channelId === tab.tabData?.channelId,
+
+		const listIndex = AppState.tabs.findIndex(
+			(t: Tab) => t.component == 'textChannel' && t.channelId == props.relationship.user.id,
 		);
+
+		console.log('listIndex', listIndex);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
-
-				if (tabS) {
-					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
+				if (listIndex == -1) {
+					API.Tabs.add(tab, true);
 				}
-				if (AppState.Tabs.currentTab() != -1) {
-					AppState.Tabs.setCurrentTab(AppState.Tabs.tabs.indexOf(tabS));
-				} else {
-					AppState.Tabs.addTab(tab, true);
-				}
+				API.Tabs.setAsCurrent(tab);
 				break;
 			case 1:
 				console.log('middle click', e.button);
-				if (tabS) {
-					console.error('Tab already exists!');
+				if (listIndex != -1) {
+					API.Tabs.setAsCurrent(listIndex);
 				} else {
-					AppState.Tabs.addTab(tab, true);
+					API.Tabs.add(tab);
 				}
+
 				break;
 		}
 	}

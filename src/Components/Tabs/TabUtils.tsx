@@ -1,24 +1,5 @@
-import { tabStoreType, useAppState } from '../../AppState';
-
-import style from './Tabs.module.css';
-import {
-	Accessor,
-	Context,
-	For,
-	Match,
-	Show,
-	Suspense,
-	Switch,
-	createContext,
-	createMemo,
-	createSignal,
-	lazy,
-	useContext,
-} from 'solid-js';
-import { useTrans } from '../../Translation';
-import { Tab, TextChannelTab as TextChannelTabType } from '../../types';
-import { Dynamic, classList } from 'solid-js/web';
-import { X } from 'lucide-solid';
+import { JSX, createContext, useContext } from 'solid-js';
+import { Tab } from '../../types';
 import { Channel } from '../../discord';
 
 import API from '../../API';
@@ -31,15 +12,15 @@ export function createTextChannelTab(channel: Channel): Tab {
 		icon: emoji,
 
 		component: 'textChannel',
-		id: channel.id,
+		channelId: channel.id,
 		guildId: channel.guild_id,
 	};
 }
 
-const TabContext = createContext<{ tab: Tab }>();
+const TabContext = createContext<Tab>();
 
 export function TabContextProvider(props: { tab: Tab; children: JSX.Element | JSX.Element[] }) {
-	return <TabContext.Provider value={{ tab: props.tab }}>{props.children}</TabContext.Provider>;
+	return <TabContext.Provider value={props.tab}>{props.children}</TabContext.Provider>;
 }
 
 export function useTabContext() {

@@ -1,25 +1,15 @@
-import { createStore } from 'solid-js/store';
-
 import Message from './Message';
-import { For, Show, createEffect, createMemo, createResource, createSignal, lazy, onMount } from 'solid-js';
-import { Channel, Message as MessageType } from '../../discord';
+import { For, Show, createMemo, createResource, createSignal, lazy, onMount } from 'solid-js';
+import { Message as MessageType } from '../../discord';
 import API from '../../API';
-
-import { useParams } from '@solidjs/router';
-
 import { useAppState } from '../../AppState';
 import { invoke } from '@tauri-apps/api/tauri';
 import { gatewayOneTimeListener, useTaurListener } from '../../test';
 import { CONSTANTS } from '../../Constants';
 import style from './css.module.css';
-
-import { Dynamic } from 'solid-js/web';
 import { useTabContext } from '../Tabs/TabUtils';
 import { Tab } from '../../types';
 
-type ChatProps = {
-	tab: Tab;
-};
 export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
@@ -28,7 +18,7 @@ export default function Chat() {
 	const AppState = useAppState();
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
-		const messages = await API.getMessages(TabContext.tab.id);
+		const messages = await API.getMessages(TabContext.channelId);
 		return messages.reverse();
 	});
 
@@ -41,7 +31,7 @@ export default function Chat() {
 		});
 	}
 	onMount(() => {
-		const channel = API.getChannelById(TabContext.tab.guildId, TabContext.tab.id); //TODO: Move VoiceChannels to their own component
+		const channel = API.getChannelById(TabContext.guildId, TabContext.type); //TODO: Move VoiceChannels to their own component
 		if (channel && channel.type == CONSTANTS.GUILD_VOICE) {
 			console.log('voice channel');
 			setIsVoiceChannel(true);
@@ -66,7 +56,7 @@ export default function Chat() {
 		console.log(
 			await invoke('start_voice_gateway', {
 				userId: AppState.userId,
-				guildId: TabContext.tab.guildId,
+				guildId: TabContext.guildId,
 				endpoint: voiceServerUpdate.data.endpoint,
 				voiceToken: voiceServerUpdate.data.token,
 				sessionId: voiceStateUpdate.data.session_id,
@@ -104,6 +94,13 @@ export default function Chat() {
 
 	return (
 		<ol class={style.chat}>
+			<button
+				onclick={() => {
+					console.log(TabContext);
+				}}
+			>
+				test
+			</button>
 			<For each={renderableMessages()}>{(message) => message}</For>
 			<Show when={isVoiceChannel()}>
 				<button onclick={startVoice}>Join Voice Channel</button>

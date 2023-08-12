@@ -1,28 +1,14 @@
-import { tabStoreType, useAppState } from '../../AppState';
+import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
-import {
-	Accessor,
-	Context,
-	For,
-	Match,
-	Show,
-	Suspense,
-	Switch,
-	createContext,
-	createMemo,
-	createSignal,
-	lazy,
-	useContext,
-} from 'solid-js';
+import { Match, Switch, createMemo } from 'solid-js';
 import { useTrans } from '../../Translation';
-import { Tab, TextChannelTab as TextChannelTabType } from '../../types';
+import { Tab } from '../../types';
 import { Dynamic, classList } from 'solid-js/web';
 import { X } from 'lucide-solid';
 
 import { createSortable, useDragDropContext } from '@thisbeyond/solid-dnd';
-import Loading from '../Loading/Loading';
-import TabShadow from './TabShadow';
+
 import API from '../../API';
 type TabProps = {
 	tab: Tab;
@@ -35,8 +21,13 @@ function TabSortable(props: TabProps) {
 
 	const tab = props.tab;
 
-	const sortable = createSortable(props.id);
-	const [state, actions] = useDragDropContext();
+	const sortable = createSortable(props.id + 1);
+
+	const [state] = useDragDropContext();
+
+	console.log(props.tab, props.id);
+
+	const tabIndex = createMemo(() => AppState.tabs.indexOf(tab));
 
 	return (
 		<li
@@ -50,7 +41,7 @@ function TabSortable(props: TabProps) {
 			<button
 				disabled={props.disabled}
 				classList={{
-					[style.active]: AppState.tabs[AppState.currentTabIdx()].id == tab.id,
+					[style.active]: AppState.currentTabIndex() == tabIndex(),
 				}}
 				onclick={() => {
 					// console.log(state.active);
@@ -72,7 +63,9 @@ function TabSortable(props: TabProps) {
 					</Match>
 				</Switch>
 
-				<span>{tab.title}</span>
+				<span>
+					{props.id + 1} {tab.title}
+				</span>
 			</button>
 			<button
 				disabled={props.disabled}

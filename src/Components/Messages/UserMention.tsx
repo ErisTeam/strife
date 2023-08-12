@@ -10,7 +10,7 @@ export default (props: UserMentionProps) => {
 	});
 	console.log(contextMenu.toggleVisibility);
 	return (
-		<span style={{ background: 'blue' }} onclick={(e) => contextMenu.toggleVisibility({ x: e.screenX, y: e.screenY })}>
+		<span style={{ background: 'blue' }} onclick={(e) => contextMenu.toggleVisibility({ x: e.clientX, y: e.clientY })}>
 			{props.mentioned_user.username}
 		</span>
 	);

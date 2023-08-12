@@ -25,15 +25,16 @@ import API from '../../API';
 const ApplicationWrapper = () => {
 	const AppState = useAppState();
 
-	API.Tabs.add(
-		{
-			title: 'Welcome',
-			component: 'welcomeTab',
-			icon: '👋',
-			id: 'welcome',
-		},
-		true,
-	);
+	onMount(() => {
+		API.Tabs.add(
+			{
+				title: 'Welcome',
+				component: 'welcomeTab',
+				icon: '👋',
+			},
+			true,
+		);
+	});
 
 	console.log('CurrentGuild', !AppState.currentGuild());
 
@@ -42,22 +43,7 @@ const ApplicationWrapper = () => {
 			<Dev>
 				<button
 					onclick={() => {
-						console.log('add test tab', AppState.currentGuild() as Guild);
-						AppState.Tabs.addTab({
-							type: 'other',
-							component: ChannelList,
-							tabData: {
-								guild: unwrap(AppState.currentGuild() as Guild),
-							},
-							title: 'Test',
-						});
-					}}
-				>
-					Add test Tab
-				</button>
-				<button
-					onclick={() => {
-						AppState.Tabs.changeOrder(0, 1);
+						API.Tabs.swapOrderByIdx(0, 1);
 					}}
 				>
 					Ordering Test

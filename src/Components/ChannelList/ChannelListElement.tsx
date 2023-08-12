@@ -1,17 +1,12 @@
 // API
-import { useNavigate } from '@solidjs/router';
 import { Channel as ChannelType } from '../../discord';
 
 // Style
 import style from './css.module.css';
 import { useAppState } from '../../AppState';
-import { CONSTANTS } from '../../Constants';
 import { Component, JSX, Match, Switch, createMemo, createSignal } from 'solid-js';
-
 import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
-import { Volume2 } from 'lucide-solid';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
-import Chat from '../Messages/Chat';
 import { Dynamic } from 'solid-js/web';
 import API from '../../API';
 import { createTextChannelTab } from '../Tabs/TabUtils';
@@ -33,36 +28,27 @@ export default (props: ChannelProps) => {
 		e.preventDefault();
 		console.log('clicked on', props.data.name, e.button, AppState);
 		console.log('props.data', props.data);
-		const inListIdx = AppState.tabs.findIndex((t: Tab) => t.id === props.data.id);
-		console.log('inListIdx', inListIdx);
+
+		const listIndex = AppState.tabs.findIndex((t: Tab) => t.component == 'textChannel' && t.channelId == props.data.id);
+
+		console.log('listIndex', listIndex);
 		const tab = createTextChannelTab(props.data);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
-
-				if (inListIdx >= 0) {
-					('Is Already on the list');
-					API.Tabs.setAsCurrent(tab);
-
-					return;
-				}
-				if (AppState.tabs.length === 0) {
-					console.log('no tabs in list');
-					API.Tabs.add(tab, true);
-				} else {
-					console.log('else');
+				if (listIndex == -1) {
 					API.Tabs.add(tab, true);
 				}
+				API.Tabs.setAsCurrent(tab);
 				break;
 			case 1:
 				console.log('middle click', e.button);
-				if (inListIdx >= 0) {
-					console.error('Tab already exists!');
-					API.Tabs.setAsCurrent(tab);
-
-					return;
+				if (listIndex != -1) {
+					API.Tabs.setAsCurrent(listIndex);
+				} else {
+					API.Tabs.add(tab);
 				}
-				API.Tabs.add(tab);
+
 				break;
 		}
 	}

@@ -8,10 +8,9 @@ import { Tab } from './types';
 import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
-import { Navigator } from '@solidjs/router';
 import { Volume2 } from 'lucide-solid';
 import { CONSTANTS } from './Constants';
-import { Component } from 'solid-js';
+import { Component, batch } from 'solid-js';
 
 export default {
 	Voice: {
@@ -20,67 +19,95 @@ export default {
 		},
 	},
 	Tabs: {
-		swapOrder(tab1: Tab, tab2: Tab) {
-			console.log('swapOrder', tab1, tab2);
-		},
+		//! NOT working
 		swapOrderByIdx(idx1: number, idx2: number) {
 			const AppState = useAppState();
-			const tabs = AppState.tabs;
-			const tab1 = tabs[idx1];
-			const tab2 = tabs[idx2];
-			AppState.setTabs(idx1, tab2);
-			AppState.setTabs(idx2, tab1);
+			console.log(AppState.tabsOrder());
+			AppState.setTabsOrder((prev) => {
+				const temp = prev[idx1];
+				prev[idx1] = prev[idx2];
+				prev[idx2] = temp;
+				return prev;
+			});
+			console.log(AppState.tabsOrder());
 		},
-		setAsCurrent(tab: Tab) {
+		setAsCurrent(tab: Tab | number) {
 			const AppState = useAppState();
-			const idx = AppState.tabs.findIndex((t) => t.id == tab.id);
-			AppState.setCurrentTabIdx(idx);
-		},
-
-		remove(tab: Tab) {
-			const AppState = useAppState();
-			const idx = AppState.tabs.findIndex((t) => t.id == tab.id);
-			if (idx == AppState.currentTabIdx()) {
-				if (AppState.tabs.length == 1) {
-					AppState.setTabs([]);
-					AppState.setCurrentTabIdx(-1);
+			if (typeof tab != 'number') {
+				const index = AppState.tabs.indexOf(tab);
+				if (index === -1) {
+					console.error(`Tab ${tab} not found`);
 					return;
 				}
-				AppState.setCurrentTabIdx(idx - 1);
+				AppState.setCurrentTabIndex(index);
+			} else {
+				AppState.setCurrentTabIndex(tab);
+			}
+		},
 
-				const newTabs = AppState.tabs.filter((t) => t.id != tab.id);
+		remove(tab: Tab | number) {
+			const AppState = useAppState();
 
-				AppState.setTabs(newTabs);
+			const tabIndex = typeof tab == 'number' ? tab : AppState.tabs.indexOf(tab);
+			if (tabIndex === -1) {
+				console.error(`Tab ${tab} not found`);
 				return;
 			}
-			if (idx < AppState.currentTabIdx()) {
-				AppState.setCurrentTabIdx(AppState.currentTabIdx() - 1);
+
+			if (tabIndex == AppState.currentTabIndex()) {
+				if (AppState.tabs.length > 1) {
+					console.log('tabIndex', tabIndex, [...AppState.tabsOrder()]);
+					let newTabindex = AppState.tabsOrder()[AppState.tabsOrder().indexOf(tabIndex) - 1];
+					if (newTabindex == null) {
+						newTabindex = 0;
+					}
+					AppState.setCurrentTabIndex(newTabindex);
+				} else {
+					AppState.setCurrentTabIndex(0);
+				}
+			} else if (AppState.currentTabIndex() > tabIndex) {
+				AppState.setCurrentTabIndex(AppState.currentTabIndex() - 1);
+			} else if (AppState.tabs.length === 1) {
+				AppState.setCurrentTabIndex(-1);
 			}
+			//? batch is important here, otherwise tabs might not be updated correctly
+			batch(() => {
+				AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
+				AppState.setTabsOrder((prev) => {
+					const idx = prev.indexOf(tabIndex);
+					prev.splice(idx, 1);
 
-			const newTabs = AppState.tabs.filter((t) => t.id != tab.id);
-
-			AppState.setTabs(newTabs);
+					prev = prev.map((order, index) => {
+						if (order > tabIndex) {
+							return order - 1;
+						}
+						return order;
+					});
+					return prev;
+				});
+			});
 		},
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
-			console.log('appstate', AppState);
-			if (replaceCurrent) {
-				if (AppState.tabs.length == 0) {
-					AppState.setTabs([tab]);
-					AppState.setCurrentTabIdx(0);
-					return;
+			//? batch is important here, otherwise tabs might not be updated correctly
+			batch(() => {
+				if (replaceCurrent) {
+					let tabIndex = AppState.currentTabIndex();
+					if (tabIndex === -1) {
+						tabIndex = AppState.tabs.length;
+					}
+
+					AppState.setTabs(tabIndex, tab);
+					AppState.setCurrentTabIndex(tabIndex);
+					AppState.setTabsOrder((prev) => {
+						prev[tabIndex] = tabIndex;
+						return prev;
+					});
+				} else {
+					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
+					AppState.setTabs(AppState.tabs.length, tab);
 				}
-				AppState.setTabs(
-					produce((draft) => {
-						draft[AppState.currentTabIdx()] = tab;
-					}),
-				);
-
-				return;
-			}
-
-			AppState.setTabs([...AppState.tabs, tab]);
-			AppState.setCurrentTabIdx(AppState.tabs.length - 1);
+			});
 		},
 	},
 	channelFromRelationship(relationship: Relationship): Channel {

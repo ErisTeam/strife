@@ -10,7 +10,7 @@ type TextArea = 'soft' | 'hard' | 'off';
 
 // type TabTypes = 'textChannel' | 'voiceChannel' | 'other';
 //When saving tabs to file you just save the key of the component
-export const TabComponents: { [key: string]: () => JSX.Element } = {
+export const TabComponents = {
 	textChannel: Chat,
 	welcomeTab: WelcomeTab,
 };
@@ -20,9 +20,7 @@ export interface Tab {
 	title: string;
 	icon?: string | Component;
 
-	guildId?: string;
-	id: string; //in case of channel, it's the channel id, if for our use, use words
-	position?: number;
+	[x: string]: any; //TODO: make better type checking
 }
 
 export type { Input, Button, TextArea, AppState };
