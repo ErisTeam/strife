@@ -55,6 +55,7 @@ function TabList(props: TabsProps) {
 			let dropTabIndex: number;
 			let dragTabIndex: number;
 			for (let i = 0; i < items().length; i++) {
+				if (dragTabIndex != null && dropTabIndex != null) break;
 				if (items()[i].id == (event.droppable.id as number) - 1) dropTabIndex = i;
 				if (items()[i].id == (event.draggable.id as number) - 1) dragTabIndex = i;
 			}
