@@ -93,6 +93,12 @@
 	aspect-ratio: 1/1;
 	line-height: 100%;
 	background-color: var(--guilds-fallback-bgc);
+	svg {
+		height: 100%;
+		width: 100%;
+		aspect-ratio: 1/1;
+		padding: 0.2em;
+	}
 }
 
 .guildList {
