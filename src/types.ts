@@ -23,4 +23,9 @@ export interface Tab {
 	[x: string]: any; //TODO: make better type checking
 }
 
-export type { Input, Button, TextArea, AppState };
+type TabsFile = {
+	tabs: Tab[];
+	order: number[];
+	current: number;
+};
+export type { Input, Button, TextArea, AppState, TabsFile };

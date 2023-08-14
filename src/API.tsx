@@ -4,13 +4,17 @@ import { emit } from '@tauri-apps/api/event';
 // Tauri
 import { invoke } from '@tauri-apps/api/tauri';
 // API
-import { Tab } from './types';
+import { Tab, TabsFile } from './types';
 import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
 import { Volume2 } from 'lucide-solid';
+
 import { CONSTANTS } from './Constants';
 import { Component, batch } from 'solid-js';
+import { exists, BaseDirectory, createDir, writeFile, readDir, readTextFile } from '@tauri-apps/api/fs';
+const sessionDataPath = 'session_data';
+const tabsPath = sessionDataPath + '/tabs.json';
 
 export default {
 	Voice: {
@@ -30,6 +34,7 @@ export default {
 				return prev;
 			});
 			console.log(AppState.tabsOrder());
+			this.saveToFile().catch((err) => console.error(err));
 		},
 		setAsCurrent(tab: Tab | number) {
 			const AppState = useAppState();
@@ -43,6 +48,7 @@ export default {
 			} else {
 				AppState.setCurrentTabIndex(tab);
 			}
+			this.saveToFile().catch((err) => console.error(err));
 		},
 
 		remove(tab: Tab | number) {
@@ -86,10 +92,12 @@ export default {
 					return prev;
 				});
 			});
+			this.saveToFile().catch((err) => console.error(err));
 		},
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
 			//? batch is important here, otherwise tabs might not be updated correctly
+			//! deosnt actually update when replacing current tab
 			batch(() => {
 				if (replaceCurrent) {
 					let tabIndex = AppState.currentTabIndex();
@@ -108,6 +116,51 @@ export default {
 					AppState.setTabs(AppState.tabs.length, tab);
 				}
 			});
+			this.saveToFile().catch((err) => console.error(err));
+		},
+
+		async saveToFile() {
+			const dir = BaseDirectory.AppData;
+			const AppState = useAppState();
+			// const filePath = this;
+			const doesDirExist = await exists(sessionDataPath, { dir: dir });
+			if (!doesDirExist) {
+				await createDir(sessionDataPath, { dir: dir });
+			}
+			const tabsFile: TabsFile = {
+				order: AppState.tabsOrder(),
+				current: AppState.currentTabIndex(),
+				tabs: AppState.tabs,
+			};
+
+			await writeFile(tabsPath, JSON.stringify(tabsFile), { dir: dir });
+		},
+		async loadFromFile(): Promise<boolean> {
+			const AppState = useAppState();
+			const dir = BaseDirectory.AppData;
+			const doesDirExist = await exists(sessionDataPath, { dir: dir });
+			if (!doesDirExist) {
+				console.warn('No session data folder found');
+				return false;
+			}
+			const doesFileExist = await exists(tabsPath, { dir: dir });
+			if (!doesFileExist) {
+				console.warn('No session data tabs file found');
+				return false;
+			}
+
+			const tabsFile = JSON.parse(await readTextFile(tabsPath, { dir: dir })) as TabsFile;
+
+			const tabsOrder = tabsFile.order;
+			const currentTab = tabsFile.current;
+			const tabs = tabsFile.tabs;
+
+			console.log(tabsFile);
+
+			AppState.setTabs(tabs);
+			AppState.setTabsOrder(tabsOrder);
+			AppState.setCurrentTabIndex(currentTab);
+			return true;
 		},
 	},
 	channelFromRelationship(relationship: Relationship): Channel {
