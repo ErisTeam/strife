@@ -28,6 +28,7 @@ import Loading from './Components/Loading/Loading';
 import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
 import Channel from './Components/Messages/Chat';
 import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
+import { appWindow } from '@tauri-apps/api/window';
 
 const App: Component = () => {
 	const AppState = useAppState();
@@ -38,6 +39,33 @@ const App: Component = () => {
 		await invoke('close_splashscreen');
 		return users[0].userId;
 	});
+
+	function changeZoom(e: KeyboardEvent) {
+		console.log(e.key);
+		if (e.ctrlKey && e.key === '=') {
+			console.log('test');
+			const root = document.querySelector(':root');
+			const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
+			console.log(fontSize);
+			let newFontSize = parseInt(fontSize) + 1;
+			if (newFontSize > 20) {
+				newFontSize = 20;
+			}
+			root.style.setProperty('font-size', newFontSize + 'px');
+		}
+		if (e.ctrlKey && e.key === '-') {
+			const root = document.querySelector(':root');
+			const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
+			console.log(fontSize);
+			let newFontSize = parseInt(fontSize) - 1;
+			if (newFontSize < 8) {
+				newFontSize = 8;
+			}
+			root.style.setProperty('font-size', newFontSize + 'px');
+		}
+	}
+
+	document.addEventListener('keydown', changeZoom);
 
 	console.log(DEV);
 

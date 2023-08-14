@@ -33,15 +33,18 @@ const Guild = (props: GuildProps) => {
 	function updateRelativeYPositon() {
 		console.log('updating relative position');
 		const boundingRect = ref.getBoundingClientRect();
+		console.log(boundingRect);
 		toolTipRef.style.top = `${boundingRect.top + window.scrollY + boundingRect.height / 2}px`;
 	}
 
 	onCleanup(() => {
 		ref.parentElement?.parentElement?.removeEventListener('scroll', updateRelativeYPositon);
+		window.removeEventListener('keydown', zoomChange);
 	});
 	onMount(() => {
 		const boundingRect = ref.getBoundingClientRect();
 		updateRelativeYPositon();
+		window.addEventListener('keydown', zoomChange);
 		toolTipRef.style.left = `${boundingRect.width}px`;
 
 		ref.parentElement.parentElement.addEventListener('scroll', updateRelativeYPositon);
@@ -50,6 +53,12 @@ const Guild = (props: GuildProps) => {
 		updateRelativeYPositon();
 	});
 
+	function zoomChange(e: KeyboardEvent) {
+		console.log(e.key);
+		if (e.ctrlKey && (e.key === '=' || e.key === '-')) {
+			updateRelativeYPositon();
+		}
+	}
 	return (
 		<li
 			use:sortable
