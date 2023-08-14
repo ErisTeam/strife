@@ -104,12 +104,25 @@ export default {
 					if (tabIndex === -1) {
 						tabIndex = AppState.tabs.length;
 					}
+					if (AppState.tabs[tabIndex].component != tab.component) {
+						AppState.setTabs(tabIndex, tab);
+						return;
+					}
 
-					AppState.setTabs(tabIndex, tab);
-					AppState.setCurrentTabIndex(tabIndex);
-					AppState.setTabsOrder((prev) => {
-						prev[tabIndex] = tabIndex;
-						return prev;
+					batch(() => {
+						AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
+						AppState.setTabs(AppState.tabs.length, tab);
+						const newTabIndex = AppState.tabs.length - 1;
+						AppState.setCurrentTabIndex(newTabIndex);
+						AppState.setTabsOrder((prev) => {
+							const originalTabOrder = prev.indexOf(tabIndex);
+							prev[originalTabOrder] = newTabIndex;
+							for (let i = originalTabOrder + 1; i < prev.length; i++) {
+								prev[i]--;
+							}
+
+							return prev;
+						});
 					});
 				} else {
 					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
