@@ -1,6 +1,6 @@
 // SolidJS
 
-import { For, Match, Show, Switch, createMemo, onMount } from 'solid-js';
+import { Match, Show, Switch, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import ChannelList from '../ChannelList/ChannelList';
 // Components
@@ -13,12 +13,10 @@ import FriendsList from '../Friends/FriendsList';
 
 import ControlPanel from '../ControlPanel/ControlPanel';
 import { ContextMenusProvider } from '../ContextMenuNew/ContextMenu';
-import { Dynamic } from 'solid-js/web';
+
 import Dev from '../Dev/Dev';
 import { Guild } from '../../discord';
-import { unwrap } from 'solid-js/store';
-import WelcomeTab from '../Tabs/WelcomeTab';
-import { DragDropDebugger, DragDropProvider, DragDropSensors, SortableProvider } from '@thisbeyond/solid-dnd';
+
 import API from '../../API';
 
 //TODO: move to routes
@@ -26,14 +24,20 @@ const ApplicationWrapper = () => {
 	const AppState = useAppState();
 
 	onMount(() => {
-		API.Tabs.add(
-			{
-				title: 'Welcome',
-				component: 'welcomeTab',
-				icon: '👋',
-			},
-			true,
-		);
+		API.Tabs.loadFromFile()
+			.then((result) => {
+				if (!result) {
+					API.Tabs.add(
+						{
+							title: 'Welcome',
+							component: 'welcomeTab',
+							icon: '👋',
+						},
+						true,
+					);
+				}
+			})
+			.catch(console.error);
 	});
 
 	console.log('CurrentGuild', !AppState.currentGuild());
@@ -47,6 +51,20 @@ const ApplicationWrapper = () => {
 					}}
 				>
 					Ordering Test
+				</button>
+				<button
+					onclick={() => {
+						API.Tabs.saveToFile().catch(console.error);
+					}}
+				>
+					Save Tabs to file
+				</button>
+				<button
+					onclick={() => {
+						API.Tabs.loadFromFile().catch(console.error);
+					}}
+				>
+					Load Tabs from file
 				</button>
 			</Dev>
 

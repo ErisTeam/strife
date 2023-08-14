@@ -58,6 +58,7 @@ tauri = { version = "1.4.1", features = [
 	"window-hide",
 	"window-show",
 	"window-unminimize",
+	"fs-all",
 ] }
 
 
