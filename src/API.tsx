@@ -100,10 +100,16 @@ export default {
 			//! deosnt actually update when replacing current tab
 			batch(() => {
 				if (replaceCurrent) {
+					if (AppState.tabs.length === 0) {
+						AppState.setTabs(0, tab);
+						AppState.setCurrentTabIndex(0);
+						AppState.setTabsOrder([0]);
+					}
 					let tabIndex = AppState.currentTabIndex();
 					if (tabIndex === -1) {
 						tabIndex = AppState.tabs.length;
 					}
+
 					if (AppState.tabs[tabIndex].component != tab.component) {
 						AppState.setTabs(tabIndex, tab);
 						return;
