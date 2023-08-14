@@ -38,8 +38,9 @@ export default (props: ChannelProps) => {
 				console.log('left click', e.button);
 				if (listIndex == -1) {
 					API.Tabs.add(tab, true);
+				} else {
+					API.Tabs.setAsCurrent(AppState.tabs.length - 1);
 				}
-				API.Tabs.setAsCurrent(tab);
 				break;
 			case 1:
 				console.log('middle click', e.button);

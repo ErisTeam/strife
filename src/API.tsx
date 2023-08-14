@@ -36,7 +36,7 @@ export default {
 			if (typeof tab != 'number') {
 				const index = AppState.tabs.indexOf(tab);
 				if (index === -1) {
-					console.error(`Tab ${tab} not found`);
+					console.error(`Tab not found`, tab);
 					return;
 				}
 				AppState.setCurrentTabIndex(index);
