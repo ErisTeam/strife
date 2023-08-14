@@ -41,7 +41,6 @@ const App: Component = () => {
 	});
 
 	function changeZoom(e: KeyboardEvent) {
-		console.log(e.key);
 		if (e.ctrlKey && e.key === '=') {
 			console.log('test');
 			const root = document.querySelector(':root');

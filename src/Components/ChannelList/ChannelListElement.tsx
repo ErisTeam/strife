@@ -57,6 +57,7 @@ export default (props: ChannelProps) => {
 	const channelIcon = createMemo((): string | Component => {
 		const { emoji, newName } = API.getChannelIcon(props.data);
 		setDisplayName(newName);
+		console.log('emoji', emoji);
 
 		return emoji;
 	});
@@ -68,10 +69,10 @@ export default (props: ChannelProps) => {
 				<button onMouseDown={onMouseDown}>
 					<div class={style.channelIcon}>
 						<Switch>
-							<Match when={typeof channelIcon() === 'function'}>
+							<Match when={typeof channelIcon() == 'function'}>
 								<Dynamic component={channelIcon()}></Dynamic>
 							</Match>
-							<Match when={typeof channelIcon() === 'string'}>{channelIcon() as string}</Match>
+							<Match when={typeof channelIcon() == 'string'}>{channelIcon() as string}</Match>
 						</Switch>
 					</div>
 					<span title={displayName()}>{displayName()}</span>

@@ -77,8 +77,8 @@ export default function Chat() {
 		console.log('messagesToRender', messagesToRender);
 		for (let i = 0; i < messagesToRender.length; i++) {
 			if (
-				messagesToRender[i].author.id == lastAuthor &&
-				messagesToRender[i].timestamp - messagesToRender[i - 1].timestamp < 1000 * 60 * 7
+				messagesToRender[i].author.id == lastAuthor
+				//&& messagesToRender[i].timestamp - messagesToRender[i - 1].timestamp < 1000 * 60 * 7
 			) {
 				renderableMessages.push(
 					<Message class={style.same} message={messagesToRender[i]} updateMessage={updateMessage} />,
@@ -94,14 +94,7 @@ export default function Chat() {
 
 	return (
 		<ol class={style.chat}>
-			<button
-				onclick={() => {
-					console.log(TabContext);
-				}}
-			>
-				test
-			</button>
-			<For each={renderableMessages()}>{(message) => message}</For>
+			{renderableMessages()}
 			<Show when={isVoiceChannel()}>
 				<button onclick={startVoice}>Join Voice Channel</button>
 			</Show>

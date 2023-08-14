@@ -2,6 +2,7 @@ import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { For, Show, Suspense } from 'solid-js';
+import outletStyle from '../ApplicationWrapper/ApplicationWrapper.module.css';
 
 import { Dynamic } from 'solid-js/web';
 
@@ -21,10 +22,8 @@ export function TabWindow() {
 
 			<For each={AppState.tabs}>
 				{(tab, index) => {
-					console.log('tab', tab);
-					console.log('Tab component', TabComponents[tab.component]);
 					return (
-						<div style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }} class={style.outlet}>
+						<div style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }} class={outletStyle.outlet}>
 							<Suspense fallback={<Loading />}>
 								<TabContextProvider tab={tab}>
 									<Dynamic component={TabComponents[tab.component]} />

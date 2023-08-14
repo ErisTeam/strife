@@ -106,11 +106,11 @@ export default {
 					}
 
 					AppState.setTabs(tabIndex, tab);
-					AppState.setCurrentTabIndex(tabIndex);
 					AppState.setTabsOrder((prev) => {
 						prev[tabIndex] = tabIndex;
 						return prev;
 					});
+					AppState.setCurrentTabIndex(tabIndex);
 				} else {
 					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
 					AppState.setTabs(AppState.tabs.length, tab);
@@ -180,37 +180,38 @@ export default {
 
 		let emoji: string | Component = '#';
 		let newName = channel.name;
-		if (emojiReg) {
+
+		if (emojiReg != null) {
 			//remove emoji from name
+			emoji = emojiReg[0];
 			const regEx = new RegExp(emojiReg[0], 'g');
 			newName = channel.name.replace(regEx, '');
-			emoji = emojiReg[0];
-		}
-		console.log(channel.type);
-		switch (channel.type) {
-			case CONSTANTS.GUILD_TEXT:
-				emoji = '#';
-				break;
-			case CONSTANTS.GUILD_VOICE:
-				emoji = Volume2;
-				break;
-			case CONSTANTS.GUILD_CATEGORY:
-				emoji = '📁';
-				break;
-			case CONSTANTS.GUILD_ANNOUNCEMENT:
-				emoji = '📢';
-				break;
-			case CONSTANTS.GUILD_DIRECTORY:
-				emoji = '📁';
-				break;
-			case CONSTANTS.GUILD_FORUM:
-				emoji = '📰';
-				break;
-			case CONSTANTS.GUILD_STAGE_VOICE:
-				emoji = '🎤';
-				break;
-			default:
-				emoji = '❓';
+		} else {
+			switch (channel.type) {
+				case CONSTANTS.GUILD_TEXT:
+					emoji = '#';
+					break;
+				case CONSTANTS.GUILD_VOICE:
+					emoji = Volume2;
+					break;
+				case CONSTANTS.GUILD_CATEGORY:
+					emoji = '📁';
+					break;
+				case CONSTANTS.GUILD_ANNOUNCEMENT:
+					emoji = '📢';
+					break;
+				case CONSTANTS.GUILD_DIRECTORY:
+					emoji = '📁';
+					break;
+				case CONSTANTS.GUILD_FORUM:
+					emoji = '📰';
+					break;
+				case CONSTANTS.GUILD_STAGE_VOICE:
+					emoji = '🎤';
+					break;
+				default:
+					emoji = '❓';
+			}
 		}
 		return { emoji, newName };
 	},

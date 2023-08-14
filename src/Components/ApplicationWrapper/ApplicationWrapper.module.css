@@ -36,6 +36,14 @@
 			.tabs {
 				width: 100%;
 			}
+			.outlet {
+				/* !minus tab size, we should probably move these values to variables */
+				height: calc(100% - 3em);
+
+				ol {
+					border-bottom-left-radius: var(--chat-roundness);
+				}
+			}
 		}
 
 		.channels + .inner {
