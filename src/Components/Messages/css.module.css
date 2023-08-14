@@ -3,6 +3,7 @@
 
 	overflow-y: scroll;
 	height: 100%;
+	padding-bottom: 3em;
 }
 .message {
 	width: 100%;

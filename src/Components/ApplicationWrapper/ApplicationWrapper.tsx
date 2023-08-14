@@ -52,20 +52,6 @@ const ApplicationWrapper = () => {
 				>
 					Ordering Test
 				</button>
-				<button
-					onclick={() => {
-						API.Tabs.saveToFile().catch(console.error);
-					}}
-				>
-					Save Tabs to file
-				</button>
-				<button
-					onclick={() => {
-						API.Tabs.loadFromFile().catch(console.error);
-					}}
-				>
-					Load Tabs from file
-				</button>
 			</Dev>
 
 			<div class={style.wrapper}>
