@@ -22,7 +22,7 @@ type GuildProps = {
 
 const Guild = (props: GuildProps) => {
 	const AppState = useAppState();
-	console.log(AppState);
+
 	const [t] = useTrans();
 
 	let toolTipRef: HTMLElement;
@@ -31,9 +31,8 @@ const Guild = (props: GuildProps) => {
 	const [state, actions] = useDragDropContext();
 
 	function updateRelativeYPositon() {
-		console.log('updating relative position');
 		const boundingRect = ref.getBoundingClientRect();
-		console.log(boundingRect);
+
 		toolTipRef.style.top = `${boundingRect.top + window.scrollY + boundingRect.height / 2}px`;
 	}
 
@@ -54,7 +53,6 @@ const Guild = (props: GuildProps) => {
 	});
 
 	function zoomChange(e: KeyboardEvent) {
-		console.log(e.key);
 		if (e.ctrlKey && (e.key === '=' || e.key === '-')) {
 			updateRelativeYPositon();
 		}
@@ -71,7 +69,6 @@ const Guild = (props: GuildProps) => {
 		>
 			<button
 				onclick={() => {
-					console.log(AppState.currentGuild(), props.guild, AppState.currentGuild() === props.guild);
 					if (AppState.currentGuild() !== props.guild) {
 						AppState.setCurrentGuild(props.guild);
 					} else {

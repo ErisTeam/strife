@@ -51,6 +51,26 @@
 				line-height: 1em;
 			}
 		}
+
+		strong {
+			font-weight: 900;
+		}
+		em {
+			font-style: italic;
+		}
+		u {
+			text-decoration: underline;
+		}
+		s {
+			text-decoration: line-through;
+		}
+		code {
+			background-color: black;
+		}
+		.block {
+			padding: 0.2em;
+			margin: 0.2em;
+		}
 	}
 }
 /* something is broken dunno what ill fix later */

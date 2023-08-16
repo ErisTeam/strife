@@ -1,5 +1,5 @@
 import { Component, JSX } from 'solid-js';
-import Chat from './Components/Messages/Chat';
+import Chat from './Components/Chat/Chat';
 import WelcomeTab from './Components/Tabs/WelcomeTab';
 
 type AppState = 'LoginScreen' | 'Application' | 'Dev';
