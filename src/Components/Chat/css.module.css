@@ -90,11 +90,11 @@
 				content: '';
 				position: absolute;
 				background-color: white;
-				width: 0.25em;
-				height: 0.25em;
+				width: 0.4em;
+				height: 0.4em;
 				left: 0;
 				top: 0;
-				translate: 0 200%;
+				translate: 0 110%;
 				border-radius: 100%;
 			}
 		}
@@ -104,13 +104,13 @@
 			&::before {
 				content: '';
 				position: absolute;
-				background-color: white;
-				width: 0.25em;
-				height: 0.25em;
+				width: 0.4em;
+				height: 0.4em;
 				left: 0;
 				top: 0;
-				translate: 1ch 200%;
+				translate: 1ch 110%;
 				border-radius: 100%;
+				border: 1px white solid;
 			}
 		}
 	}
