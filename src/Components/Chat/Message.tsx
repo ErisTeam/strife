@@ -103,7 +103,6 @@ const Message = (props: MessageProps) => {
 		//get whitespace between matches
 
 		if (matches.length == 0) {
-			console.log('formatting', content);
 			return formatMentions(content);
 		}
 
@@ -178,6 +177,7 @@ const Message = (props: MessageProps) => {
 
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
+
 	const profileImage = createMemo(() => {
 		if (message.author.avatar) {
 			return `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=80`;
