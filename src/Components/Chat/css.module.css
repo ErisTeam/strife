@@ -71,6 +71,18 @@
 			padding: 0.2em;
 			margin: 0.2em;
 		}
+		h4 {
+			font-size: 2em;
+			font-weight: 900;
+		}
+		h5 {
+			font-weight: 900;
+			font-size: 1.6em;
+		}
+		h6 {
+			font-weight: 900;
+			font-size: 1.3em;
+		}
 	}
 }
 /* something is broken dunno what ill fix later */
