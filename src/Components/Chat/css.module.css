@@ -83,6 +83,36 @@
 			font-weight: 900;
 			font-size: 1.3em;
 		}
+		.list {
+			position: relative;
+			padding-left: 1ch;
+			&::before {
+				content: '';
+				position: absolute;
+				background-color: white;
+				width: 0.25em;
+				height: 0.25em;
+				left: 0;
+				top: 0;
+				translate: 0 200%;
+				border-radius: 100%;
+			}
+		}
+		.indentedList {
+			position: relative;
+			padding-left: 2ch;
+			&::before {
+				content: '';
+				position: absolute;
+				background-color: white;
+				width: 0.25em;
+				height: 0.25em;
+				left: 0;
+				top: 0;
+				translate: 1ch 200%;
+				border-radius: 100%;
+			}
+		}
 	}
 }
 /* something is broken dunno what ill fix later */
