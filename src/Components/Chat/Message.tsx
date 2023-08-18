@@ -69,7 +69,6 @@ const Message = (props: MessageProps) => {
 
 		return <>{...a}</>;
 	}
-	// !Still lacks headers and lists and links
 	function formatMarkdown(content: string) {
 		const boldRegex = /(\*{2}(.+?)\*{2})(?!\*)/gm;
 
@@ -168,15 +167,32 @@ const Message = (props: MessageProps) => {
 		return <>{...results}</>;
 	}
 
-	function formatContent(content: string) {
-		return formatMentions(content);
-	}
 	const formatedMessage = createMemo(() => {
 		return formatMarkdown(message.content);
 	});
 
+	const formatedAttachments = createMemo(() => {
+		return formatAttachments(message.attachments);
+	});
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
+
+	//! REPLACE TYPE AFTER IT GETS ADDED TO PROTOBUF
+	function formatAttachments(ats: any[]): JSX.Element[] {
+		console.log(ats);
+		const returnables = [];
+		if (ats.length == 0) return;
+		for (let i = 0; i < ats.length; i++) {
+			if (ats[i].content_type.includes('image')) {
+				returnables.push(
+					<li style={`--height: ${ats[i].height}; --width: ${ats[i].width}`} class={style.image}>
+						<img src={ats[i].url} alt={message.content} />
+					</li>,
+				);
+			}
+		}
+		return returnables;
+	}
 
 	const profileImage = createMemo(() => {
 		if (message.author.avatar) {
@@ -217,6 +233,10 @@ const Message = (props: MessageProps) => {
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
 				<p>{formatedMessage()}</p>
+				<Show when={message.attachments?.length > 0}>
+					<ul class={style.attachments}>{formatedAttachments()}</ul>
+				</Show>
+
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 			</div>
 		</li>

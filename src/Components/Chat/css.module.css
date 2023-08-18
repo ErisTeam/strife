@@ -6,7 +6,7 @@
 	padding-bottom: 3em;
 }
 .message {
-	width: 100%;
+	width: 90%;
 	display: flex;
 	padding: 0 2em;
 	padding-bottom: 0;
@@ -123,6 +123,32 @@
 				translate: 1ch 110%;
 				border-radius: 100%;
 				border: 1px white solid;
+			}
+		}
+	}
+	.attachments {
+		border: 1px red solid;
+		width: 100%;
+		height: min(30vw, 20em);
+
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-gutter: stable;
+
+		.image {
+			border: 1px red solid;
+			display: block;
+			flex-shrink: 0;
+			padding: 0.5em;
+
+			height: 100%;
+			img {
+				display: block;
+				border-radius: var(--round-large);
+				border: 1px red solid;
+				display: block;
+				height: 100%;
 			}
 		}
 	}
