@@ -185,7 +185,7 @@ const Message = (props: MessageProps) => {
 		for (let i = 0; i < ats.length; i++) {
 			if (ats[i].content_type.includes('image')) {
 				returnables.push(
-					<li style={`--height: ${ats[i].height}; --width: ${ats[i].width}`} class={style.image}>
+					<li class={style.image}>
 						<img src={ats[i].url} alt={message.content} />
 					</li>,
 				);
@@ -234,7 +234,9 @@ const Message = (props: MessageProps) => {
 				</div>
 				<p>{formatedMessage()}</p>
 				<Show when={message.attachments?.length > 0}>
-					<ul class={style.attachments}>{formatedAttachments()}</ul>
+					<div class={style.wrapper}>
+						<ul class={style.attachments}>{formatedAttachments()}</ul>
+					</div>
 				</Show>
 
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>

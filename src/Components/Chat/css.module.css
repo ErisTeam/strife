@@ -8,7 +8,7 @@
 .message {
 	width: 90%;
 	display: flex;
-	padding: 0 2em;
+	padding: 0 1em;
 	padding-bottom: 0;
 
 	margin-top: 1em;
@@ -37,6 +37,34 @@
 		flex-direction: column;
 		justify-content: space-between;
 
+		/* i dont know why this works */
+		.wrapper {
+			height: 15%;
+
+			.attachments {
+				display: flex;
+				flex-shrink: 1;
+				align-items: flex-end;
+				width: 100%;
+				overflow-x: auto;
+				scrollbar-gutter: stable;
+
+				.image {
+					padding: 0.2em;
+					flex-shrink: 0;
+					min-height: 6em;
+					max-height: 95%;
+					width: fit-content;
+					height: fit-content;
+					img {
+						max-height: 20em;
+						height: 100%;
+						object-fit: scale-down;
+						border-radius: 12px;
+					}
+				}
+			}
+		}
 		.details {
 			display: flex;
 			align-items: flex-end;
@@ -126,32 +154,6 @@
 			}
 		}
 	}
-	.attachments {
-		border: 1px red solid;
-		width: 100%;
-		height: min(30vw, 20em);
-
-		display: flex;
-		flex-wrap: nowrap;
-		overflow-x: auto;
-		scrollbar-gutter: stable;
-
-		.image {
-			border: 1px red solid;
-			display: block;
-			flex-shrink: 0;
-			padding: 0.5em;
-
-			height: 100%;
-			img {
-				display: block;
-				border-radius: var(--round-large);
-				border: 1px red solid;
-				display: block;
-				height: 100%;
-			}
-		}
-	}
 }
 /* something is broken dunno what ill fix later */
 .same {
@@ -165,7 +167,7 @@
 	.messageInner {
 		height: 100%;
 		padding: 0;
-		margin-left: 5.5em;
+		margin-left: 4.5em;
 		.details {
 			display: none;
 			button {
