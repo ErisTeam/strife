@@ -1,11 +1,12 @@
 import ContextMenu, { useMenu } from '../ContextMenu/ContextMenu';
 import { Message as MessageType } from '../../discord';
-import { For, JSX, Show, createMemo } from 'solid-js';
+import { For, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
 import API from '../../API';
 
 import style from './css.module.css';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import UserMention from './UserMention';
+import { Download } from 'lucide-solid';
 
 interface FormatedMessage extends MessageType {
 	formatedContent: JSX.Element[];
@@ -171,27 +172,59 @@ const Message = (props: MessageProps) => {
 		return formatMarkdown(message.content);
 	});
 
-	const formattedAttachments = createMemo(() => {
-		return formatAttachments(message.attachments);
+	const [formattedImages, setFormattedImages] = createSignal<JSX.Element[]>([]);
+	const [formattedVideos, setFormattedVideos] = createSignal<JSX.Element[]>([]);
+	const [formattedAudios, setFormattedAudios] = createSignal<JSX.Element[]>([]);
+
+	onMount(() => {
+		formatAttachments(message.attachments);
 	});
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
 
 	//! REPLACE TYPE AFTER IT GETS ADDED TO PROTOBUF
-	function formatAttachments(ats: any[]): JSX.Element[] {
+	function formatAttachments(ats: any[]) {
 		console.log(ats);
-		const returnables = [];
+		const images = [];
+		const videos = [];
+		const audios = [];
 		if (ats.length == 0) return;
 		for (let i = 0; i < ats.length; i++) {
 			if (ats[i].content_type.includes('image')) {
-				returnables.push(
+				images.push(
 					<li class={style.image}>
+						<a class={style.download} href={ats[i].url} target="_blank">
+							<Download />
+						</a>
 						<img src={ats[i].url} alt={message.content} />
 					</li>,
 				);
 			}
+			if (ats[i].content_type.includes('video')) {
+				videos.push(
+					<li class={style.video}>
+						<a class={style.download} href={ats[i].url} target="_blank">
+							<Download />
+						</a>
+						<video controls src={ats[i].url} />
+					</li>,
+				);
+			}
+			if (ats[i].content_type.includes('audio')) {
+				audios.push(
+					<li>
+						<a class={style.download} href={ats[i].url} target="_blank">
+							<Download />
+						</a>
+						<span>{ats[i].filename}</span>
+						<audio controls src={ats[i].url} />
+					</li>,
+				);
+			}
 		}
-		return returnables;
+		setFormattedImages(images);
+		setFormattedVideos(videos);
+		setFormattedAudios(audios);
 	}
 
 	const profileImage = createMemo(() => {
@@ -233,10 +266,16 @@ const Message = (props: MessageProps) => {
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
 				<p>{formattedMessage()}</p>
-				<Show when={message.attachments?.length > 0}>
+				<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
 					<div class={style.wrapper}>
-						<ul class={style.attachments}>{formattedAttachments()}</ul>
+						<ul class={style.attachments}>
+							{formattedVideos()}
+							{formattedImages()}
+						</ul>
 					</div>
+				</Show>
+				<Show when={formattedAudios().length > 0}>
+					<ul class={style.audios}>{formattedAudios()}</ul>
 				</Show>
 
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
