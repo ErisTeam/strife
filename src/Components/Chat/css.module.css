@@ -92,6 +92,7 @@
 			}
 		}
 		.audios {
+			max-width: 100em;
 			li {
 				padding: 1em;
 				background-color: var(--depth2);
