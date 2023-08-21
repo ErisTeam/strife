@@ -267,12 +267,10 @@ const Message = (props: MessageProps) => {
 				</div>
 				<p>{formattedMessage()}</p>
 				<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
-					<div class={style.wrapper}>
-						<ul class={style.attachments}>
-							{formattedVideos()}
-							{formattedImages()}
-						</ul>
-					</div>
+					<ul class={style.attachments}>
+						{formattedVideos()}
+						{formattedImages()}
+					</ul>
 				</Show>
 				<Show when={formattedAudios().length > 0}>
 					<ul class={style.audios}>{formattedAudios()}</ul>

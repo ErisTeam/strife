@@ -38,55 +38,55 @@
 		justify-content: space-between;
 
 		/* i dont know why this works */
-		.wrapper {
-			.attachments {
-				display: flex;
-				flex-shrink: 1;
-				align-items: flex-end;
-				width: 100%;
-				overflow-x: auto;
-				scrollbar-gutter: stable;
-				margin-bottom: 0.25em;
 
-				.image {
-					position: relative;
-					padding: 0.2em;
-					flex-shrink: 0;
-					min-height: 6em;
-					max-height: 95%;
-					width: fit-content;
-					height: fit-content;
-					img {
-						max-height: 20em;
-						height: 100%;
-						object-fit: scale-down;
-						border-radius: 12px;
-					}
-					&:hover {
-						.download {
-							opacity: 100;
-						}
+		.attachments {
+			border: 1px red solid;
+
+			display: flex;
+
+			align-items: flex-end;
+			width: 90%;
+			overflow-x: auto;
+			scrollbar-gutter: stable;
+			margin-bottom: 0.25em;
+			flex-shrink: 1;
+
+			.image {
+				position: relative;
+				padding-right: 0.2em;
+				flex-shrink: 0;
+				min-height: 6em;
+				max-height: 100%;
+				width: fit-content;
+				height: fit-content;
+				img {
+					max-height: 19em;
+
+					object-fit: scale-down;
+					border-radius: 12px;
+				}
+				&:hover {
+					.download {
+						opacity: 100;
 					}
 				}
+			}
 
-				.video {
-					position: relative;
-					padding: 0.2em;
-					flex-shrink: 0;
-					min-height: 6em;
+			.video {
+				position: relative;
+				padding: 0.2em;
+				flex-shrink: 1;
+				min-height: 6em;
+				max-height: 100%;
+				width: fit-content;
 
-					width: fit-content;
-					height: fit-content;
-					video {
-						max-height: 20em;
-						height: 100%;
-
-						border-radius: 12px;
-					}
-					&:hover {
-						.download {
-							opacity: 100;
-						}
+				video {
+					height: 18em;
+					flex-shrink: 1;
+				}
+				&:hover {
+					.download {
+						opacity: 100;
 					}
 				}
 			}
