@@ -167,11 +167,11 @@ const Message = (props: MessageProps) => {
 		return <>{...results}</>;
 	}
 
-	const formatedMessage = createMemo(() => {
+	const formattedMessage = createMemo(() => {
 		return formatMarkdown(message.content);
 	});
 
-	const formatedAttachments = createMemo(() => {
+	const formattedAttachments = createMemo(() => {
 		return formatAttachments(message.attachments);
 	});
 	//TODO: make embeds work
@@ -232,10 +232,10 @@ const Message = (props: MessageProps) => {
 					</button>
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
-				<p>{formatedMessage()}</p>
+				<p>{formattedMessage()}</p>
 				<Show when={message.attachments?.length > 0}>
 					<div class={style.wrapper}>
-						<ul class={style.attachments}>{formatedAttachments()}</ul>
+						<ul class={style.attachments}>{formattedAttachments()}</ul>
 					</div>
 				</Show>
 
