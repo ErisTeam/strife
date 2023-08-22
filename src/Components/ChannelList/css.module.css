@@ -120,7 +120,7 @@
 		padding: 0 0.5em;
 		height: calc(100% - 4.75em);
 
-		overflow-y: scroll;
+		overflow-y: auto;
 
 		scrollbar-gutter: stable;
 	}
