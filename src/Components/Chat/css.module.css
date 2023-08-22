@@ -235,6 +235,9 @@
 				border: 1px white solid;
 			}
 		}
+		.spoiler {
+			background-color: aqua;
+		}
 	}
 }
 /* something is broken dunno what ill fix later */
