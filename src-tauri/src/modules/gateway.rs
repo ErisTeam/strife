@@ -256,6 +256,7 @@ impl Gateway {
 				}
 
 				tokio_tungstenite::tungstenite::Message::Close(frame) => {
+					println!("aaaaaaaaaaaaaaaaaaaaa {:?}",frame);
 					if let Some(frame) = frame {
 						match frame.code {
 							CloseCode::Library(code) => {
@@ -269,6 +270,7 @@ impl Gateway {
 							}
 						}
 					}
+					
 					return Err("Connection closed".into());
 				}
 				_ => {}
