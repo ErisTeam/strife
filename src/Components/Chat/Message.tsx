@@ -7,9 +7,20 @@ import style from './css.module.css';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import UserMention from './UserMention';
 import { Download } from 'lucide-solid';
+import { useAppState } from '../../AppState';
 
 interface FormatedMessage extends MessageType {
 	formatedContent: JSX.Element[];
+}
+function Menu() {
+	const menu = useMenu<MessageType>();
+	const authorId = menu.author.id;
+	const AppState = useAppState();
+	return (
+		<Show when={authorId == AppState.userId}>
+			<button>edit</button>
+		</Show>
+	);
 }
 
 type MessageProps = {
@@ -238,11 +249,6 @@ const Message = (props: MessageProps) => {
 			return '/Friends/fallback.png';
 		}
 	});
-
-	function Menu() {
-		const menu = useMenu<MessageType>();
-		return <button>edit</button>;
-	}
 
 	const contextMenu = createContextMenu({
 		component: [Menu],
