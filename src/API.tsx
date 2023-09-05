@@ -193,6 +193,11 @@ export default {
 			position: 0,
 		};
 	},
+	getServerIconFromChannel(channel: Channel): string {
+		const AppState = useAppState();
+		const guild = AppState.userGuilds.find((g) => g.properties.id === channel.guild_id);
+		return guild.properties.icon;
+	},
 
 	getChannelIcon(channel: Channel): { emoji: string | Component; newName: string } {
 		//extract emoji from name

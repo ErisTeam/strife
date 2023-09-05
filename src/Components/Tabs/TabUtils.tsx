@@ -8,8 +8,8 @@ export function createTextChannelTab(channel: Channel): Tab {
 	const { emoji, newName } = API.getChannelIcon(channel);
 
 	return {
-		title: newName,
-		icon: emoji,
+		title: channel.name,
+		icon: API.getServerIconFromChannel(channel),
 
 		component: 'textChannel',
 		channelId: channel.id,

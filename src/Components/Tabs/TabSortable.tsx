@@ -64,7 +64,8 @@ function TabSortable(props: TabProps) {
 				</Switch>
 
 				<span>
-					{props.id + 1} {tab.title}
+					{/* {props.id + 1} */}
+					{tab.title}
 				</span>
 			</button>
 			<button
