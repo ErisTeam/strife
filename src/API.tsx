@@ -96,15 +96,18 @@ export default {
 		},
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
-
-			if (!replaceCurrent || AppState.tabs.length === 0) {
-				AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
-				AppState.setTabs(AppState.tabs.length, tab);
-				if (replaceCurrent) AppState.setCurrentTabIndex(0);
-				return;
-			}
-			//? batch is important here, otherwise tabs might not be updated correctly
 			batch(() => {
+				if (!replaceCurrent || AppState.tabs.length === 0) {
+					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
+
+					AppState.setTabs(AppState.tabs.length, tab);
+					if (replaceCurrent) AppState.setCurrentTabIndex(0);
+
+					return;
+				}
+
+				//? batch is important here, otherwise tabs might not be updated correctly
+
 				let tabIndex = AppState.currentTabIndex();
 				if (tabIndex === -1) {
 					tabIndex = AppState.tabs.length;
@@ -115,21 +118,20 @@ export default {
 					return;
 				}
 
-				batch(() => {
-					AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
-					AppState.setTabs(AppState.tabs.length, tab);
-					const newTabIndex = AppState.tabs.length - 1;
-					AppState.setCurrentTabIndex(newTabIndex);
-					AppState.setTabsOrder((prev) => {
-						const originalTabOrder = prev.indexOf(tabIndex);
-						prev[originalTabOrder] = newTabIndex;
-						for (let i = originalTabOrder + 1; i < prev.length; i++) {
-							prev[i]--;
-						}
+				AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
+				AppState.setTabs(AppState.tabs.length, tab);
+				const newTabIndex = AppState.tabs.length - 1;
+				AppState.setCurrentTabIndex(newTabIndex);
+				AppState.setTabsOrder((prev) => {
+					const originalTabOrder = prev.indexOf(tabIndex);
+					prev[originalTabOrder] = newTabIndex;
+					for (let i = originalTabOrder + 1; i < prev.length; i++) {
+						prev[i]--;
+					}
 
-						return prev;
-					});
+					return prev;
 				});
+
 				AppState.setCurrentTabIndex(tabIndex);
 			});
 			this.saveToFile().catch((err) => console.error(err));
