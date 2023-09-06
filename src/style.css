@@ -95,7 +95,7 @@ pre {
 	border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-	background-color: hsl(205, 0%, 12%);
+	background-color: var(--primary);
 }
 
 :root {

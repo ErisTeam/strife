@@ -288,6 +288,7 @@ const Message = (props: MessageProps) => {
 
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 			</div>
+			<aside class={style.sameTime}>{intl.format(new Date(message.timestamp))}</aside> {/* TODO: czas */}
 		</li>
 	);
 };

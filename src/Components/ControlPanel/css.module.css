@@ -2,9 +2,8 @@
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-columns: 20% 40% 20%;
-	grid-template-rows: 100%;
-	column-gap: 10%;
+	grid-template-columns: 1fr 2fr 1fr;
+	justify-content: center;
 	padding: 0.25em;
 	background-color: var(--control-panel-bgc);
 	@media (max-width: 430px) {
@@ -20,8 +19,7 @@
 	min-width: 200px;
 	display: grid;
 	transition: all 200ms ease-in-out;
-	grid-template-columns: 20% 60% 20%;
-	grid-template-rows: 1fr;
+	grid-template-columns: 1fr 2fr 1fr;
 
 	.left {
 		grid-column: 1/2;
@@ -110,7 +108,6 @@
 .mediaPanel {
 	height: 100%;
 	transition: all 200ms ease-in-out;
-	width: 100%;
 	border-radius: var(--control-panel-roundness);
 	display: flex;
 	justify-content: space-evenly;
@@ -146,23 +143,19 @@
 	display: flex;
 
 	align-items: center;
-
 	transition: all 200ms ease-in-out;
 	border-radius: var(--control-panel-roundness);
-	width: 100%;
-
 	overflow: hidden;
 	img {
-		margin-left: 0.25em;
 		display: block;
 		width: 2.75em;
+		aspect-ratio: 1/1;
 
 		border-radius: 100%;
 		border: 2px solid var(--depth2);
 	}
 	.user {
 		padding-left: 0.4em;
-		height: 80%;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -171,8 +164,6 @@
 			line-height: 1em;
 			font-size: 1em;
 			color: var(--control-panel-text);
-			width: 90%;
-			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 		}
@@ -181,7 +172,6 @@
 
 			font-size: 0.8em;
 			line-height: 1em;
-			width: 95%;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -190,7 +180,6 @@
 			color: var(--control-panel-text-secondary);
 			font-size: 0.8em;
 			line-height: 1em;
-			width: 97%;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -208,3 +197,5 @@
 		}
 	}
 }
+
+@media (max-width: 600px) {
