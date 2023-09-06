@@ -77,6 +77,8 @@
 			{
 				"fullscreen": false,
 				"width": 800,
+				"minWidth": 300,
+				"minHeight": 300,
 				"height": 600,
 				"resizable": true,
 				"title": "PandaCord",

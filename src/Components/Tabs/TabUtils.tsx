@@ -5,7 +5,7 @@ import { Channel } from '../../discord';
 import API from '../../API';
 
 export function createTextChannelTab(channel: Channel): Tab {
-	const { emoji, newName } = API.getChannelIcon(channel);
+	// const { emoji, newName } = API.getChannelIcon(channel);
 
 	return {
 		title: channel.name,

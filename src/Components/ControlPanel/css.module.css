@@ -7,12 +7,17 @@
 	column-gap: 10%;
 	padding: 0.25em;
 	background-color: var(--control-panel-bgc);
+	@media (max-width: 430px) {
+		display: flex;
+		justify-content: space-between;
+	}
 }
 .contextPanelVoice {
 	border-radius: var(--control-panel-roundness);
 	height: 100%;
 	width: 100%;
-	min-width: 250px;
+
+	min-width: 200px;
 	display: grid;
 	transition: all 200ms ease-in-out;
 	grid-template-columns: 20% 60% 20%;
@@ -63,8 +68,43 @@
 
 		align-items: center;
 	}
+	.left,
+	.right,
+	.channel {
+		button {
+			svg {
+				width: 1.5em;
+			}
+		}
+	}
 	&:hover {
 		background-color: var(--control-panel-hover-bgc);
+	}
+	@media (max-width: 570px) {
+		.left,
+		.right {
+			height: 3em;
+			display: grid;
+			column-gap: 0;
+			grid-template-rows: 1fr, 1fr;
+			button {
+				aspect-ratio: 1/1;
+				height: 1.5em;
+				svg {
+					width: 1.5em;
+					height: 1.5em;
+				}
+			}
+		}
+		.channel {
+			span {
+				width: 85%;
+			}
+
+			p {
+				width: 90%;
+			}
+		}
 	}
 }
 .mediaPanel {
@@ -76,14 +116,33 @@
 	justify-content: space-evenly;
 	align-items: center;
 	flex-wrap: wrap;
-	column-gap: 0.5em;
+	column-gap: 0.3em;
 	&:hover {
 		background-color: var(--control-panel-hover-bgc);
 	}
+	button {
+		width: 1.5em;
+		height: 1.5em;
+		svg {
+			width: 1.5em;
+			height: 1.5em;
+		}
+	}
+
+	@media (max-width: 570px) {
+		display: grid;
+		padding-left: 1em;
+		padding-right: 1em;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		button {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	}
 }
 .userPanel {
-	display: block;
-
 	display: flex;
 
 	align-items: center;
@@ -140,8 +199,12 @@
 	&:hover {
 		background-color: var(--control-panel-hover-bgc);
 	}
-}
-
-/*for less than 650px wide  */
-@media (max-width: 650px) {
+	@media (max-width: 430px) {
+		width: fit-content;
+		flex-shrink: 0;
+		padding-right: 0.4em;
+		.user {
+			display: none;
+		}
+	}
 }
