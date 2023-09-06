@@ -96,45 +96,41 @@ export default {
 		},
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
+
+			if (!replaceCurrent || AppState.tabs.length === 0) {
+				AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
+				AppState.setTabs(AppState.tabs.length, tab);
+				if (replaceCurrent) AppState.setCurrentTabIndex(0);
+				return;
+			}
 			//? batch is important here, otherwise tabs might not be updated correctly
-			//! deosnt actually update when replacing current tab
 			batch(() => {
-				if (replaceCurrent) {
-					if (AppState.tabs.length === 0) {
-						AppState.setTabs(0, tab);
-						AppState.setCurrentTabIndex(0);
-						AppState.setTabsOrder([0]);
-					}
-					let tabIndex = AppState.currentTabIndex();
-					if (tabIndex === -1) {
-						tabIndex = AppState.tabs.length;
-					}
-
-					if (AppState.tabs[tabIndex].component != tab.component) {
-						AppState.setTabs(tabIndex, tab);
-						return;
-					}
-
-					batch(() => {
-						AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
-						AppState.setTabs(AppState.tabs.length, tab);
-						const newTabIndex = AppState.tabs.length - 1;
-						AppState.setCurrentTabIndex(newTabIndex);
-						AppState.setTabsOrder((prev) => {
-							const originalTabOrder = prev.indexOf(tabIndex);
-							prev[originalTabOrder] = newTabIndex;
-							for (let i = originalTabOrder + 1; i < prev.length; i++) {
-								prev[i]--;
-							}
-
-							return prev;
-						});
-					});
-					AppState.setCurrentTabIndex(tabIndex);
-				} else {
-					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
-					AppState.setTabs(AppState.tabs.length, tab);
+				let tabIndex = AppState.currentTabIndex();
+				if (tabIndex === -1) {
+					tabIndex = AppState.tabs.length;
 				}
+
+				if (AppState.tabs[tabIndex].component != tab.component) {
+					AppState.setTabs(tabIndex, tab);
+					return;
+				}
+
+				batch(() => {
+					AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
+					AppState.setTabs(AppState.tabs.length, tab);
+					const newTabIndex = AppState.tabs.length - 1;
+					AppState.setCurrentTabIndex(newTabIndex);
+					AppState.setTabsOrder((prev) => {
+						const originalTabOrder = prev.indexOf(tabIndex);
+						prev[originalTabOrder] = newTabIndex;
+						for (let i = originalTabOrder + 1; i < prev.length; i++) {
+							prev[i]--;
+						}
+
+						return prev;
+					});
+				});
+				AppState.setCurrentTabIndex(tabIndex);
 			});
 			this.saveToFile().catch((err) => console.error(err));
 		},
