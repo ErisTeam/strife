@@ -41,11 +41,20 @@
 		.right {
 			display: flex;
 			gap: 0.5em;
+			background-color: var(--control-panel-bgc);
+			z-index: 1;
+			height: 3em;
 		}
 		.channel {
 			white-space: nowrap;
-			overflow: hidden;
+			overflaw: hidden;
 			width: 200px;
+		}
+
+		/* TODO: animacja tekstu */
+		.channel:hover {
+			position: relative;
+			animation: marquee 5s linear infinite;
 		}
 	}
 	.mediaPanel {
@@ -69,5 +78,13 @@
 
 			width: 100px !important;
 		}
+	}
+}
+@keyframes marquee {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-100%);
 	}
 }
