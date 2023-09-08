@@ -14,9 +14,10 @@ import {
 	DragEvent,
 	closestCorners,
 } from '@thisbeyond/solid-dnd';
-import TabShadow from './TabShadow';
+import TabShadow, { TEST } from './TabShadow';
 import TabSortable from './TabSortable';
-type Item = {
+import Loading from '../Loading/Loading';
+export type Item = {
 	id: number;
 	tab: Tab;
 };
@@ -45,7 +46,7 @@ function TabList(props: TabsProps) {
 	});
 
 	function onDragStart(event: DragEvent) {
-		console.log(event.draggable);
+		console.log(event.draggable, draggedTabIndex());
 		setDraggedTabIndex((event.draggable.id as number) - 1);
 	}
 
@@ -84,7 +85,7 @@ function TabList(props: TabsProps) {
 					</ul>
 				</nav>
 				<DragOverlay>
-					<TabShadow tab={items().find((t) => t.id == draggedTabIndex())?.tab} />
+					<TabShadow items={items()} />
 				</DragOverlay>
 			</DragDropProvider>
 		</>
