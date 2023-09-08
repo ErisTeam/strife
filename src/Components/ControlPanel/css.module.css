@@ -47,11 +47,11 @@
 		}
 		.channel {
 			white-space: nowrap;
-			overflaw: hidden;
+			overflow-x: hidden;
 			width: 200px;
 		}
 
-		/* TODO: animacja tekstu */
+		/*TODO: text moving on hover */
 		.channel:hover {
 			position: relative;
 			animation: marquee 5s linear infinite;
