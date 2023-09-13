@@ -136,7 +136,7 @@ const Message = (props: MessageProps) => {
 				if (match.match(codeBlockRegex)) {
 					const inner = match.replace(/```/gm, '');
 
-					element = <code class={style.block}>{formatCodeBlock(inner)}</code>;
+					element = <pre class={style.block}>{formatCodeBlock(inner)}</pre>;
 				} else if (match.match(codeLineRegex)) {
 					const inner = match.replace(/`/gm, '');
 					element = <code>{inner}</code>;

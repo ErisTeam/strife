@@ -197,9 +197,13 @@
 		code {
 			background-color: black;
 		}
+
+		/* TODO: Make scrollable if too wide */
 		.block {
 			padding: 0.2em;
 			margin: 0.2em;
+
+			background-color: black;
 		}
 		h4 {
 			font-size: 2em;
