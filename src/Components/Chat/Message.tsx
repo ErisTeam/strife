@@ -39,39 +39,31 @@ const Message = (props: MessageProps) => {
 		timeStyle: 'medium',
 	});
 	const boldRegex = /(\*{2}(.+?)\*{2})(?!\*)/gm;
-
 	const italicRegex = /(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)/gm;
 	const alternateItalicRegex = /(?<!_)(_(?!_)(.+?)_)(?!_)/gm;
-
 	const underlineRegex = /(__(.+?)__)(?!_)/gm;
 	const strikethroughRegex = /(~{2}(.+?)~{2})/gm;
-
 	const codeBlockRegex = /(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)/gm;
-
 	const codeLineRegex = /(`(.+?)`)(?!``)(?<!``)/gm;
 	const headerOneRegex = /(^# .*)/gm;
 	const headerTwoRegex = /(^## .*)/gm;
-
 	const headerThreeRegex = /(^### .*)/gm;
 	const listRegex = /(^- .*)|(^\* .*)/gm;
 	const listIndentedRegex = /(^ - .*)|(^ \* .*)/gm;
-
 	const quoteRegex = /(^> .*)/gm;
 	const mdLinkRegex = /\[(.*?)\]\((https?:\/\/(?:[-\w]+\.)?([-\w]+))\)/gm;
 	const linkRegex = /https?:\/\/(?:[-\w]+\.)?([-\w]+)/gm;
 	const spoilerRegex = /(\|{2}(.+?)\|{2})(?!\*)/gm;
 
 	const newlineRegex = /(\n)/gm;
-	const allClosableRegex = new RegExp(
-		`${boldRegex.source}|${italicRegex.source}|${underlineRegex.source}|${strikethroughRegex.source}|${alternateItalicRegex.source}|${codeBlockRegex.source}|${codeLineRegex.source}|${spoilerRegex.source}`,
-		'gm',
-	);
 
-	const spaceBetweenFormattedText =
-		/(?<=((\*{2}(.+?)\*{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))( +?)(?=((\*{2}(.+?)\*{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\|{2}(.+?)\|{2})(?!\*)|(\n)))/gm;
+	const allClosableRegex = `${boldRegex.source}|${italicRegex.source}|${underlineRegex.source}|${strikethroughRegex.source}|${alternateItalicRegex.source}|${codeBlockRegex.source}|${codeLineRegex.source}|${spoilerRegex.source}`;
 
-	const regex =
-		/(\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)|(?<=((\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))( +?)(?=((\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))|(^# .*)|(^## .*)|(^### .*)|((^- .*)|(^\* .*))|((^ - .*)|(^ \* .*))|(^> .*)|\[(.*?)\]\((.*?)\)|(.*)/gm;
+	const spaceBetweenFormattedText = `(?<=(${allClosableRegex}|(\n)))( +?)(?=(${allClosableRegex}|(\n)))`;
+
+	const fullLineRegex = `${headerOneRegex.source}|${headerTwoRegex.source}|${headerThreeRegex.source}|${listRegex.source}|${listIndentedRegex.source}|${quoteRegex.source}|${mdLinkRegex.source}`;
+
+	const regex = new RegExp(`/${allClosableRegex}|(\n)|${spaceBetweenFormattedText}|${fullLineRegex}|(.*)/`, 'gm');
 
 	function formatMentions(content: string) {
 		const userMentionRegex = '<@!?(\\d+)>';
