@@ -57,7 +57,7 @@ const Message = (props: MessageProps) => {
 	const listIndentedRegex = /(^ - .*)|(^ \* .*)/gm;
 
 	const quoteRegex = /(^> .*)/gm;
-	const mdLinkRegex = /\[(.*?)\]\((.*?)\)/gm;
+	const mdLinkRegex = /\[(.*?)\]\((https?:\/\/(?:[-\w]+\.)?([-\w]+))\)/gm;
 	const linkRegex = /https?:\/\/(?:[-\w]+\.)?([-\w]+)/gm;
 	const spoilerRegex = /(\|{2}(.+?)\|{2})(?!\*)/gm;
 
@@ -66,15 +66,12 @@ const Message = (props: MessageProps) => {
 		`${boldRegex.source}|${italicRegex.source}|${underlineRegex.source}|${strikethroughRegex.source}|${alternateItalicRegex.source}|${codeBlockRegex.source}|${codeLineRegex.source}|${spoilerRegex.source}`,
 		'gm',
 	);
-	const spaceBetweenFormattedText = new RegExp(
-		`/(?<=(${allClosableRegex.source}|(\n)))( +?)(?=(${allClosableRegex.source}|(\n)))`,
-		'gm',
-	);
 
-	const regex = new RegExp(
-		`/${allClosableRegex.source}|(\n)|${spaceBetweenFormattedText.source}|${headerOneRegex.source}|${headerTwoRegex.source}|${headerThreeRegex.source}|(${listRegex.source})|(${listIndentedRegex.source})|${quoteRegex.source}|${mdLinkRegex.source}|(.*)`,
-		'gm',
-	);
+	const spaceBetweenFormattedText =
+		/(?<=((\*{2}(.+?)\*{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))( +?)(?=((\*{2}(.+?)\*{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\|{2}(.+?)\|{2})(?!\*)|(\n)))/gm;
+
+	const regex =
+		/(\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)|(?<=((\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))( +?)(?=((\*{2}(.+?)\*{2})(?!\*)|(\|{2}(.+?)\|{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})(?!~)(?!~)|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|(`(.+?)`)(?!``)(?<!``)|(\n)))|(^# .*)|(^## .*)|(^### .*)|((^- .*)|(^\* .*))|((^ - .*)|(^ \* .*))|(^> .*)|\[(.*?)\]\((.*?)\)|(.*)/gm;
 
 	function formatMentions(content: string) {
 		const userMentionRegex = '<@!?(\\d+)>';
@@ -87,7 +84,7 @@ const Message = (props: MessageProps) => {
 			'gm',
 		);
 		const mentions =
-			content.match(mentionsRegex)?.map((match, index) => {
+			content.match(mentionsRegex)?.map((match) => {
 				let element;
 				if (match.match(userMentionRegex)) {
 					element = <UserMention mentioned_user={message.mentions.find((mention) => match.includes(mention.id))} />;
@@ -118,82 +115,55 @@ const Message = (props: MessageProps) => {
 
 		return <>{...a}</>;
 	}
-	function formatCodeBlock(content: string) {
-		console.warn(content);
-		return content;
-	}
+
 	function formatMarkdown(content: string) {
 		const matches = content.match(regex) || [];
-		console.log('matches', matches);
 
 		if (matches.length == 0) {
 			return formatMentions(content);
 		}
-
-		const results =
-			matches?.map((match) => {
-				let element;
-				if (match.match(codeBlockRegex)) {
-					const inner = match.replace(/```/gm, '');
-
-					element = <pre class={style.block}>{formatCodeBlock(inner)}</pre>;
-				} else if (match.match(codeLineRegex)) {
-					const inner = match.replace(/`/gm, '');
-					element = <code>{inner}</code>;
-				} else if (match.match(boldRegex)) {
-					const inner = match.replace(/\*\*/gm, '');
-					element = <strong>{formatMarkdown(inner)}</strong>;
-				} else if (match.match(italicRegex)) {
-					const inner = match.replace(/\*/gm, '');
-					element = <em>{formatMarkdown(inner)}</em>;
-				} else if (match.match(underlineRegex)) {
-					const inner = match.replace(/__/gm, '');
-					element = <u>{formatMarkdown(inner)}</u>;
-				} else if (match.match(alternateItalicRegex)) {
-					const inner = match.replace(/_/gm, '');
-					element = <em>{formatMarkdown(inner)}</em>;
-				} else if (match.match(strikethroughRegex)) {
-					const inner = match.replace(/~~/gm, '');
-					element = <s>{formatMarkdown(inner)}</s>;
-				} else if (match.match(newlineRegex)) {
-					element = <br />;
-				} else if (match.match(headerOneRegex)) {
-					const inner = match.slice(1);
-					element = <h4>{formatMarkdown(inner)}</h4>;
-				} else if (match.match(headerTwoRegex)) {
-					const inner = match.slice(2);
-					element = <h5>{formatMarkdown(inner)}</h5>;
-				} else if (match.match(headerThreeRegex)) {
-					const inner = match.slice(3);
-					element = <h6>{formatMarkdown(inner)}</h6>;
-				} else if (match.match(listRegex)) {
-					const inner = match.slice(2);
-					element = <span class={style.list}>{formatMarkdown(inner)}</span>;
-				} else if (match.match(listIndentedRegex)) {
-					const inner = match.slice(3);
-					element = <span class={style.indentedList}>{formatMarkdown(inner)}</span>;
-				} else if (match.match(quoteRegex)) {
-					const inner = match.slice(2);
-					element = <q>{formatMarkdown(inner)}</q>;
-				} else if (match.match(spoilerRegex)) {
-					const inner = match.replace(/\|\|/gm, '');
-					element = <span class={style.spoiler}>{formatMarkdown(inner)}</span>;
-				} else if (match.match(mdLinkRegex)) {
-					const link = match.match(linkRegex);
-					const text = match.match(/(?<=\[).*?(?=\])/gm);
-					if (link && text) {
-						element = <a href={link[0]}>{text[0]}</a>;
-					} else {
-						element = <>{formatMentions(match)}</>;
+		return (
+			<>
+				{...matches.map((match) => {
+					switch (true) {
+						case !!match.match(codeBlockRegex):
+							return <pre class={style.block}>{match.replace(/```/gm, '')}</pre>;
+						case !!match.match(codeLineRegex):
+							return <code>{match.replace(/`/gm, '')}</code>;
+						case !!match.match(boldRegex):
+							return <strong>{formatMarkdown(match.replace(/\*\*/gm, ''))}</strong>;
+						case !!match.match(italicRegex):
+							return <em>{formatMarkdown(match.replace(/(?<!\*)\*(?!\*)/gm, ''))}</em>;
+						case !!match.match(underlineRegex):
+							return <u>{formatMarkdown(match.replace(/__/gm, ''))}</u>;
+						case !!match.match(alternateItalicRegex):
+							return <em>{formatMarkdown(match.replace(/(?<!_)_(?!_)/gm, ''))}</em>;
+						case !!match.match(strikethroughRegex):
+							return <s>{formatMarkdown(match.replace(/~~/gm, ''))}</s>;
+						case !!match.match(newlineRegex):
+							return <br />;
+						case !!match.match(headerOneRegex):
+							return <h4>{formatMarkdown(match.slice(1))}</h4>;
+						case !!match.match(headerTwoRegex):
+							return <h5>{formatMarkdown(match.slice(2))}</h5>;
+						case !!match.match(headerThreeRegex):
+							return <h6>{formatMarkdown(match.slice(3))}</h6>;
+						case !!match.match(listRegex):
+							return <span class={style.list}>{formatMarkdown(match.slice(2))}</span>;
+						case !!match.match(listIndentedRegex):
+							return <span class={style.indentedList}>{formatMarkdown(match.slice(3))}</span>;
+						case !!match.match(quoteRegex):
+							return <q>{formatMarkdown(match.slice(2))}</q>;
+						case !!match.match(spoilerRegex):
+							return <span class={style.spoiler}>{formatMarkdown(match.replace(/\|\|/gm, ''))}</span>;
+						case !!match.match(mdLinkRegex):
+							return <a href={match.match(linkRegex)[0]}>{match.match(/(?<=\[).*?(?=\])/gm)[0]}</a>;
+						default:
+							return <>{formatMentions(match)}</>;
 					}
-				} else {
-					element = <>{formatMentions(match)}</>;
-				}
-
-				return element;
-			}) || [];
-
-		return <>{...results}</>;
+				}) || []}
+			</>
+		);
 	}
 
 	const formattedMessage = createMemo(() => {
