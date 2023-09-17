@@ -9,9 +9,6 @@ import UserMention from './UserMention';
 import { Download } from 'lucide-solid';
 import { useAppState } from '../../AppState';
 
-interface FormatedMessage extends MessageType {
-	formatedContent: JSX.Element[];
-}
 function Menu() {
 	const menu = useMenu<MessageType>();
 	const authorId = menu.author.id;
@@ -30,136 +27,14 @@ type MessageProps = {
 	class?: string;
 };
 const Message = (props: MessageProps) => {
-	let embed;
-
-	const val = props.message;
 	const message = props.message;
 	const intl = new Intl.DateTimeFormat(undefined, {
 		dateStyle: 'short',
 		timeStyle: 'medium',
 	});
-	const boldRegex = /(\*{2}(.+?)\*{2})(?!\*)/gm;
-	const italicRegex = /(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)/gm;
-	const alternateItalicRegex = /(?<!_)(_(?!_)(.+?)_)(?!_)/gm;
-	const underlineRegex = /(__(.+?)__)(?!_)/gm;
-	const strikethroughRegex = /(~{2}(.+?)~{2})/gm;
-	const codeBlockRegex = /(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)/gm;
-	const codeLineRegex = /(`(.+?)`)(?!``)(?<!``)/gm;
-	const headerOneRegex = /(^# .*)/gm;
-	const headerTwoRegex = /(^## .*)/gm;
-	const headerThreeRegex = /(^### .*)/gm;
-	const listRegex = /(^- .*)|(^\* .*)/gm;
-	const listIndentedRegex = /(^ - .*)|(^ \* .*)/gm;
-	const quoteRegex = /(^> .*)/gm;
-	const mdLinkRegex = /\[(.*?)\]\((https?:\/\/(?:[-\w]+\.)?([-\w]+))\)/gm;
-	const linkRegex = /https?:\/\/(?:[-\w]+\.)?([-\w]+)/gm;
-	const spoilerRegex = /(\|{2}(.+?)\|{2})(?!\*)/gm;
-
-	const newlineRegex = /(\n)/gm;
-
-	const allClosableRegex = `${boldRegex.source}|${italicRegex.source}|${underlineRegex.source}|${strikethroughRegex.source}|${alternateItalicRegex.source}|${codeBlockRegex.source}|${codeLineRegex.source}|${spoilerRegex.source}`;
-
-	const spaceBetweenFormattedText = `(?<=(${allClosableRegex}|(\n)))( +?)(?=(${allClosableRegex}|(\n)))`;
-
-	const fullLineRegex = `${headerOneRegex.source}|${headerTwoRegex.source}|${headerThreeRegex.source}|${listRegex.source}|${listIndentedRegex.source}|${quoteRegex.source}|${mdLinkRegex.source}`;
-
-	const regex = new RegExp(`/${allClosableRegex}|(\n)|${spaceBetweenFormattedText}|${fullLineRegex}|(.*)/`, 'gm');
-
-	function formatMentions(content: string) {
-		const userMentionRegex = '<@!?(\\d+)>';
-		const channelMentionRegex = '<#(\\d+)>';
-		const roleMentionRegex = '<@&(\\d+)>';
-		const commandMentionRegex = '<\\/(\\w+):(\\d+)>';
-
-		const mentionsRegex = new RegExp(
-			`${userMentionRegex}|${channelMentionRegex}|${roleMentionRegex}|${commandMentionRegex}`,
-			'gm',
-		);
-		const mentions =
-			content.match(mentionsRegex)?.map((match) => {
-				let element;
-				if (match.match(userMentionRegex)) {
-					element = <UserMention mentioned_user={message.mentions.find((mention) => match.includes(mention.id))} />;
-				} else if (match.match(channelMentionRegex)) {
-					element = <mark style={{ background: 'green' }}>{match}</mark>;
-				} else if (match.match(roleMentionRegex)) {
-					element = <mark style={{ background: 'yellow' }}>{match}</mark>;
-				} else if (match.match(commandMentionRegex)) {
-					element = <mark style={{ background: 'red' }}>{match}</mark>;
-				} else {
-					element = <mark style={{ background: 'black' }}>{match}</mark>;
-				}
-				return { match: match, element: element };
-			}) || [];
-
-		const regex = mentions.map((e) => e.match).join('|');
-		//console.log(regex);
-		if (regex.length == 0) return <>{content}</>;
-		//console.log(regex, content.split(new RegExp(regex, 'gm')), mentions);
-		const split = content.split(new RegExp(regex, 'gm'));
-		const a = [];
-		for (let i = 0; i < split.length; i++) {
-			a.push(split[i]);
-			if (i < mentions.length) {
-				a.push(mentions[i].element);
-			}
-		}
-
-		return <>{...a}</>;
-	}
-
-	function formatMarkdown(content: string) {
-		const matches = content.match(regex) || [];
-
-		if (matches.length == 0) {
-			return formatMentions(content);
-		}
-		return (
-			<>
-				{...matches.map((match) => {
-					switch (true) {
-						case !!match.match(codeBlockRegex):
-							return <pre class={style.block}>{match.replace(/```/gm, '')}</pre>;
-						case !!match.match(codeLineRegex):
-							return <code>{match.replace(/`/gm, '')}</code>;
-						case !!match.match(boldRegex):
-							return <strong>{formatMarkdown(match.replace(/\*\*/gm, ''))}</strong>;
-						case !!match.match(italicRegex):
-							return <em>{formatMarkdown(match.replace(/(?<!\*)\*(?!\*)/gm, ''))}</em>;
-						case !!match.match(underlineRegex):
-							return <u>{formatMarkdown(match.replace(/__/gm, ''))}</u>;
-						case !!match.match(alternateItalicRegex):
-							return <em>{formatMarkdown(match.replace(/(?<!_)_(?!_)/gm, ''))}</em>;
-						case !!match.match(strikethroughRegex):
-							return <s>{formatMarkdown(match.replace(/~~/gm, ''))}</s>;
-						case !!match.match(newlineRegex):
-							return <br />;
-						case !!match.match(headerOneRegex):
-							return <h4>{formatMarkdown(match.slice(1))}</h4>;
-						case !!match.match(headerTwoRegex):
-							return <h5>{formatMarkdown(match.slice(2))}</h5>;
-						case !!match.match(headerThreeRegex):
-							return <h6>{formatMarkdown(match.slice(3))}</h6>;
-						case !!match.match(listRegex):
-							return <span class={style.list}>{formatMarkdown(match.slice(2))}</span>;
-						case !!match.match(listIndentedRegex):
-							return <span class={style.indentedList}>{formatMarkdown(match.slice(3))}</span>;
-						case !!match.match(quoteRegex):
-							return <q>{formatMarkdown(match.slice(2))}</q>;
-						case !!match.match(spoilerRegex):
-							return <span class={style.spoiler}>{formatMarkdown(match.replace(/\|\|/gm, ''))}</span>;
-						case !!match.match(mdLinkRegex):
-							return <a href={match.match(linkRegex)[0]}>{match.match(/(?<=\[).*?(?=\])/gm)[0]}</a>;
-						default:
-							return <>{formatMentions(match)}</>;
-					}
-				}) || []}
-			</>
-		);
-	}
-
 	const formattedMessage = createMemo(() => {
-		return formatMarkdown(message.content);
+		// return formatMarkdown(message.content);
+		return API.Messages.formatMarkdown(message.content, message.mentions);
 	});
 
 	const [formattedImages, setFormattedImages] = createSignal<JSX.Element[]>([]);
@@ -225,16 +100,17 @@ const Message = (props: MessageProps) => {
 		}
 	});
 
+	const userName = createMemo(() => {
+		return message.author.global_name || message.author.username;
+	});
+	//it is used, ignore the error
 	const contextMenu = createContextMenu({
 		component: [Menu],
 		data: message,
 	});
-
-	const userName = createMemo(() => {
-		return message.author.global_name || message.author.username;
-	});
-
 	return (
+		/* eslint-disable */
+		// @ts-ignore DISPLAYS ERROR ON use:
 		<li class={[style.message, props.class].join(' ')} use:contextMenu>
 			<button>
 				<img src={profileImage()} alt={userName()} />

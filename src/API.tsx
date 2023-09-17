@@ -13,6 +13,7 @@ import { Volume2 } from 'lucide-solid';
 import { CONSTANTS } from './Constants';
 import { Component, batch } from 'solid-js';
 import { exists, BaseDirectory, createDir, writeFile, readDir, readTextFile } from '@tauri-apps/api/fs';
+import Messages from './API/Messages';
 const sessionDataPath = 'session_data';
 const tabsPath = sessionDataPath + '/tabs.json';
 
@@ -22,6 +23,7 @@ export default {
 			//TODO: implement voice
 		},
 	},
+	Messages: Messages,
 	Tabs: {
 		//! NOT working
 		swapOrderByIdx(idx1: number, idx2: number) {

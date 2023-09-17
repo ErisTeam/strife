@@ -4,6 +4,7 @@ type UserMentionProps = {
 	mentioned_user: any; //TODO: User type
 };
 export default (props: UserMentionProps) => {
+	//!DOESNT WORK WHEN USERNAME IS NOT KNOWN TODO:FIX
 	const contextMenu = createContextMenu({
 		component: [() => <div>{props.mentioned_user.username}</div>],
 		data: props.mentioned_user,
