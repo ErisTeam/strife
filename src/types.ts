@@ -1,4 +1,4 @@
-import { Component, JSX } from 'solid-js';
+import { Component } from 'solid-js';
 import Chat from './Components/Chat/Chat';
 import WelcomeTab from './Components/Tabs/WelcomeTab';
 
@@ -19,7 +19,8 @@ export interface Tab {
 	component: keyof typeof TabComponents;
 	title: string;
 	icon?: string | Component;
-
+	channelId?: string;
+	guildId?: string;
 	[x: string]: any; //TODO: make better type checking
 }
 
@@ -28,4 +29,4 @@ type TabsFile = {
 	order: number[];
 	current: number;
 };
-export type { Input, Button, TextArea, AppState, TabsFile };
+export type { AppState, Button, Input, TabsFile, TextArea };

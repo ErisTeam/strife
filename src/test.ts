@@ -28,7 +28,7 @@ interface GatewayEvent {
 
 function startListener<T extends { type: string }>(
 	eventName: string | TauriEvent,
-	condition: ((event: T) => boolean) | null = null
+	condition: ((event: T) => boolean) | null = null,
 ) {
 	const listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
 	console.log('start gateway NEW', eventName);
@@ -70,7 +70,7 @@ function startGatewayListener(userId: string) {
 interface eventBase {
 	type: string;
 }
-interface messageCreate extends eventBase {
+export interface messageCreate extends eventBase {
 	type: 'messageCreate';
 	userId: string;
 	data: {
@@ -94,7 +94,7 @@ function onMessageCreate(listener: Listener, channelId: string) {
 async function oneTimeListener<T extends { type: string }>(
 	event: string,
 	eventName: string,
-	condition: ((event: T) => boolean) | null = null
+	condition: ((event: T) => boolean) | null = null,
 ): Promise<T> {
 	return new Promise((resolve) => {
 		const a = startListener<T>(event, condition);

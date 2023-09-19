@@ -4,7 +4,7 @@ import API from '../../API';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { Message as MessageType } from '../../discord';
-import { gatewayOneTimeListener, useTaurListener } from '../../test';
+import { gatewayOneTimeListener, startGatewayListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
 import Message from './Message';
 import style from './css.module.css';
@@ -12,9 +12,28 @@ import style from './css.module.css';
 export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
-
-	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 	const AppState = useAppState();
+	const listener = startGatewayListener(AppState.userId);
+	listener.on<any>('messageCreate', (event) => {
+		console.log('event', event);
+		if (event.data.channel_id === TabContext.channelId) {
+			console.log('messageCreate', event);
+			const newMessage = {
+				id: event.data.id,
+				channel_id: event.data.channel_id,
+				content: event.data.content,
+				timestamp: event.data.timestamp,
+				author: event.data.author,
+				embeds: event.data.embeds,
+				attachments: event.data.attachments,
+				mentions: event.data.mentions,
+				mention_roles: event.data.mention_roles,
+			} as MessageType;
+			console.log('newMessage', newMessage);
+			setMessages(messages().concat(newMessage));
+		}
+	});
+	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
 		const messages = await API.getMessages(TabContext.channelId);
