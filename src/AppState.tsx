@@ -1,10 +1,10 @@
 // SolidJS
-import { createSignal, createContext, useContext, JSX } from 'solid-js';
-import { SetStoreFunction, StoreSetter, createStore, produce } from 'solid-js/store';
+import { JSX, createContext, createSignal, useContext } from 'solid-js';
+import { createStore } from 'solid-js/store';
 // API
+import { Locale } from './Translation';
 import { Guild, Relationship } from './discord';
 import { Tab } from './types';
-import { Locale } from './Translation';
 
 const userId = '';
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
@@ -22,7 +22,11 @@ const [locale, setLocale] = createSignal<Locale>('en_US');
 const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1); //TODO: CHANGE TO USE index
 
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
+const localeJsFormat = () => {
+	const locale = useAppState().locale();
 
+	return locale.replace('_', '-');
+};
 const ContextValue = {
 	userGuilds,
 	setUserGuilds,
@@ -39,6 +43,7 @@ const ContextValue = {
 	setLocale,
 	currentTabIndex: currentTabIdx,
 	setCurrentTabIndex: setCurrentTabIdx,
+	localeJsFormat,
 
 	currentGuild,
 	setCurrentGuild,

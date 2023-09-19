@@ -46,7 +46,6 @@
 
 		grid-column: 2/3;
 		grid-row: 1/3;
-		row-span: 2;
 
 		.attachments {
 			display: flex;
@@ -146,9 +145,6 @@
 					}
 				}
 			}
-			.timeSame {
-				display: none;
-			}
 		}
 		.download {
 			height: 2em;
@@ -181,144 +177,94 @@
 				color: var(--tertiary);
 			}
 		}
-
-		strong {
-			font-weight: 900;
-		}
-		em {
-			font-style: italic;
-		}
-		u {
-			text-decoration: underline;
-		}
-		s {
-			text-decoration: line-through;
-		}
-		code {
-			background-color: black;
-		}
-
-		/* TODO: Make scrollable if too wide */
-		.block {
-			padding: 0.2em;
-			margin: 0.2em;
-
-			background-color: black;
-		}
-		h4 {
-			font-size: 2em;
-			font-weight: 900;
-		}
-		h5 {
-			font-weight: 900;
-			font-size: 1.6em;
-		}
-		h6 {
-			font-weight: 900;
-			font-size: 1.3em;
-		}
-		a {
-			color: aqua;
-		}
-		q {
-			background-color: rgb(95, 95, 62);
-			&::before {
-				content: none;
-			}
-			&::after {
-				content: none;
-			}
-		}
-		.list {
-			position: relative;
-			padding-left: 1ch;
-			&::before {
-				content: '';
-				position: absolute;
-				background-color: white;
-				width: 0.4em;
-				height: 0.4em;
-				left: 0;
-				top: 0;
-				translate: 0 110%;
-				border-radius: 100%;
-			}
-		}
-		.indentedList {
-			position: relative;
-			padding-left: 2ch;
-			&::before {
-				content: '';
-				position: absolute;
-				width: 0.4em;
-				height: 0.4em;
-				left: 0;
-				top: 0;
-				translate: 1ch 110%;
-				border-radius: 100%;
-				border: 1px white solid;
-			}
-		}
-		.spoiler {
-			background-color: aqua;
-		}
-	}
-	.sameTime {
-		display: none;
 	}
 }
 
-/* something is broken dunno what ill fix later */
-.same {
-	margin-top: 0;
-	padding: 0;
+.messageSame {
+	display: flex;
+}
+.messageText {
+	strong {
+		font-weight: 900;
+	}
+	em {
+		font-style: italic;
+	}
+	u {
+		text-decoration: underline;
+	}
+	s {
+		text-decoration: line-through;
+	}
+	code {
+		background-color: black;
+	}
 
-	& > button {
-		display: none;
-		img {
+	/* TODO: Make scrollable if too wide */
+	.block {
+		padding: 0.2em;
+		margin: 0.2em;
+
+		background-color: black;
+	}
+	h4 {
+		font-size: 2em;
+		font-weight: 900;
+	}
+	h5 {
+		font-weight: 900;
+		font-size: 1.6em;
+	}
+	h6 {
+		font-weight: 900;
+		font-size: 1.3em;
+	}
+	a {
+		color: aqua;
+	}
+	q {
+		background-color: rgb(95, 95, 62);
+		&::before {
+			content: none;
+		}
+		&::after {
+			content: none;
 		}
 	}
-	.messageInner {
-		grid-column: 2/3;
-		height: 100%;
-		padding: 0;
-		.details {
-			display: none;
+	.list {
+		position: relative;
+		padding-left: 1ch;
+		&::before {
+			content: '';
+			position: absolute;
+			background-color: white;
+			width: 0.4em;
+			height: 0.4em;
+			left: 0;
+			top: 0;
+			translate: 0 110%;
+			border-radius: 100%;
 		}
+	}
+	.indentedList {
+		position: relative;
+		padding-left: 2ch;
+		&::before {
+			content: '';
+			position: absolute;
+			width: 0.4em;
+			height: 0.4em;
+			left: 0;
+			top: 0;
+			translate: 1ch 110%;
+			border-radius: 100%;
+			border: 1px white solid;
+		}
+	}
+	.spoiler {
+		background-color: aqua;
 	}
 }
-.same:hover {
-	.sameTime {
-		grid-column: 1/2;
-		grid-row: 1/3;
-		raw-span: 2;
-		justify-self: center;
-		align-self: center;
-
-		width: fit-content;
-		height: fit-content;
-		text-align: center;
-		display: block;
-		font-weight: bold;
-
-		transform: rotate(-69deg);
-		animation: minecraft 2s ease-in-out infinite;
-	}
-
-	/* animation minecraft text */
-	@keyframes minecraft {
-		0% {
-			font-size: 0.9em;
-			color: var(--primary);
-		}
-		50% {
-			font-size: 1em;
-			color: var(--secondary);
-		}
-
-		100% {
-			font-size: 0.9em;
-			color: var(--primary);
-		}
-	}
+.botTag {
+	color: purple;
 }

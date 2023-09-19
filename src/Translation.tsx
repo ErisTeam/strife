@@ -1,9 +1,9 @@
-import en_us from './Locales/en_US';
 import * as i18n from '@solid-primitives/i18n';
+import en_us from './Locales/en_US';
 
-import pl_PL from './Locales/pl_PL';
-import { createMemo, createResource, createSignal } from 'solid-js';
+import { createMemo } from 'solid-js';
 import { useAppState } from './AppState';
+import pl_PL from './Locales/pl_PL';
 export const dictionaries = {
 	en_US: en_us,
 

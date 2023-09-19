@@ -1,25 +1,24 @@
-import { useMenu } from '../ContextMenu/ContextMenu';
-import { Message as MessageType } from '../../discord';
 import { For, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
 import API from '../../API';
+import { Message as MessageType } from '../../discord';
 
-import style from './css.module.css';
-import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import { Download } from 'lucide-solid';
 import { useAppState } from '../../AppState';
+import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import MessageContextMenu from './MessageContextMenu';
+import style from './css.module.css';
 
 type MessageProps = {
 	message: MessageType;
 	updateMessage?: (val: Partial<MessageType>) => void;
 	setReference?: (id: string) => void;
-	class?: string;
+	same?: boolean;
 };
 const Message = (props: MessageProps) => {
 	const message = props.message;
-	const intl = new Intl.DateTimeFormat(undefined, {
-		dateStyle: 'short',
-		timeStyle: 'medium',
+	const AppState = useAppState();
+	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
+		timeStyle: 'short',
 	});
 	const formattedMessage = createMemo(() => {
 		// return formatMarkdown(message.content);
@@ -99,10 +98,31 @@ const Message = (props: MessageProps) => {
 		component: [MessageContextMenu],
 		data: message,
 	});
+
+	if (props.same) {
+		return (
+			<li class={style.messageSame} use:contextMenu>
+				<time>{intl.format(new Date(message.timestamp))}</time>
+
+				<div class={style.messageInner}>
+					<p class={style.messageText}>{formattedMessage()}</p>
+					<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
+						<ul class={style.attachments}>
+							{formattedVideos()}
+							{formattedImages()}
+						</ul>
+					</Show>
+					<Show when={formattedAudios().length > 0}>
+						<ul class={style.audios}>{formattedAudios()}</ul>
+					</Show>
+
+					<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
+				</div>
+			</li>
+		);
+	}
 	return (
-		/* eslint-disable */
-		// @ts-ignore DISPLAYS ERROR ON use:
-		<li class={[style.message, props.class].join(' ')} use:contextMenu>
+		<li class={style.message} use:contextMenu>
 			<button>
 				<img src={profileImage()} alt={userName()} />
 			</button>
@@ -112,12 +132,12 @@ const Message = (props: MessageProps) => {
 						{userName()}
 
 						<Show when={message.author.bot}>
-							<span style={{ color: 'violet' }}> Bot</span>
+							<span class={style.botTag}> Bot</span>
 						</Show>
 					</button>
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
-				<p>{formattedMessage()}</p>
+				<p class={style.messageText}>{formattedMessage()}</p>
 				<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
 					<ul class={style.attachments}>
 						{formattedVideos()}
@@ -130,7 +150,6 @@ const Message = (props: MessageProps) => {
 
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 			</div>
-			<aside class={style.sameTime}>{intl.format(new Date(message.timestamp))}</aside> {/* TODO: czas */}
 		</li>
 	);
 };

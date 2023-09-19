@@ -1,37 +1,24 @@
 // SolidJS
-import { render } from 'solid-js/web';
-import { Routes, Route, Router, Outlet } from '@solidjs/router';
-import { Component, createResource, DEV, Show } from 'solid-js';
-import { TransProvider } from './Translation';
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
-
-// API
-import { AppStateProvider, useAppState } from './AppState';
-
-// Components
-import ApplicationWrapper from './Components/ApplicationWrapper/ApplicationWrapper';
-
-import Prev from './Routes/Dev/Prev';
-import Login from './Routes/Login/Login';
-import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
-import Error from './Routes/Error/Error';
+import { Outlet, Route, Router, Routes } from '@solidjs/router';
+import { invoke } from '@tauri-apps/api';
+import { Component, DEV, Show, createResource } from 'solid-js';
+import { render } from 'solid-js/web';
+import { AppStateProvider } from './AppState';
+import Application from './Components/Application/Application';
 import Dev from './Components/Dev/Dev';
-
+import Loading from './Components/Loading/Loading';
+import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
+import R from './R';
+import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
+import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import MessageTest from './Routes/Dev/MessageTest/MessageTest';
-
-// Style
+import Prev from './Routes/Dev/Prev';
+import Error from './Routes/Error/Error';
+import Login from './Routes/Login/Login';
 import './style.css';
 
-import { invoke } from '@tauri-apps/api';
-import R from './R';
-import Loading from './Components/Loading/Loading';
-import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
-import Channel from './Components/Messages/Chat';
-import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
-import { appWindow } from '@tauri-apps/api/window';
-
 const App: Component = () => {
-	const AppState = useAppState();
 	const [id] = createResource(async () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
 		console.log(users);
@@ -41,11 +28,9 @@ const App: Component = () => {
 	});
 
 	function changeZoom(e: KeyboardEvent) {
+		const root = document.querySelector(':root');
+		const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
 		if (e.ctrlKey && e.key === '=') {
-			console.log('test');
-			const root = document.querySelector(':root');
-			const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
-			console.log(fontSize);
 			let newFontSize = parseInt(fontSize) + 1;
 			if (newFontSize > 20) {
 				newFontSize = 20;
@@ -53,9 +38,6 @@ const App: Component = () => {
 			root.style.setProperty('font-size', newFontSize + 'px');
 		}
 		if (e.ctrlKey && e.key === '-') {
-			const root = document.querySelector(':root');
-			const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
-			console.log(fontSize);
 			let newFontSize = parseInt(fontSize) - 1;
 			if (newFontSize < 8) {
 				newFontSize = 8;
@@ -97,12 +79,7 @@ const App: Component = () => {
 
 							<Route path="/login" component={Login} />
 
-							<Route path="/app" element={<R state={'Application'} force={true} component={ApplicationWrapper} />}>
-								{/* <Route path="/" component={Channel} />
-									<Route path="/:guildId" component={Channel}>
-										<Route path="/:channelId" component={Channel} />
-									</Route> */}
-							</Route>
+							<Route path="/app" element={<R state={'Application'} force={true} component={Application} />}></Route>
 							<Route path="*" component={Error} />
 						</Routes>
 					</AppStateProvider>

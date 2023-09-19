@@ -1,14 +1,13 @@
-import Message from './Message';
-import { For, Show, createMemo, createResource, createSignal, lazy, onMount } from 'solid-js';
-import { Message as MessageType } from '../../discord';
+import { invoke } from '@tauri-apps/api/tauri';
+import { Show, createMemo, createResource, createSignal, onMount } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { invoke } from '@tauri-apps/api/tauri';
-import { gatewayOneTimeListener, useTaurListener } from '../../test';
 import { CONSTANTS } from '../../Constants';
-import style from './css.module.css';
+import { Message as MessageType } from '../../discord';
+import { gatewayOneTimeListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
-import { Tab } from '../../types';
+import Message from './Message';
+import style from './css.module.css';
 
 export default function Chat() {
 	const TabContext = useTabContext();
@@ -80,9 +79,7 @@ export default function Chat() {
 				messagesToRender[i].author.id == lastAuthor
 				//&& messagesToRender[i].timestamp - messagesToRender[i - 1].timestamp < 1000 * 60 * 7
 			) {
-				renderableMessages.push(
-					<Message class={style.same} message={messagesToRender[i]} updateMessage={updateMessage} />,
-				);
+				renderableMessages.push(<Message same={true} message={messagesToRender[i]} updateMessage={updateMessage} />);
 			} else {
 				renderableMessages.push(<Message message={messagesToRender[i]} updateMessage={updateMessage} />);
 				lastAuthor = messagesToRender[i].author.id as string;

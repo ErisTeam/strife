@@ -1,15 +1,14 @@
 import { useAppState } from '../../AppState';
 
-import style from './Tabs.module.css';
 import { For, Show, Suspense } from 'solid-js';
-import outletStyle from '../ApplicationWrapper/ApplicationWrapper.module.css';
+import outletStyle from '../Application/Application.module.css';
 
 import { Dynamic } from 'solid-js/web';
 
 import Loading from '../Loading/Loading';
 
-import TabList from './TabList';
 import { TabComponents } from '../../types';
+import TabList from './TabList';
 import { TabContextProvider } from './TabUtils';
 
 export function TabWindow() {

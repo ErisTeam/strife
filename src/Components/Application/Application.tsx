@@ -8,19 +8,19 @@ import GuildList from '../Guild/GuildList';
 import TabWindow from '../Tabs/TabWindow';
 
 // Style
-import style from './ApplicationWrapper.module.css';
 import FriendsList from '../Friends/FriendsList';
+import style from './Application.module.css';
 
-import ControlPanel from '../ControlPanel/ControlPanel';
 import { ContextMenusProvider } from '../ContextMenuNew/ContextMenu';
+import ControlPanel from '../ControlPanel/ControlPanel';
 
-import Dev from '../Dev/Dev';
 import { Guild } from '../../discord';
+import Dev from '../Dev/Dev';
 
 import API from '../../API';
 
 //TODO: move to routes
-const ApplicationWrapper = () => {
+const Application = () => {
 	const AppState = useAppState();
 
 	onMount(() => {
@@ -75,4 +75,4 @@ const ApplicationWrapper = () => {
 		</ContextMenusProvider>
 	);
 };
-export default ApplicationWrapper;
+export default Application;
