@@ -33,8 +33,15 @@ export default function Chat() {
 				mention_roles: event.data.mention_roles,
 			} as MessageType;
 
+			let isAtBottom = false;
+			if (chatref.scrollTop + chatref.clientHeight >= chatref.scrollHeight) {
+				isAtBottom = true;
+			}
 			setMessages(messages().concat(newMessage));
-			scrollToBottom();
+
+			if (isAtBottom) {
+				scrollToBottom();
+			}
 		}
 	});
 
