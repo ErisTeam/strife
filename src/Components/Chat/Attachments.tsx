@@ -14,7 +14,6 @@ export default function Attachments(props: AttachmentsProps) {
 		formatAttachments(props.attachments);
 	});
 	function formatAttachments(ats: any[]) {
-		console.log(ats);
 		const images = [];
 		const videos = [];
 		const audios = [];

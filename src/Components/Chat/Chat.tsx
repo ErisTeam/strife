@@ -37,6 +37,7 @@ export default function Chat() {
 			if (chatref.scrollTop + chatref.clientHeight >= chatref.scrollHeight) {
 				isAtBottom = true;
 			}
+			console.log('newMessage', newMessage);
 			setMessages(messages().concat(newMessage));
 
 			if (isAtBottom) {
