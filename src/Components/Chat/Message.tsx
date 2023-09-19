@@ -1,10 +1,9 @@
-import { For, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
+import { For, Show, createMemo } from 'solid-js';
 import API from '../../API';
-import { Message as MessageType } from '../../discord';
-
-import { Download } from 'lucide-solid';
 import { useAppState } from '../../AppState';
+import { Message as MessageType } from '../../discord';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
+import Attachments from './Attachments';
 import MessageContextMenu from './MessageContextMenu';
 import style from './css.module.css';
 
@@ -21,64 +20,11 @@ const Message = (props: MessageProps) => {
 		timeStyle: 'short',
 	});
 	const formattedMessage = createMemo(() => {
-		// return formatMarkdown(message.content);
 		return API.Messages.formatMarkdown(message.content, message.mentions);
 	});
 
-	const [formattedImages, setFormattedImages] = createSignal<JSX.Element[]>([]);
-	const [formattedVideos, setFormattedVideos] = createSignal<JSX.Element[]>([]);
-	const [formattedAudios, setFormattedAudios] = createSignal<JSX.Element[]>([]);
-
-	onMount(() => {
-		formatAttachments(message.attachments);
-	});
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
-
-	//! REPLACE TYPE AFTER IT GETS ADDED TO PROTOBUF
-	function formatAttachments(ats: any[]) {
-		console.log(ats);
-		const images = [];
-		const videos = [];
-		const audios = [];
-		if (ats.length == 0) return;
-		for (let i = 0; i < ats.length; i++) {
-			if (ats[i].content_type.includes('image')) {
-				images.push(
-					<li class={style.image}>
-						<a class={style.download} href={ats[i].url} target="_blank">
-							<Download />
-						</a>
-						<img src={ats[i].url} alt={message.content} />
-					</li>,
-				);
-			}
-			if (ats[i].content_type.includes('video')) {
-				videos.push(
-					<li class={style.video}>
-						<a class={style.download} href={ats[i].url} target="_blank">
-							<Download />
-						</a>
-						<video controls src={ats[i].url} />
-					</li>,
-				);
-			}
-			if (ats[i].content_type.includes('audio')) {
-				audios.push(
-					<li>
-						<a class={style.download} href={ats[i].url} target="_blank">
-							<Download />
-						</a>
-						<span>{ats[i].filename}</span>
-						<audio controls src={ats[i].url} />
-					</li>,
-				);
-			}
-		}
-		setFormattedImages(images);
-		setFormattedVideos(videos);
-		setFormattedAudios(audios);
-	}
 
 	const profileImage = createMemo(() => {
 		if (message.author.avatar) {
@@ -92,8 +38,6 @@ const Message = (props: MessageProps) => {
 		return (message.author.global_name as string) || (message.author.username as string);
 	});
 
-	/* eslint-disable */
-	// @ts-ignore DISPLAYS ERROR THAT ITS NOT BEING USED, BUT IT IS:
 	const contextMenu = createContextMenu({
 		component: [MessageContextMenu],
 		data: message,
@@ -106,15 +50,7 @@ const Message = (props: MessageProps) => {
 
 				<div class={style.messageInner}>
 					<p class={style.messageText}>{formattedMessage()}</p>
-					<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
-						<ul class={style.attachments}>
-							{formattedVideos()}
-							{formattedImages()}
-						</ul>
-					</Show>
-					<Show when={formattedAudios().length > 0}>
-						<ul class={style.audios}>{formattedAudios()}</ul>
-					</Show>
+					<Attachments attachments={message.attachments} />
 
 					<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 				</div>
@@ -138,15 +74,7 @@ const Message = (props: MessageProps) => {
 					<time>{intl.format(new Date(message.timestamp))}</time>
 				</div>
 				<p class={style.messageText}>{formattedMessage()}</p>
-				<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
-					<ul class={style.attachments}>
-						{formattedVideos()}
-						{formattedImages()}
-					</ul>
-				</Show>
-				<Show when={formattedAudios().length > 0}>
-					<ul class={style.audios}>{formattedAudios()}</ul>
-				</Show>
+				<Attachments attachments={message.attachments} />
 
 				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
 			</div>
