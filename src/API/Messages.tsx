@@ -57,9 +57,8 @@ export default {
 			}) || [];
 
 		const regex = mentions.map((e) => e.match).join('|');
-		//console.log(regex);
 		if (regex.length == 0) return <>{content}</>;
-		//console.log(regex, content.split(new RegExp(regex, 'gm')), mentions);
+
 		const split = content.split(new RegExp(regex, 'gm'));
 		const a = [];
 		for (let i = 0; i < split.length; i++) {

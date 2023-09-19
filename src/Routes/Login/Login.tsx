@@ -1,7 +1,7 @@
 // SolidJS
 import { Show, createSignal, onCleanup, onMount } from 'solid-js';
 import { useBeforeLeave, useNavigate } from '@solidjs/router';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 // Tauri
 import { emit } from '@tauri-apps/api/event';
 
@@ -25,7 +25,6 @@ import HCaptcha from 'solid-hcaptcha';
 //TODO clean
 
 const LoginPage = () => {
-	const [t] = useTrans();
 	// Data of the user that scans the QR Code
 	// If set to undefined the component will go back to showing the QR Code
 	const [userData, setUserData] = createSignal<UserData>();

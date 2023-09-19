@@ -8,7 +8,7 @@ import buttons from './../../Styles/Buttons.module.css';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 
 type LoginBoxProps = {
 	class?: string;
@@ -16,7 +16,6 @@ type LoginBoxProps = {
 };
 
 function LoginBox(prop: LoginBoxProps) {
-	const [t] = useTrans();
 	const [name, setName] = createSignal('');
 	const [password, setPassword] = createSignal('');
 

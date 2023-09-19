@@ -2,7 +2,7 @@ import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 import { Tab } from '../../types';
 import { Dynamic, classList } from 'solid-js/web';
 import { X } from 'lucide-solid';
@@ -17,7 +17,6 @@ type TabProps = {
 };
 function TabSortable(props: TabProps) {
 	const AppState = useAppState();
-	const [t] = useTrans();
 
 	const tab = props.tab;
 

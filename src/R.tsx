@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api';
 import { Component, Show, createEffect, createResource, createSignal } from 'solid-js';
 import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
-import { useTrans } from './Translation';
+import { t } from './Translation';
 import Dev from './Components/Dev/Dev';
 import API from './API';
 import { useAppState } from './AppState';
@@ -16,8 +16,6 @@ type Props = {
 const TimeLeft = 10;
 //TODO: change name
 const R = (props: Props) => {
-	const [t] = useTrans();
-
 	const [error, setError] = createSignal<Error | null>(null);
 	const AppState = useAppState();
 
@@ -67,7 +65,8 @@ const R = (props: Props) => {
 							error() && (
 								<>
 									<h3>{error().toString()}</h3>
-									<h3>{t.error({ time: timeLeft() })}</h3>
+									{/* TODO:FIX */}
+									{/* <h3>{t.error({ time: timeLeft() })}</h3> */}
 								</>
 							)
 						}

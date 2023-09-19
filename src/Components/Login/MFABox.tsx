@@ -3,7 +3,7 @@ import style from './css.module.css';
 import inputs from './../../Styles/Inputs.module.css';
 
 import buttons from './../../Styles/Buttons.module.css';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 /* Tauri */
 import { emit } from '@tauri-apps/api/event';
 
@@ -16,7 +16,6 @@ type MFABoxProps = {
 };
 
 function MFABox(prop: MFABoxProps) {
-	const [t] = useTrans();
 	const [code, setCode] = createSignal('');
 
 	return (

@@ -18,12 +18,10 @@ import buttons from '../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
 import SplashText from '../../Components/Dev/SplashText';
 import { AppState } from '../../types';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 import Switch from '../../Components/Switch/Switch';
 
 function Prev() {
-	const [t, { setLocale }] = useTrans();
-
 	const [a] = createResource(async () => {
 		throw new Error('test');
 	});
@@ -176,13 +174,15 @@ function Prev() {
 							style={{ width: '100%' }}
 							onchange={(e) => {
 								// @ts-ignore
-								setLocale(e.currentTarget.value);
+								AppState.setLocale(e.currentTarget.value);
+								console.log(AppState.locale());
 							}}
 						>
 							<option value="en_US">en_US</option>
 							<option value="pl_PL">pl_PL</option>
 						</select>
-						<span>{t.hello({ name: 'Test' })}</span>
+
+						<span>{t.hello({ name: 'test' })}</span>
 					</div>
 				</div>
 			</div>

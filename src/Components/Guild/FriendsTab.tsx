@@ -7,10 +7,9 @@ import { useAppState } from '../../AppState';
 // Style
 import style from './css.module.css';
 import API from '../../API';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 const FriendsTab = () => {
 	const AppState = useAppState();
-	const [t] = useTrans();
 
 	let toolTipRef: HTMLElement;
 	let ref: HTMLLIElement;

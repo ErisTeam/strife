@@ -1,24 +1,13 @@
-import ContextMenu, { useMenu } from '../ContextMenu/ContextMenu';
+import { useMenu } from '../ContextMenu/ContextMenu';
 import { Message as MessageType } from '../../discord';
 import { For, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
 import API from '../../API';
 
 import style from './css.module.css';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
-import UserMention from './UserMention';
 import { Download } from 'lucide-solid';
 import { useAppState } from '../../AppState';
-
-function Menu() {
-	const menu = useMenu<MessageType>();
-	const authorId = menu.author.id;
-	const AppState = useAppState();
-	return (
-		<Show when={authorId == AppState.userId}>
-			<button>edit</button>
-		</Show>
-	);
-}
+import MessageContextMenu from './MessageContextMenu';
 
 type MessageProps = {
 	message: MessageType;
@@ -101,11 +90,13 @@ const Message = (props: MessageProps) => {
 	});
 
 	const userName = createMemo(() => {
-		return message.author.global_name || message.author.username;
+		return (message.author.global_name as string) || (message.author.username as string);
 	});
-	//it is used, ignore the error
+
+	/* eslint-disable */
+	// @ts-ignore DISPLAYS ERROR THAT ITS NOT BEING USED, BUT IT IS:
 	const contextMenu = createContextMenu({
-		component: [Menu],
+		component: [MessageContextMenu],
 		data: message,
 	});
 	return (

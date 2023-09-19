@@ -7,7 +7,7 @@ import { useAppState } from '../../AppState';
 // Style
 import style from './css.module.css';
 import API from '../../API';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 
 import { Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
@@ -22,8 +22,6 @@ type GuildProps = {
 
 const Guild = (props: GuildProps) => {
 	const AppState = useAppState();
-
-	const [t] = useTrans();
 
 	let toolTipRef: HTMLElement;
 	let ref: HTMLLIElement;

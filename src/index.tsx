@@ -16,7 +16,7 @@ import Login from './Routes/Login/Login';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import Error from './Routes/Error/Error';
 import Dev from './Components/Dev/Dev';
-import TranslationTest from './Routes/Dev/Translation/TranslationTest';
+
 import MessageTest from './Routes/Dev/MessageTest/MessageTest';
 
 // Style
@@ -71,45 +71,43 @@ const App: Component = () => {
 	return (
 		<Router>
 			<WindowDecoration />
-			<TransProvider>
-				<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
-					<Show when={!id.loading} fallback={<Loading />}>
-						<AppStateProvider userId={id()}>
-							<Dev />
 
-							<Routes>
-								{/* <Redirect /> */}
-								<Route path="/dev" element={<R state={'Dev'} component={Outlet} />}>
-									<Route path="/translationtest" component={TranslationTest} />
-									<Route path="/loadingtest" component={LoadingTest} />
-								</Route>
+			<Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
+				<Show when={!id.loading} fallback={<Loading />}>
+					<AppStateProvider userId={id()}>
+						<Dev />
 
-								<Route path="/login" element={<R state={'LoginScreen'} force={true} component={Login} />} />
+						<Routes>
+							{/* <Redirect /> */}
+							<Route path="/dev" element={<R state={'Dev'} component={Outlet} />}>
+								<Route path="/loadingtest" component={LoadingTest} />
+							</Route>
 
-								<Route path="/" element={<R state={'Dev'} force={true} component={Prev} />}></Route>
+							<Route path="/login" element={<R state={'LoginScreen'} force={true} component={Login} />} />
 
-								<Route path="/dev" element={<R state={'Dev'} force={true} component={Outlet} />}>
-									<Route path="/contextmenutest" component={ContextMenuTest} />
-									<Route path="/messagetest" component={MessageTest} />
-									<Route path="/loadingtest" component={LoadingTest} />
-									<Route path="/login" component={Prev} />
-									<Route path="/test" component={ContextMenuTest} />
-								</Route>
+							<Route path="/" element={<R state={'Dev'} force={true} component={Prev} />}></Route>
 
-								<Route path="/login" component={Login} />
+							<Route path="/dev" element={<R state={'Dev'} force={true} component={Outlet} />}>
+								<Route path="/contextmenutest" component={ContextMenuTest} />
+								<Route path="/messagetest" component={MessageTest} />
+								<Route path="/loadingtest" component={LoadingTest} />
+								<Route path="/login" component={Prev} />
+								<Route path="/test" component={ContextMenuTest} />
+							</Route>
 
-								<Route path="/app" element={<R state={'Application'} force={true} component={ApplicationWrapper} />}>
-									{/* <Route path="/" component={Channel} />
+							<Route path="/login" component={Login} />
+
+							<Route path="/app" element={<R state={'Application'} force={true} component={ApplicationWrapper} />}>
+								{/* <Route path="/" component={Channel} />
 									<Route path="/:guildId" component={Channel}>
 										<Route path="/:channelId" component={Channel} />
 									</Route> */}
-								</Route>
-								<Route path="*" component={Error} />
-							</Routes>
-						</AppStateProvider>
-					</Show>
+							</Route>
+							<Route path="*" component={Error} />
+						</Routes>
+					</AppStateProvider>
 				</Show>
-			</TransProvider>
+			</Show>
 		</Router>
 	);
 };

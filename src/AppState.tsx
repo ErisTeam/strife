@@ -4,6 +4,7 @@ import { SetStoreFunction, StoreSetter, createStore, produce } from 'solid-js/st
 // API
 import { Guild, Relationship } from './discord';
 import { Tab } from './types';
+import { Locale } from './Translation';
 
 const userId = '';
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
@@ -16,6 +17,8 @@ const [channelsSize, setChannelsSize] = createSignal<number>(250);
 
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
+const [locale, setLocale] = createSignal<Locale>('en_US');
+
 const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1); //TODO: CHANGE TO USE index
 
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
@@ -32,7 +35,8 @@ const ContextValue = {
 	setTabs,
 	tabsOrder,
 	setTabsOrder,
-
+	locale,
+	setLocale,
 	currentTabIndex: currentTabIdx,
 	setCurrentTabIndex: setCurrentTabIdx,
 

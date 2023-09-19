@@ -2,7 +2,7 @@ import { tabStoreType, useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 
 import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
@@ -17,12 +17,11 @@ export function TEST(props: { activeDraggable: Draggable }) {
 
 function TabShadow(props: { activeDraggable?: Draggable; items: Item[] }) {
 	const tab = createMemo(() => {
-		let id = (props.activeDraggable?.id as number) || 1;
-		let b = props.items.find((t) => t.id == id - 1 || 0)?.tab;
+		const id = (props.activeDraggable?.id as number) || 1;
+		const b = props.items.find((t) => t.id == id - 1 || 0)?.tab;
 		return b;
 	});
 
-	const [t] = useTrans();
 	if (!tab()) return <div>Null</div>;
 	console.log(tab());
 

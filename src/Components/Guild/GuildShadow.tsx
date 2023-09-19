@@ -4,7 +4,7 @@ import { Show } from 'solid-js';
 // Style
 import style from './css.module.css';
 import API from '../../API';
-import { useTrans } from '../../Translation';
+import { t } from '../../Translation';
 
 import { Guild as TGuild } from '../../discord';
 
@@ -14,8 +14,6 @@ interface GuildProps {
 }
 
 const GuildShadow = (props: GuildProps) => {
-	const [t] = useTrans();
-
 	if (!props.guild) return null;
 	return (
 		<li class={style.guild}>

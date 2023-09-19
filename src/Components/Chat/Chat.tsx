@@ -85,7 +85,7 @@ export default function Chat() {
 				);
 			} else {
 				renderableMessages.push(<Message message={messagesToRender[i]} updateMessage={updateMessage} />);
-				lastAuthor = messagesToRender[i].author.id;
+				lastAuthor = messagesToRender[i].author.id as string;
 			}
 		}
 		console.log('renderableMessages', renderableMessages);
