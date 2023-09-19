@@ -1,0 +1,114 @@
+{
+	"attachments": Array [], 
+	"author": 
+	{
+		"avatar": String("2a3793ddc22e37033824521a62baba6d"), 
+		"avatar_decoration_data": Null, 
+		"discriminator": String("0"), 
+		"global_name": String("Broma"), 
+		"id": String("972768292425064458"), 
+		"public_flags": Number(0), 
+		"username": String("brom4")
+	}, 
+	"channel_id": String("865640086796107786"), 
+	"components": Array [], 
+	"content": String("yeah it is my current ROM's kernel by some community member with some battery tweaks and KernelSU"), 
+	"edited_timestamp": Null, 
+	"embeds": Array [], 
+	"flags": Number(0), 
+	"guild_id": String("811255666990907402"), 
+	"id": String("1153673388418670712"), 
+	"member": Object 
+	{
+		"avatar": Null, 
+		"communication_disabled_until": Null, 
+		"deaf": Bool(false), 
+		"flags": Number(0), 
+		"joined_at": String("2023-08-01T05:02:31.063000+00:00"), 
+		"mute": Bool(false), "nick": Null, "pending": Bool(false), 
+		"premium_since": Null, "roles": Array []
+	}, 
+	"mention_everyone": Bool(false), 
+	"mention_roles": Array [], 
+	"mentions": Array 
+	[
+		Object 
+		{
+			"avatar": String("4a4eb7f14014e99304699b5953ca8cbb"), 
+			"avatar_decoration_data": Null, 
+			"discriminator": String("0"), 
+			"global_name": String("Rebin Tunign"), 
+			"id": String("663444718566244419"), 
+			"member": Object 
+			{
+				"avatar": Null, 
+				"communication_disabled_until": Null, 
+				"deaf": Bool(false), 
+				"flags": Number(0), 
+				"joined_at": String("2022-10-04T15:33:05.972000+00:00"), 
+				"mute": Bool(false), 
+				"nick": String("pot of me (MIUI)"), 
+				"pending": Bool(false), 
+				"premium_since": Null, 
+				"roles": Array []
+			}, 
+			"public_flags": Number(256), 
+			"username": String("rebintunign")
+		}
+	], 
+	"message_reference": Object 
+	{
+		"channel_id": String("865640086796107786"), 
+		"guild_id": String("811255666990907402"), 
+		"message_id": String("1153438652383375490")
+	}, 
+	"nonce": String("1159844167887618048"), 
+	"pinned": Bool(false), 
+	"referenced_message": Object 
+	{
+		"attachments": Array [], 
+		"author": Object 
+		{
+			"avatar": String("4a4eb7f14014e99304699b5953ca8cbb"),
+			"avatar_decoration_data": Null,
+			"discriminator": String("0"),
+			"global_name": String("Rebin Tunign"),
+			"id": String("663444718566244419"),
+			"public_flags": Number(256),
+			"username": String("rebintunign")},
+			"channel_id": String("865640086796107786"),
+			"components": Array [],
+			"content": String("PUBG Kernel 😎"),
+			"edited_timestamp": Null,
+			"embeds": Array [],
+			"flags": Number(0),
+			"id": String("1153438652383375490"),
+			"mention_everyone": Bool(false),
+			"mention_roles": Array [],
+			"mentions": Array 
+			[
+				Object 
+				{
+					"avatar": String("2a3793ddc22e37033824521a62baba6d"),
+					"avatar_decoration_data": Null,
+					"discriminator": String("0"),
+					"global_name": String("Broma"),
+					"id": String("972768292425064458"),
+					"public_flags": Number(0), "username": String("brom4")
+				}
+			], 
+			"message_reference": Object 
+			{
+				"channel_id": String("865640086796107786"),
+				"guild_id": String("811255666990907402"),
+				"message_id": String("1153379899298549910")
+			}, 
+			"pinned": Bool(false),
+			"timestamp": String("2023-09-18T21:13:24.582000+00:00"),
+			"tts": Bool(false),
+			"type": Number(19)
+	},
+	"timestamp": String("2023-09-19T12:46:10.014000+00:00"), 
+	"tts": Bool(false), 
+	"type": Number(19)
+}
