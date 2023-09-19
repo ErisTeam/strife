@@ -13,11 +13,14 @@ export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
 	const AppState = useAppState();
+	let chatref: HTMLOListElement;
+	function scrollToBottom() {
+		chatref.scrollTo(0, chatref.scrollHeight);
+	}
 	const listener = startGatewayListener(AppState.userId);
 	listener.on<any>('messageCreate', (event) => {
-		console.log('event', event);
+		console.log(TabContext.channelId, event.data.channel_id, event.data.content);
 		if (event.data.channel_id === TabContext.channelId) {
-			console.log('messageCreate', event);
 			const newMessage = {
 				id: event.data.id,
 				channel_id: event.data.channel_id,
@@ -29,10 +32,12 @@ export default function Chat() {
 				mentions: event.data.mentions,
 				mention_roles: event.data.mention_roles,
 			} as MessageType;
-			console.log('newMessage', newMessage);
+
 			setMessages(messages().concat(newMessage));
+			scrollToBottom();
 		}
 	});
+
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
@@ -54,6 +59,7 @@ export default function Chat() {
 			console.log('voice channel');
 			setIsVoiceChannel(true);
 		}
+		scrollToBottom();
 	});
 	async function startVoice() {
 		await invoke('send_voice_state_update', {
@@ -109,7 +115,7 @@ export default function Chat() {
 	});
 
 	return (
-		<ol class={style.chat}>
+		<ol class={style.chat} ref={chatref}>
 			{renderableMessages()}
 			<Show when={isVoiceChannel()}>
 				<button onclick={startVoice}>Join Voice Channel</button>
