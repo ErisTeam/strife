@@ -43,36 +43,29 @@ const Message = (props: MessageProps) => {
 		data: message,
 	});
 
-	if (props.same) {
-		return (
-			<li class={style.messageSame} use:contextMenu>
-				<time>{intl.format(new Date(message.timestamp))}</time>
-
-				<div class={style.messageInner}>
-					<p class={style.messageText}>{formattedMessage()}</p>
-					<Attachments attachments={message.attachments} />
-
-					<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
-				</div>
-			</li>
-		);
-	}
 	return (
-		<li class={style.message} use:contextMenu>
-			<button>
-				<img src={profileImage()} alt={userName()} />
-			</button>
+		<li classList={{ [style.message]: !props.same, [style.messageSame]: props.same }} use:contextMenu>
+			<Show when={props.same}>
+				<time>{intl.format(new Date(message.timestamp))}</time>
+			</Show>
+			<Show when={!props.same}>
+				<button>
+					<img src={profileImage()} alt={userName()} />
+				</button>
+			</Show>
 			<div class={style.messageInner}>
-				<div class={style.details}>
-					<button>
-						{userName()}
+				<Show when={!props.same}>
+					<div class={style.details}>
+						<button>
+							{userName()}
 
-						<Show when={message.author.bot}>
-							<span class={style.botTag}> Bot</span>
-						</Show>
-					</button>
-					<time>{intl.format(new Date(message.timestamp))}</time>
-				</div>
+							<Show when={message.author.bot}>
+								<span class={style.botTag}> Bot</span>
+							</Show>
+						</button>
+						<time>{intl.format(new Date(message.timestamp))}</time>
+					</div>
+				</Show>
 				<p class={style.messageText}>{formattedMessage()}</p>
 				<Attachments attachments={message.attachments} />
 
