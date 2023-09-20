@@ -1,0 +1,10 @@
+.embed {
+	border-radius: var(--round-medium);
+	background-color: var(--depth5);
+
+	padding: 1em;
+
+	position: relative;
+
+	border-left: var(--round-medium) solid var(--embed-color);
+}

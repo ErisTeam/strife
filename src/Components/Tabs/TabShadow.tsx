@@ -1,4 +1,4 @@
-import { tabStoreType, useAppState } from '../../AppState';
+import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
@@ -15,11 +15,9 @@ export function TEST(props: { activeDraggable: Draggable }) {
 	return <div>{props.activeDraggable.id}</div>;
 }
 
-function TabShadow(props: { activeDraggable?: Draggable; items: Item[] }) {
+function TabShadow(props: { items: Item[]; itemId: number }) {
 	const tab = createMemo(() => {
-		const id = (props.activeDraggable?.id as number) || 1;
-		const b = props.items.find((t) => t.id == id - 1 || 0)?.tab;
-		return b;
+		return props.items.find((t) => t.id == props.itemId)?.tab;
 	});
 
 	if (!tab()) return <div>Null</div>;

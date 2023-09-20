@@ -25,7 +25,14 @@ const R = (props: Props) => {
 		console.log('bbbbbbbbbb');
 		console.log('res', res);
 		if (props.state === 'Application') {
-			await API.activateUser(AppState.userId);
+			try {
+				await API.activateUser(AppState.userId);
+			} catch (err) {
+				setError(err.toString());
+				startTimer(() => {
+					refetch();
+				});
+			}
 		}
 		return res;
 	});

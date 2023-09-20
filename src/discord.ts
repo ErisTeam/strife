@@ -178,4 +178,31 @@ type Message = {
 	attachments: any[];
 };
 
-export type { GuildsResponse, UsersResponse, Role, Guild, Channel, RelationshipUser, Relationship, Message };
+type Embed = {
+	title?: string;
+	type?: string;
+	description?: string;
+	url?: string;
+
+	timestamp?: string;
+
+	color?: number;
+
+	footer?: EmbedFooter;
+	image?: EmbedImage;
+	thumbnail?: EmbedThumbnail;
+	video?: EmbedVideo;
+	provider?: EmbedProvider;
+	author?: EmbedAuthor;
+	fields?: EmbedFields;
+};
+
+type EmbedFooter = {};
+type EmbedImage = {};
+type EmbedThumbnail = {};
+type EmbedVideo = {};
+type EmbedProvider = {};
+type EmbedAuthor = {};
+type EmbedFields = {};
+
+export type { GuildsResponse, UsersResponse, Role, Guild, Channel, RelationshipUser, Relationship, Message, Embed };

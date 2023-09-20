@@ -6,6 +6,7 @@ import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Attachments from './Attachments';
 import MessageContextMenu from './MessageContextMenu';
 import style from './css.module.css';
+import Embed from './Embed';
 
 type MessageProps = {
 	message: MessageType;
@@ -69,7 +70,7 @@ const Message = (props: MessageProps) => {
 				<p class={style.messageText}>{formattedMessage()}</p>
 				<Attachments attachments={message.attachments} />
 
-				<For each={message.embeds}>{(embed) => <h2>{JSON.stringify(embed)}</h2>}</For>
+				<For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
 			</div>
 		</li>
 	);
