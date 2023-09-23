@@ -8,16 +8,19 @@ repository = "https://github.com/pietruszka123/TNaDC"
 edition = "2021"
 rust-version = "1.70"
 
+
 [build-dependencies]
 tauri-build = { version = "1.4.0", features = [] }
-prost-build = "0.11.9"
+prost-build = "0.12.1"
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.48.0", features = [
+windows = { version = "0.51.1", features = [
 	"Win32_UI_WindowsAndMessaging",
 	"Win32_Foundation",
 	"Win32_Graphics_Dwm",
 	"Win32_UI_Controls",
+	"UI_WindowManagement",
+	"Foundation",
 ] }
 
 [profile.dev.package.num-bigint-dig]
@@ -32,9 +35,9 @@ base64 = "0.21.2"
 
 
 # Async functionality 🗼
-tokio = { version = "1.29.1", features = ["full"] }
+tokio = { version = "1.32.0", features = ["full"] }
 futures-util = "0.3.28"
-async-trait = "0.1.71"
+async-trait = "0.1.73"
 
 # idk idc
 const_format = "0.2.31"
@@ -77,8 +80,8 @@ tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", br
 chrono = "0.4.26"
 
 #protobuf
-prost = "0.11.9"
-prost-types = "0.11.9"
+prost = "0.12.1"
+prost-types = "0.12.1"
 
 
 reqwest = { version = "0.11.18", features = ["json"] }

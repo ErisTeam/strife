@@ -90,7 +90,7 @@
 				"width": 200,
 				"height": 400,
 				"decorations": false,
-				"url": "splashscreen.html",
+				"url": "/SplashScreen/splashscreen.html",
 				"label": "splashscreen",
 				"center": true,
 				"resizable": false

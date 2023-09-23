@@ -25,17 +25,6 @@ use std::sync::Arc;
 use serde::Deserialize;
 use tauri::{ Manager, UserAttentionType };
 use tauri_plugin_log::LogTarget;
-use windows::{
-	Win32::{
-		Graphics::Dwm::{ DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DwmExtendFrameIntoClientArea },
-		Foundation::HWND,
-		UI::{
-			WindowsAndMessaging::{ SetWindowLongA, GWL_STYLE, WS_POPUP, SetWindowLongPtrA, SetWindowLongPtrW },
-			Controls::MARGINS,
-		},
-	},
-	core::CanInto,
-};
 
 use crate::main_app_state::MainState;
 
@@ -47,6 +36,7 @@ struct TestData {}
 #[tauri::command]
 async fn test(handle: tauri::AppHandle) {
 	println!("test");
+	return;
 
 	// let mut path = handle.path_resolver().app_cache_dir().unwrap();
 	// path.push("413428675866787863");
@@ -73,23 +63,25 @@ fn close_loading(app: &mut tauri::App) -> Result<()> {
 	main_window.show()?;
 	Ok(())
 }
-
+#[cfg(target_os = "windows")]
 fn enable_round_borders(window: tauri::Window) {
-	if cfg!(windows) {
-		let hwnd = windows::Win32::Foundation::HWND(window.hwnd().unwrap().0);
-		unsafe {
-			let margins = MARGINS {
-				cxLeftWidth: 8,
-				cxRightWidth: 8,
-				cyTopHeight: 8,
-				cyBottomHeight: 8,
-			};
+	use windows::Win32::{ Graphics::Dwm::DwmExtendFrameIntoClientArea, UI::Controls::MARGINS };
+	let hwnd = windows::Win32::Foundation::HWND(window.hwnd().unwrap().0);
 
-			let result = DwmExtendFrameIntoClientArea(hwnd, &margins);
-			println!("DwmSetWindowAttribute: {:?}", result);
-		}
+	unsafe {
+		let margins = MARGINS {
+			cxLeftWidth: 0,
+			cxRightWidth: 0,
+			cyTopHeight: 0,
+			cyBottomHeight: 0,
+		};
+
+		let result = DwmExtendFrameIntoClientArea(hwnd, &margins);
+		println!("DwmSetWindowAttribute: {:?}", result);
 	}
 }
+#[cfg(not(target_os = "windows"))]
+fn enable_round_borders(window: tauri::Window) {}
 
 #[tokio::main]
 async fn main() {
@@ -101,8 +93,7 @@ async fn main() {
 
 	main_state.event_manager.lock().await.set_state(Arc::downgrade(&main_state));
 
-	let m = main_state.clone();
-	let m2 = main_state.clone();
+	let m = main_state.clone(); //TODO: change name
 
 	tauri::Builder
 		::default()
@@ -126,7 +117,7 @@ async fn main() {
 			});
 
 			if cfg!(debug_assertions) {
-				dev::add_token(&m, app_handle.clone());
+				// dev::add_token(&m, app_handle.clone());
 				dev::clear_gateway_logs(app_handle.clone());
 				close_loading(app)?;
 			}
@@ -149,5 +140,4 @@ async fn main() {
 		)
 		.run(tauri::generate_context!())
 		.expect("Error while running tauri application.");
-	m2.user_manager.save_to_file().await.unwrap();
 }
