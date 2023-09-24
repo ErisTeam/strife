@@ -1,13 +1,14 @@
 .wrapper {
 	width: 100%;
-	height: 100%;
-	position: absolute;
+	height: calc(100% - var(--window-decoration-height));
+
 	overflow: hidden;
+	position: relative;
 }
 .background {
 	content: '';
 	width: 100vw;
-	height: 100vh;
+	height: calc(100vh - var(--window-decoration-height));
 	background: linear-gradient(107.57deg, #f2003a 0%, rgba(0, 178, 255, 0.63) 100.02%);
 }
 .background::before {
@@ -23,9 +24,8 @@
 }
 
 .container {
-	width: 100vw;
-	height: 100vh;
-	position: absolute;
+	width: 100%;
+	height: 100%;
 
 	display: flex;
 	flex-direction: row;
@@ -45,15 +45,13 @@
 	border-radius: var(--captcha-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
+	gap: 1.6em;
+
 	max-width: min(80%, 50ch);
 	h1 {
 		font-size: 3rem;
 		font-weight: 600;
 		text-align: center;
-	}
-
-	& > *:not(:last-child) {
-		margin-bottom: 1.6rem;
 	}
 }
 
@@ -126,9 +124,8 @@
 }
 
 .gradient {
-	width: 100vw;
-	height: 100vh;
-	position: absolute;
+	width: 100%;
+	height: 100%;
 	background: linear-gradient(107.57deg, #f2003a 0%, rgba(0, 178, 255, 0.63) 100.02%);
 	opacity: 0.6;
 }
@@ -153,8 +150,8 @@
 /* Corner SVGs */
 
 .leftBottom .leftTop .rightTop {
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	position: absolute;
 }
 
@@ -167,7 +164,7 @@
 .rightTop2 {
 	filter: var(--drop-shadow);
 	position: absolute;
-	aspect-ratio: auto;
+
 	user-select: none;
 }
 

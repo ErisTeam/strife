@@ -42,11 +42,14 @@
 		transition: height 300ms ease-in-out;
 		height: 0px;
 		overflow: hidden;
+		gap: 0.4em;
 	}
 	& ol.expand {
-		/* because you cant animate fit-content or auto height we need to calucate it, the formula is, (channel height+margin)*channelCount + margin    you only multiply one margin due to margin collapse*/
-		height: calc(2.4em * var(--childCount) + 0.4em) !important;
-		height: fit-content;
+		/* because you cant animate fit-content or auto height we need to calucate it, the formula is, (channel height+margin)*channelCount + margin    you only multiply one margin due to margin collapse
+		
+		you cant animate 100% either so this has to stay sadly
+		*/
+		height: calc(2.4em * var(--childCount) + 0.4em);
 	}
 }
 .rotate {
@@ -54,6 +57,7 @@
 }
 .channel {
 	width: 100%;
+	padding: 0.2em 0;
 	& button {
 		display: flex;
 		justify-content: flex-start;
@@ -61,7 +65,7 @@
 		height: 2em;
 		color: var(--channel-text-color);
 		width: 100%;
-		margin: 0.4em 0;
+
 		background: linear-gradient(
 			to right,
 			var(--channel-gradient-hover-one) 33%,
@@ -116,9 +120,11 @@
 }
 .list {
 	height: 100%;
+	display: flex;
+	flex-direction: column;
 	& > ol {
 		padding: 0 0.5em;
-		height: calc(100% - 4.75em);
+		height: 100%;
 
 		overflow-y: auto;
 
@@ -180,13 +186,9 @@
 		overflow-y: hidden;
 		border-radius: var(--channel-title-list-roundness);
 		z-index: 10;
+		gap: 0.4em;
 
 		& li {
-			margin-top: 0.4em;
-			margin-bottom: 0.4em;
-			padding-left: 0.4em;
-			padding-right: 0.4em;
-
 			width: 24ch;
 			height: 2em;
 
@@ -196,6 +198,7 @@
 				}
 			}
 			button {
+				gap: 0.5em;
 				height: 2.5em;
 				padding: 0;
 				height: 100%;
@@ -222,7 +225,6 @@
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					margin-right: 0.5em;
 
 					vertical-align: middle;
 					padding: 0.4em;

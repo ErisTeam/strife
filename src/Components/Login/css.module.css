@@ -54,10 +54,7 @@
 	border-radius: var(--MFA-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
-
-	& > *:not(:last-child) {
-		margin-bottom: 1.6rem;
-	}
+	gap: 1.6em;
 }
 
 .loginBox {
@@ -71,17 +68,14 @@
 	border-radius: var(--login-roundness);
 	padding: 1.6rem;
 	filter: var(--drop-shadow);
-	& > *:not(:last-child) {
-		margin-bottom: 1.6rem;
-	}
+	gap: 1.6rem;
+
 	.rememberMe {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		& > *:not(:last-child) {
-			margin-right: 0.5rem;
-		}
+		gap: 0.5em;
 
 		& > p {
 			font-size: 1.2rem;
@@ -104,15 +98,9 @@
 	justify-content: center;
 	padding: 1.6rem;
 	border-radius: var(--qr-roundness);
+	gap: 1em;
 	filter: var(--drop-shadow);
 
-	& > *:first-child {
-		margin-bottom: 1rem;
-	}
-
-	& > *:not(:first-child) {
-		margin-top: 0.6rem;
-	}
 	img {
 		width: 10rem;
 		height: 10rem;

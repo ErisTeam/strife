@@ -123,11 +123,17 @@ export default function Chat() {
 	});
 
 	return (
-		<ol class={style.chat} ref={chatref}>
-			{renderableMessages()}
-			<Show when={isVoiceChannel()}>
-				<button onclick={startVoice}>Join Voice Channel</button>
-			</Show>
-		</ol>
+		<main class={style.main}>
+			<ol ref={chatref}>
+				{renderableMessages()}
+				<Show when={isVoiceChannel()}>
+					<button onclick={startVoice}>Join Voice Channel</button>
+				</Show>
+			</ol>
+			<section>
+				<h1>CHAT INPUT WILL BE HERE</h1>
+				<textarea></textarea>
+			</section>
+		</main>
 	);
 }

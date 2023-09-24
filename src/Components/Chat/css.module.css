@@ -1,18 +1,28 @@
-.chat {
+.main {
+	height: 100%;
+	width: 100%;
 	background-color: var(--chat-bgc);
 
-	overflow-y: scroll;
-	height: 100%;
-	padding-bottom: 3em;
+	section {
+		background-color: red;
+		width: 100%;
+		height: 5em;
+	}
+	ol {
+		/* TODO:Figure out a way to get rid of this calc */
+		height: calc(100% - 5em);
 
-	display: flex;
-	flex-direction: column;
-	gap: 0.5em;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		overflow-y: scroll;
 
-	&::-webkit-scrollbar {
-		width: 0.75em;
+		&::-webkit-scrollbar {
+			width: 0.75em;
+		}
 	}
 }
+
 .message {
 	width: fit-content;
 	max-width: 100%;
@@ -96,8 +106,6 @@
 				display: flex;
 				flex-direction: column;
 				position: relative;
-
-				margin-bottom: 0.25em;
 
 				span {
 					white-space: nowrap;
@@ -203,8 +211,6 @@
 	/* TODO: Make scrollable if too wide */
 	.block {
 		padding: 0.2em;
-		margin: 0.2em;
-
 		background-color: black;
 	}
 	h4 {

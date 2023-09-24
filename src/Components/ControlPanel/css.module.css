@@ -1,7 +1,7 @@
 .controlPanel {
 	background-color: var(--control-panel-bgc);
 
-	height: 3.5em;
+	height: var(--control-panel-height);
 	width: 100%;
 
 	display: flex;

@@ -11,28 +11,33 @@ import { TabComponents } from '../../types';
 import TabList from './TabList';
 import { TabContextProvider } from './TabUtils';
 
-export function TabWindow() {
+export function TabWindow({ className }: { className?: string }) {
 	const AppState = useAppState();
 	console.log('length', AppState.tabs.length);
 
 	return (
-		<Show when={AppState.tabs.length > 0}>
-			<TabList />
+		<div class={className}>
+			<Show when={AppState.tabs.length > 0}>
+				<TabList />
 
-			<For each={AppState.tabs}>
-				{(tab, index) => {
-					return (
-						<div style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }} class={outletStyle.outlet}>
-							<Suspense fallback={<Loading />}>
-								<TabContextProvider tab={tab}>
-									<Dynamic component={TabComponents[tab.component]} />
-								</TabContextProvider>
-							</Suspense>
-						</div>
-					);
-				}}
-			</For>
-		</Show>
+				<For each={AppState.tabs}>
+					{(tab, index) => {
+						return (
+							<div
+								style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }}
+								class={outletStyle.outlet}
+							>
+								<Suspense fallback={<Loading />}>
+									<TabContextProvider tab={tab}>
+										<Dynamic component={TabComponents[tab.component]} />
+									</TabContextProvider>
+								</Suspense>
+							</div>
+						);
+					}}
+				</For>
+			</Show>
+		</div>
 	);
 }
 

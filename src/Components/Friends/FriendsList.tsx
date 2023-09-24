@@ -1,9 +1,9 @@
 import { For, createResource, onCleanup, onMount } from 'solid-js';
+import API from '../../API';
 import { useAppState } from '../../AppState';
-import style from './css.module.css';
 import Friend from './Friend';
 import FriendsTitle from './FriendsTitle';
-import API from '../../API';
+import style from './css.module.css';
 
 function FriendsList(props: { className?: string }) {
 	const [friends] = createResource(async () => {

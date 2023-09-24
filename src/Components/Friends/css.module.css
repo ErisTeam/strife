@@ -3,16 +3,17 @@
 	border-top-left-radius: var(--channel-list-roundness);
 	height: 100%;
 	min-width: 100px;
+	display: flex;
+	flex-direction: column;
 	& > ol {
 		padding: 0 0.5em;
-		/* size of title */
-		height: calc(100% - 4.75em);
+		height: 100%;
 		overflow-y: scroll;
 
 		scrollbar-gutter: stable;
-		li {
-			margin-bottom: 0.5em;
-		}
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
 	}
 	background-color: var(--friend-list-bgc);
 	border-bottom-left-radius: var(--channel-list-roundness);
@@ -44,12 +45,10 @@
 		height: 2.5em;
 		color: var(--channel-text-color);
 		width: 100%;
-		/* padding: 0 1em; */
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
 		column-gap: 0.5em;
-		margin: 0.4em 0;
 		background: linear-gradient(
 			to right,
 			var(--friend-gradient-hover-one) 33%,
@@ -60,11 +59,11 @@
 		background-position: right bottom;
 		transition: all 300ms ease-in-out;
 
+		padding-right: 3em;
 		border-radius: var(--round-xlarge);
 
-		/*cant be in % or ellipsis wont work*/
 		main {
-			width: calc(100% - (2.5em + 0.5em));
+			width: 100%;
 			display: flex;
 			flex-direction: column;
 			justify-content: space-around;

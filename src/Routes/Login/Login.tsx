@@ -1,26 +1,26 @@
 // SolidJS
-import { Show, createSignal, onCleanup, onMount } from 'solid-js';
-import { useBeforeLeave, useNavigate } from '@solidjs/router';
+import { useNavigate } from '@solidjs/router';
+import { createSignal } from 'solid-js';
 import { t } from '../../Translation';
 // Tauri
 import { emit } from '@tauri-apps/api/event';
 
 // API
-import API from './../../API';
-import { useTaurListener } from './../../test';
-import { useAppState } from './../../AppState';
 import qrcode from 'qrcode';
 import { UserData } from '../../Components/Login/QRCode';
+import API from './../../API';
+import { useAppState } from './../../AppState';
+import { useTaurListener } from './../../test';
 
 // Components
 import LoginBox from '../../Components/Login/LoginBox';
-import QRCode from '../../Components/Login/QRCode';
 import MFABox from '../../Components/Login/MFABox';
+import QRCode from '../../Components/Login/QRCode';
 // Style
-import style from './Login.module.css';
+import HCaptcha from 'solid-hcaptcha';
 import Dev from '../../Components/Dev/Dev';
 import { AuthEvents } from '../../types/Auth';
-import HCaptcha from 'solid-hcaptcha';
+import style from './Login.module.css';
 
 //TODO clean
 
@@ -145,7 +145,6 @@ const LoginPage = () => {
 		console.log(classes());
 		setPanel(to);
 	}
-	const [test, setTest] = createSignal(false);
 
 	return (
 		<div class={[style.wrapper, style.background].join(' ')}>
@@ -172,20 +171,7 @@ const LoginPage = () => {
 				>
 					show Login
 				</button>
-				<button
-					onclick={() => {
-						setTest(!test());
-					}}
-				>
-					Test
-				</button>
 			</Dev>
-
-			<Show when={test()}>
-				<div class={style.gradient}>
-					<img src="LoginPage/BackgroundDoodle.png" alt="Decorative Background"></img>
-				</div>
-			</Show>
 
 			{/* Main Page */}
 
