@@ -21,6 +21,7 @@ impl EventManager {
 		self.state = Some(state);
 	}
 	pub fn clear_listeners(&mut self, handle: AppHandle) {
+		//TODO: try to remove clone
 		for handler in self.event_listeners.clone().into_iter() {
 			handle.unlisten(handler);
 		}
@@ -37,11 +38,13 @@ impl EventManager {
 		//todo test Reconnecting
 	}
 
+	//TODO: return Result
 	pub fn register_for_login_screen(&mut self, handle: AppHandle) {
 		let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
 
 		self.event_listeners.extend(events::auth::get_all_events(state, handle.clone()));
 	}
+	//TODO: return Result
 	pub fn register_for_main_app(&mut self, handle: AppHandle) {
 		let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
 
