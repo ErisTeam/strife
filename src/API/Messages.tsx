@@ -1,6 +1,8 @@
+import { JSXElement } from 'solid-js';
 import UserMention from '../Components/Chat/UserMention';
 import style from '../Components/Chat/css.module.css';
 
+export const markdownChars = ['*', '_', '~', 'Dead', '`', '|', '#', '-', '>'];
 const boldRegex = /(\*{2}(.+?)\*{2})(?!\*)/gm;
 const italicRegex = /(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)/gm;
 const alternateItalicRegex = /(?<!_)(_(?!_)(.+?)_)(?!_)/gm;
@@ -81,7 +83,7 @@ export default {
 				{...matches.map((match) => {
 					switch (true) {
 						case !!match.match(codeBlockRegex):
-							return <pre class={style.block}>{match.replace(/```/gm, '')}</pre>;
+							return <pre class="codeblock">{match.replace(/```/gm, '')}</pre>;
 						case !!match.match(codeLineRegex):
 							return <code>{match.replace(/`/gm, '')}</code>;
 						case !!match.match(boldRegex):
@@ -112,6 +114,113 @@ export default {
 							return <span class={style.spoiler}>{this.formatMarkdown(match.replace(/\|\|/gm, ''), mentions)}</span>;
 						case !!match.match(mdLinkRegex):
 							return <a href={match.match(linkRegex)[0]}>{match.match(/(?<=\[).*?(?=\])/gm)[0]}</a>;
+						default:
+							return <>{this.formatMentions(match, mentions)}</>;
+					}
+				}) || []}
+			</>
+		);
+	},
+	markdownSuggestion(content: string) {
+		return (
+			<>
+				<span class="mdSuggestion">{content}</span>
+			</>
+		);
+	},
+	formatMarkdownPreserve(content: string, mentions: any[] = []): JSXElement {
+		const matches = content.match(regex) || [];
+
+		if (matches.length == 0) {
+			return this.formatMentions(content, mentions);
+		}
+		return (
+			<>
+				{...matches.map((match) => {
+					switch (true) {
+						case !!match.match(codeBlockRegex):
+							return (
+								<>
+									{this.markdownSuggestion('```')}
+									<pre class="codeblock">{match.replace(/```/gm, '')}</pre>
+									{this.markdownSuggestion('```')}
+								</>
+							);
+						case !!match.match(codeLineRegex):
+							return (
+								<>
+									{this.markdownSuggestion('`')}
+									<code>{match.replace(/`/gm, '')}</code>
+									{this.markdownSuggestion('`')}
+								</>
+							);
+						case !!match.match(boldRegex):
+							return (
+								<>
+									{this.markdownSuggestion('**')}
+									<strong>{this.formatMarkdownPreserve(match.replace(/\*\*/gm, ''), mentions)}</strong>
+									{this.markdownSuggestion('**')}
+								</>
+							);
+						case !!match.match(italicRegex):
+							return (
+								<>
+									{this.markdownSuggestion('*')}
+									<em>{this.formatMarkdownPreserve(match.replace(/(?<!\*)\*(?!\*)/gm, ''), mentions)}</em>
+									{this.markdownSuggestion('*')}
+								</>
+							);
+
+						case !!match.match(underlineRegex):
+							return (
+								<>
+									{this.markdownSuggestion('__')}
+									<u>{this.formatMarkdownPreserve(match.replace(/__/gm, ''), mentions)}</u>
+									{this.markdownSuggestion('__')}
+								</>
+							);
+						case !!match.match(alternateItalicRegex):
+							return (
+								<>
+									{this.markdownSuggestion('_')}
+									<em>{this.formatMarkdownPreserve(match.replace(/(?<!_)_(?!_)/gm, ''), mentions)}</em>
+									{this.markdownSuggestion('_')}
+								</>
+							);
+						case !!match.match(strikethroughRegex):
+							return (
+								<>
+									{this.markdownSuggestion('~~')}
+									<s>{this.formatMarkdownPreserve(match.replace(/~~/gm, ''), mentions)}</s>
+									{this.markdownSuggestion('~~')}
+								</>
+							);
+						case !!match.match(newlineRegex):
+							return <br />;
+						case !!match.match(headerOneRegex):
+							return match;
+						case !!match.match(headerTwoRegex):
+							return match;
+						case !!match.match(headerThreeRegex):
+							return match;
+						case !!match.match(listRegex):
+							return match;
+						case !!match.match(listIndentedRegex):
+							return match;
+						case !!match.match(quoteRegex):
+							return match;
+						case !!match.match(spoilerRegex):
+							return (
+								<>
+									{this.markdownSuggestion('||')}
+									<span class={style.spoiler}>
+										{this.formatMarkdownPreserve(match.replace(/\|\|/gm, ''), mentions)}
+									</span>
+									{this.markdownSuggestion('||')}
+								</>
+							);
+						case !!match.match(mdLinkRegex):
+							return match;
 						default:
 							return <>{this.formatMentions(match, mentions)}</>;
 					}

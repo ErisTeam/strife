@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { Show, createMemo, createResource, createSignal, onMount } from 'solid-js';
 import API from '../../API';
+import { markdownChars } from '../../API/Messages';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { Message as MessageType } from '../../discord';
@@ -13,7 +14,50 @@ export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
 	const AppState = useAppState();
+	const [shadowTextDom, setShadowTextDom] = createSignal<any>();
 	let chatref: HTMLOListElement;
+	let textarea: HTMLDivElement;
+	let shadowText: HTMLDivElement;
+
+	//!THIS IS BROKEN AS HELL
+	onMount(() => {
+		textarea.addEventListener('keyup', (e) => {
+			console.log(JSON.stringify(textarea.innerText));
+
+			if (e.key == 'Enter' && e.shiftKey) {
+				console.log('newLine');
+			}
+			if (e.key == 'Enter' && !e.shiftKey) {
+				e.preventDefault();
+				console.log('send');
+			}
+			console.log(e.key);
+			if (markdownChars.includes(e.key) || e.key == 'Backspace') {
+				const c = window.getSelection().getRangeAt(0).startOffset;
+
+				console.log('markdown');
+				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
+
+				setShadowTextDom(temp);
+				textarea.innerHTML = shadowText.innerHTML;
+				// TODO:Improve moving the caret
+				const inputNode = document.createElement('span');
+				textarea.appendChild(inputNode);
+				const range = document.createRange();
+				const sel = window.getSelection();
+				console.log(textarea.childNodes);
+				if (textarea.childNodes[textarea.childNodes.length - 1].textContent.length == 0) {
+					range.setStart(inputNode, 0);
+				} else {
+					range.setStart(textarea.childNodes[textarea.childNodes.length - 1], c);
+				}
+				range.collapse(true);
+				sel.removeAllRanges();
+				sel.addRange(range);
+			}
+		});
+	});
+
 	function scrollToBottom() {
 		chatref.scrollTo(0, chatref.scrollHeight);
 	}
@@ -130,9 +174,25 @@ export default function Chat() {
 					<button onclick={startVoice}>Join Voice Channel</button>
 				</Show>
 			</ol>
+			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
 			<section>
 				<h1>CHAT INPUT WILL BE HERE</h1>
-				<textarea></textarea>
+				<div
+					class={style.textarea}
+					role="textbox"
+					aria-multiline="true"
+					spellcheck={true}
+					aria-autocomplete="list"
+					data-can-focus="true"
+					data-slate-editor="true"
+					data-slate-node="value"
+					contenteditable={true}
+					data-ms-editor="true"
+					ref={textarea}
+				></div>
+				<div ref={shadowText} style="display: none">
+					{shadowTextDom()}
+				</div>
 			</section>
 		</main>
 	);

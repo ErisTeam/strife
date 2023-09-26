@@ -266,3 +266,51 @@ body {
 	display: flex;
 	flex-direction: column;
 }
+strong {
+	font-weight: 900;
+}
+em {
+	font-style: italic;
+}
+u {
+	text-decoration: underline;
+}
+s {
+	text-decoration: line-through;
+}
+code {
+	background-color: black;
+}
+
+/* TODO: Make scrollable if too wide */
+.codeblock {
+	padding: 0.2em;
+	background-color: black;
+}
+h4 {
+	font-size: 2em;
+	font-weight: 900;
+}
+h5 {
+	font-weight: 900;
+	font-size: 1.6em;
+}
+h6 {
+	font-weight: 900;
+	font-size: 1.3em;
+}
+a {
+	color: aqua;
+}
+q {
+	background-color: rgb(95, 95, 62);
+	&::before {
+		content: none;
+	}
+	&::after {
+		content: none;
+	}
+}
+.mdSuggestion {
+	color: red;
+}

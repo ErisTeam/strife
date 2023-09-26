@@ -7,6 +7,11 @@
 		background-color: red;
 		width: 100%;
 		height: 5em;
+		.textarea {
+			height: 100%;
+			width: 100%;
+			background-color: gray;
+		}
 	}
 	ol {
 		/* TODO:Figure out a way to get rid of this calc */
@@ -192,51 +197,6 @@
 	display: flex;
 }
 .messageText {
-	strong {
-		font-weight: 900;
-	}
-	em {
-		font-style: italic;
-	}
-	u {
-		text-decoration: underline;
-	}
-	s {
-		text-decoration: line-through;
-	}
-	code {
-		background-color: black;
-	}
-
-	/* TODO: Make scrollable if too wide */
-	.block {
-		padding: 0.2em;
-		background-color: black;
-	}
-	h4 {
-		font-size: 2em;
-		font-weight: 900;
-	}
-	h5 {
-		font-weight: 900;
-		font-size: 1.6em;
-	}
-	h6 {
-		font-weight: 900;
-		font-size: 1.3em;
-	}
-	a {
-		color: aqua;
-	}
-	q {
-		background-color: rgb(95, 95, 62);
-		&::before {
-			content: none;
-		}
-		&::after {
-			content: none;
-		}
-	}
 	.list {
 		position: relative;
 		padding-left: 1ch;
