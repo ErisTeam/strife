@@ -11,6 +11,8 @@
 			height: 100%;
 			width: 100%;
 			background-color: gray;
+			caret-color: var(--text);
+			cursor: text;
 		}
 	}
 	ol {
@@ -226,9 +228,6 @@
 			border-radius: 100%;
 			border: 1px white solid;
 		}
-	}
-	.spoiler {
-		background-color: aqua;
 	}
 }
 .botTag {

@@ -1,7 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { Show, createMemo, createResource, createSignal, onMount } from 'solid-js';
 import API from '../../API';
-import { markdownChars } from '../../API/Messages';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { Message as MessageType } from '../../discord';
@@ -14,10 +13,51 @@ export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
 	const AppState = useAppState();
-	const [shadowTextDom, setShadowTextDom] = createSignal<any>();
+
 	let chatref: HTMLOListElement;
 	let textarea: HTMLDivElement;
-	let shadowText: HTMLDivElement;
+
+	//TODO: make it possible to select multiple characters
+
+	// get the cursor position from .editor start
+	function getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
+		if (stat.done) return stat;
+
+		let currentNode = null;
+		if (parent.childNodes.length == 0) {
+			stat.pos += parent.textContent.length;
+		} else {
+			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+				currentNode = parent.childNodes[i];
+				if (currentNode === node) {
+					stat.pos += offset;
+					stat.done = true;
+					return stat;
+				} else getCursorPosition(currentNode, node, offset, stat);
+			}
+		}
+		return stat;
+	}
+
+	//find the child node and relative position and set it on range
+	function setCursorPosition(parent: Node, range: Range, stat: { pos: number; done: boolean }) {
+		if (stat.done) return range;
+
+		if (parent.childNodes.length == 0) {
+			if (parent.textContent.length >= stat.pos) {
+				range.setStart(parent, stat.pos);
+				stat.done = true;
+			} else {
+				stat.pos = stat.pos - parent.textContent.length;
+			}
+		} else {
+			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+				const currentNode = parent.childNodes[i];
+				setCursorPosition(currentNode, range, stat);
+			}
+		}
+		return range;
+	}
 
 	//!THIS IS BROKEN AS HELL
 	onMount(() => {
@@ -30,31 +70,26 @@ export default function Chat() {
 			if (e.key == 'Enter' && !e.shiftKey) {
 				e.preventDefault();
 				console.log('send');
-			}
-			console.log(e.key);
-			if (markdownChars.includes(e.key) || e.key == 'Backspace') {
-				const c = window.getSelection().getRangeAt(0).startOffset;
-
-				console.log('markdown');
-				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
-
-				setShadowTextDom(temp);
-				textarea.innerHTML = shadowText.innerHTML;
-				// TODO:Improve moving the caret
-				const inputNode = document.createElement('span');
-				textarea.appendChild(inputNode);
-				const range = document.createRange();
+			} else {
+				//get current cursor position
 				const sel = window.getSelection();
-				console.log(textarea.childNodes);
-				if (textarea.childNodes[textarea.childNodes.length - 1].textContent.length == 0) {
-					range.setStart(inputNode, 0);
-				} else {
-					range.setStart(textarea.childNodes[textarea.childNodes.length - 1], c);
-				}
-				range.collapse(true);
+				const node = sel.focusNode;
+				const offset = sel.focusOffset;
+				const pos = getCursorPosition(textarea, node, offset, { pos: 0, done: false });
+				if (offset === 0) pos.pos += 0.5;
+				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
+				console.log('temp', temp);
+				textarea.innerHTML = temp;
+				// TODO:Improve moving the caret
 				sel.removeAllRanges();
+				const range = setCursorPosition(textarea, document.createRange(), {
+					pos: pos.pos,
+					done: false,
+				});
+				range.collapse(true);
 				sel.addRange(range);
 			}
+			console.log(e.key);
 		});
 	});
 
@@ -183,16 +218,9 @@ export default function Chat() {
 					aria-multiline="true"
 					spellcheck={true}
 					aria-autocomplete="list"
-					data-can-focus="true"
-					data-slate-editor="true"
-					data-slate-node="value"
 					contenteditable={true}
-					data-ms-editor="true"
 					ref={textarea}
 				></div>
-				<div ref={shadowText} style="display: none">
-					{shadowTextDom()}
-				</div>
 			</section>
 		</main>
 	);

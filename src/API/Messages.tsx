@@ -1,4 +1,3 @@
-import { JSXElement } from 'solid-js';
 import UserMention from '../Components/Chat/UserMention';
 import style from '../Components/Chat/css.module.css';
 
@@ -9,7 +8,7 @@ const alternateItalicRegex = /(?<!_)(_(?!_)(.+?)_)(?!_)/gm;
 const underlineRegex = /(__(.+?)__)(?!_)/gm;
 const strikethroughRegex = /(~{2}(.+?)~{2})/gm;
 const codeBlockRegex = /(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)/gm;
-const codeLineRegex = /(`(.+?)`)(?!``)(?<!``)/gm;
+const codeLineRegex = /((?<!`)|(?<!``))((`(((.[^=])+?))`))((?!`)|(?!``)^)/gm;
 const headerOneRegex = /(^# .*)/gm;
 const headerTwoRegex = /(^## .*)/gm;
 const headerThreeRegex = /(^### .*)/gm;
@@ -111,9 +110,13 @@ export default {
 						case !!match.match(quoteRegex):
 							return <q>{this.formatMarkdown(match.slice(2), mentions)}</q>;
 						case !!match.match(spoilerRegex):
-							return <span class={style.spoiler}>{this.formatMarkdown(match.replace(/\|\|/gm, ''), mentions)}</span>;
+							return <span class="mdSpoiler">{this.formatMarkdown(match.replace(/\|\|/gm, ''), mentions)}</span>;
 						case !!match.match(mdLinkRegex):
-							return <a href={match.match(linkRegex)[0]}>{match.match(/(?<=\[).*?(?=\])/gm)[0]}</a>;
+							return (
+								<a class="mdLink" href={match.match(linkRegex)[0]}>
+									{match.match(/(?<=\[).*?(?=\])/gm)[0]}
+								</a>
+							);
 						default:
 							return <>{this.formatMentions(match, mentions)}</>;
 					}
@@ -122,110 +125,82 @@ export default {
 		);
 	},
 	markdownSuggestion(content: string) {
-		return (
-			<>
-				<span class="mdSuggestion">{content}</span>
-			</>
-		);
+		return `<span class="mdSuggestion">${content}</span>`;
 	},
-	formatMarkdownPreserve(content: string, mentions: any[] = []): JSXElement {
+	// THIS IS GOOFY AS FUCK
+	formatMarkdownPreserve(content: string): string {
 		const matches = content.match(regex) || [];
+		console.log('matches', matches);
+		let result = '';
+		matches.forEach((match) => {
+			let left = '';
+			let right = '';
+			if (match == 'undefined') {
+				return;
+			}
+			if (match.match(codeBlockRegex)) {
+				result +=
+					'<pre class="codeblock">' +
+					this.markdownSuggestion('```') +
+					match.replace('```', '').replace(/```(?=[^```]*$)/, '') +
+					this.markdownSuggestion('```') +
+					'</pre>';
 
-		if (matches.length == 0) {
-			return this.formatMentions(content, mentions);
-		}
-		return (
-			<>
-				{...matches.map((match) => {
-					switch (true) {
-						case !!match.match(codeBlockRegex):
-							return (
-								<>
-									{this.markdownSuggestion('```')}
-									<pre class="codeblock">{match.replace(/```/gm, '')}</pre>
-									{this.markdownSuggestion('```')}
-								</>
-							);
-						case !!match.match(codeLineRegex):
-							return (
-								<>
-									{this.markdownSuggestion('`')}
-									<code>{match.replace(/`/gm, '')}</code>
-									{this.markdownSuggestion('`')}
-								</>
-							);
-						case !!match.match(boldRegex):
-							return (
-								<>
-									{this.markdownSuggestion('**')}
-									<strong>{this.formatMarkdownPreserve(match.replace(/\*\*/gm, ''), mentions)}</strong>
-									{this.markdownSuggestion('**')}
-								</>
-							);
-						case !!match.match(italicRegex):
-							return (
-								<>
-									{this.markdownSuggestion('*')}
-									<em>{this.formatMarkdownPreserve(match.replace(/(?<!\*)\*(?!\*)/gm, ''), mentions)}</em>
-									{this.markdownSuggestion('*')}
-								</>
-							);
+				return;
+			}
+			if (match.match(codeLineRegex)) {
+				result +=
+					'<code>' +
+					this.markdownSuggestion('`') +
+					match.replace('`', '').replace(/`(?=[^`]*$)/, '') +
+					this.markdownSuggestion('`') +
+					'</code>';
+				return;
+			}
+			if (
+				match.match(boldRegex) ||
+				match.match(italicRegex) ||
+				match.match(underlineRegex) ||
+				match.match(alternateItalicRegex) ||
+				match.match(strikethroughRegex) ||
+				match.match(spoilerRegex)
+			) {
+				if (match.match(boldRegex)) {
+					match = match.replace('**', '').replace(/\*\*(?=[^**]*$)/, '');
+					left += '<strong>' + this.markdownSuggestion('**');
+					right += this.markdownSuggestion('**') + '</strong>';
+				}
+				if (match.match(italicRegex)) {
+					match = match.replace('*', '').replace(/\*(?=[^*]*$)/, '');
+					left += '<em>' + this.markdownSuggestion('*');
+					right = this.markdownSuggestion('*') + '</em>' + right;
+				}
+				if (match.match(underlineRegex)) {
+					match = match.replace('__', '').replace(/__(?=[^__]*$)/, '');
+					left += '<u>' + this.markdownSuggestion('__');
+					right = this.markdownSuggestion('__') + '</u>' + right;
+				}
+				if (match.match(alternateItalicRegex)) {
+					match = match.replace('_', '').replace(/_(?=[^_]*$)/, '');
+					left += '<em>' + this.markdownSuggestion('_');
+					right = this.markdownSuggestion('_') + '</em>' + right;
+				}
+				if (match.match(strikethroughRegex)) {
+					match = match.replace('~~', '').replace(/~~(?=[^~~]*$)/, '');
+					left += '<s>' + this.markdownSuggestion('~~');
+					right = this.markdownSuggestion('~~') + '</s>' + right;
+				}
+				if (match.match(spoilerRegex)) {
+					match = match.replace('||', '').replace(/\|\|(?=[^||]*$)/, '');
+					left += '<span class="mdSpoiler">' + this.markdownSuggestion('||');
+					right = this.markdownSuggestion('||') + '</span>' + right;
+				}
 
-						case !!match.match(underlineRegex):
-							return (
-								<>
-									{this.markdownSuggestion('__')}
-									<u>{this.formatMarkdownPreserve(match.replace(/__/gm, ''), mentions)}</u>
-									{this.markdownSuggestion('__')}
-								</>
-							);
-						case !!match.match(alternateItalicRegex):
-							return (
-								<>
-									{this.markdownSuggestion('_')}
-									<em>{this.formatMarkdownPreserve(match.replace(/(?<!_)_(?!_)/gm, ''), mentions)}</em>
-									{this.markdownSuggestion('_')}
-								</>
-							);
-						case !!match.match(strikethroughRegex):
-							return (
-								<>
-									{this.markdownSuggestion('~~')}
-									<s>{this.formatMarkdownPreserve(match.replace(/~~/gm, ''), mentions)}</s>
-									{this.markdownSuggestion('~~')}
-								</>
-							);
-						case !!match.match(newlineRegex):
-							return <br />;
-						case !!match.match(headerOneRegex):
-							return match;
-						case !!match.match(headerTwoRegex):
-							return match;
-						case !!match.match(headerThreeRegex):
-							return match;
-						case !!match.match(listRegex):
-							return match;
-						case !!match.match(listIndentedRegex):
-							return match;
-						case !!match.match(quoteRegex):
-							return match;
-						case !!match.match(spoilerRegex):
-							return (
-								<>
-									{this.markdownSuggestion('||')}
-									<span class={style.spoiler}>
-										{this.formatMarkdownPreserve(match.replace(/\|\|/gm, ''), mentions)}
-									</span>
-									{this.markdownSuggestion('||')}
-								</>
-							);
-						case !!match.match(mdLinkRegex):
-							return match;
-						default:
-							return <>{this.formatMentions(match, mentions)}</>;
-					}
-				}) || []}
-			</>
-		);
+				result += left + match + right;
+			} else {
+				result += left + match + right;
+			}
+		});
+		return result;
 	},
 };

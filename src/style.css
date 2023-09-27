@@ -299,8 +299,11 @@ h6 {
 	font-weight: 900;
 	font-size: 1.3em;
 }
-a {
+a.mdLink {
 	color: aqua;
+}
+.mdSpoiler {
+	background-color: aqua;
 }
 q {
 	background-color: rgb(95, 95, 62);
