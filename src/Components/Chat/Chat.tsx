@@ -62,8 +62,6 @@ export default function Chat() {
 	//!THIS IS BROKEN AS HELL
 	onMount(() => {
 		textarea.addEventListener('keyup', (e) => {
-			console.log(JSON.stringify(textarea.innerText));
-
 			if (e.key == 'Enter' && e.shiftKey) {
 				console.log('newLine');
 			}
@@ -78,9 +76,9 @@ export default function Chat() {
 				const pos = getCursorPosition(textarea, node, offset, { pos: 0, done: false });
 				if (offset === 0) pos.pos += 0.5;
 				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
-				console.log('temp', temp);
+
 				textarea.innerHTML = temp;
-				// TODO:Improve moving the caret
+
 				sel.removeAllRanges();
 				const range = setCursorPosition(textarea, document.createRange(), {
 					pos: pos.pos,
@@ -89,7 +87,6 @@ export default function Chat() {
 				range.collapse(true);
 				sel.addRange(range);
 			}
-			console.log(e.key);
 		});
 	});
 
@@ -220,7 +217,7 @@ export default function Chat() {
 					aria-autocomplete="list"
 					contenteditable={true}
 					ref={textarea}
-				></div>
+				/>
 			</section>
 		</main>
 	);
