@@ -16,6 +16,7 @@ import { useTaurListener } from './../../test';
 import LoginBox from '../../Components/Login/LoginBox';
 import MFABox from '../../Components/Login/MFABox';
 import QRCode from '../../Components/Login/QRCode';
+
 // Style
 import HCaptcha from 'solid-hcaptcha';
 import Dev from '../../Components/Dev/Dev';
@@ -149,32 +150,20 @@ const LoginPage = () => {
 	return (
 		<div class={[style.wrapper, style.background].join(' ')}>
 			<Dev>
-				<button
-					onclick={() => {
-						switchTo('mfa');
-					}}
-				>
-					show MFA
+				<button onclick={() => { switchTo('mfa'); }} >
+					show MF
 				</button>
 
-				<button
-					onclick={() => {
-						switchTo('captcha');
-					}}
-				>
+				<button onclick={() => { switchTo('captcha'); }} >
 					show Captcha
 				</button>
-				<button
-					onclick={() => {
-						switchTo('login');
-					}}
-				>
+
+				<button onclick={() => { switchTo('login'); }} >
 					show Login
 				</button>
 			</Dev>
 
 			{/* Main Page */}
-
 			<div class={[style.container, classes().login].join(' ')}>
 				<LoginBox class={style.loginBox} login={login} />
 
@@ -186,12 +175,13 @@ const LoginPage = () => {
 					paragraph={t.LoginPage.qrCodeParagraph()}
 					altParagraph={t.LoginPage.qrCodeParagrpahAlt()}
 					user_data={userData()}
-				></QRCode>
+				/>
 			</div>
 
 			<div class={[style.container, classes().mfa].join(' ')}>
 				<MFABox verify={verifyLogin} />
 			</div>
+
 			<div class={[style.container, classes().captcha].join(' ')}>
 				<div class={style.hcaptchaContainer}>
 					<h1 class={style.header}>{t.LoginPage.captchaHeader()}</h1>

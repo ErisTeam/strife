@@ -1,5 +1,6 @@
 use std::{ sync::Arc, path::PathBuf };
 use log::error;
+use serde::Deserialize;
 use tauri::AppHandle;
 use tokio::sync::Mutex;
 use crate::{ event_manager::EventManager, modules::{ auth::Auth, main_app::MainApp, user_manager::UserManager } };
@@ -12,6 +13,7 @@ pub enum State {
 	LoginScreen(Auth),
 	MainApp(MainApp),
 }
+
 #[allow(dead_code)]
 impl State {
 	pub fn variant_eq(a: &Self, b: &Self) -> bool {
@@ -60,6 +62,7 @@ pub struct MainState {
 
 	//TODO: pub system_info: Mutex<SystemInfo>
 }
+
 #[allow(dead_code)]
 impl MainState {
 	pub fn new(event_manager: EventManager) -> Self {

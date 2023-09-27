@@ -137,15 +137,14 @@
 	position: absolute;
 }
 
-@media (max-width: 1099px) {
+/* @media (max-width: 1099px) {
 	.qrcode {
-		position: inherit;
-		transform: translateX(91%);
+		transform: translateX(100%);
 	}
 	.loginBox {
-		transform: translateX(-25%);
+		transform: translateX(-20%);
 	}
-}
+} */
 
 /* Corner SVGs */
 

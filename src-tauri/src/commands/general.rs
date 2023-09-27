@@ -26,6 +26,11 @@ pub enum GeneralError {
 	#[error("Other error: {0}")] Other(String),
 }
 
+/// ### Function
+///	Sets the state of the app if it's not already set to the wanted value.
+/// 
+/// ### Parameters
+/// `force` - If true, sets the provided state even if it's already set.
 #[tauri::command]
 pub async fn set_state(
 	new_state: String,
