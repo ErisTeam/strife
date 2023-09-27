@@ -9,7 +9,7 @@ import Application from './Components/Application/Application';
 import Dev from './Components/Dev/Dev';
 import Loading from './Components/Loading/Loading';
 import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
-import R from './R';
+import StateSetter from './StateSetter';
 import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import MessageTest from './Routes/Dev/MessageTest/MessageTest';
@@ -61,15 +61,15 @@ const App: Component = () => {
 
 						<Routes>
 							{/* <Redirect /> */}
-							<Route path="/dev" element={<R state={'Dev'} component={Outlet} />}>
+							<Route path="/dev" element={<StateSetter state={'Dev'} component={Outlet} />}>
 								<Route path="/loadingtest" component={LoadingTest} />
 							</Route>
 
-							<Route path="/login" element={<R state={'LoginScreen'} force={true} component={Login} />} />
+							<Route path="/login" element={<StateSetter state={'LoginScreen'} force={true} component={Login} />} />
 
-							<Route path="/" element={<R state={'Dev'} force={true} component={Prev} />}></Route>
+							<Route path="/" element={<StateSetter state={'Dev'} force={true} component={Prev} />}></Route>
 
-							<Route path="/dev" element={<R state={'Dev'} force={true} component={Outlet} />}>
+							<Route path="/dev" element={<StateSetter state={'Dev'} force={true} component={Outlet} />}>
 								<Route path="/contextmenutest" component={ContextMenuTest} />
 								<Route path="/messagetest" component={MessageTest} />
 								<Route path="/loadingtest" component={LoadingTest} />
@@ -79,7 +79,7 @@ const App: Component = () => {
 
 							<Route path="/login" component={Login} />
 
-							<Route path="/app" element={<R state={'Application'} force={true} component={Application} />}></Route>
+							<Route path="/app" element={<StateSetter state={'Application'} force={true} component={Application} />}></Route>
 							<Route path="*" component={Error} />
 						</Routes>
 					</AppStateProvider>

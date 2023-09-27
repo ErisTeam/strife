@@ -7,28 +7,26 @@ import Dev from './Components/Dev/Dev';
 import API from './API';
 import { useAppState } from './AppState';
 
+const TIME_UNTIL_REFETCH = 10;
+
 type Props = {
 	state: AppState;
 	force?: boolean;
 	component: Component;
 };
 
-const TimeLeft = 10;
-//TODO: change name
-const R = (props: Props) => {
-	const [error, setError] = createSignal<Error | null>(null);
+const StateSetter = (props: Props) => {
 	const AppState = useAppState();
+	const [error, setError] = createSignal<Error | null>(null);
 
 	const [a, { refetch }] = createResource(async () => {
-		console.log('aaaaaaaaa');
 		const res = await invoke('set_state', { newState: props.state, force: props.force });
-		console.log('bbbbbbbbbb');
 		console.log('res', res);
 		if (props.state === 'Application') {
 			try {
 				await API.activateUser(AppState.userId);
 			} catch (err) {
-				setError(err.toString());
+				setError(err as Error);
 				startTimer(() => {
 					refetch();
 				});
@@ -48,7 +46,7 @@ const R = (props: Props) => {
 	}, a);
 
 	function startTimer(onEnd: () => void) {
-		setTimeLeft(TimeLeft);
+		setTimeLeft(TIME_UNTIL_REFETCH);
 		const r = setInterval(() => {
 			if (timeLeft() == 0) {
 				onEnd();
@@ -98,4 +96,4 @@ const R = (props: Props) => {
 		</>
 	);
 };
-export default R;
+export default StateSetter;
