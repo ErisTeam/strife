@@ -58,38 +58,18 @@ export default function Chat() {
 		}
 		return range;
 	}
+	const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
 
 	//!THIS IS BROKEN AS HELL
-	//TODO: figure out why it loses focus after removing all characters
+
 	onMount(() => {
 		textarea.addEventListener('keyup', (e) => {
-			console.log('keyup', e.key);
-			let isSelectAll = false;
-			let isPasteFromHistory = false;
-			if (e.key == 'v' && e.metaKey) {
-				isPasteFromHistory = true;
-			}
-			if (e.key == 'a' && e.ctrlKey) {
-				isSelectAll = true;
-			}
 			if (e.key == 'Enter' && e.shiftKey) {
 				console.log('newLine');
 			}
 			if (e.key == 'Enter' && !e.shiftKey) {
-				e.preventDefault();
 				console.log('send');
-			} else if (
-				e.key != 'ArrowUp' &&
-				e.key != 'ArrowDown' &&
-				e.key != 'ArrowLeft' &&
-				e.key != 'ArrowRight' &&
-				e.key != 'Shift' &&
-				e.key != 'Control' &&
-				e.key != 'Alt' &&
-				e.key != 'Meta' &&
-				isSelectAll != true &&
-				isPasteFromHistory != true
-			) {
+			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
 				const sel = window.getSelection();
 
 				const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });

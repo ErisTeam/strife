@@ -156,6 +156,9 @@ export default {
 					'</code>';
 				return;
 			}
+			if (match.match(newlineRegex)) {
+				result += '\n';
+			}
 			if (
 				match.match(boldRegex) ||
 				match.match(italicRegex) ||
