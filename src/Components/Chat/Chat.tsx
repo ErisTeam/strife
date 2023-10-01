@@ -60,10 +60,15 @@ export default function Chat() {
 	}
 
 	//!THIS IS BROKEN AS HELL
+	//TODO: figure out why it loses focus after removing all characters
 	onMount(() => {
 		textarea.addEventListener('keyup', (e) => {
 			console.log('keyup', e.key);
 			let isSelectAll = false;
+			let isPasteFromHistory = false;
+			if (e.key == 'v' && e.metaKey) {
+				isPasteFromHistory = true;
+			}
 			if (e.key == 'a' && e.ctrlKey) {
 				isSelectAll = true;
 			}
@@ -82,14 +87,13 @@ export default function Chat() {
 				e.key != 'Control' &&
 				e.key != 'Alt' &&
 				e.key != 'Meta' &&
-				isSelectAll != true
+				isSelectAll != true &&
+				isPasteFromHistory != true
 			) {
-				//get current cursor position
 				const sel = window.getSelection();
-				const node = sel.focusNode;
-				const offset = sel.focusOffset;
-				const pos = getCursorPosition(textarea, node, offset, { pos: 0, done: false });
-				if (offset === 0) pos.pos += 0.5;
+
+				const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
+				if (sel.focusOffset === 0) pos.pos += 0.5;
 				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
 
 				textarea.innerHTML = temp;
