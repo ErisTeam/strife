@@ -130,11 +130,10 @@ export default {
 	// THIS IS GOOFY AS FUCK
 	formatMarkdownPreserve(content: string): string {
 		const matches = content.match(regex) || [];
-		console.log('matches', matches);
 		let result = '';
 		matches.forEach((match) => {
-			let left = '';
-			let right = '';
+			const left = '';
+			const right = '';
 			if (match == 'undefined') {
 				return;
 			}
@@ -165,42 +164,94 @@ export default {
 				match.match(strikethroughRegex) ||
 				match.match(spoilerRegex)
 			) {
-				if (match.match(boldRegex)) {
-					match = match.replace('**', '').replace(/\*\*(?=[^**]*$)/, '');
-					left += '<strong>' + this.markdownSuggestion('**');
-					right += this.markdownSuggestion('**') + '</strong>';
-				}
-				if (match.match(italicRegex)) {
-					match = match.replace('*', '').replace(/\*(?=[^*]*$)/, '');
-					left += '<em>' + this.markdownSuggestion('*');
-					right = this.markdownSuggestion('*') + '</em>' + right;
-				}
-				if (match.match(underlineRegex)) {
-					match = match.replace('__', '').replace(/__(?=[^__]*$)/, '');
-					left += '<u>' + this.markdownSuggestion('__');
-					right = this.markdownSuggestion('__') + '</u>' + right;
-				}
-				if (match.match(alternateItalicRegex)) {
-					match = match.replace('_', '').replace(/_(?=[^_]*$)/, '');
-					left += '<em>' + this.markdownSuggestion('_');
-					right = this.markdownSuggestion('_') + '</em>' + right;
-				}
-				if (match.match(strikethroughRegex)) {
-					match = match.replace('~~', '').replace(/~~(?=[^~~]*$)/, '');
-					left += '<s>' + this.markdownSuggestion('~~');
-					right = this.markdownSuggestion('~~') + '</s>' + right;
-				}
-				if (match.match(spoilerRegex)) {
-					match = match.replace('||', '').replace(/\|\|(?=[^||]*$)/, '');
-					left += '<span class="mdSpoiler">' + this.markdownSuggestion('||');
-					right = this.markdownSuggestion('||') + '</span>' + right;
-				}
-
-				result += left + match + right;
+				result += this.formatMarkdowPreserveStep(match);
 			} else {
 				result += left + match + right;
 			}
 		});
 		return result;
 	},
+	getMarkdownOrder(match: string): string[] {
+		const markdownOrder = [];
+		while (match.length > 0) {
+			if (
+				match[0] + match[1] == '**' ||
+				match[0] + match[1] == '__' ||
+				match[0] + match[1] == '~~' ||
+				match[0] + match[1] == '||'
+			) {
+				markdownOrder.push(match[0] + match[1]);
+				match = match.slice(2, match.length);
+			} else if ((match[0] == '*' && match[1] != '*') || (match[0] == '_' && match[1] != '_')) {
+				markdownOrder.push(match[0]);
+				match = match.slice(1, match.length);
+			} else {
+				//remove first char
+				match = match.slice(1, match.length);
+				markdownOrder.push('x');
+			}
+		}
+		return markdownOrder;
+	},
+	formatMarkdowPreserveStep(match: string) {
+		const left: SideType[] = [];
+		const right: SideType[] = [];
+		const markdownOrder = this.getMarkdownOrder(match);
+
+		if (match.match(boldRegex)) {
+			match = match.replace('**', '').replace(/\*\*(?=[^**]*$)/, '');
+			left.push({ content: '<strong>' + this.markdownSuggestion('**'), char: '**' });
+			right.unshift({ content: this.markdownSuggestion('**') + '</strong>', char: '**' });
+		}
+		if (match.match(italicRegex)) {
+			match = match.replace('*', '').replace(/\*(?=[^*]*$)/, '');
+			left.push({ content: '<em>' + this.markdownSuggestion('*'), char: '*' });
+			right.unshift({ content: this.markdownSuggestion('*') + '</em>', char: '*' });
+		}
+		if (match.match(underlineRegex)) {
+			match = match.replace('__', '').replace(/__(?=[^__]*$)/, '');
+
+			left.push({ content: '<u>' + this.markdownSuggestion('__'), char: '__' });
+			right.unshift({ content: this.markdownSuggestion('__') + '</u>', char: '__' });
+		}
+		if (match.match(alternateItalicRegex)) {
+			match = match.replace('_', '').replace(/_(?=[^_]*$)/, '');
+
+			left.push({ content: '<em>' + this.markdownSuggestion('_'), char: '_' });
+			right.unshift({ content: this.markdownSuggestion('_') + '</em>', char: '_' });
+		}
+		if (match.match(strikethroughRegex)) {
+			match = match.replace('~~', '').replace(/~~(?=[^~~]*$)/, '');
+
+			left.push({ content: '<s>' + this.markdownSuggestion('~~'), char: '~~' });
+			right.unshift({ content: this.markdownSuggestion('~~') + '</s>', char: '~~' });
+		}
+		if (match.match(spoilerRegex)) {
+			match = match.replace('||', '').replace(/\|\|(?=[^||]*$)/, '');
+
+			left.push({ content: '<span class="mdSpoiler">' + this.markdownSuggestion('||'), char: '||' });
+			right.unshift({ content: this.markdownSuggestion('||') + '</span>', char: '||' });
+		}
+
+		let leftReal = '';
+		let rightReal = '';
+
+		let hasXed = false;
+		for (let i = 0; i < markdownOrder.length; i++) {
+			if (markdownOrder[i] == 'x') {
+				hasXed = true;
+			} else if (hasXed) {
+				rightReal += right.find((r) => r.char == markdownOrder[i]).content;
+			} else {
+				leftReal += left.find((l) => l.char == markdownOrder[i]).content;
+			}
+		}
+
+		return leftReal + match + rightReal;
+	},
+};
+
+type SideType = {
+	content: string;
+	char: string;
 };

@@ -62,13 +62,28 @@ export default function Chat() {
 	//!THIS IS BROKEN AS HELL
 	onMount(() => {
 		textarea.addEventListener('keyup', (e) => {
+			console.log('keyup', e.key);
+			let isSelectAll = false;
+			if (e.key == 'a' && e.ctrlKey) {
+				isSelectAll = true;
+			}
 			if (e.key == 'Enter' && e.shiftKey) {
 				console.log('newLine');
 			}
 			if (e.key == 'Enter' && !e.shiftKey) {
 				e.preventDefault();
 				console.log('send');
-			} else {
+			} else if (
+				e.key != 'ArrowUp' &&
+				e.key != 'ArrowDown' &&
+				e.key != 'ArrowLeft' &&
+				e.key != 'ArrowRight' &&
+				e.key != 'Shift' &&
+				e.key != 'Control' &&
+				e.key != 'Alt' &&
+				e.key != 'Meta' &&
+				isSelectAll != true
+			) {
 				//get current cursor position
 				const sel = window.getSelection();
 				const node = sel.focusNode;
