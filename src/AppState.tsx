@@ -21,7 +21,7 @@ const [locale, setLocale] = createSignal<Locale>('en_US');
 
 const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1); //TODO: CHANGE TO USE index
 
-const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channels after being decoupled set to null to hide
+const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channelsset to null to hide
 const localeJsFormat = () => {
 	const locale = useAppState().locale();
 

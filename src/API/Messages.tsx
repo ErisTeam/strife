@@ -27,7 +27,9 @@ const spaceBetweenFormattedText = `(?<=(${allClosableRegex}|(\n)))( +?)(?=(${all
 
 const fullLineRegex = `${headerOneRegex.source}|${headerTwoRegex.source}|${headerThreeRegex.source}|${listRegex.source}|${listIndentedRegex.source}|${quoteRegex.source}|${mdLinkRegex.source}`;
 
-const regex = new RegExp(`${allClosableRegex}|(\n)|${spaceBetweenFormattedText}|${fullLineRegex}|(.*)`, 'gm');
+// const regex = new RegExp(`${allClosableRegex}|(\n)|${spaceBetweenFormattedText}|${fullLineRegex}`, 'gm');
+const regex =
+	/((\*{2}(.+?)\*{2})(?!\*)|(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)|(__(.+?)__)(?!_)|(~{2}(.+?)~{2})|(?<!_)(_(?!_)(.+?)_)(?!_)|(`{3}(.|\n+?)((.|\n)*)`{3})(?!`)|((?<!`)|(?<!``))((`(((.[^=])+?))`))((?!`)|(?!``)^)|(\|{2}(.+?)\|{2})(?!\*)|(\n)|(^# .*)|(^## .*)|(^### .*)|(^- .*)|(^\* .*)|(^ - .*)|(^ \* .*)|(^> .*)|\[(.*?)\]\((https?:\/\/(?:[-\w]+\.)?([-\w]+)))|(.)/gm;
 
 export default {
 	formatMentions(content: string, mentionsInput: any[]) {
@@ -130,10 +132,12 @@ export default {
 	// THIS IS GOOFY AS FUCK
 	formatMarkdownPreserve(content: string): string {
 		const matches = content.match(regex) || [];
+		console.log('matches', matches);
 		let result = '';
+		if (matches.length == 0) {
+			return content;
+		}
 		matches.forEach((match) => {
-			const left = '';
-			const right = '';
 			if (match == 'undefined') {
 				return;
 			}
@@ -167,9 +171,10 @@ export default {
 				match.match(strikethroughRegex) ||
 				match.match(spoilerRegex)
 			) {
+				console.log('inputted match: ', match);
 				result += this.formatMarkdowPreserveStep(match);
 			} else {
-				result += left + match + right;
+				result += match;
 			}
 		});
 		return result;
@@ -202,6 +207,7 @@ export default {
 		const markdownOrder = this.getMarkdownOrder(match);
 
 		if (match.match(boldRegex)) {
+			console.log('boldRegex:', match.match(boldRegex));
 			match = match.replace('**', '').replace(/\*\*(?=[^**]*$)/, '');
 			left.push({ content: '<strong>' + this.markdownSuggestion('**'), char: '**' });
 			right.unshift({ content: this.markdownSuggestion('**') + '</strong>', char: '**' });
@@ -249,6 +255,10 @@ export default {
 				leftReal += left.find((l) => l.char == markdownOrder[i]).content;
 			}
 		}
+		console.log('match: ', match);
+		console.log('markDownOrder:', markdownOrder, 'left:', leftReal, 'right:', rightReal);
+		console.log(regex.source);
+		console.log('spaceBetween', spaceBetweenFormattedText);
 
 		return leftReal + match + rightReal;
 	},
