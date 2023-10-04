@@ -19,7 +19,7 @@ const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
 const [locale, setLocale] = createSignal<Locale>('en_US');
 
-const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1); //TODO: CHANGE TO USE index
+const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1);
 
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channelsset to null to hide
 const localeJsFormat = () => {

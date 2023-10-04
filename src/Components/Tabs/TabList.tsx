@@ -85,7 +85,7 @@ function TabList(props: TabsProps) {
 					</ul>
 				</nav>
 				<DragOverlay>
-					<TabShadow items={items()} />
+					<TabShadow items={items()} itemId={draggedTabIndex() || 0} />
 				</DragOverlay>
 			</DragDropProvider>
 		</>

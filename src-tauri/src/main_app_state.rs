@@ -92,8 +92,6 @@ impl MainState {
 
 		*state = new_state;
 
-		//TODO: Start new state
-
 		event_manager.clear_listeners(handle.clone());
 
 		event_manager.register_debug(handle.clone());

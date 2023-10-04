@@ -3,7 +3,7 @@
 	width: 100%;
 	background-color: var(--chat-bgc);
 
-	section {
+	> section {
 		background-color: red;
 		width: 100%;
 		height: 5em;

@@ -194,15 +194,41 @@ type Embed = {
 	video?: EmbedVideo;
 	provider?: EmbedProvider;
 	author?: EmbedAuthor;
-	fields?: EmbedFields;
+	fields?: EmbedField[];
 };
-
-type EmbedFooter = {};
-type EmbedImage = {};
-type EmbedThumbnail = {};
-type EmbedVideo = {};
-type EmbedProvider = {};
-type EmbedAuthor = {};
-type EmbedFields = {};
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
+type EmbedFooter = {
+	text: string;
+	icon_url?: string;
+	proxy_icon_url?: string;
+};
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure
+type EmbedImage = {
+	url: string;
+	proxy_url?: string;
+	height?: number;
+	width?: number;
+};
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure
+type EmbedThumbnail = EmbedImage;
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure
+type EmbedVideo = EmbedImage;
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure
+type EmbedProvider = {
+	name?: string;
+	url?: string;
+};
+//https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure
+type EmbedAuthor = {
+	name: string;
+	url?: string;
+	icon_url?: string;
+	proxy_icon_url?: string;
+};
+type EmbedField = {
+	name: string;
+	value: string;
+	inline?: boolean;
+};
 
 export type { GuildsResponse, UsersResponse, Role, Guild, Channel, RelationshipUser, Relationship, Message, Embed };
