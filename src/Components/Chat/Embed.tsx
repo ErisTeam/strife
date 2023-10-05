@@ -5,6 +5,7 @@ import API from '../../API';
 import { useAppState } from '../../AppState';
 import openInBrowser from '../../API/anchor';
 import TwitterEmbed from './embeds/TwitterEmbed';
+import { X } from 'lucide-solid';
 type EmbedProps = {
 	embed: EmbedType;
 };
@@ -24,6 +25,9 @@ export default function Embed(props: EmbedProps) {
 					class={style.embed}
 					style={{ '--embed-color': `#${props.embed.color?.toString(16).padStart(6, '0')}` }}
 				>
+					<aside class={style.closeButton}>
+						<X />
+					</aside>
 					<Show when={props.embed.author}>
 						<header class={style.author}>
 							{props.embed.author.icon_url && <img src={props.embed.author.icon_url} />}

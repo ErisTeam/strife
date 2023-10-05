@@ -1,7 +1,9 @@
+import { X } from 'lucide-solid';
 import { useAppState } from '../../../AppState';
 import { Embed } from '../../../discord';
 import style from '../Embed.module.css';
 
+//TODO: translate component
 export default function TwitterEmbed(props: { embed: Embed }) {
 	const AppState = useAppState();
 	const dateFormater = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
@@ -16,15 +18,18 @@ export default function TwitterEmbed(props: { embed: Embed }) {
 
 	return (
 		<article class={`${style.embed} ${style.twitter}`}>
+			<aside class={style.closeButton}>
+				<X />
+			</aside>
 			<aside class={style.author}>
-				<a class={style.profileImage} href={props.embed.author.url} title="View profile on twitter">
+				<a class={style.profileImage} href={props.embed.author.url} title="View profile on Twitter">
 					<img src={props.embed.author.proxy_icon_url} />
 				</a>
 				<span>
-					<a class={style.username} title="View profile on twitter">
+					<a class={style.username} title="View profile on Twitter">
 						{props.embed.author.name.replace(/\(@.*?\)/g, '')}
 					</a>
-					<a class={style.profileLink} href={props.embed.author.url} title="View profile on twitter">
+					<a class={style.profileLink} href={props.embed.author.url} title="View profile on Twitter">
 						{props.embed.author.name.match(/@.*?\)/g)[0].slice(0, -1)}
 					</a>
 				</span>
@@ -63,7 +68,7 @@ export default function TwitterEmbed(props: { embed: Embed }) {
 							<path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path>
 						</g>
 					</svg>
-					{props.embed.fields[1].value}
+					{numberFormater.format(parseInt(props.embed.fields[1].value))}
 				</a>
 				{/* <a class={style.share} title="Share this post">
 					<svg viewBox="0 0 24 24" aria-hidden="true" style="">
@@ -74,7 +79,7 @@ export default function TwitterEmbed(props: { embed: Embed }) {
 					Share
 				</a> */}
 			</section>
-			<a href={props.embed.url} class={style.replies}>
+			<a href={props.embed.url} class={style.replies} title="Read replies">
 				Read replies
 			</a>
 		</article>

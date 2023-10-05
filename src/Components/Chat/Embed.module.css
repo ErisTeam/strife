@@ -1,4 +1,36 @@
 .embed {
+	&:hover .closeButton {
+		display: flex;
+
+		&:hover {
+			background-color: rgb(199, 0, 0);
+		}
+	}
+	.closeButton {
+		display: none;
+		position: absolute;
+		z-index: 100;
+
+		transition: 0.2s;
+
+		cursor: pointer;
+
+		color: white;
+
+		justify-content: center;
+		align-items: center;
+
+		right: -0.5em;
+		top: -0.5em;
+		background-color: red;
+		padding: 0.2em;
+		width: 1.5em;
+		height: 1.5em;
+
+		aspect-ratio: 1/1;
+		border-radius: 100%;
+	}
+
 	border-radius: var(--round-medium);
 	background-color: var(--depth5);
 
@@ -54,7 +86,6 @@
 .embed.twitter {
 	background-color: rgb(255, 255, 255);
 	* {
-		color: black;
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
 		font-weight: 400;
@@ -72,6 +103,7 @@
 		width: 100%;
 		align-items: center;
 		font-size: 16px;
+
 		.profileImage {
 			img {
 				width: 3em;
@@ -88,6 +120,7 @@
 					text-decoration: underline;
 				}
 				cursor: pointer;
+				color: black;
 			}
 			.profileLink {
 				&:hover {
@@ -109,6 +142,7 @@
 
 	.description {
 		font-size: 19px;
+		color: black;
 	}
 
 	.time {
@@ -132,18 +166,14 @@
 		padding-bottom: 0.5em;
 
 		.like {
-			fill: rgb(249, 24, 128);
-			&:hover {
-				color: rgb(249, 24, 128);
-			}
+			--fill-color: rgb(249, 24, 128);
 		}
 		.reply {
-			fill: rgb(29, 155, 240);
-			&:hover {
-				color: rgb(29, 155, 240);
-			}
+			--fill-color: rgb(29, 155, 240);
+			min-width: 0;
 		}
 		.share {
+			--fill-color: rgb(0, 186, 124);
 			fill: rgb(83, 100, 113);
 
 			&:hover {
@@ -152,7 +182,7 @@
 			}
 		}
 		.retweets {
-			fill: rgb(12, 181, 124);
+			--fill-color: rgb(12, 181, 124);
 		}
 		.like,
 		.reply,
@@ -166,6 +196,12 @@
 
 			color: rgb(83, 100, 113);
 			transition-duration: 0.2s;
+
+			fill: var(--fill-color);
+
+			&:hover {
+				color: var(--fill-color);
+			}
 
 			svg {
 				width: 1.5em;

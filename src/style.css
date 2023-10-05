@@ -176,7 +176,7 @@ pre {
 	--channel-category-hover-two: transparent;
 	--channel-list-bgc: var(--depth1);
 	--channel-text-color: var(--text);
-	--channel-list-title-bgc: var(--depth1`);
+	--channel-list-title-bgc: var(--depth1);
 	--channel-list-title-text: var(--text);
 	--channel-list-title-icon: var(--disabled-text);
 	--channel-gradient-hover-one: var(--depth2);
