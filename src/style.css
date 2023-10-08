@@ -266,10 +266,10 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-strong {
+b {
 	font-weight: 900;
 }
-em {
+i {
 	font-style: italic;
 }
 u {

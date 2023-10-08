@@ -74,7 +74,7 @@ export default function Chat() {
 
 				const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
 				if (sel.focusOffset === 0) pos.pos += 0.5;
-				const temp = API.Messages.formatMarkdownPreserve(textarea.innerText);
+				const temp = API.Messages.formatMarkdownPreserveOld(textarea.innerText);
 
 				textarea.innerHTML = temp;
 

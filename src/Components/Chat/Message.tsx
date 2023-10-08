@@ -4,9 +4,9 @@ import { useAppState } from '../../AppState';
 import { Message as MessageType } from '../../discord';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Attachments from './Attachments';
+import Embed from './Embed';
 import MessageContextMenu from './MessageContextMenu';
 import style from './css.module.css';
-import Embed from './Embed';
 
 type MessageProps = {
 	message: MessageType;
@@ -21,7 +21,9 @@ const Message = (props: MessageProps) => {
 		timeStyle: 'short',
 	});
 	const formattedMessage = createMemo(() => {
-		return API.Messages.formatMarkdown(message.content, message.mentions);
+		const messageText = API.Messages.formatMarkdown(message.content);
+		console.log('messageText', messageText);
+		return messageText;
 	});
 
 	//TODO: make embeds work
