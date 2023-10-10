@@ -9,6 +9,7 @@ import buttons from './../../../Styles/Buttons.module.css';
 /* Solid */
 import { createSignal } from 'solid-js';
 import { t } from '../../../Translation';
+import Switch from '../../Switch/Switch';
 
 type LoginBoxProps = {
 	class?: string;

@@ -20,7 +20,7 @@
 	bottom: 0;
 	background-color: var(--switch-bgc);
 
-	transition: 300ms;
+	transition-duration: 300ms;
 	border-radius: var(--switch-roundness);
 	&:before {
 		position: absolute;
@@ -31,19 +31,29 @@
 		bottom: 0.3em;
 		background-color: var(--switch-knob);
 
-		transition: 300ms;
+		transition-duration: 300ms;
 		border-radius: var(--switch-roundness);
+		
 	}
+
 }
 
+input:hover + .slider,
+input:hover + .slider {
+	background-color: var(--switch-hover-bgc);
+}
+
+input:active + .slider,
 input:checked + .slider {
 	background-color: var(--switch-active-bgc);
 }
 
-input:focus + .slider {
-	box-shadow: 0 0 1px var(--switch-active-bgc);
+input:active:hover + .slider,
+input:checked:hover + .slider {
+	background-color: var(--switch-active-hover-bgc);
 }
 
-input:checked + .slider:before {
+input:active + .slider::before,
+input:checked + .slider::before {
 	translate: 1.6em 0;
 }

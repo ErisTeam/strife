@@ -11,7 +11,7 @@
 
 .default:active:hover,
 .default:active:focus-visible {
-	background-color: var(--button-hover-bgc);
+	background-color: var(--button-active-hover-bgc);
 }
 
 .default:active {

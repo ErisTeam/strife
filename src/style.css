@@ -80,41 +80,10 @@ pre {
 /* ==========================================================================
    PANDACORD STYLES     |||||    ALL ABOVE IS NORMALIZATION
    ========================================================================== */
-
-::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-}
-::-webkit-scrollbar-track {
-	background-color: hsl(205, 0%, 30%);
-	border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-	background-color: hsl(205, 0%, 16%);
-	border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-	background-color: var(--primary);
-}
-
 :root {
-	/*FIGMA --depth1: #2a2c2a;
-	--depth2: #323636;
-	--depth3: #3a4042;
-	--depth4: #434a4d; */
-
-	/*PREVIOUS --depth1: #1f1f20;
-	--depth2: #252628;
-	--depth3: #2d2f31;
-	--depth4: #343438; */
-
-	/* PREVIOUS PREV--depth0: hsl(205, 0%, 8%);
-	--depth1: hsl(205, 0%, 12%);
-	--depth2: hsl(205, 0%, 20%);
-	--depth3: hsl(205, 0%, 26%);
-	--depth4: hsl(205, 0%, 32%); */
-	/* CSS HSL */
+/*=======================
+  ||    Base colors    ||
+  ======================= */
 	--depth9: hsl(240, 3%, 35%);
 	--depth8: hsl(240, 3%, 32%);
 	--depth7: hsl(240, 3%, 29%);
@@ -126,24 +95,97 @@ pre {
 	--depth1: hsl(240, 2%, 10%);
 	--depth0: hsl(240, 3%, 7%);
 
-	--primary: hsl(18, 86%, 50%);
-	--secondary: hsl(205, 100%, 50%);
-	--tertiary: hsl(161, 100%, 40%);
-	--darken: brightness(93%);
-	--darken-for-active: brightness(80%);
+	/* Ligher by 1% */
+	/* --depth9-hover: hsl(240, 3%, 36%); /* TODO */
+	/* --depth8-hover: hsl(240, 3%, 33%); /* TODO */
+	/* --depth7-hover: hsl(240, 3%, 30%); /* TODO */
+	/* --depth6-hover: hsl(240, 2%, 27%); /* TODO */
+	/* --depth5-hover: hsl(240, 3%, 24%); /* TODO */
+	/* --depth4-hover: hsl(240, 3%, 20%); /* TODO */
+	/* --depth3-hover: hsl(240, 4%, 17%); /* TODO */
+	/* --depth2-hover: hsl(240, 1%, 14%); /* TODO */
+	/* --depth1-hover: hsl(240, 2%, 11%); /* TODO */
+	/* --depth0-hover: hsl(240, 3%, 8%); /* TODO */
+
+	/* Darker by 1% */
+	--depth9-hover: hsl(240, 3%, 34%); /* TODO */
+	--depth8-hover: hsl(240, 3%, 31%); /* TODO */
+	--depth7-hover: hsl(240, 3%, 28%); /* TODO */
+	--depth6-hover: hsl(240, 2%, 25%); /* TODO */
+	--depth5-hover: hsl(240, 3%, 22%); /* TODO */
+	--depth4-hover: hsl(240, 3%, 18%); /* TODO */
+	--depth3-hover: hsl(240, 4%, 15%); /* TODO */
+	--depth2-hover: hsl(240, 1%, 12%); /* TODO */
+	--depth1-hover: hsl(240, 2%, 9%); /* TODO */
+	--depth0-hover: hsl(240, 3%, 6%); /* TODO */
+
+	--primary: hsl(18, 86%, 50%); /* TODO */
+	--secondary: hsl(205, 100%, 50%); /* TODO */
+	--tertiary: hsl(161, 100%, 40%); /* TODO */
+
+	/* Lighter by 2% */
+	/* --primary: hsl(18, 86%, 51%); /* TODO */
+	/* --secondary: hsl(205, 100%, 51%); /* TODO */
+	/* --tertiary: hsl(161, 100%, 41%); /* TODO */
+
+	/* Darker by 5% */
+	--primary-hover: hsl(18, 86%, 45%); /* TODO */
+	--secondary-hover: hsl(205, 100%, 46%); /* TODO */
+	--tertiary-hover: hsl(161, 100%, 36%); /* TODO */
 
 	--text: #ffffff;
 	--disabled-text: #a0a0a0;
 
+/*=======================
+  ||    Base values    ||
+  ======================= */
 	--round-medium: 6px;
 	--round-large: 12px;
 	--round-xlarge: 24px;
 
 	--default-padding: 0.5em;
 	/* TODO: Find a better font (numbers are looking kinda... funky. As well as all of the text that has a bigger weight than normal) */
-	--default-font: 'Atkinson Hyperlegible', sans-serif;
+	--default-font: 'Atkinson Hyperlegible', sans-serif; /* TODO */
 
 	--drop-shadow: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
+	
+/*===========================
+  ||    Base components    ||
+  =========================== */
+	--base-component-depth: var(--depth3);
+	--base-component-depth-hover: var(--depth3-hover);
+
+	/* CHECKBOX */
+	--checkbox-bgc: var(--base-component-depth);
+	--checkbox-hover-bgc: var(--base-component-depth-hover);
+	--checkbox-active-bgc: var(--primary);
+	--checkbox-active-hover-bgc: var(--primary-hover);
+	
+	/* BUTTON */
+	--button-bgc: var(--base-component-depth);
+	--button-hover-bgc: var(--base-component-depth-hover);
+	--button-active-bgc: var(--primary);
+	--button-active-hover-bgc: var(--primary-hover);
+	--button-padding: var(--default-padding);
+	--button-roundness: var(--round-medium);
+	
+	/* INPUT */
+	--input-bgc: var(--base-component-depth);
+	--input-roundness: var(--round-medium);
+	--input-padding: var(--default-padding);
+	--input-placeholder: var(--disabled-text);
+	
+	/* SWITCH */
+	--switch-bgc: var(--base-component-depth);
+	--switch-hover-bgc: var(--base-component-depth-hover);
+	--switch-active-bgc: var(--primary);
+	--switch-active-hover-bgc: var(--primary-hover);
+	--switch-knob: var(--text);
+	--switch-roundness: 2.4em;
+
+/*======================
+  ||    Components    ||
+  ====================== */
 	/* WINDOW DECORATIONS */
 	--window-decoration-height: 1.5em;
 	--window-decoration-bgc: var(--depth0);
@@ -217,27 +259,25 @@ pre {
 	--chat-bgc: var(--depth3);
 	--chat-roundness: var(--round-large); /* Misc */
 	--loading-bgc: var(--depth1);
-
-	--switch-bgc: var(--depth2);
-	--switch-active-bgc: var(--primary);
-	--switch-knob: var(--text);
-	--switch-roundness: 2.4em;
-
-	--button-bgc: var(--depth3);
-	--button-hover-bgc: var(--depth2);
-	--button-active-bgc: var(--primary);
-	--button-padding: var(--default-padding);
-	--button-roundness: var(--round-medium);
-
-	--checkbox-bgc: var(--depth3);
-	--checkbox-hover-bgc: var(--depth3);
-	--checkbox-active-bgc: var(--primary);
-
-	--input-bgc: var(--depth3);
-	--input-roundness: var(--round-medium);
-	--input-padding: var(--default-padding);
-	--input-placeholder: var(--disabled-text);
 }
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-track {
+	background-color: hsl(205, 0%, 30%);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: hsl(205, 0%, 16%);
+	border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--primary);
+}
+
 
 * {
 	font-family: var(--default-font);
