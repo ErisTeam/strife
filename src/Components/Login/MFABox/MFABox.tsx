@@ -1,9 +1,9 @@
 /* Style */
-import style from './css.module.css';
-import inputs from './../../Styles/Inputs.module.css';
+import style from './../css.module.css';
+import inputs from './../../../Styles/Inputs.module.css';
 
-import buttons from './../../Styles/Buttons.module.css';
-import { t } from '../../Translation';
+import buttons from './../../../Styles/Buttons.module.css';
+import { t } from '../../../Translation';
 /* Tauri */
 import { emit } from '@tauri-apps/api/event';
 

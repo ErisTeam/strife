@@ -1,14 +1,14 @@
 /** @format */
 
 /* Style */
-import style from './css.module.css';
-import inputs from './../../Styles/Inputs.module.css';
-import checkboxes from './../../Styles/Checkboxes.module.css';
-import buttons from './../../Styles/Buttons.module.css';
+import style from './../css.module.css';
+import inputs from './../../../Styles/Inputs.module.css';
+import checkboxes from './../../../Styles/Checkboxes.module.css';
+import buttons from './../../../Styles/Buttons.module.css';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-import { t } from '../../Translation';
+import { t } from '../../../Translation';
 
 type LoginBoxProps = {
 	class?: string;
@@ -30,6 +30,8 @@ function LoginBox(prop: LoginBoxProps) {
 			}}
 		>
 			<h1 class={style.header}>{t.LoginPage.logIn()}</h1>
+			
+			{/* Name and password fields */}
 			<fieldset class={style.inputs}>
 				<input
 					class={inputs.default}
@@ -44,6 +46,8 @@ function LoginBox(prop: LoginBoxProps) {
 					onChange={(e) => setPassword(e.currentTarget.value)}
 				/>
 			</fieldset>
+			
+			{/* Remember me and login button */}
 			<fieldset class={style.bottomPart}>
 				<label class={style.rememberMe}>
 					<p>{t.LoginPage.rememberMe()}</p>
