@@ -230,7 +230,7 @@ pre {
 	--button-roundness: var(--round-medium);
 
 	--checkbox-bgc: var(--depth3);
-	--checkbox-hover-bgc: var(--depth2);
+	--checkbox-hover-bgc: var(--depth3);
 	--checkbox-active-bgc: var(--primary);
 
 	--input-bgc: var(--depth3);

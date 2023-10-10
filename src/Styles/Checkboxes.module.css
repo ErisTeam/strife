@@ -21,6 +21,7 @@
 .default:active:focus-visible,
 .default:checked:hover,
 .default:checked:focus-visible {
+	/* TODO: chekcbox-active-hover*/
 	background-color: var(--checkbox-hover-bgc);
 }
 

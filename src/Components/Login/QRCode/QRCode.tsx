@@ -1,7 +1,7 @@
 /** @format */
 
 import { Show } from 'solid-js';
-import style from './css.module.css';
+import style from './../css.module.css';
 
 //TODO: Remove or move
 interface UserData {

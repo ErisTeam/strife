@@ -7,15 +7,15 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import qrcode from 'qrcode';
-import { UserData } from '../../Components/Login/QRCode';
+import { UserData } from '../../Components/Login/QRCode/QRCode';
 import API from './../../API';
 import { useAppState } from './../../AppState';
 import { useTaurListener } from './../../test';
 
 // Components
-import LoginBox from '../../Components/Login/LoginBox';
-import MFABox from '../../Components/Login/MFABox';
-import QRCode from '../../Components/Login/QRCode';
+import LoginBox from '../../Components/Login/LoginBox/LoginBox';
+import MFABox from '../../Components/Login/MFABox/MFABox';
+import QRCode from '../../Components/Login/QRCode/QRCode';
 
 // Style
 import HCaptcha from 'solid-hcaptcha';
