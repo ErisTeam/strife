@@ -79,7 +79,7 @@ function addX(count: number) {
 }
 
 export default {
-	formatMarkdownToJSX(content: string) {
+	formatMarkdownToJSX(content: string): Element[] | Element | string {
 		if (content == undefined) return '';
 
 		if (content.match(regex.outsides.link)) {
@@ -198,7 +198,7 @@ export default {
 			}
 		});
 
-		return [...results];
+		return [...results] as Element[];
 	},
 
 	formatMarkdownToHTML(content: string) {
@@ -238,9 +238,7 @@ export default {
 		return combined.join('');
 	},
 
-	/**
-	 * @deprecated working on new version
-	 */ formatMentions(content: string, mentionsInput: any[]) {
+	formatMentions(content: string, mentionsInput: any[]) {
 		const userMentionRegex = '<@!?(\\d+)>';
 		const channelMentionRegex = '<#(\\d+)>';
 		const roleMentionRegex = '<@&(\\d+)>';
