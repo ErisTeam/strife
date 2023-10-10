@@ -1,133 +1,207 @@
 import UserMention from '../Components/Chat/UserMention';
-import style from '../Components/Chat/css.module.css';
 
-export const markdownChars = ['*', '_', '~', 'Dead', '`', '|', '#', '-', '>'];
 //TODO:: ADD QUOTES AND SPOILERS BACK !!!!!MAKE ORDER INDEPENDENT!!!!
+const markdownChars = ['###', '##', '#', '**', ' * ', '* ', '*', '~~', '__', '_', ' - ', '- ', '```', '`', '> ', '||'];
+const regex = {
+	insides: {
+		header3: /^#{3} \s?([^\n]+)/g,
+		header2: /^#{2} \s?([^\n]+)/g,
+		header1: /^#{1} \s?([^\n]+)/g,
+		bold: /(\*{2}(.+?)\*{2})(?!\*)/gm,
+		italic: /(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)/gm,
+		strikethrough: /(~{2}(.+?)~{2})/g,
+		underline: /(__(.+?)__)(?!_)/g,
+		alternateItalic: /(?<!_)(_(?!_)(.+?)_)(?!_)/g,
+		link: /\[([^\]]+)\]\(([^)]+)\)/g,
+		list: /(^- (.*))|(^\* (.*))/g,
+		indentedList: /(^ - (.*))|(^ \* (.*))/g,
+		codeBlock: /(`{3}([\S\s]+)`{3})(?!`)/gm,
+		code: /(`{1}(.+?[^`+])`{1})(?!`)/g,
+		quote: />{1} \s?([^\n]+)/g,
+		spoiler: /(\|{2}(.+?)\|{2})(?!\|)/g,
+	},
+	outsides: {
+		header3: /(^#{3} \s?(?:[^\n]+))/g,
+		header2: /(^#{2} \s?(?:[^\n]+))/g,
+		header1: /(^#{1} \s?(?:[^\n]+))/g,
+		bold: /(\*{2}(?:.+?)\*{2})(?!\*)/gm,
+		italic: /(?<!\*)(\*(?!\*)(?:.+?)\*)(?!\*)/gm,
+		strikethrough: /(~{2}(?:.+?)~{2})/g,
+		underline: /(__(?:.+?)__)(?!_)/g,
+		alternateItalic: /(?<!_)(_(?!_)(?:.+?)_)(?!_)/g,
+		link: /\[(?:[^\]]+)\]\((?:[^)]+)\)/g,
+		list: /(^- (?:.*))|(^\* (?:.*))/g,
+		indentedList: /(^ - (?:.*))|(^ \* (?:.*))/g,
+		codeBlock: /(`{3}(?:[\S\s]+)`{3})(?!`)/gm,
+		code: /(`{1}(?:.+?[^`+])`{1})(?!`)/g,
+		quote: /(>{1} \s?(?:[^\n]+))/g,
+		spoiler: /(\|{2}(?:.+?)\|{2})(?!\|)/g,
+	},
+} as const;
+
 const ruleSplitter = /(`{3}(?:.+?)`{3})(?!`)|(`{1}(?:.+?[^`+])`{1})(?!`)/gm;
 const codeRules = [
-	//codeblock
-	[/(`{3}(.+?)`{3})(?!`)/gm, '<pre class="codeblock">$2</pre>'],
-	//code
-	[/(`{1}(.+?[^`+])`{1})(?!`)/g, '<code>$2</code>'],
+	[regex.insides.codeBlock, '<pre class="codeblock">$2</pre>'],
+	[regex.insides.code, '<code>$2</code>'],
 ];
 const rules = [
-	//header rules
-
-	[/#{3}\s?([^\n]+)/g, '<h6>$1</h6>'],
-	[/#{2}\s?([^\n]+)/g, '<h5>$1</h5>'],
-	[/#{1}\s?([^\n]+)/g, '<h4>$1</h4>'],
-
-	//bold, italics, strikethrough and paragragh rules
-	[/(\*{2}(.+?)\*{2})(?!\*)/gm, '<b>$2</b>'],
-	[/(?<!\*)(\*(?!\*)(.+?)\*)(?!\*)/gm, '<i>$2</i>'],
-	[/(~{2}(.+?)~{2})/g, '<s>$2</s>'],
-	[/(__(.+?)__)(?!_)/g, '<u>$2</u>'],
-	[/(?<!_)(_(?!_)(.+?)_)(?!_)/g, '<i>$2</i>'],
-	// [/([^\n]+\n?)/g, '<p>$1</p>'],
-
-	//links
-	[/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'],
-	// return <span class={style.list}>{this.formatMarkdown(match.slice(2), mentions)}</span>;
-	// 		case !!match.match(listIndentedRegex):
-	// 			return <span class={style.indentedList}>{this.formatMarkdown(match.slice(3), mentions)}</span>;
-
-	// //Lists
-	[/(^- (.*))|(^\* (.*))/g, '<span class="mdList">$2</span>'],
-	[/(^ - (.*))|(^ \* (.*))/g, '<span class="mdIndentedList">$2</span>'],
-
-	// [/([^\n]+)(\*)([^\n]+)/g, '<ul><li>$3</li></ul>'],
+	[regex.insides.header3, '<h6>$1</h6>'],
+	[regex.insides.header2, '<h5>$1</h5>'],
+	[regex.insides.header1, '<h4>$1</h4>'],
+	[regex.insides.bold, '<b>$2</b>'],
+	[regex.insides.italic, '<i>$2</i>'],
+	[regex.insides.strikethrough, '<s>$2</s>'],
+	[regex.insides.underline, '<u>$2</u>'],
+	[regex.insides.alternateItalic, '<i>$2</i>'],
+	[regex.insides.link, '<a href="$2">$1</a>'],
+	[regex.insides.list, '<span class="mdList">$2</span>'],
+	[regex.insides.indentedList, '<span class="mdIndentedList">$2</span>'],
 ];
 
-const header3 = /(<h6>(.+?)<\/h6>)/gm;
-const header2 = /(<h5>(.+?)<\/h5>)/gm;
-const header1 = /(<h4>(.+?)<\/h4>)/gm;
-const bold = /(<b>(.+?)<\/b>)/gm;
-const italic = /(<i>(.+?)<\/i>)/gm;
-const strikethrough = /(<s>(.+?)<\/s>)/gm;
-const underline = /(<u>(.+?)<\/u>)/gm;
-const link = /(<a href="(.+?)">(.+?)<\/a>)/gm;
-const list = /(<span class="mdList">(.+?)<\/span>)/gm;
-const indentedList = /(<span class="mdIndentedList">(.+?)<\/span>)/gm;
-const codeBlock = /(<pre class="codeblock">(.+?)<\/pre>)/gm;
-const code = /(<code>(.+?)<\/code>)/gm;
-const allHTML = new RegExp(
-	`${header3.source}|${header2.source}|${header1.source}|${bold.source}|${italic.source}|${strikethrough.source}|${underline.source}|${link.source}|${list.source}|${indentedList.source}|${codeBlock.source}|${code.source}|(.+)`,
+const allHTMLInsides = new RegExp(
+	`${regex.insides.header3.source}|${regex.insides.header2.source}|${regex.insides.header1.source}|${regex.insides.bold.source}|${regex.insides.italic.source}|${regex.insides.strikethrough.source}|${regex.insides.underline.source}|${regex.insides.alternateItalic.source}|${regex.insides.link.source}|${regex.insides.list.source}|${regex.insides.indentedList.source}|${regex.insides.codeBlock.source}|${regex.insides.code.source}|${regex.insides.quote.source}|${regex.insides.spoiler.source}|(.+?)`,
 	'gm',
 );
+const allHTMLOutsides = new RegExp(
+	`${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
+	'gm',
+);
+const markdownVerifier = new RegExp(
+	`${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}`,
+	'gm',
+);
+function addX(count: number) {
+	let returnString = '';
+	for (let i = 0; i < count; i++) {
+		returnString += 'x';
+	}
+	return returnString;
+}
 
 export default {
-	formatMarkdown(content: string) {
-		return this.formattedMarkdownStringToJSX(this.formatMarkdownToString(content));
-	},
-	formattedMarkdownStringToJSX(html: string) {
-		console.log('html', html);
-		if (html == undefined) return <></>;
-		const matches = html.match(allHTML) || [];
-		console.log('allHTML', allHTML);
-		console.log('matches', matches);
+	formatMarkdownToJSX(content: string) {
+		if (content == undefined) return '';
 
-		if (matches.length == 0) {
-			return html;
+		if (content.match(regex.outsides.link)) {
+			const matches = content.matchAll(regex.insides.link).next();
+			return (
+				<a href={matches.value[2]} class="mdLink">
+					{matches.value[1]}
+				</a>
+			);
 		}
-		const results =
-			matches.map((match) => {
-				switch (true) {
-					case !!match.match(codeBlock):
-						return <pre class="codeblock">{match.match(/((?<=<pre class="codeblock">)(.+?)(?=<\/pre>))/gm)[0]}</pre>;
-					case !!match.match(code):
-						return <code>{match.match(/((?<=<code>)(.+?)(?=<\/code>))/gm)[0]}</code>;
-					case !!match.match(bold):
-						console.log('bold', match.match(/((?<=<b>)(.+?)(?=<\/b>))/gm));
-						return <b>{this.formattedMarkdownStringToJSX(match.match(/((?<=<b>)(.+?)(?=<\/b>))/gm)[0])}</b>;
-					case !!match.match(italic):
-						console.log('italic', match.match(/((?<=<i>)(.+?)(?=<\/i>))/gm));
-						return <i>{this.formattedMarkdownStringToJSX(match.match(/((?<=<i>)(.+?)(?=<\/i>))/gm)[0])}</i>;
-					case !!match.match(underline):
-						console.log('underline', match.match(/((?<=<u>)(.+?)(?=<\/u>))/gm));
-						return <u>{this.formattedMarkdownStringToJSX(match.match(/((?<=<u>)(.+?)(?=<\/u>))/gm)[0])}</u>;
+		let splits = content.split(allHTMLOutsides);
+		splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
+		const newSplits: string[] = [];
+		let isInText = false;
+		splits.forEach((split) => {
+			if (split.length == 1 && !isInText) {
+				newSplits.push(split);
+				isInText = true;
+			} else if (split.length == 1 && isInText) {
+				newSplits[newSplits.length - 1] += split;
+			} else {
+				newSplits.push(split);
+				isInText = false;
+			}
+		});
 
-					case !!match.match(strikethrough):
-						console.log('strikethrough', match.match(/((?<=<s>)(.+?)(?=<\/s>))/gm));
-						return <s>{this.formattedMarkdownStringToJSX(match.match(/((?<=<s>)(.+?)(?=<\/s>))/gm)[0])}</s>;
+		splits = newSplits;
+		if (splits.length == 0) return '';
 
-					case !!match.match(header1):
-						return <h4>{this.formattedMarkdownStringToJSX(match.match(/((?<=<h4>)(.+?)(?=<\/h4>))/gm)[0])}</h4>;
-					case !!match.match(header2):
-						return <h5>{this.formattedMarkdownStringToJSX(match.match(/((?<=<h5>)(.+?)(?=<\/h5>))/gm)[0])}</h5>;
-					case !!match.match(header3):
-						return <h6>{this.formattedMarkdownStringToJSX(match.match(/((?<=<h6>)(.+?)(?=<\/h6>))/gm)[0])}</h6>;
-					case !!match.match(list):
-						return (
-							<span class={style.list}>
-								{this.formattedMarkdownStringToJSX(match.match(/((?<=<span class="mdList">)(.+?)(?=<\/span>))/gm)[0])}
-							</span>
-						);
-					case !!match.match(indentedList):
-						return (
-							<span class={style.indentedList}>
-								{this.formattedMarkdownStringToJSX(
-									match.match(/((?<=<span class="mdIndentedList">)(.+?)(?=<\/span>))/gm)[0],
-								)}
-							</span>
-						);
-					// case !!match.match(quoteRegex):
-					// 	return <q>{this.formatMarkdown(match.slice(2), mentions)}</q>;
-					// case !!match.match():
-					// 	return <span class="mdSpoiler">{this.formatMarkdown(match.replace(/\|\|/gm, ''), mentions)}</span>;
-					case !!match.match(link):
-						return (
-							<a class="mdLink" href={match.match(link)[1]}>
-								{match.match(link)[2]}
-							</a>
-						);
-					default:
-						return <>{match}</>;
+		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
+			return splits[0];
+		}
+
+		const results = splits.map((split) => {
+			const markdownIndexes: Array<[number, string]> = [];
+
+			let splitTemp = split;
+			markdownChars.forEach((char) => {
+				const index = splitTemp.indexOf(char);
+				if (index != -1) markdownIndexes.push([index, char]);
+				splitTemp = splitTemp.replaceAll(char, addX(char.length));
+			});
+
+			const orderedMarkdownIndexes = markdownIndexes.sort((a, b) => a[0] - b[0]);
+			if (orderedMarkdownIndexes.length == 0) return this.formatMarkdownToJSX(split);
+			switch (true) {
+				case orderedMarkdownIndexes[0][1] == '**': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2]);
+
+					return <b>{inside}</b>;
 				}
-			}) || [];
-		console.log('results', results);
-		return <>{results}</>;
+				case orderedMarkdownIndexes[0][1] == '*' && split.match(regex.outsides.list) == null: {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.italic).next().value[2]);
+					return <i>{inside}</i>;
+				}
+				case orderedMarkdownIndexes[0][1] == '~~': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.strikethrough).next().value[2]);
+					return <s>{inside}</s>;
+				}
+				case orderedMarkdownIndexes[0][1] == '__': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.underline).next().value[2]);
+					return <u>{inside}</u>;
+				}
+				case orderedMarkdownIndexes[0][1] == '_': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.alternateItalic).next().value[2]);
+					return <i>{inside}</i>;
+				}
+				case orderedMarkdownIndexes[0][1] == '- ': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[2]);
+					return <span class="mdList">{inside}</span>;
+				}
+				case orderedMarkdownIndexes[0][1] == '* ': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[4]);
+					return <span class="mdList">{inside}</span>;
+				}
+				case orderedMarkdownIndexes[0][1] == ' - ': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2]);
+					return <span class="mdIndentedList">{inside}</span>;
+				}
+				case orderedMarkdownIndexes[0][1] == ' * ': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[4]);
+					return <span class="mdIndentedList">{inside}</span>;
+				}
+				case orderedMarkdownIndexes[0][1] == '```': {
+					const inside = split.matchAll(regex.insides.codeBlock).next().value[2];
+					return <pre class="codeblock">{inside}</pre>;
+				}
+				case orderedMarkdownIndexes[0][1] == '`': {
+					const inside = split.matchAll(regex.insides.code).next().value[2];
+					return <code>{inside}</code>;
+				}
+				case orderedMarkdownIndexes[0][1] == '#': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header1).next().value[1]);
+					return <h4>{inside}</h4>;
+				}
+				case orderedMarkdownIndexes[0][1] == '##': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header2).next().value[1]);
+					return <h5>{inside}</h5>;
+				}
+				case orderedMarkdownIndexes[0][1] == '###': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header3).next().value[1]);
+					return <h6>{inside}</h6>;
+				}
+				case orderedMarkdownIndexes[0][1] == '> ': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1]);
+					return <q>{inside}</q>;
+				}
+				case orderedMarkdownIndexes[0][1] == '||': {
+					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2]);
+					return <span class="mdSpoiler">{inside}</span>;
+				}
+
+				default: {
+					return this.formatMarkdownToJSX(split);
+				}
+			}
+		});
+
+		return [...results];
 	},
-	formatMarkdownToString(content: string) {
+
+	formatMarkdownToHTML(content: string) {
 		const split = content.split(ruleSplitter);
 		const combined: string[] = [];
 		let isInText = false;
@@ -207,211 +281,4 @@ export default {
 
 		return <>{...a}</>;
 	},
-	/**
-	 * @deprecated working on new version
-	 */ formatMarkdownOld(content: string, mentions: any[]) {
-		const matches = content.match(regex) || [];
-
-		if (matches.length == 0) {
-			return this.formatMentions(content, mentions);
-		}
-		return (
-			<>
-				{...matches.map((match) => {
-					switch (true) {
-						case !!match.match(codeBlockRegex):
-							return <pre class="codeblock">{match.replace(/```/gm, '')}</pre>;
-						case !!match.match(codeLineRegex):
-							return <code>{match.replace(/`/gm, '')}</code>;
-						case !!match.match(boldRegex):
-							return <strong>{this.formatMarkdown(match.replace(/\*\*/gm, ''), mentions)}</strong>;
-						case !!match.match(italicRegex):
-							return <em>{this.formatMarkdown(match.replace(/(?<!\*)\*(?!\*)/gm, ''), mentions)}</em>;
-						case !!match.match(underlineRegex):
-							return <u>{this.formatMarkdown(match.replace(/__/gm, ''), mentions)}</u>;
-						case !!match.match(alternateItalicRegex):
-							return <em>{this.formatMarkdown(match.replace(/(?<!_)_(?!_)/gm, ''), mentions)}</em>;
-						case !!match.match(strikethroughRegex):
-							return <s>{this.formatMarkdown(match.replace(/~~/gm, ''), mentions)}</s>;
-						case !!match.match(newlineRegex):
-							return <br />;
-						case !!match.match(headerOneRegex):
-							return <h4>{this.formatMarkdown(match.slice(1), mentions)}</h4>;
-						case !!match.match(headerTwoRegex):
-							return <h5>{this.formatMarkdown(match.slice(2), mentions)}</h5>;
-						case !!match.match(headerThreeRegex):
-							return <h6>{this.formatMarkdown(match.slice(3), mentions)}</h6>;
-						case !!match.match(listRegex):
-							return <span class={style.list}>{this.formatMarkdown(match.slice(2), mentions)}</span>;
-						case !!match.match(listIndentedRegex):
-							return <span class={style.indentedList}>{this.formatMarkdown(match.slice(3), mentions)}</span>;
-						case !!match.match(quoteRegex):
-							return <q>{this.formatMarkdown(match.slice(2), mentions)}</q>;
-						case !!match.match(spoilerRegex):
-							return <span class="mdSpoiler">{this.formatMarkdown(match.replace(/\|\|/gm, ''), mentions)}</span>;
-						case !!match.match(mdLinkRegex):
-							return (
-								<a class="mdLink" href={match.match(linkRegex)[0]}>
-									{match.match(/(?<=\[).*?(?=\])/gm)[0]}
-								</a>
-							);
-						default:
-							return <>{this.formatMentions(match, mentions)}</>;
-					}
-				}) || []}
-			</>
-		);
-	},
-	/**
-	 * @deprecated working on new version
-	 */ markdownSuggestion(content: string) {
-		return `<span class="mdSuggestion">${content}</span>`;
-	},
-	// THIS IS GOOFY AS FUCK
-	/**
-	 * @deprecated working on new version
-	 */ formatMarkdownPreserveOld(content: string): string {
-		const matches = content.match(regex) || [];
-		console.log('matches', matches);
-		let result = '';
-		if (matches.length == 0) {
-			return content;
-		}
-		matches.forEach((match) => {
-			if (match == 'undefined') {
-				return;
-			}
-			if (match.match(codeBlockRegex)) {
-				result +=
-					'<pre class="codeblock">' +
-					this.markdownSuggestion('```') +
-					match.replace('```', '').replace(/```(?=[^```]*$)/, '') +
-					this.markdownSuggestion('```') +
-					'</pre>';
-
-				return;
-			}
-			if (match.match(codeLineRegex)) {
-				result +=
-					'<code>' +
-					this.markdownSuggestion('`') +
-					match.replace('`', '').replace(/`(?=[^`]*$)/, '') +
-					this.markdownSuggestion('`') +
-					'</code>';
-				return;
-			}
-			if (match.match(newlineRegex)) {
-				result += '\n';
-			}
-			if (
-				match.match(boldRegex) ||
-				match.match(italicRegex) ||
-				match.match(underlineRegex) ||
-				match.match(alternateItalicRegex) ||
-				match.match(strikethroughRegex) ||
-				match.match(spoilerRegex)
-			) {
-				console.log('inputted match: ', match);
-				result += this.formatMarkdowPreserveStep(match);
-			} else {
-				result += match;
-			}
-		});
-		return result;
-	},
-	/**
-	 * @deprecated working on new version
-	 */ getMarkdownOrder(match: string): string[] {
-		const markdownOrder = [];
-		while (match.length > 0) {
-			if (
-				match[0] + match[1] == '**' ||
-				match[0] + match[1] == '__' ||
-				match[0] + match[1] == '~~' ||
-				match[0] + match[1] == '||'
-			) {
-				markdownOrder.push(match[0] + match[1]);
-				match = match.slice(2, match.length);
-			} else if ((match[0] == '*' && match[1] != '*') || (match[0] == '_' && match[1] != '_')) {
-				markdownOrder.push(match[0]);
-				match = match.slice(1, match.length);
-			} else {
-				//remove first char
-				match = match.slice(1, match.length);
-				markdownOrder.push('x');
-			}
-		}
-		return markdownOrder;
-	},
-	/**
-	 * @deprecated working on new version
-	 */
-	formatMarkdowPreserveStep(match: string) {
-		const left: SideType[] = [];
-		const right: SideType[] = [];
-		const markdownOrder = this.getMarkdownOrder(match);
-
-		if (match.match(boldRegex)) {
-			console.log('boldRegex:', match.match(boldRegex));
-			match = match.replace('**', '').replace(/\*\*(?=[^**]*$)/, '');
-			left.push({ content: '<strong>' + this.markdownSuggestion('**'), char: '**' });
-			right.unshift({ content: this.markdownSuggestion('**') + '</strong>', char: '**' });
-		}
-		if (match.match(italicRegex)) {
-			match = match.replace('*', '').replace(/\*(?=[^*]*$)/, '');
-			left.push({ content: '<em>' + this.markdownSuggestion('*'), char: '*' });
-			right.unshift({ content: this.markdownSuggestion('*') + '</em>', char: '*' });
-		}
-		if (match.match(underlineRegex)) {
-			match = match.replace('__', '').replace(/__(?=[^__]*$)/, '');
-
-			left.push({ content: '<u>' + this.markdownSuggestion('__'), char: '__' });
-			right.unshift({ content: this.markdownSuggestion('__') + '</u>', char: '__' });
-		}
-		if (match.match(alternateItalicRegex)) {
-			match = match.replace('_', '').replace(/_(?=[^_]*$)/, '');
-
-			left.push({ content: '<em>' + this.markdownSuggestion('_'), char: '_' });
-			right.unshift({ content: this.markdownSuggestion('_') + '</em>', char: '_' });
-		}
-		if (match.match(strikethroughRegex)) {
-			match = match.replace('~~', '').replace(/~~(?=[^~~]*$)/, '');
-
-			left.push({ content: '<s>' + this.markdownSuggestion('~~'), char: '~~' });
-			right.unshift({ content: this.markdownSuggestion('~~') + '</s>', char: '~~' });
-		}
-		if (match.match(spoilerRegex)) {
-			match = match.replace('||', '').replace(/\|\|(?=[^||]*$)/, '');
-
-			left.push({ content: '<span class="mdSpoiler">' + this.markdownSuggestion('||'), char: '||' });
-			right.unshift({ content: this.markdownSuggestion('||') + '</span>', char: '||' });
-		}
-
-		let leftReal = '';
-		let rightReal = '';
-
-		let hasXed = false;
-		for (let i = 0; i < markdownOrder.length; i++) {
-			if (markdownOrder[i] == 'x') {
-				hasXed = true;
-			} else if (hasXed) {
-				rightReal += right.find((r) => r.char == markdownOrder[i]).content;
-			} else {
-				leftReal += left.find((l) => l.char == markdownOrder[i]).content;
-			}
-		}
-		console.log('match: ', match);
-		console.log('markDownOrder:', markdownOrder, 'left:', leftReal, 'right:', rightReal);
-		console.log(regex.source);
-		console.log('spaceBetween', spaceBetweenFormattedText);
-
-		return leftReal + match + rightReal;
-	},
-};
-/**
- * @deprecated working on new version
- */
-type SideType = {
-	content: string;
-	char: string;
 };

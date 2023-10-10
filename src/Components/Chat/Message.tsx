@@ -21,7 +21,7 @@ const Message = (props: MessageProps) => {
 		timeStyle: 'short',
 	});
 	const formattedMessage = createMemo(() => {
-		const messageText = API.Messages.formatMarkdown(message.content);
+		const messageText = API.Messages.formatMarkdownToJSX(message.content);
 		console.log('messageText', messageText);
 		return messageText;
 	});
