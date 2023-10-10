@@ -5,14 +5,16 @@ type UserMentionProps = {
 };
 export default (props: UserMentionProps) => {
 	//!DOESNT WORK WHEN USERNAME IS NOT KNOWN TODO:FIX
+	const username = props.mentioned_user?.username || 'unknown';
+
 	const contextMenu = createContextMenu({
-		component: [() => <div>{props.mentioned_user.username}</div>],
+		component: [() => <div>{username}</div>],
 		data: props.mentioned_user,
 	});
 	console.log(contextMenu.toggleVisibility);
 	return (
 		<span style={{ background: 'blue' }} onclick={(e) => contextMenu.toggleVisibility({ x: e.clientX, y: e.clientY })}>
-			{props.mentioned_user.username}
+			{username}
 		</span>
 	);
 };
