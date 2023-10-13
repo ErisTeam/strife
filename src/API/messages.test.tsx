@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
 import API from '../API';
 import '@testing-library/jest-dom';
-// test('plain text', () => {
-// 	const x = API.Messages.formatMarkdownToJSX('hello');
-// 	expect(x).toStrictEqual(<>hello</>);
-// });
+test('plain text', () => {
+	const x = API.Messages.formatMarkdownToJSX('hello');
+	expect(x).toStrictEqual(<>hello</>);
+});
 test('bold', () => {
 	const x = API.Messages.formatMarkdownToJSX('**hello**');
 	console.log('x', x);
@@ -143,4 +143,12 @@ test('alternate list', () => {
 test('alternate indented list', () => {
 	const x = API.Messages.formatMarkdownToJSX(' * hello');
 	expect(x).toStrictEqual([<span class="mdIndentedList">hello</span>]);
+});
+test('weird edge case', () => {
+	const x = API.Messages.formatMarkdownToJSX('_z_');
+	expect(x).toStrictEqual([<i>z</i>]);
+});
+test('link with italic', () => {
+	const x = API.Messages.formatMarkdownToJSX('https://reddit.com/r/super_test_yes');
+	expect(x).toStrictEqual('https://reddit.com/r/super_test_yes');
 });

@@ -1,5 +1,6 @@
 import UserMention from '../Components/Chat/UserMention';
-
+const linkRegex =
+	/(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gim;
 //TODO:: ADD QUOTES AND SPOILERS BACK !!!!!MAKE ORDER INDEPENDENT!!!!
 const markdownChars = ['###', '##', '#', '**', ' * ', '* ', '*', '~~', '__', '_', ' - ', '- ', '```', '`', '> ', '||'];
 const regex = {
@@ -77,7 +78,7 @@ function addX(count: number) {
 export default {
 	formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
 		if (content == undefined) return '';
-
+		if (content.match(linkRegex) && !content.match(regex.outsides.link)) return content;
 		if (content.match(regex.outsides.link)) {
 			const matches = content.matchAll(regex.insides.link).next();
 			return (
