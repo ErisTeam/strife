@@ -16,6 +16,7 @@ export default function Chat() {
 
 	let chatref: HTMLOListElement;
 	let textarea: HTMLDivElement;
+	const [editor, setEditor] = createSignal<any>();
 
 	//TODO: make it possible to select multiple characters
 
@@ -74,9 +75,9 @@ export default function Chat() {
 
 				const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
 				if (sel.focusOffset === 0) pos.pos += 0.5;
-				const temp = API.Messages.formatMarkdownPreserveOld(textarea.innerText);
+				const temp = API.Messages.formatMarkdownToJSXPreserve(textarea.innerText);
 
-				textarea.innerHTML = temp;
+				setEditor(temp);
 
 				sel.removeAllRanges();
 				const range = setCursorPosition(textarea, document.createRange(), {
@@ -216,7 +217,9 @@ export default function Chat() {
 					aria-autocomplete="list"
 					contenteditable={true}
 					ref={textarea}
-				/>
+				>
+					{editor()}
+				</div>
 			</section>
 		</main>
 	);
