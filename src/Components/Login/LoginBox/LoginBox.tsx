@@ -3,8 +3,8 @@
 /* Style */
 import style from './../css.module.css';
 import inputs from './../../../Styles/Inputs.module.css';
-import checkboxes from './../../../Styles/Checkboxes.module.css';
 import buttons from './../../../Styles/Buttons.module.css';
+import Checkbox from '../../Checkbox/Checkbox';
 
 /* Solid */
 import { createSignal } from 'solid-js';
@@ -50,9 +50,9 @@ function LoginBox(prop: LoginBoxProps) {
 			
 			{/* Remember me and login button */}
 			<fieldset class={style.bottomPart}>
-				<label class={style.rememberMe}>
+				<label class={style.rememberMe} for='rememberMe'>
 					<p>{t.LoginPage.rememberMe()}</p>
-					<input type="checkbox" class={checkboxes.default} />
+					<Checkbox id='rememberMe'/>
 				</label>
 				<button class={[style.loginButton, buttons.default].join(' ')} type="submit">
 					{t.LoginPage.logIn()}
