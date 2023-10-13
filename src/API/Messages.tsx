@@ -1,7 +1,5 @@
 import UserMention from '../Components/Chat/UserMention';
-const linkRegex =
-	/(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gim;
-//TODO:: ADD QUOTES AND SPOILERS BACK !!!!!MAKE ORDER INDEPENDENT!!!!
+
 const markdownChars = ['###', '##', '#', '**', ' * ', '* ', '*', '~~', '__', '_', ' - ', '- ', '```', '`', '> ', '||'];
 const regex = {
 	insides: {
