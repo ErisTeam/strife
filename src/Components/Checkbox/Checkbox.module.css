@@ -1,0 +1,44 @@
+.container {
+    /* These variables are here to calculate the position of the checkmark icon */
+    --dimension: 1.2rem;
+}
+
+.default {
+	display: inline-block;
+	position: relative;
+	width: var(--dimension);
+	height: var(--dimension);
+	border-radius: 2px;
+	background-color: var(--checkbox-bgc);
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.default:hover,
+.default:focus-visible {
+	background-color: var(--checkbox-hover-bgc);
+}
+
+.default:active,
+.default:checked {
+    background-color: var(--checkbox-active-bgc);
+}
+
+.default:active:hover,
+.default:active:focus-visible,
+.default:checked:hover,
+.default:checked:focus-visible {
+	background-color: var(--checkbox-active-hover-bgc);
+}
+
+.checkIcon {
+    visibility: hidden;
+    position: fixed;
+    width: var(--dimension);
+    height: var(--dimension);
+    translate: calc(var(--dimension) * -1) 0.1rem;
+}
+
+.default:checked + .checkIcon {
+    visibility: visible;
+}

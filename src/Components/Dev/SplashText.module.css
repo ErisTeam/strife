@@ -18,7 +18,7 @@
 	color: #ffff55;
 
 	font-size: 0.8em;
-	font-family: Monocraft, var(--default-font);
+	font-family: Monocraft, var(--font);
 	animation: alternate splashText 0.5s infinite;
 	user-select: none;
 	pointer-events: none;

@@ -19,7 +19,7 @@
 }
 
 .loginButton {
-	--default-padding: 0.5rem 2rem;
+	--padding: 0.5rem 2rem;
 	font-size: 1.2rem;
 }
 .bottomPart {

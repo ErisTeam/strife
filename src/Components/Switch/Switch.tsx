@@ -1,7 +1,6 @@
 /** @format */
 
 import style from './Switch.module.css';
-import './Switch.module.css';
 
 type SwitchProps = {
 	disabled?: boolean;
