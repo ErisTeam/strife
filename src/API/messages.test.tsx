@@ -148,7 +148,17 @@ test('weird edge case', () => {
 	const x = API.Messages.formatMarkdownToJSX('_z_');
 	expect(x).toStrictEqual([<i>z</i>]);
 });
-test('link with italic', () => {
+test('link with italic in url', () => {
 	const x = API.Messages.formatMarkdownToJSX('https://reddit.com/r/super_test_yes');
-	expect(x).toStrictEqual('https://reddit.com/r/super_test_yes');
+	expect(x).toStrictEqual(['https://reddit.com/r/super_test_yes']);
+});
+
+test('link with italic in url plus bold test', () => {
+	const x = API.Messages.formatMarkdownToJSX('https://reddit.com/r/super_test_yes **test**');
+	expect(x).toStrictEqual(
+		<>
+			https://reddit.com/r/super_test_yes<> </>
+			<b>test</b>
+		</>,
+	);
 });

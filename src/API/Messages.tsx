@@ -1,6 +1,8 @@
 import UserMention from '../Components/Chat/UserMention';
 
 const markdownChars = ['###', '##', '#', '**', ' * ', '* ', '*', '~~', '__', '_', ' - ', '- ', '```', '`', '> ', '||'];
+const linkRegex =
+	/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*))/g;
 const regex = {
 	insides: {
 		header3: /^#{3} \s?([^\n]+)/g,
@@ -58,7 +60,7 @@ const rules = [
 ];
 
 const allHTMLOutsides = new RegExp(
-	`${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
+	`${linkRegex.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
 	'gm',
 );
 const markdownVerifier = new RegExp(
@@ -75,8 +77,10 @@ function addX(count: number) {
 
 export default {
 	formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
+		console.log(content);
+		console.log('ALL HTML OUTSIDES', allHTMLOutsides);
 		if (content == undefined) return '';
-		if (content.match(linkRegex) && !content.match(regex.outsides.link)) return content;
+
 		if (content.match(regex.outsides.link)) {
 			const matches = content.matchAll(regex.insides.link).next();
 			return (
@@ -87,6 +91,7 @@ export default {
 		}
 		let splits = content.split(allHTMLOutsides);
 		splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
+		console.log('splits', splits);
 		const newSplits: string[] = [];
 		let isInText = false;
 		splits.forEach((split) => {
@@ -107,6 +112,7 @@ export default {
 		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
 			return this.formatMentions(splits[0], mentions);
 		}
+		console.log('splits', splits);
 
 		const results = splits.map((split) => {
 			const markdownIndexes: Array<[number, string]> = [];
@@ -119,8 +125,15 @@ export default {
 			});
 
 			const orderedMarkdownIndexes = markdownIndexes.sort((a, b) => a[0] - b[0]);
-			if (orderedMarkdownIndexes.length == 0) return this.formatMarkdownToJSX(split);
+
 			switch (true) {
+				case !!split.match(linkRegex): {
+					console.log('link', split);
+					return split;
+				}
+				case orderedMarkdownIndexes.length == 0: {
+					return this.formatMarkdownToJSX(split);
+				}
 				case orderedMarkdownIndexes[0][1] == '**': {
 					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2], mentions);
 
