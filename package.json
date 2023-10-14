@@ -42,7 +42,6 @@
 		"@thisbeyond/solid-dnd": "^0.7.4",
 		"libsodium-wrappers": "^0.7.13",
 		"lucide-solid": "^0.279.0",
-		"opus-encdec": "^0.1.1",
 		"postcss-nested": "^6.0.1",
 		"prettier": "^3.0.3",
 		"qrcode": "^1.5.3",

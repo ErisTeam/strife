@@ -17,6 +17,7 @@ export default function Chat() {
 	let chatref: HTMLOListElement;
 	let textarea: HTMLDivElement;
 	const [editor, setEditor] = createSignal<any>();
+	const [isTyping, setIsTyping] = createSignal(false);
 
 	//TODO: make it possible to select multiple characters
 
@@ -60,32 +61,45 @@ export default function Chat() {
 		return range;
 	}
 	const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
-
+	const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
 	//!THIS IS BROKEN AS HELL
 
 	onMount(() => {
 		textarea.addEventListener('keyup', (e) => {
+			console.log('isTyping', isTyping(), textarea.innerText.length);
+			console.log('keyup', e.key);
 			if (e.key == 'Enter' && e.shiftKey) {
 				console.log('newLine');
 			}
 			if (e.key == 'Enter' && !e.shiftKey) {
 				console.log('send');
 			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
-				const sel = window.getSelection();
+				setIsTyping(true);
 
-				const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
-				if (sel.focusOffset === 0) pos.pos += 0.5;
-				const temp = API.Messages.formatMarkdownToJSXPreserve(textarea.innerText);
+				console.log('key', e.key);
+				if (MARKDOWN_KEYS.includes(e.key)) {
+					const sel = window.getSelection();
+					console.log('ke', e.key);
 
-				setEditor(temp);
+					const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
+					if (sel.focusOffset === 0) pos.pos += 0.5;
+					setEditor(textarea.innerText);
+					const temp = API.Messages.formatMarkdownToJSXPreserve(textarea.innerText);
 
-				sel.removeAllRanges();
-				const range = setCursorPosition(textarea, document.createRange(), {
-					pos: pos.pos,
-					done: false,
-				});
-				range.collapse(true);
-				sel.addRange(range);
+					setEditor(temp);
+
+					sel.removeAllRanges();
+					const range = setCursorPosition(textarea, document.createRange(), {
+						pos: pos.pos,
+						done: false,
+					});
+					range.collapse(true);
+					sel.addRange(range);
+				} else {
+					console.log('KEY', e.key);
+
+					if (textarea.innerText.length < 1) setIsTyping(false);
+				}
 			}
 		});
 	});
@@ -176,6 +190,10 @@ export default function Chat() {
 			invoke('send_to_voice_gateway', { packet: JSON.stringify(data) });
 		};
 	}
+	async function sendMessage() {
+		await API.Messages.sendMessage(textarea.innerText, TabContext.channelId);
+		textarea.innerText = '';
+	}
 	const renderableMessages = createMemo(() => {
 		const renderableMessages = [];
 		let lastAuthor = '';
@@ -208,7 +226,9 @@ export default function Chat() {
 			</ol>
 			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
 			<section>
-				<h1>CHAT INPUT WILL BE HERE</h1>
+				<Show when={!isTyping()}>
+					<div class={style.placeholder}>PLACEHOLDER TEXT</div>
+				</Show>
 				<div
 					class={style.textarea}
 					role="textbox"
@@ -220,6 +240,7 @@ export default function Chat() {
 				>
 					{editor()}
 				</div>
+				<button onClick={sendMessage}>TEST</button>
 			</section>
 		</main>
 	);

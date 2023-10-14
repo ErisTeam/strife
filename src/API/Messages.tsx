@@ -1,5 +1,15 @@
+import API from '../API';
 import UserMention from '../Components/Chat/UserMention';
+const userMentionRegex = '<@!?(\\d+)>';
+const channelMentionRegex = '<#(\\d+)>';
+const roleMentionRegex = '<@&(\\d+)>';
+const commandMentionRegex = '<\\/(\\w+):(\\d+)>';
+const emojiRegex = /(\<:(?:.+):\d+\>)/g;
 
+const mentionsRegex = new RegExp(
+	`${userMentionRegex}|${channelMentionRegex}|${roleMentionRegex}|${commandMentionRegex}`,
+	'gm',
+);
 const markdownChars = ['###', '##', '#', '**', ' * ', '* ', '*', '~~', '__', '_', ' - ', '- ', '```', '`', '> ', '||'];
 const linkRegex =
 	/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*))/g;
@@ -60,7 +70,7 @@ const rules = [
 ];
 
 const allHTMLOutsides = new RegExp(
-	`${linkRegex.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
+	`${emojiRegex.source}|${mentionsRegex.source}|${linkRegex.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
 	'gm',
 );
 const markdownVerifier = new RegExp(
@@ -77,6 +87,7 @@ function addX(count: number) {
 
 export default {
 	formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
+		console.log('mentionsRegex', mentionsRegex.source);
 		if (content == undefined) return '';
 
 		if (content.match(regex.outsides.link)) {
@@ -102,7 +113,7 @@ export default {
 				isInText = false;
 			}
 		});
-
+		console.log('newSplits', newSplits);
 		splits = newSplits;
 		if (splits.length == 0) return '';
 
@@ -115,6 +126,7 @@ export default {
 
 			let splitTemp = split;
 			markdownChars.forEach((char) => {
+				if (splitTemp.match(markdownVerifier) == null) return;
 				const index = splitTemp.indexOf(char);
 				if (index != -1) markdownIndexes.push([index, char]);
 				splitTemp = splitTemp.replaceAll(char, addX(char.length));
@@ -124,6 +136,13 @@ export default {
 
 			switch (true) {
 				case !!split.match(linkRegex): {
+					return split;
+				}
+				case !!split.match(mentionsRegex): {
+					return this.formatMentions(split, mentions);
+				}
+				case !!split.match(emojiRegex): {
+					// TODO:ADD EMOJI FORMATTING
 					return split;
 				}
 				case orderedMarkdownIndexes.length == 0: {
@@ -150,6 +169,8 @@ export default {
 					return <u>{inside}</u>;
 				}
 				case orderedMarkdownIndexes[0][1] == '_': {
+					console.log('split', split);
+
 					const inside = this.formatMarkdownToJSX(
 						split.matchAll(regex.insides.alternateItalic).next().value[2],
 						mentions,
@@ -165,6 +186,7 @@ export default {
 					return <span class="mdList">{inside}</span>;
 				}
 				case orderedMarkdownIndexes[0][1] == ' - ': {
+					console.log('split', split);
 					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions);
 					return <span class="mdIndentedList">{inside}</span>;
 				}
@@ -461,15 +483,6 @@ export default {
 	},
 
 	formatMentions(content: string, mentionsInput: any[]) {
-		const userMentionRegex = '<@!?(\\d+)>';
-		const channelMentionRegex = '<#(\\d+)>';
-		const roleMentionRegex = '<@&(\\d+)>';
-		const commandMentionRegex = '<\\/(\\w+):(\\d+)>';
-
-		const mentionsRegex = new RegExp(
-			`${userMentionRegex}|${channelMentionRegex}|${roleMentionRegex}|${commandMentionRegex}`,
-			'gm',
-		);
 		const mentions =
 			content.match(mentionsRegex)?.map((match) => {
 				let element;
@@ -500,5 +513,33 @@ export default {
 		}
 
 		return <>{...a}</>;
+	},
+	async sendMessage(
+		content: string,
+		channelId: string,
+		isTTS: boolean = false,
+		embeds: any[] = [],
+		mentions: any[] = [],
+	) {
+		const message = {
+			content: content,
+			tts: isTTS,
+			embeds: embeds,
+		};
+		const token = await API.getToken();
+		const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+		const resDataponse = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: token,
+				//! IF HAS ATTACHMENTS CHANGE TO MULTIPART/FORM-DATA
+				'Content-Type': 'application/json',
+			},
+
+			body: JSON.stringify(message),
+		});
+		const response = await resDataponse.json();
+		console.log(response);
+		return message;
 	},
 };

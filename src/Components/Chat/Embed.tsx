@@ -43,7 +43,7 @@ export default function Embed(props: EmbedProps) {
 						</Match>
 					</Switch>
 					{props.embed.description && (
-						<p class={style.description}>{API.Messages.formatMarkdown(props.embed.description, [])}</p>
+						<p class={style.description}>{API.Messages.formatMarkdownToJSX(props.embed.description, [])}</p>
 					)}
 					<section class={style.fields}>
 						<For each={props.embed.fields || []}>
