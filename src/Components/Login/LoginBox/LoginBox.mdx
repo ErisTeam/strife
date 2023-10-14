@@ -1,9 +1,0 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as LoginBoxStories from './LoginBox.stories';
-
-<Meta of={LoginBoxStories} />
-
-# Description
-Component handling the login operation using a `login` function passed to it as a parameter. The `login` functions signature takes in a `name: string`, `password: string`, `captcha_token?: string` and returns a `Promise<void>`.
-
-<Canvas of={LoginBoxStories.LoginBox} />
