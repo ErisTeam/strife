@@ -139,6 +139,7 @@ pre {
 /*=======================
   ||    Base values    ||
   ======================= */
+    --round-small: 2px;
 	--round-medium: 6px;
 	--round-large: 12px;
 	--round-xlarge: 24px;

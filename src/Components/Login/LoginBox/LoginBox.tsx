@@ -9,9 +9,8 @@ import Checkbox from '../../Checkbox/Checkbox';
 /* Solid */
 import { createSignal } from 'solid-js';
 import { t } from '../../../Translation';
-import Switch from '../../Switch/Switch';
 
-type LoginBoxProps = {
+export interface LoginBoxProps {
 	class?: string;
 	login: (name: string, password: string, captcha_token?: string) => Promise<void>;
 };

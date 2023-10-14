@@ -68,6 +68,9 @@ function Prev() {
 					<A class={buttons.default} href="/dev/guildtest">
 						Guild Test
 					</A>
+                    <A class={buttons.default} href="/dev/componentdocs">
+                        Component Docs
+                    </A>
 				</div>
 				<div>
 					<h2>Buttons</h2>

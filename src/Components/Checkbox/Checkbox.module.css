@@ -8,7 +8,7 @@
 	position: relative;
 	width: var(--dimension);
 	height: var(--dimension);
-	border-radius: 2px;
+	border-radius: var(--round-small);
 	background-color: var(--checkbox-bgc);
 	vertical-align: middle;
 	cursor: pointer;
@@ -33,7 +33,8 @@
 
 .checkIcon {
     visibility: hidden;
-    position: fixed;
+    position: absolute;
+    pointer-events: none;
     width: var(--dimension);
     height: var(--dimension);
     translate: calc(var(--dimension) * -1) 0.1rem;

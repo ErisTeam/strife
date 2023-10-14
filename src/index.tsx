@@ -13,6 +13,7 @@ import StateSetter from './StateSetter';
 import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
 import MessageTest from './Routes/Dev/MessageTest/MessageTest';
+import ComponentDocs from './Routes/Dev/ComponentDocs/ComponentDocs';
 import Prev from './Routes/Dev/Prev';
 import Error from './Routes/Error/Error';
 import Login from './Routes/Login/Login';
@@ -75,6 +76,7 @@ const App: Component = () => {
 								<Route path="/loadingtest" component={LoadingTest} />
 								<Route path="/login" component={Prev} />
 								<Route path="/test" component={ContextMenuTest} />
+                                <Route path="/componentdocs" component={ComponentDocs} />
 							</Route>
 
 							<Route path="/login" component={Login} />

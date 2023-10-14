@@ -25,7 +25,7 @@ type QRCodeProps = {
 function QRCode(prop: QRCodeProps) {
 	return (
 		<div class={[style.qrBox, prop.class].join(' ')}>
-			<img class={style.qrcode} src={prop.qrcode_src ? prop.qrcode_src : prop.fallback_src} alt="QR Code" />
+			<img class={style.qrcode} src={prop.qrcode_src ?? prop.fallback_src} alt="QR Code" />
 			<Show
 				when={prop.user_data === undefined}
 				fallback={

@@ -103,7 +103,7 @@ interface GuildChannel extends channel {
 	nsfw?: boolean;
 }
 
-type Channel = {
+export type Channel = {
 	id: string;
 	type: ChannelType;
 	guild_id: string; // if it's a dm channel, set to @me

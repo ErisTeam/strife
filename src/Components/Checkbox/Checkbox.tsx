@@ -1,3 +1,4 @@
+import { createSignal, onMount } from "solid-js";
 import style from "./Checkbox.module.css";
 import { CheckIcon } from "lucide-solid";
 
@@ -9,9 +10,13 @@ interface CheckboxProps {
 }
 
 export default function Checkbox(props: CheckboxProps) {
+    const [checked, setChecked] = createSignal<boolean>()
+
+    onMount(() => {setChecked(props.defaultChecked ?? false)});
+
     return (
         <div class={style.container}>
-            <input id={props.id} type="checkbox" class={style.default} onChange={props.onChange} />
+            <input id={props.id} type="checkbox" class={style.default} onChange={props.onChange} checked={checked()} />
             <CheckIcon class={style.checkIcon} />
         </div>
     )
