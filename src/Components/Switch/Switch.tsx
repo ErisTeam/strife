@@ -9,16 +9,14 @@ type SwitchProps = {
     defaultChecked?: boolean,
 
 	onChange?: (e: Event) => void;
+
+	value?: boolean;
 };
 
 function Switch(props: SwitchProps) {
-    const [checked, setChecked] = createSignal<boolean>()
-
-    onMount(() => {setChecked(props.defaultChecked ?? false)});
-
 	return (
 		<label class={style.switch}>
-			<input type="checkbox" disabled={props.disabled} checked={checked()}/>
+			<input checked={props.value} onchange={props.onChange} type="checkbox" disabled={props.disabled} />
 			<span class={style.slider} />
 		</label>
 	);
