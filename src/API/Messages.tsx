@@ -248,6 +248,13 @@ export default {
 			if (split.match(linkRegex)) {
 				return split;
 			}
+			if (split.match(emojiRegex)) {
+				// TODO:ADD EMOJI FORMATTING
+				return split;
+			}
+			if (split.match(mentionsRegex)) {
+				return this.formatMentions(split, mentions);
+			}
 			if (markdownIndexes.length == 0) {
 				return this.formatMarkdownToJSXPreserve(split);
 			}
