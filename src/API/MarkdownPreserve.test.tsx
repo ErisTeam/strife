@@ -108,7 +108,7 @@ test('header 3', () => {
 });
 test('link', () => {
 	const x = API.Messages.formatMarkdownToJSXPreserve('[hello](https://google.com)');
-	expect(x).toStrictEqual('[hello](https://google.com)');
+	expect(x).toStrictEqual(['[hello](https://google.com)']);
 });
 test('code', () => {
 	const x = API.Messages.formatMarkdownToJSXPreserve('`hello`').flat(Infinity);

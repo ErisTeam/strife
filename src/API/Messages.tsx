@@ -40,7 +40,7 @@ const regex = {
 		strikethrough: /(~{2}(?:.+?)~{2})/g,
 		underline: /(__(?:.+?)__)(?!_)/g,
 		alternateItalic: /(?<!_)(_(?!_)(?:.+?)_)(?!_)/g,
-		link: /\[(?:[^\]]+)\]\((?:[^)]+)\)/g,
+		link: /(\[(?:[^\]]+)\]\((?:[^)]+)\))/g,
 		list: /(^- (?:.*))|(^\* (?:.*))/g,
 		indentedList: /(^ - (?:.*))|(^ \* (?:.*))/g,
 		codeBlock: /(`{3}(?:[\S\s]+)`{3})(?!`)/gm,
@@ -84,143 +84,145 @@ function addX(count: number) {
 	}
 	return returnString;
 }
+function fixSplits(splits: string[]) {
+	splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
+
+	const newSplits: string[] = [];
+	let isInText = false;
+	splits.forEach((split) => {
+		if (split.length == 1 && !isInText) {
+			newSplits.push(split);
+			isInText = true;
+		} else if (split.length == 1 && isInText) {
+			newSplits[newSplits.length - 1] += split;
+		} else {
+			newSplits.push(split);
+			isInText = false;
+		}
+	});
+
+	return newSplits;
+}
+function getMarkdownIndexes(split: string): Array<[number, string]> {
+	const markdownIndexes: Array<[number, string]> = [];
+
+	for (let i = 0; i < markdownChars.length; i++) {
+		const index = split.indexOf(markdownChars[i]);
+		if (index != -1) markdownIndexes.push([index, markdownChars[i]]);
+		split = split.replaceAll(markdownChars[i], addX(markdownChars[i].length));
+	}
+
+	return markdownIndexes.sort((a, b) => a[0] - b[0]);
+}
 
 export default {
 	formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
-		console.log('mentionsRegex', mentionsRegex.source);
 		if (content == undefined) return '';
-
-		if (content.match(regex.outsides.link)) {
-			const matches = content.matchAll(regex.insides.link).next();
-			return (
-				<a href={matches.value[2]} class="mdLink">
-					{matches.value[1]}
-				</a>
-			);
-		}
 		let splits = content.split(allHTMLOutsides);
-		splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
-		const newSplits: string[] = [];
-		let isInText = false;
-		splits.forEach((split) => {
-			if (split.length == 1 && !isInText) {
-				newSplits.push(split);
-				isInText = true;
-			} else if (split.length == 1 && isInText) {
-				newSplits[newSplits.length - 1] += split;
-			} else {
-				newSplits.push(split);
-				isInText = false;
-			}
-		});
-		console.log('newSplits', newSplits);
-		splits = newSplits;
+		splits = fixSplits(splits);
 		if (splits.length == 0) return '';
-
 		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
 			return this.formatMentions(splits[0], mentions);
 		}
 
 		const results = splits.map((split) => {
-			const markdownIndexes: Array<[number, string]> = [];
+			const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
 
-			let splitTemp = split;
-			markdownChars.forEach((char) => {
-				if (splitTemp.match(markdownVerifier) == null) return;
-				const index = splitTemp.indexOf(char);
-				if (index != -1) markdownIndexes.push([index, char]);
-				splitTemp = splitTemp.replaceAll(char, addX(char.length));
-			});
+			if (split.match(regex.outsides.link)) {
+				const matches = split.matchAll(regex.insides.link).next();
+				return (
+					<a href={matches.value[2]} class="mdLink">
+						{matches.value[1]}
+					</a>
+				);
+			}
+			if (split.match(linkRegex)) {
+				return split;
+			}
+			if (split.match(emojiRegex)) {
+				// TODO:ADD EMOJI FORMATTING
+				return split;
+			}
+			if (split.match(mentionsRegex)) {
+				return this.formatMentions(split, mentions);
+			}
 
-			const orderedMarkdownIndexes = markdownIndexes.sort((a, b) => a[0] - b[0]);
+			if (markdownIndexes.length == 0) {
+				return this.formatMarkdownToJSX(split);
+			}
 
-			switch (true) {
-				case !!split.match(linkRegex): {
-					return split;
+			switch (markdownIndexes[0][1]) {
+				case '**': {
+					return <b>{this.formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>;
 				}
-				case !!split.match(mentionsRegex): {
-					return this.formatMentions(split, mentions);
+				case '*': {
+					return <i>{this.formatMarkdownToJSX(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>;
 				}
-				case !!split.match(emojiRegex): {
-					// TODO:ADD EMOJI FORMATTING
-					return split;
-				}
-				case orderedMarkdownIndexes.length == 0: {
-					return this.formatMarkdownToJSX(split);
-				}
-				case orderedMarkdownIndexes[0][1] == '**': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2], mentions);
-
-					return <b>{inside}</b>;
-				}
-				case orderedMarkdownIndexes[0][1] == '*' && split.match(regex.outsides.list) == null: {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.italic).next().value[2], mentions);
-					return <i>{inside}</i>;
-				}
-				case orderedMarkdownIndexes[0][1] == '~~': {
-					const inside = this.formatMarkdownToJSX(
-						split.matchAll(regex.insides.strikethrough).next().value[2],
-						mentions,
+				case '~~': {
+					return (
+						<s>{this.formatMarkdownToJSX(split.matchAll(regex.insides.strikethrough).next().value[2], mentions)}</s>
 					);
-					return <s>{inside}</s>;
 				}
-				case orderedMarkdownIndexes[0][1] == '__': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.underline).next().value[2], mentions);
-					return <u>{inside}</u>;
+				case '__': {
+					return <u>{this.formatMarkdownToJSX(split.matchAll(regex.insides.underline).next().value[2], mentions)}</u>;
 				}
-				case orderedMarkdownIndexes[0][1] == '_': {
-					console.log('split', split);
-
-					const inside = this.formatMarkdownToJSX(
-						split.matchAll(regex.insides.alternateItalic).next().value[2],
-						mentions,
+				case '_': {
+					return (
+						<i>{this.formatMarkdownToJSX(split.matchAll(regex.insides.alternateItalic).next().value[2], mentions)}</i>
 					);
-					return <i>{inside}</i>;
 				}
-				case orderedMarkdownIndexes[0][1] == '- ': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[2], mentions);
-					return <span class="mdList">{inside}</span>;
+				case '- ': {
+					return (
+						<span class="mdList">
+							{this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[2], mentions)}
+						</span>
+					);
 				}
-				case orderedMarkdownIndexes[0][1] == '* ': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[4], mentions);
-					return <span class="mdList">{inside}</span>;
+				case '* ': {
+					return (
+						<span class="mdList">
+							{this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[4], mentions)}
+						</span>
+					);
 				}
-				case orderedMarkdownIndexes[0][1] == ' - ': {
-					console.log('split', split);
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions);
-					return <span class="mdIndentedList">{inside}</span>;
+				case ' - ': {
+					return (
+						<span class="mdIndentedList">
+							{this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions)}
+						</span>
+					);
 				}
-				case orderedMarkdownIndexes[0][1] == ' * ': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[4], mentions);
-					return <span class="mdIndentedList">{inside}</span>;
+				case ' * ': {
+					return (
+						<span class="mdIndentedList">
+							{this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[4], mentions)}
+						</span>
+					);
 				}
-				case orderedMarkdownIndexes[0][1] == '```': {
-					const inside = split.matchAll(regex.insides.codeBlock).next().value[2];
-					return <pre class="codeblock">{inside}</pre>;
+				case '```': {
+					return <pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>;
 				}
-				case orderedMarkdownIndexes[0][1] == '`': {
-					const inside = split.matchAll(regex.insides.code).next().value[2];
-					return <code>{inside}</code>;
+				case '`': {
+					return <code>{split.matchAll(regex.insides.code).next().value[2]}</code>;
 				}
-				case orderedMarkdownIndexes[0][1] == '#': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header1).next().value[1], mentions);
-					return <h4>{inside}</h4>;
+				case '#': {
+					return <h4>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header1).next().value[1], mentions)}</h4>;
 				}
-				case orderedMarkdownIndexes[0][1] == '##': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header2).next().value[1], mentions);
-					return <h5>{inside}</h5>;
+				case '##': {
+					return <h5>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header2).next().value[1], mentions)}</h5>;
 				}
-				case orderedMarkdownIndexes[0][1] == '###': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.header3).next().value[1], mentions);
-					return <h6>{inside}</h6>;
+				case '###': {
+					return <h6>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header3).next().value[1], mentions)}</h6>;
 				}
-				case orderedMarkdownIndexes[0][1] == '> ': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1], mentions);
-					return <q>{inside}</q>;
+				case '> ': {
+					return <q>{this.formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1], mentions)}</q>;
 				}
-				case orderedMarkdownIndexes[0][1] == '||': {
-					const inside = this.formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2], mentions);
-					return <span class="mdSpoiler">{inside}</span>;
+				case '||': {
+					return (
+						<span class="mdSpoiler">
+							{this.formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
+						</span>
+					);
 				}
 
 				default: {
@@ -233,175 +235,134 @@ export default {
 	},
 	formatMarkdownToJSXPreserve(content: string, mentions: any[] = []): Element[] | Element | string {
 		if (content == undefined) return '';
-		console.log();
-
-		if (content.match(regex.outsides.link)) {
-			const matches = content.matchAll(regex.insides.link).next();
-			return content;
-		}
 		let splits = content.split(allHTMLOutsides);
-		splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
-		const newSplits: string[] = [];
-		let isInText = false;
-		splits.forEach((split) => {
-			if (split.length == 1 && !isInText) {
-				newSplits.push(split);
-				isInText = true;
-			} else if (split.length == 1 && isInText) {
-				newSplits[newSplits.length - 1] += split;
-			} else {
-				newSplits.push(split);
-				isInText = false;
-			}
-		});
-
-		splits = newSplits;
+		splits = fixSplits(splits);
 		if (splits.length == 0) return '';
-
 		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
 			return this.formatMentions(splits[0], mentions);
 		}
 
 		const results = splits.map((split) => {
-			const markdownIndexes: Array<[number, string]> = [];
+			const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
 
-			let splitTemp = split;
-			markdownChars.forEach((char) => {
-				const index = splitTemp.indexOf(char);
-				if (index != -1) markdownIndexes.push([index, char]);
-				splitTemp = splitTemp.replaceAll(char, addX(char.length));
-			});
-
-			const orderedMarkdownIndexes = markdownIndexes.sort((a, b) => a[0] - b[0]);
-
-			switch (true) {
-				case !!split.match(linkRegex): {
-					return split;
-				}
-				case orderedMarkdownIndexes.length == 0: {
-					return this.formatMarkdownToJSXPreserve(split);
-				}
-				case orderedMarkdownIndexes[0][1] == '**': {
-					const inside = this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.bold).next().value[2], mentions);
-
+			if (split.match(linkRegex)) {
+				return split;
+			}
+			if (markdownIndexes.length == 0) {
+				return this.formatMarkdownToJSXPreserve(split);
+			}
+			switch (markdownIndexes[0][1]) {
+				case '**': {
 					return (
 						<>
 							<span class="mdSuggestion">**</span>
-							<b>{inside}</b>
+							<b>{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>
 							<span class="mdSuggestion">**</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '*' && split.match(regex.outsides.list) == null: {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.italic).next().value[2],
-						mentions,
-					);
+				case '*': {
 					return (
 						<>
 							<span class="mdSuggestion">*</span>
-							<i>{inside}</i>
+							<i>{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>
 							<span class="mdSuggestion">*</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '~~': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.strikethrough).next().value[2],
-						mentions,
-					);
+				case '~~': {
 					return (
 						<>
 							<span class="mdSuggestion">~~</span>
 
-							<s>{inside}</s>
+							<s>
+								{this.formatMarkdownToJSXPreserve(
+									split.matchAll(regex.insides.strikethrough).next().value[2],
+									mentions,
+								)}
+							</s>
 							<span class="mdSuggestion">~~</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '__': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.underline).next().value[2],
-						mentions,
-					);
+				case '__': {
 					return (
 						<>
 							<span class="mdSuggestion">__</span>
-							<u>{inside}</u>
+							<u>
+								{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.underline).next().value[2], mentions)}
+							</u>
 							<span class="mdSuggestion">__</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '_': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.alternateItalic).next().value[2],
-						mentions,
-					);
+				case '_': {
 					return (
 						<>
 							<span class="mdSuggestion">_</span>
-							<i>{inside}</i>
+							<i>
+								{this.formatMarkdownToJSXPreserve(
+									split.matchAll(regex.insides.alternateItalic).next().value[2],
+									mentions,
+								)}
+							</i>
 							<span class="mdSuggestion">_</span>
 						</>
 					);
 				}
 
-				case orderedMarkdownIndexes[0][1] == '```': {
-					const inside = split.matchAll(regex.insides.codeBlock).next().value[2];
+				case '```': {
 					return (
 						<>
 							<span class="mdSuggestion">```</span>
-							<pre class="codeblock">{inside}</pre>
+							<pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>
 							<span class="mdSuggestion">```</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '`': {
-					const inside = split.matchAll(regex.insides.code).next().value[2];
+				case '`': {
 					return (
 						<>
 							<span class="mdSuggestion">`</span>
-							<code>{inside}</code>
+							<code>{split.matchAll(regex.insides.code).next().value[2]}</code>
 							<span class="mdSuggestion">`</span>
 						</>
 					);
 				}
 
-				case orderedMarkdownIndexes[0][1] == '||': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.spoiler).next().value[2],
-						mentions,
-					);
+				case '||': {
 					return (
 						<>
 							<span class="mdSuggestion">||</span>
-							<span class="mdSpoiler">{inside}</span>
+							<span class="mdSpoiler">
+								{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
+							</span>
 							<span class="mdSuggestion">||</span>
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '#': {
+				case '#': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.header1).next().value[1],
 						mentions,
 					);
 					return <># {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == '##': {
+				case '##': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.header2).next().value[1],
 						mentions,
 					);
 					return <>## {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == '###': {
+				case '###': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.header3).next().value[1],
 						mentions,
 					);
 					return <>### {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == '> ': {
+				case '> ': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.quote).next().value[1],
 						mentions,
@@ -413,27 +374,32 @@ export default {
 						</>
 					);
 				}
-				case orderedMarkdownIndexes[0][1] == '- ': {
+				case '- ': {
 					const inside = this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[2], mentions);
 					return <>- {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == '* ': {
+				case '* ': {
 					const inside = this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[4], mentions);
 					return <>* {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == ' - ': {
+				case ' - ': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.indentedList).next().value[2],
 						mentions,
 					);
 					return <> - {inside}</>;
 				}
-				case orderedMarkdownIndexes[0][1] == ' * ': {
+				case ' * ': {
 					const inside = this.formatMarkdownToJSXPreserve(
 						split.matchAll(regex.insides.indentedList).next().value[4],
 						mentions,
 					);
-					return <> * {inside}</>;
+					return (
+						<>
+							{' * '}
+							{inside}
+						</>
+					);
 				}
 
 				default: {

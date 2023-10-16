@@ -98,8 +98,6 @@ test('Markdown formatting of link text failing', () => {
 	const text = API.Messages.formatMarkdownToHTML('[google](http://goc');
 	expect(text).toBe('[google](http://goc');
 });
-// <span class="mdList">$2</span>
-// 	<span class="mdIndentedList">$2</span>
 test('Markdown formatting of a list', () => {
 	const text = API.Messages.formatMarkdownToHTML('- list item 1');
 	expect(text).toBe('<span class="mdList">list item 1</span>');
