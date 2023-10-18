@@ -2,9 +2,10 @@ import { X } from 'lucide-solid';
 import { useAppState } from '../../../AppState';
 import { Embed } from '../../../discord';
 import style from '../Embed.module.css';
-
+import { EmbedProps } from '../Embed';
+import { JSX } from 'solid-js';
 //TODO: translate component
-export default function TwitterEmbed(props: { embed: Embed }) {
+export default function TwitterEmbed(props: EmbedProps) {
 	const AppState = useAppState();
 	const dateFormater = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
 		dateStyle: 'medium',
@@ -16,14 +17,21 @@ export default function TwitterEmbed(props: { embed: Embed }) {
 
 	const tweetId = props.embed.url.match(/\/\d+/)[0].slice(1);
 
+	function onImageError(e: Event) {
+		(e.target as HTMLImageElement).src = '/Friends/falback.png';
+	}
+
 	return (
 		<article class={`${style.embed} ${style.twitter}`}>
-			<aside class={style.closeButton}>
-				<X />
-			</aside>
+			{props.showCloseButton && (
+				<aside class={style.closeButton}>
+					<X />
+				</aside>
+			)}
+
 			<aside class={style.author}>
 				<a class={style.profileImage} href={props.embed.author.url} title="View profile on Twitter">
-					<img src={props.embed.author.proxy_icon_url} />
+					<img src={props.embed.author.proxy_icon_url} onerror={onImageError} />
 				</a>
 				<span>
 					<a class={style.username} title="View profile on Twitter">

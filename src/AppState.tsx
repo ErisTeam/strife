@@ -5,6 +5,8 @@ import { createStore } from 'solid-js/store';
 import { Locale } from './Translation';
 import { Guild, Relationship } from './discord';
 import { Tab } from './types';
+import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsTypes';
+import Settings from './API/Settings';
 
 const userId = '';
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
@@ -27,6 +29,12 @@ const localeJsFormat = () => {
 
 	return locale.replace('_', '-');
 };
+
+const [settingsCategories, setSettingsCategories] = createStore<SettingsCategory[]>(
+	Settings.defaultSettings.categories,
+);
+const [settingsEntries, setSettingsEntries] = createStore<SettingsEntry[]>([]);
+
 const ContextValue = {
 	userGuilds,
 	setUserGuilds,
@@ -51,6 +59,13 @@ const ContextValue = {
 	setCurrentState,
 	channelsSize,
 	setChannelsSize,
+
+	settings: {
+		categories: settingsCategories,
+		setCategories: setSettingsCategories,
+		entries: settingsEntries,
+		setEntries: setSettingsEntries,
+	},
 };
 const AppState = createContext(ContextValue);
 

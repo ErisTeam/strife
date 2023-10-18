@@ -38,6 +38,14 @@ const Application = () => {
 				}
 			})
 			.catch(console.error);
+
+		if (API.Tabs.findByComponent('settings') == -1) {
+			API.Tabs.add({
+				component: 'settings',
+				title: 'Settings',
+				icon: '⚙️',
+			});
+		}
 	});
 
 	console.log('CurrentGuild', !AppState.currentGuild());

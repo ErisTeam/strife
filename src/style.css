@@ -81,7 +81,7 @@ pre {
    PANDACORD STYLES     |||||    ALL ABOVE IS NORMALIZATION
    ========================================================================== */
 :root {
-/*=======================
+	/*=======================
   ||    Base colors    ||
   ======================= */
 	--depth9: hsl(240, 3%, 35%);
@@ -136,7 +136,7 @@ pre {
 	--text: #ffffff;
 	--disabled-text: #a0a0a0;
 
-/*=======================
+	/*=======================
   ||    Base values    ||
   ======================= */
     --round-small: 2px;
@@ -149,8 +149,8 @@ pre {
 	--font: 'Atkinson Hyperlegible', sans-serif; /* TODO */
 
 	--drop-shadow: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.35));
-	
-/*===========================
+
+	/*===========================
   ||    Base components    ||
   =========================== */
 	--base-component-depth: var(--depth3);
@@ -171,13 +171,13 @@ pre {
 	--button-active-hover-bgc: var(--base-component-primary-hover);
 	--button-padding: var(--padding);
 	--button-roundness: var(--round-medium);
-	
+
 	/* INPUT */
 	--input-bgc: var(--base-component-depth);
 	--input-roundness: var(--round-medium);
 	--input-padding: var(--padding);
 	--input-placeholder: var(--disabled-text);
-	
+
 	/* SWITCH */
 	--switch-bgc: var(--base-component-depth);
 	--switch-hover-bgc: var(--base-component-depth-hover);
@@ -186,7 +186,7 @@ pre {
 	--switch-knob-bgc: var(--text);
 	--switch-roundness: 2.4em;
 
-/*======================
+	/*======================
   ||    Components    ||
   ====================== */
 	/* WINDOW DECORATIONS */
@@ -264,7 +264,8 @@ pre {
 
 	/* CHAT */
 	--chat-bgc: var(--depth3);
-	--chat-roundness: var(--round-large); /* Misc */
+	--chat-roundness: var(--round-large);
+	/* Misc */
 	--loading-bgc: var(--depth1);
 }
 
@@ -284,7 +285,6 @@ pre {
 ::-webkit-scrollbar-thumb:hover {
 	background-color: var(--primary);
 }
-
 
 * {
 	font-family: var(--font);

@@ -10,6 +10,7 @@ import Loading from '../Loading/Loading';
 import { TabComponents } from '../../types';
 import TabList from './TabList';
 import { TabContextProvider } from './TabUtils';
+import SuspenseErrorBoundary from '../SuspenseErrorBoundary/SuspenseErrorBoundary';
 
 export function TabWindow({ className }: { className?: string }) {
 	const AppState = useAppState();
@@ -27,11 +28,11 @@ export function TabWindow({ className }: { className?: string }) {
 								style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }}
 								class={outletStyle.outlet}
 							>
-								<Suspense fallback={<Loading />}>
-									<TabContextProvider tab={tab}>
-										<Dynamic component={TabComponents[tab.component]} />
-									</TabContextProvider>
-								</Suspense>
+								{/* <SuspenseErrorBoundary> */}
+								<TabContextProvider tab={tab}>
+									<Dynamic component={TabComponents[tab.component]} />
+								</TabContextProvider>
+								{/* </SuspenseErrorBoundary> */}
 							</div>
 						);
 					}}

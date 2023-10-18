@@ -4,7 +4,7 @@ import { emit } from '@tauri-apps/api/event';
 // Tauri
 import { invoke } from '@tauri-apps/api/tauri';
 // API
-import { Tab, TabsFile } from './types';
+import { Tab, TabComponents, TabsFile } from './types';
 import { Channel, Guild, Message, Relationship } from './discord';
 import { oneTimeListener } from './test';
 import { produce } from 'solid-js/store';
@@ -14,10 +14,13 @@ import { CONSTANTS } from './Constants';
 import { Component, batch } from 'solid-js';
 import { exists, BaseDirectory, createDir, writeFile, readDir, readTextFile } from '@tauri-apps/api/fs';
 import Messages from './API/Messages';
+import Style from './API/Style';
+import Settings from './API/Settings';
 const sessionDataPath = 'session_data';
 const tabsPath = sessionDataPath + '/tabs.json';
 
 export default {
+	Style: Style,
 	Voice: {
 		async joinVoiceChannel(guildId: string, channelId: string) {
 			//TODO: implement voice
@@ -25,6 +28,10 @@ export default {
 	},
 	Messages: Messages,
 	Tabs: {
+		findByComponent(component: keyof typeof TabComponents) {
+			const AppState = useAppState();
+			return AppState.tabs.findIndex((t) => t.component == component);
+		},
 		//! NOT working
 		swapOrderByIdx(idx1: number, idx2: number) {
 			const AppState = useAppState();

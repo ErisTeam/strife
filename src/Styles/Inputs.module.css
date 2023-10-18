@@ -7,3 +7,16 @@
 .default::placeholder {
 	color: var(--input-placeholder);
 }
+.colorPicker {
+	width: 2em;
+	height: 2em;
+	padding: 0;
+	border-radius: 100%;
+	&::-webkit-color-swatch-wrapper {
+		padding: 0.2em;
+	}
+	&::-webkit-color-swatch {
+		border: none;
+		border-radius: 100%;
+	}
+}

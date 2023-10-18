@@ -14,7 +14,9 @@ interface GuildProps {
 }
 
 const GuildShadow = (props: GuildProps) => {
-	if (!props.guild) return null;
+	const [t] = useTrans();
+
+	if (!props.guild) return <div>Null</div>;
 	return (
 		<li class={style.guild}>
 			<button>

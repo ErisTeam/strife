@@ -1,6 +1,7 @@
 import { Component } from 'solid-js';
 import Chat from './Components/Chat/Chat';
 import WelcomeTab from './Components/Tabs/WelcomeTab';
+import Settings from './Components/Settings/Settings';
 
 type AppState = 'LoginScreen' | 'Application' | 'Dev';
 
@@ -13,6 +14,7 @@ type TextArea = 'soft' | 'hard' | 'off';
 export const TabComponents = {
 	textChannel: Chat,
 	welcomeTab: WelcomeTab,
+	settings: Settings,
 };
 
 export interface Tab {

@@ -75,7 +75,6 @@ function TabList(props: TabsProps) {
 	return (
 		<>
 			<DragDropProvider onDragEnd={onDragEnd} onDragStart={onDragStart} collisionDetector={closestCorners}>
-				<DragDropDebugger />
 				<DragDropSensors />
 				<nav class={[props.className, style.tabs].join(' ')}>
 					<ul>

@@ -2,9 +2,9 @@
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
 import { Outlet, Route, Router, Routes } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api';
-import { Component, DEV, Show, createResource } from 'solid-js';
+import { Component, DEV, Show, createResource, onMount } from 'solid-js';
 import { render } from 'solid-js/web';
-import { AppStateProvider } from './AppState';
+import { AppStateProvider, useAppState } from './AppState';
 import Application from './Components/Application/Application';
 import Dev from './Components/Dev/Dev';
 import Loading from './Components/Loading/Loading';
@@ -18,8 +18,25 @@ import Prev from './Routes/Dev/Prev';
 import Error from './Routes/Error/Error';
 import Login from './Routes/Login/Login';
 import './style.css';
+import Settings from './API/Settings';
+import API from './API';
 
 const App: Component = () => {
+	onMount(() => {
+		const entries = Settings.defaultSettings.entries.map((e) => {
+			if (typeof e == 'function') {
+				return e();
+			}
+			return e;
+		});
+		//TODO: remove this
+		const AppState = useAppState();
+		AppState.settings.setEntries(entries);
+		API.Style.start();
+		console.log(AppState.settings);
+
+		Settings.loadFromFile();
+	});
 	const [id] = createResource(async () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
 		console.log(users);
@@ -76,12 +93,15 @@ const App: Component = () => {
 								<Route path="/loadingtest" component={LoadingTest} />
 								<Route path="/login" component={Prev} />
 								<Route path="/test" component={ContextMenuTest} />
-                                <Route path="/componentdocs" component={ComponentDocs} />
+								<Route path="/componentdocs" component={ComponentDocs} />
 							</Route>
 
 							<Route path="/login" component={Login} />
 
-							<Route path="/app" element={<StateSetter state={'Application'} force={true} component={Application} />}></Route>
+							<Route
+								path="/app"
+								element={<StateSetter state={'Application'} force={true} component={Application} />}
+							></Route>
 							<Route path="*" component={Error} />
 						</Routes>
 					</AppStateProvider>
