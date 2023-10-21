@@ -66,7 +66,6 @@ const App: Component = () => {
 
 	document.addEventListener('keydown', changeZoom);
 
-	console.log(DEV);
 
 	return (
 		<Router>
