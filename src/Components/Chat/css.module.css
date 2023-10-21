@@ -23,6 +23,12 @@
 			caret-color: var(--text);
 			cursor: text;
 		}
+		button {
+			width: 50%;
+		}
+		input {
+			width: 50%;
+		}
 	}
 	ol {
 		/* TODO:Figure out a way to get rid of this calc */

@@ -221,7 +221,9 @@ export default function Chat() {
 			<ol ref={chatref}>
 				{renderableMessages()}
 				<Show when={isVoiceChannel()}>
-					<button onclick={startVoice}>Join Voice Channel</button>
+					<li>
+						<button onclick={startVoice}>Join Voice Channel</button>
+					</li>
 				</Show>
 			</ol>
 			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
@@ -230,6 +232,7 @@ export default function Chat() {
 					<div class={style.placeholder}>PLACEHOLDER TEXT</div>
 				</Show>
 				<div
+					title="TEMP"
 					class={style.textarea}
 					role="textbox"
 					aria-multiline="true"
@@ -240,6 +243,7 @@ export default function Chat() {
 				>
 					{editor()}
 				</div>
+				<input type="file" title="TEMP" />
 				<button onClick={sendMessage}>TEST</button>
 			</section>
 		</main>

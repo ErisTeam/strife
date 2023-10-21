@@ -39,7 +39,7 @@ export default (props: ChannelProps) => {
 				if (listIndex == -1) {
 					API.Tabs.add(tab, true);
 				} else {
-					API.Tabs.setAsCurrent(AppState.tabs.length - 1);
+					API.Tabs.setAsCurrent(listIndex);
 				}
 				break;
 			case 1:

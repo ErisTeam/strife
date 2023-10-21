@@ -105,6 +105,7 @@ export default {
 		},
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
+			console.log('adding tab', tab);
 			batch(() => {
 				if (!replaceCurrent || AppState.tabs.length === 0) {
 					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
@@ -181,6 +182,10 @@ export default {
 			const tabsOrder = tabsFile.order;
 			const currentTab = tabsFile.current;
 			const tabs = tabsFile.tabs;
+			if (tabsOrder.length < 1 || tabs.length < 1) {
+				console.error('Invalid tabs file');
+				return false;
+			}
 
 			console.log(tabsFile);
 

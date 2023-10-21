@@ -27,7 +27,7 @@ import API from '../../API';
 import Dev from '../Dev/Dev';
 import { useTabContext } from '../Tabs/TabUtils';
 
-export default () => {
+export default function SettingsPage() {
 	const AppState = useAppState();
 
 	const [currentRoute, setCurrentRoute] = createSignal(AppState.settings.categories[0]);
@@ -64,4 +64,4 @@ export default () => {
 			</article>
 		</article>
 	);
-};
+}

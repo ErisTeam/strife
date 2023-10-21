@@ -7,7 +7,7 @@ import style from './Tabs.module.css';
 import Message from '../Messages/Message';
 import { Message as MessageType } from '../../discord';
 
-export default () => {
+export default function WelcomeTab() {
 	// const tabData = useTabContext();
 
 	const appState = useAppState();
@@ -25,4 +25,4 @@ export default () => {
 			<h1>Welcome: {userInfo()?.username}</h1>
 		</div>
 	);
-};
+}
