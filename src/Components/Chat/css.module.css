@@ -6,28 +6,31 @@
 	> section {
 		background-color: red;
 		width: 100%;
-		height: 5em;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		position: relative;
-		.placeholder {
-			position: absolute;
-			top: 0;
-			left: 0;
-			color: pink;
+		ul {
+			display: flex;
+			flex-direction: row;
 		}
-		.textarea {
-			height: 100%;
+		.editor {
 			width: 100%;
-			background-color: gray;
-			caret-color: var(--text);
-			cursor: text;
-		}
-		button {
-			width: 50%;
-		}
-		input {
-			width: 50%;
+			height: 100%;
+			position: relative;
+
+			.placeholder {
+				position: absolute;
+				top: 0;
+				left: 0;
+				color: pink;
+			}
+			.textarea {
+				height: 100%;
+				width: 100%;
+				background-color: gray;
+				caret-color: var(--text);
+				cursor: text;
+			}
 		}
 	}
 	ol {

@@ -1,11 +1,12 @@
-import { invoke } from '@tauri-apps/api/tauri';
-import { Show, createMemo, createResource, createSignal, onMount } from 'solid-js';
+import { convertFileSrc, invoke } from '@tauri-apps/api/tauri';
+import { For, Show, createMemo, createResource, createSignal, onMount } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { Message as MessageType } from '../../discord';
 import { gatewayOneTimeListener, startGatewayListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
+import { open } from '@tauri-apps/api/dialog';
 import Message from './Message';
 import style from './css.module.css';
 
@@ -17,7 +18,8 @@ export default function Chat() {
 	let chatref: HTMLOListElement;
 	let textarea: HTMLDivElement;
 	const [editor, setEditor] = createSignal<any>();
-	const [isTyping, setIsTyping] = createSignal(false);
+	const [isTyping, setIsTyping] = createSignal(false); //TODO: make this work
+	const [files, setFiles] = createSignal<string[]>([]);
 
 	//TODO: make it possible to select multiple characters
 
@@ -228,23 +230,69 @@ export default function Chat() {
 			</ol>
 			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
 			<section>
-				<Show when={!isTyping()}>
-					<div class={style.placeholder}>PLACEHOLDER TEXT</div>
-				</Show>
-				<div
-					title="TEMP"
-					class={style.textarea}
-					role="textbox"
-					aria-multiline="true"
-					spellcheck={true}
-					aria-autocomplete="list"
-					contenteditable={true}
-					ref={textarea}
+				<button class={style.send} onClick={sendMessage}>
+					TEST
+				</button>
+				<button
+					class={style.uploadTest}
+					onClick={() => {
+						open({
+							multiple: true,
+							filters: [
+								{
+									name: 'Image',
+									extensions: ['png', 'jpeg'],
+								},
+							],
+						}).then((selected) => {
+							if (Array.isArray(selected)) {
+								setFiles((files) => [...files, ...selected]);
+								// user selected multiple files
+							} else if (selected === null) {
+								// user cancelled the selection
+							} else {
+								setFiles((files) => [...files, selected]);
+							}
+						});
+					}}
 				>
-					{editor()}
+					UPLOAD
+				</button>
+				<ul>
+					<For each={files()}>
+						{(file) => {
+							const assetUrl = convertFileSrc(file, 'asset');
+							return (
+								<li>
+									<button
+										onClick={() => {
+											setFiles((files) => files.filter((f) => f != file));
+										}}
+									>
+										<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
+									</button>
+								</li>
+							);
+						}}
+					</For>
+				</ul>
+				<div class={style.editor}>
+					<Show when={!isTyping()}>
+						<div class={style.placeholder}>PLACEHOLDER TEXT</div>
+					</Show>
+					<div
+						title="TEMP"
+						class={style.textarea}
+						role="textbox"
+						aria-multiline="true"
+						spellcheck={true}
+						aria-autocomplete="list"
+						contenteditable={true}
+						ref={textarea}
+					>
+						{editor()}
+					</div>
 				</div>
-				<input type="file" title="TEMP" />
-				<button onClick={sendMessage}>TEST</button>
 			</section>
 		</main>
 	);
