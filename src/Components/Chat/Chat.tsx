@@ -217,7 +217,26 @@ export default function Chat() {
 		console.log('renderableMessages', renderableMessages);
 		return renderableMessages;
 	});
-
+	function uploadFile() {
+		open({
+			multiple: true,
+			filters: [
+				{
+					name: 'Image',
+					extensions: ['png', 'jpeg'],
+				},
+			],
+		}).then((selected) => {
+			if (Array.isArray(selected)) {
+				setFiles((files) => [...files, ...selected]);
+				// user selected multiple files
+			} else if (selected === null) {
+				// user cancelled the selection
+			} else {
+				setFiles((files) => [...files, selected]);
+			}
+		});
+	}
 	return (
 		<main class={style.main}>
 			<ol ref={chatref}>
@@ -230,34 +249,6 @@ export default function Chat() {
 			</ol>
 			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
 			<section>
-				<button class={style.send} onClick={sendMessage}>
-					TEST
-				</button>
-				<button
-					class={style.uploadTest}
-					onClick={() => {
-						open({
-							multiple: true,
-							filters: [
-								{
-									name: 'Image',
-									extensions: ['png', 'jpeg'],
-								},
-							],
-						}).then((selected) => {
-							if (Array.isArray(selected)) {
-								setFiles((files) => [...files, ...selected]);
-								// user selected multiple files
-							} else if (selected === null) {
-								// user cancelled the selection
-							} else {
-								setFiles((files) => [...files, selected]);
-							}
-						});
-					}}
-				>
-					UPLOAD
-				</button>
 				<ul>
 					<For each={files()}>
 						{(file) => {
@@ -269,28 +260,42 @@ export default function Chat() {
 											setFiles((files) => files.filter((f) => f != file));
 										}}
 									>
-										<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
+										X
 									</button>
+									<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
 								</li>
 							);
 						}}
 					</For>
 				</ul>
-				<div class={style.editor}>
-					<Show when={!isTyping()}>
-						<div class={style.placeholder}>PLACEHOLDER TEXT</div>
-					</Show>
-					<div
-						title="TEMP"
-						class={style.textarea}
-						role="textbox"
-						aria-multiline="true"
-						spellcheck={true}
-						aria-autocomplete="list"
-						contenteditable={true}
-						ref={textarea}
-					>
-						{editor()}
+				<div class={style.editorWrapper}>
+					<div class={style.buttonContainer}>
+						<button class={style.uploadTest} onClick={uploadFile}>
+							UPLOAD
+						</button>
+					</div>
+
+					<div class={style.editor}>
+						<Show when={!isTyping()}>
+							<div class={style.placeholder}>PLACEHOLDER TEXT</div>
+						</Show>
+						<div
+							title="TEMP"
+							class={style.textarea}
+							role="textbox"
+							aria-multiline="true"
+							spellcheck={true}
+							aria-autocomplete="list"
+							contenteditable={true}
+							ref={textarea}
+						>
+							{editor()}
+						</div>
+					</div>
+					<div class={style.buttonContainer}>
+						<button class={style.send} onClick={sendMessage}>
+							Send
+						</button>
 					</div>
 				</div>
 			</section>
