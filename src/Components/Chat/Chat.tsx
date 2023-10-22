@@ -192,9 +192,10 @@ export default function Chat() {
 			invoke('send_to_voice_gateway', { packet: JSON.stringify(data) });
 		};
 	}
-	async function sendMessage() {
-		await API.Messages.sendMessage(textarea.innerText, TabContext.channelId);
+	function sendMessage() {
+		API.Messages.sendMessage(TabContext.channelId, textarea.innerText, files());
 		textarea.innerText = '';
+		setFiles([]);
 	}
 	const renderableMessages = createMemo(() => {
 		const renderableMessages = [];

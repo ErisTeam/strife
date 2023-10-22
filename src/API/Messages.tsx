@@ -1,3 +1,4 @@
+import { fs } from '@tauri-apps/api';
 import API from '../API';
 import UserMention from '../Components/Chat/UserMention';
 const userMentionRegex = '<@!?(\\d+)>';
@@ -108,7 +109,9 @@ function getMarkdownIndexes(split: string): Array<[number, string]> {
 
 	for (let i = 0; i < markdownChars.length; i++) {
 		const index = split.indexOf(markdownChars[i]);
-		if (index != -1) markdownIndexes.push([index, markdownChars[i]]);
+		if (!(markdownChars[i] == ' - ' && index > split.length / 2)) {
+			if (index != -1) markdownIndexes.push([index, markdownChars[i]]);
+		}
 		split = split.replaceAll(markdownChars[i], addX(markdownChars[i].length));
 	}
 
@@ -186,6 +189,8 @@ export default {
 					);
 				}
 				case ' - ': {
+					console.log('indented list');
+					console.log(split);
 					return (
 						<span class="mdIndentedList">
 							{this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions)}
@@ -488,31 +493,77 @@ export default {
 		return <>{...a}</>;
 	},
 	async sendMessage(
-		content: string,
 		channelId: string,
+		content: string = '',
+		attachments: string[] = [],
 		isTTS: boolean = false,
 		embeds: any[] = [],
 		mentions: any[] = [],
 	) {
-		const message = {
-			content: content,
-			tts: isTTS,
-			embeds: embeds,
-		};
+		// const jsonPayload = {
+		// 	content: content,
+		// 	embeds: [
+		// 		{
+		// 			title: 'Hello, Embed!',
+		// 			description: 'This is an embedded message.',
+		// 			thumbnail: {
+		// 				url: 'attachment://myfilename.png',
+		// 			},
+		// 			image: {
+		// 				url: 'attachment://mygif.gif',
+		// 			},
+		// 		},
+		// 	],
+		// 	message_reference: {
+		// 		message_id: '233648473390448641',
+		// 	},
+		// 	attachments: [
+		// 		{
+		// 			id: 0,
+		// 			description: 'Image of a cute little cat',
+		// 			filename: 'myfilename.png',
+		// 		},
+		// 		{
+		// 			id: 1,
+		// 			description: 'Rickroll gif',
+		// 			filename: 'mygif.gif',
+		// 		},
+		// 	],
+		// };
+		// formData.append('payload_json', JSON.stringify(jsonPayload));
 		const token = await API.getToken();
 		const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
-		const resDataponse = await fetch(url, {
+
+		const formData = new FormData();
+
+		content ? formData.append('content', content) : null;
+		for (let i = 0; i < attachments.length; i++) {
+			const attachment = attachments[i];
+			let fileName;
+			if (attachment.includes('/')) {
+				fileName = attachment.split('/')[attachment.split('/').length - 1];
+			} else {
+				fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+			}
+			const filearray = await fs.readBinaryFile(attachment);
+			const fileBlob = new Blob([filearray]);
+			console.log(fileName, filearray);
+			formData.append(`files[${i}]`, fileBlob, fileName);
+		}
+		console.warn('formData', formData);
+		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
 				Authorization: token,
-				//! IF HAS ATTACHMENTS CHANGE TO MULTIPART/FORM-DATA
-				'Content-Type': 'application/json',
 			},
-
-			body: JSON.stringify(message),
+			body: formData,
 		});
-		const response = await resDataponse.json();
-		console.log(response);
-		return message;
+		if (response.status == 200) {
+			return true;
+		} else {
+			const json = await response.json();
+			console.log(json);
+			return false;
+		}
 	},
 };
