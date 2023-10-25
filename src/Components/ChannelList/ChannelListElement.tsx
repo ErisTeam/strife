@@ -1,5 +1,5 @@
 // API
-import { Channel as ChannelType } from '../../discord';
+import { Channel as ChannelType } from '../../types/Channel';
 
 // Style
 import style from './css.module.css';

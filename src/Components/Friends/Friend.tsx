@@ -1,4 +1,4 @@
-import { Relationship } from '../../discord';
+import { Relationship } from '../../types/User';
 
 import style from './css.module.css';
 

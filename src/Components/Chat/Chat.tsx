@@ -3,7 +3,7 @@ import { For, Show, createMemo, createResource, createSignal, onMount } from 'so
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
-import { Message as MessageType } from '../../discord';
+import { Message as MessageType } from '../../types/Messages';
 import { gatewayOneTimeListener, startGatewayListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
 import { open } from '@tauri-apps/api/dialog';

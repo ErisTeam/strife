@@ -1,5 +1,5 @@
 import { useMenu } from '../ContextMenu/ContextMenu';
-import { Message as MessageType } from '../../discord';
+import { Message as MessageType } from '../../types/Messages';
 import { Show } from 'solid-js';
 import { useAppState } from '../../AppState';
 

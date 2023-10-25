@@ -9,6 +9,7 @@ import MFABoxDocs from './docs/LoginComponents/MFABoxDocs';
 import QRCodeDocs from './docs/LoginComponents/QRCodeDocs';
 import LoadingDocs from './docs/LoadingDocs';
 import { LoginBoxProps } from '../../../Components/Login/LoginBox/LoginBox';
+import ChatDocs from './docs/ChatComponents/ChatDocs';
 
 export default function ComponentDocs() {
     return (
@@ -39,6 +40,7 @@ export default function ComponentDocs() {
             <article class={style.componentGroup}>
                 <h2>Idk</h2>
 
+                <ChatDocs />
                 <LoadingDocs />
             </article>
         </main>

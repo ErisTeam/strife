@@ -45,7 +45,7 @@ interface VerifySuccess extends AuthEvent {
 	userSettings?: any;
 }
 
-type AuthEvents =
+export type AuthEvents =
 	| qrcode
 	| ticketData
 	| RequireAuth
@@ -54,4 +54,3 @@ type AuthEvents =
 	| LoginSuccess
 	| Error
 	| VerifySuccess;
-export { AuthEvents };

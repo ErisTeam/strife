@@ -63,9 +63,9 @@ impl UserA {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PublicUser {
+	pub id: String,
 	pub username: String,
 	pub public_flags: u64,
-	pub id: String,
 	pub global_name: Option<String>,
 	pub discriminator: String,
 	pub bot: Option<bool>,
