@@ -25,7 +25,7 @@ import { createSignal } from 'solid-js';
 import FriendsTab from './FriendsTab';
 import GuildShadow from './GuildShadow';
 
-import { Guild as TGuild } from '../../discord';
+import { Guild as TGuild } from '../../types/Guild';
 interface GuildListProps {
 	className?: string;
 }

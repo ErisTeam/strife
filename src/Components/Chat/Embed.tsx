@@ -1,5 +1,5 @@
 import { For, Match, Show, Switch, createMemo } from 'solid-js';
-import { Embed as EmbedType } from '../../discord';
+import { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
 import API from '../../API';
 import { useAppState } from '../../AppState';

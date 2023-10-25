@@ -6,7 +6,7 @@ import style from './css.module.css';
 import API from '../../API';
 import { t } from '../../Translation';
 
-import { Guild as TGuild } from '../../discord';
+import { Guild as TGuild } from '../../types/Guild';
 
 interface GuildProps {
 	className?: string;

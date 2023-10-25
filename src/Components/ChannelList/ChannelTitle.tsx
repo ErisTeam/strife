@@ -16,7 +16,7 @@ import {
 	UserCog2,
 	UserPlus2,
 } from 'lucide-solid';
-import { Guild } from '../../discord';
+import { Guild } from '../../types/Guild';
 import style from './css.module.css';
 import { createSignal } from 'solid-js';
 type GuildTitleProps = {

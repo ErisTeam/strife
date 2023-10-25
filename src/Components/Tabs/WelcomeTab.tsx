@@ -5,7 +5,7 @@ import API from '../../API';
 
 import style from './Tabs.module.css';
 import Message from '../Messages/Message';
-import { Message as MessageType } from '../../discord';
+import { Message as MessageType } from '../../types/Messages';
 
 export default function WelcomeTab() {
 	// const tabData = useTabContext();

@@ -1,6 +1,6 @@
 import { useMenu } from '../ContextMenu/ContextMenu';
 import API from '../../API';
-import { Channel } from '../../discord';
+import { Channel } from '../../types/Channel';
 import { useAppState } from '../../AppState';
 import { createTextChannelTab } from '../Tabs/TabUtils';
 

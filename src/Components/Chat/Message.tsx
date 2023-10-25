@@ -1,7 +1,7 @@
 import { For, Show, createMemo } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
-import { Message as MessageType } from '../../discord';
+import { Message as MessageType } from '../../types/Messages';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Attachments from './Attachments';
 import Embed from './Embed';

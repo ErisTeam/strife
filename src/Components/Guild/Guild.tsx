@@ -12,7 +12,7 @@ import { t } from '../../Translation';
 import { Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
-import { Guild as TGuild } from '../../discord';
+import { Guild as TGuild } from '../../types/Guild';
 type GuildProps = {
 	// index: number;
 	className?: string;

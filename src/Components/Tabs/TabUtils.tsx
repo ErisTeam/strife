@@ -1,6 +1,6 @@
 import { JSX, createContext, useContext } from 'solid-js';
 import { Tab } from '../../types';
-import { Channel } from '../../discord';
+import { Channel } from '../../types/Channel';
 
 import API from '../../API';
 

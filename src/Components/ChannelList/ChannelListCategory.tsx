@@ -1,6 +1,6 @@
 // API
 import { JSX, createSignal } from 'solid-js';
-import { Channel as ChannelType } from '../../discord';
+import { Channel as ChannelType } from '../../types/Channel';
 import { ChevronDown } from 'lucide-solid';
 // Components
 // Style

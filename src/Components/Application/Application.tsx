@@ -14,7 +14,7 @@ import ControlPanel from '../ControlPanel/ControlPanel';
 import Dev from '../Dev/Dev';
 
 import API from '../../API';
-import { Guild } from '../../discord';
+import { Guild } from '../../types/Guild';
 import ChannelList from '../ChannelList/ChannelList';
 import FriendsList from '../Friends/FriendsList';
 import TabWindow from '../Tabs/TabWindow';
