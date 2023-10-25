@@ -19,6 +19,8 @@ export default function Attachments(props: AttachmentsProps) {
 		const audios = [];
 		if (ats.length == 0) return;
 		for (let i = 0; i < ats.length; i++) {
+			console.log(ats[i]);
+			if (ats[i].content_type == undefined) break;
 			if (ats[i].content_type.includes('image')) {
 				images.push(
 					<li class={style.image}>

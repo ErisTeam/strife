@@ -1,6 +1,7 @@
 import { fs } from '@tauri-apps/api';
 import API from '../API';
 import UserMention from '../Components/Chat/UserMention';
+import { UploadFile } from '../Components/Chat/Chat';
 const userMentionRegex = '<@!?(\\d+)>';
 const channelMentionRegex = '<#(\\d+)>';
 const roleMentionRegex = '<@&(\\d+)>';
@@ -495,7 +496,7 @@ export default {
 	async sendMessage(
 		channelId: string,
 		content: string = '',
-		attachments: string[] = [],
+		attachments: UploadFile[] = [],
 		isTTS: boolean = false,
 		embeds: any[] = [],
 		mentions: any[] = [],
@@ -543,8 +544,8 @@ export default {
 			const attachment = attachments[i];
 			console.log(attachment, typeof attachment);
 			if (typeof attachment != 'string') {
-				fileName = 'attachment';
-				fileBlob = attachment;
+				fileName = attachment.name;
+				fileBlob = attachment.blob;
 				console.log(fileName, fileBlob);
 			} else {
 				if (attachment.includes('/')) {
@@ -556,6 +557,7 @@ export default {
 				fileBlob = new Blob([filearray]);
 				console.log(fileName, filearray);
 			}
+			console.log('sending', fileName);
 
 			formData.append(`files[${i}]`, fileBlob, fileName);
 		}
@@ -589,7 +591,7 @@ export default {
 					stat.pos += offset;
 					stat.done = true;
 					return stat;
-				} else getCursorPosition(currentNode, node, offset, stat);
+				} else this.getCursorPosition(currentNode, node, offset, stat);
 			}
 		}
 		return stat;

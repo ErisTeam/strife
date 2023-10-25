@@ -12,6 +12,12 @@ import style from './css.module.css';
 import MessageEditor from './MessageEditor';
 import MessageSender from './MessageSender';
 
+export type UploadFile =
+	| string
+	| {
+			name: string;
+			blob: Blob;
+	  };
 export default function Chat() {
 	const TabContext = useTabContext();
 	console.log('TabContext', TabContext);
@@ -19,7 +25,7 @@ export default function Chat() {
 
 	let chatref: HTMLOListElement;
 
-	const [files, setFiles] = createSignal<string[]>([]);
+	const [files, setFiles] = createSignal<UploadFile[]>([]);
 
 	//TODO: make it possible to select multiple characters
 

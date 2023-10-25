@@ -1,12 +1,13 @@
 import { Accessor, Setter, Show, Signal, createEffect, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
 import API from '../../API';
+import { UploadFile } from './Chat';
 
 type MessageEditorProps = {
 	text: Accessor<string>;
 	setText: Setter<string>;
-	files: Accessor<string[]>;
-	setFiles: Setter<any[]>;
+	files: Accessor<UploadFile[]>;
+	setFiles: Setter<UploadFile[]>;
 };
 const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
@@ -34,7 +35,8 @@ export default function MessageEditor(props: MessageEditorProps) {
 				selection.collapseToEnd();
 			} else {
 				let blob = e.clipboardData.files[0];
-				props.setFiles((files) => [...files, blob]);
+				let fileName = blob.name;
+				props.setFiles((files) => [...files, { name: fileName, blob: blob }]);
 			}
 		});
 		textarea.addEventListener('keyup', (e) => {

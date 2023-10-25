@@ -4,11 +4,12 @@ import { open } from '@tauri-apps/api/dialog';
 import API from '../../API';
 import MessageEditor from './MessageEditor';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { UploadFile } from './Chat';
 type MessageSenderProps = {
 	channelId: string;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
-	files: Accessor<string[]>;
-	setFiles: Setter<string[]>;
+	files: Accessor<UploadFile[]>;
+	setFiles: Setter<UploadFile[]>;
 };
 export default function MessageSender(props: MessageSenderProps) {
 	const [msgText, setMsgText] = createSignal('');
@@ -62,7 +63,7 @@ export default function MessageSender(props: MessageSenderProps) {
 									>
 										X
 									</button>
-									<img style="width: 50px; height:50px" src={URL.createObjectURL(file)} alt="lol" />
+									<img style="width: 50px; height:50px" src={URL.createObjectURL(file.blob)} alt="lol" />
 								</li>
 							);
 						}
