@@ -49,7 +49,7 @@ export default function MessageEditor(props: MessageEditorProps) {
 			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
 				setIsTyping(true);
 
-				if (MARKDOWN_KEYS.includes(e.key)) {
+				if (MARKDOWN_KEYS.includes(e.key) || e.key == 'Backspace') {
 					const sel = window.getSelection();
 
 					const pos = API.Messages.getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
