@@ -11,7 +11,6 @@ import { Dynamic } from 'solid-js/web';
 import API from '../../API';
 import { createTextChannelTab } from '../Tabs/TabUtils';
 import { Tab } from '../../types';
-import { open } from '@tauri-apps/api/dialog';
 
 interface ChannelProps {
 	data: ChannelType;

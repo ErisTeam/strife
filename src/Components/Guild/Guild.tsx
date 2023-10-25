@@ -40,11 +40,12 @@ const Guild = (props: GuildProps) => {
 	});
 	onMount(() => {
 		const boundingRect = ref.getBoundingClientRect();
-		updateRelativeYPositon();
+
 		window.addEventListener('keydown', zoomChange);
 		toolTipRef.style.left = `${boundingRect.width}px`;
 
 		ref.parentElement.parentElement.addEventListener('scroll', updateRelativeYPositon);
+		updateRelativeYPositon();
 	});
 	actions.onDragEnd(() => {
 		updateRelativeYPositon();
@@ -55,6 +56,7 @@ const Guild = (props: GuildProps) => {
 			updateRelativeYPositon();
 		}
 	}
+
 	return (
 		<li
 			use:sortable

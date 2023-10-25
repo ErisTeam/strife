@@ -9,6 +9,8 @@ import { useTabContext } from '../Tabs/TabUtils';
 import { open } from '@tauri-apps/api/dialog';
 import Message from './Message';
 import style from './css.module.css';
+import MessageEditor from './MessageEditor';
+import MessageSender from './MessageSender';
 
 export default function Chat() {
 	const TabContext = useTabContext();
@@ -16,95 +18,10 @@ export default function Chat() {
 	const AppState = useAppState();
 
 	let chatref: HTMLOListElement;
-	let textarea: HTMLDivElement;
-	const [editor, setEditor] = createSignal<any>();
-	const [isTyping, setIsTyping] = createSignal(false); //TODO: make this work
+
 	const [files, setFiles] = createSignal<string[]>([]);
 
 	//TODO: make it possible to select multiple characters
-
-	// get the cursor position from .editor start
-	function getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
-		if (stat.done) return stat;
-
-		let currentNode = null;
-		if (parent.childNodes.length == 0) {
-			stat.pos += parent.textContent.length;
-		} else {
-			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
-				currentNode = parent.childNodes[i];
-				if (currentNode === node) {
-					stat.pos += offset;
-					stat.done = true;
-					return stat;
-				} else getCursorPosition(currentNode, node, offset, stat);
-			}
-		}
-		return stat;
-	}
-
-	//find the child node and relative position and set it on range
-	function setCursorPosition(parent: Node, range: Range, stat: { pos: number; done: boolean }) {
-		if (stat.done) return range;
-
-		if (parent.childNodes.length == 0) {
-			if (parent.textContent.length >= stat.pos) {
-				range.setStart(parent, stat.pos);
-				stat.done = true;
-			} else {
-				stat.pos = stat.pos - parent.textContent.length;
-			}
-		} else {
-			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
-				const currentNode = parent.childNodes[i];
-				setCursorPosition(currentNode, range, stat);
-			}
-		}
-		return range;
-	}
-	const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
-	const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
-	//!THIS IS BROKEN AS HELL
-
-	onMount(() => {
-		textarea.addEventListener('keyup', (e) => {
-			console.log('isTyping', isTyping(), textarea.innerText.length);
-			console.log('keyup', e.key);
-			if (e.key == 'Enter' && e.shiftKey) {
-				console.log('newLine');
-			}
-			if (e.key == 'Enter' && !e.shiftKey) {
-				console.log('send');
-			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
-				setIsTyping(true);
-
-				console.log('key', e.key);
-				if (MARKDOWN_KEYS.includes(e.key)) {
-					const sel = window.getSelection();
-					console.log('ke', e.key);
-
-					const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
-					if (sel.focusOffset === 0) pos.pos += 0.5;
-					setEditor(textarea.innerText);
-					const temp = API.Messages.formatMarkdownToJSXPreserve(textarea.innerText);
-
-					setEditor(temp);
-
-					sel.removeAllRanges();
-					const range = setCursorPosition(textarea, document.createRange(), {
-						pos: pos.pos,
-						done: false,
-					});
-					range.collapse(true);
-					sel.addRange(range);
-				} else {
-					console.log('KEY', e.key);
-
-					if (textarea.innerText.length < 1) setIsTyping(false);
-				}
-			}
-		});
-	});
 
 	function scrollToBottom() {
 		chatref.scrollTo(0, chatref.scrollHeight);
@@ -192,11 +109,7 @@ export default function Chat() {
 			invoke('send_to_voice_gateway', { packet: JSON.stringify(data) });
 		};
 	}
-	function sendMessage() {
-		API.Messages.sendMessage(TabContext.channelId, textarea.innerText, files());
-		textarea.innerText = '';
-		setFiles([]);
-	}
+
 	const renderableMessages = createMemo(() => {
 		const renderableMessages = [];
 		let lastAuthor = '';
@@ -218,26 +131,7 @@ export default function Chat() {
 		console.log('renderableMessages', renderableMessages);
 		return renderableMessages;
 	});
-	function uploadFile() {
-		open({
-			multiple: true,
-			filters: [
-				{
-					name: 'Image',
-					extensions: ['png', 'jpeg'],
-				},
-			],
-		}).then((selected) => {
-			if (Array.isArray(selected)) {
-				setFiles((files) => [...files, ...selected]);
-				// user selected multiple files
-			} else if (selected === null) {
-				// user cancelled the selection
-			} else {
-				setFiles((files) => [...files, selected]);
-			}
-		});
-	}
+
 	return (
 		<main class={style.main}>
 			<ol ref={chatref}>
@@ -250,55 +144,7 @@ export default function Chat() {
 			</ol>
 			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
 			<section>
-				<ul>
-					<For each={files()}>
-						{(file) => {
-							const assetUrl = convertFileSrc(file, 'asset');
-							return (
-								<li>
-									<button
-										onClick={() => {
-											setFiles((files) => files.filter((f) => f != file));
-										}}
-									>
-										X
-									</button>
-									<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
-								</li>
-							);
-						}}
-					</For>
-				</ul>
-				<div class={style.editorWrapper}>
-					<div class={style.buttonContainer}>
-						<button class={style.uploadTest} onClick={uploadFile}>
-							UPLOAD
-						</button>
-					</div>
-
-					<div class={style.editor}>
-						<Show when={!isTyping()}>
-							<div class={style.placeholder}>PLACEHOLDER TEXT</div>
-						</Show>
-						<div
-							title="TEMP"
-							class={style.textarea}
-							role="textbox"
-							aria-multiline="true"
-							spellcheck={true}
-							aria-autocomplete="list"
-							contenteditable={true}
-							ref={textarea}
-						>
-							{editor()}
-						</div>
-					</div>
-					<div class={style.buttonContainer}>
-						<button class={style.send} onClick={sendMessage}>
-							Send
-						</button>
-					</div>
-				</div>
+				<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
 			</section>
 		</main>
 	);
