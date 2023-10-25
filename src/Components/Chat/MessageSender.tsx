@@ -21,12 +21,6 @@ export default function MessageSender(props: MessageSenderProps) {
 	function uploadFile() {
 		open({
 			multiple: true,
-			filters: [
-				{
-					name: 'Image',
-					extensions: ['png', 'jpeg'],
-				},
-			],
 		}).then((selected) => {
 			if (Array.isArray(selected)) {
 				props.setFiles((files) => [...files, ...selected]);
@@ -43,19 +37,35 @@ export default function MessageSender(props: MessageSenderProps) {
 			<ul>
 				<For each={props.files()}>
 					{(file) => {
-						const assetUrl = convertFileSrc(file, 'asset');
-						return (
-							<li>
-								<button
-									onClick={() => {
-										props.setFiles((files) => files.filter((f) => f != file));
-									}}
-								>
-									X
-								</button>
-								<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
-							</li>
-						);
+						if (typeof file == 'string') {
+							let assetUrl = convertFileSrc(file, 'asset');
+
+							return (
+								<li>
+									<button
+										onClick={() => {
+											props.setFiles((files) => files.filter((f) => f != file));
+										}}
+									>
+										X
+									</button>
+									<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
+								</li>
+							);
+						} else {
+							return (
+								<li>
+									<button
+										onClick={() => {
+											props.setFiles((files) => files.filter((f) => f != file));
+										}}
+									>
+										X
+									</button>
+									<img style="width: 50px; height:50px" src={URL.createObjectURL(file)} alt="lol" />
+								</li>
+							);
+						}
 					}}
 				</For>
 			</ul>
@@ -65,7 +75,7 @@ export default function MessageSender(props: MessageSenderProps) {
 						UPLOAD
 					</button>
 				</div>
-				<MessageEditor setText={setMsgText} text={msgText} />
+				<MessageEditor setText={setMsgText} text={msgText} files={props.files} setFiles={props.setFiles} />
 
 				<div class={style.buttonContainer}>
 					<button class={style.send} onClick={sendMessage}>

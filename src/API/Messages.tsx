@@ -538,16 +538,25 @@ export default {
 
 		content ? formData.append('content', content) : null;
 		for (let i = 0; i < attachments.length; i++) {
-			const attachment = attachments[i];
 			let fileName;
-			if (attachment.includes('/')) {
-				fileName = attachment.split('/')[attachment.split('/').length - 1];
+			let fileBlob;
+			const attachment = attachments[i];
+			console.log(attachment, typeof attachment);
+			if (typeof attachment != 'string') {
+				fileName = 'attachment';
+				fileBlob = attachment;
+				console.log(fileName, fileBlob);
 			} else {
-				fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+				if (attachment.includes('/')) {
+					fileName = attachment.split('/')[attachment.split('/').length - 1];
+				} else {
+					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+				}
+				const filearray = await fs.readBinaryFile(attachment);
+				fileBlob = new Blob([filearray]);
+				console.log(fileName, filearray);
 			}
-			const filearray = await fs.readBinaryFile(attachment);
-			const fileBlob = new Blob([filearray]);
-			console.log(fileName, filearray);
+
 			formData.append(`files[${i}]`, fileBlob, fileName);
 		}
 		console.warn('formData', formData);

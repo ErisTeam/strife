@@ -5,6 +5,8 @@ import API from '../../API';
 type MessageEditorProps = {
 	text: Accessor<string>;
 	setText: Setter<string>;
+	files: Accessor<string[]>;
+	setFiles: Setter<any[]>;
 };
 const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
@@ -19,6 +21,22 @@ export default function MessageEditor(props: MessageEditorProps) {
 		}
 	});
 	onMount(() => {
+		textarea.addEventListener('paste', (e) => {
+			e.preventDefault();
+
+			if (!e.clipboardData.files[0]) {
+				let text = e.clipboardData.getData('text');
+
+				const selection = window.getSelection();
+				if (!selection.rangeCount) return;
+				selection.deleteFromDocument();
+				selection.getRangeAt(0).insertNode(document.createTextNode(text));
+				selection.collapseToEnd();
+			} else {
+				let blob = e.clipboardData.files[0];
+				props.setFiles((files) => [...files, blob]);
+			}
+		});
 		textarea.addEventListener('keyup', (e) => {
 			props.setText(textarea.innerText);
 			if (e.key == 'Enter' && e.shiftKey) {
