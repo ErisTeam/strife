@@ -81,7 +81,7 @@ export interface PublicUser {
     id: snowflake; // The user's id.
     discriminator: string; // The user's Discord-tag.
     username: string; // The user's username, not unique across the platform.
-    global_name: string;  //The user's display name, if it is set. For bots, this is the application name.
+    global_name?: string;  //The user's display name, if it is set. For bots, this is the application name.
 
     avatar: string; // The user's avatar hash.
     avatar_decoration?: string; // The user's avatar decoration hash.

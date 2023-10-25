@@ -41,13 +41,14 @@ const Message = (props: MessageProps) => {
 		return (message.author.global_name as string) || (message.author.username as string);
 	});
 
-	const contextMenu = createContextMenu({
+	/*const contextMenu = createContextMenu({
 		component: [MessageContextMenu],
 		data: message,
-	});
+	});*/
 
+    /*use:contextMenu*/
 	return (
-		<li classList={{ [style.message]: !props.same, [style.messageSame]: props.same }} use:contextMenu>
+		<li classList={{ [style.message]: !props.same, [style.messageSame]: props.same }} >
 			<Show when={props.same}>
 				<time>{intl.format(new Date(message.timestamp))}</time>
 			</Show>

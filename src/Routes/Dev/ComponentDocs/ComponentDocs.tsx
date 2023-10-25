@@ -10,6 +10,7 @@ import QRCodeDocs from './docs/LoginComponents/QRCodeDocs';
 import LoadingDocs from './docs/LoadingDocs';
 import { LoginBoxProps } from '../../../Components/Login/LoginBox/LoginBox';
 import ChatDocs from './docs/ChatComponents/ChatDocs';
+import MessageDocs from './docs/ChatComponents/MessageDocs';
 
 export default function ComponentDocs() {
     return (
@@ -41,6 +42,7 @@ export default function ComponentDocs() {
                 <h2>Idk</h2>
 
                 <ChatDocs />
+                <MessageDocs />
                 <LoadingDocs />
             </article>
         </main>
