@@ -3,7 +3,7 @@ import API from '../API';
 import '@testing-library/jest-dom';
 test('plain text', () => {
 	const x = API.Messages.formatMarkdownToJSXPreserve('hello');
-	expect(x).toStrictEqual(<>hello</>);
+	expect(x).toStrictEqual([<>hello</>]);
 });
 test('bold', () => {
 	const x = API.Messages.formatMarkdownToJSXPreserve('**hello**').flat(Infinity);
@@ -223,7 +223,7 @@ test('monster', () => {
 });
 test('fake header', () => {
 	const x = API.Messages.formatMarkdownToJSXPreserve('#### Header');
-	expect(x).toStrictEqual(<>#### Header</>);
+	expect(x).toStrictEqual([<>#### Header</>]);
 });
 
 test('alternate list', () => {

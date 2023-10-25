@@ -244,13 +244,14 @@ export default {
 		let splits = content.split(allHTMLOutsides);
 		splits = fixSplits(splits);
 		if (splits.length == 0) return '';
-		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
-			return this.formatMentions(splits[0], mentions);
-		}
 
+		console.log('splits', splits);
 		const results = splits.map((split) => {
 			const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
 
+			if (!split.match(markdownVerifier)) {
+				return this.formatMentions(split, mentions);
+			}
 			if (split.match(linkRegex)) {
 				return split;
 			}
@@ -275,6 +276,7 @@ export default {
 					);
 				}
 				case '*': {
+					console.log('split', split);
 					return (
 						<>
 							<span class="mdSuggestion">*</span>
