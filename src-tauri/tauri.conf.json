@@ -96,7 +96,8 @@
 				"title": "PandaCord",
 				"visible": false,
 				"center": true,
-				"decorations": false
+				"decorations": false,
+				"fileDropEnabled": false
 			},
 			{
 				"width": 200,

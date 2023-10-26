@@ -34,9 +34,11 @@ export default function MessageEditor(props: MessageEditorProps) {
 				selection.getRangeAt(0).insertNode(document.createTextNode(text));
 				selection.collapseToEnd();
 			} else {
-				let blob = e.clipboardData.files[0];
-				let fileName = blob.name;
-				props.setFiles((files) => [...files, { name: fileName, blob: blob }]);
+				for (let i = 0; i < e.clipboardData.files.length; i++) {
+					let blob = e.clipboardData.files[i];
+					let fileName = blob.name;
+					props.setFiles((files) => [...files, { name: fileName, blob: blob }]);
+				}
 			}
 		});
 		textarea.addEventListener('keyup', (e) => {
