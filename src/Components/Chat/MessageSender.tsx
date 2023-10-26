@@ -34,7 +34,7 @@ export default function MessageSender(props: MessageSenderProps) {
 		});
 	}
 	return (
-		<>
+		<section class={style.messageSender}>
 			<ul>
 				<For each={props.files()}>
 					{(file) => {
@@ -84,6 +84,6 @@ export default function MessageSender(props: MessageSenderProps) {
 					</button>
 				</div>
 			</div>
-		</>
+		</section>
 	);
 }

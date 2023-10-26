@@ -188,10 +188,8 @@ export default function Chat() {
 					</li>
 				</Show>
 			</ol>
-			{/* style="position: relative; outline: none; white-space: pre-wrap; overflow-wrap: break-word;"  */}
-			<section>
-				<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
-			</section>
+
+			<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
 		</main>
 	);
 }
