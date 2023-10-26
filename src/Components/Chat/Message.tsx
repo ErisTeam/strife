@@ -6,28 +6,38 @@ import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Attachments from './Attachments';
 import Embed from './Embed';
 import MessageContextMenu from './MessageContextMenu';
-import style from './css.module.css';
+import style from './Message.module.css';
 
 type MessageProps = {
 	message: MessageType;
+
+    /** Should the message be treated as the successor of a previous one (sent by the same person), which will show it without a profile picture. */
+	same?: boolean;
+
 	updateMessage?: (val: Partial<MessageType>) => void;
 	setReference?: (id: string) => void;
-	same?: boolean;
 };
+
 const Message = (props: MessageProps) => {
-	const message = props.message;
 	const AppState = useAppState();
-	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
-		timeStyle: 'short',
-	});
+	const message = props.message;
+
+    // Time format
+	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), { timeStyle: 'short' });
+
+    const time = createMemo(() => {
+        return intl.format(new Date(message.timestamp))
+    })
+
 	const formattedMessage = createMemo(() => {
 		const messageText = API.Messages.formatMarkdownToJSX(message.content);
 		console.log('messageText', messageText);
 		return messageText;
 	});
 
-	//TODO: make embeds work
-	function formatEmbed(embed: any) {}
+	const userName = createMemo(() => {
+		return (message.author.global_name as string) || (message.author.username as string);
+	});
 
 	const profileImage = createMemo(() => {
 		if (message.author.avatar) {
@@ -37,9 +47,8 @@ const Message = (props: MessageProps) => {
 		}
 	});
 
-	const userName = createMemo(() => {
-		return (message.author.global_name as string) || (message.author.username as string);
-	});
+	//TODO: make embeds work
+	function formatEmbed(embed: any) {}
 
 	/*const contextMenu = createContextMenu({
 		component: [MessageContextMenu],
@@ -48,32 +57,39 @@ const Message = (props: MessageProps) => {
 
     /*use:contextMenu*/
 	return (
-		<li classList={{ [style.message]: !props.same, [style.messageSame]: props.same }} >
-			<Show when={props.same}>
-				<time>{intl.format(new Date(message.timestamp))}</time>
+		<li class={style.message} classList={{ [style.same]: props.same }} >
+			<Show
+                when={props.same}
+                fallback={
+                    <button class={[style.left, style.profileImage].join(' ')}>
+                        <img src={profileImage()} alt={userName()} />
+                    </button>
+                }
+            >
+				<time class={style.left}>{time()}</time>
 			</Show>
-			<Show when={!props.same}>
-				<button>
-					<img src={profileImage()} alt={userName()} />
-				</button>
-			</Show>
-			<div class={style.messageInner}>
+
+			<div class={style.right}>
 				<Show when={!props.same}>
-					<div class={style.details}>
-						<button>
+					<div class={style.info}>
+						<button class={style.userName}>
 							{userName()}
 
 							<Show when={message.author.bot}>
 								<span class={style.botTag}> Bot</span>
 							</Show>
 						</button>
-						<time>{intl.format(new Date(message.timestamp))}</time>
+						<time>{time()}</time>
 					</div>
 				</Show>
-				<p class={style.messageText}>{formattedMessage()}</p>
+
+				<p class={style.text}>{formattedMessage()}</p>
+
 				<Attachments attachments={message.attachments} />
 
-				<For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
+				<For each={message.embeds}>
+                    {(embed) => <Embed embed={embed} />}
+                </For>
 			</div>
 		</li>
 	);

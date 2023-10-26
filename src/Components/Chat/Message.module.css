@@ -1,0 +1,68 @@
+.message {
+    display: grid;
+    grid-template-columns: 4em 1fr;
+    grid-template-rows: 2.4em 1fr;
+
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+}
+
+time {
+    font-size: 0.75em;
+    color: var(--disabled-text);
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .info {
+        display: flex;
+        gap: 0.8em;
+        align-items: center;
+
+        .userName {
+            font-weight: bold;
+        }
+    }
+}
+
+/* Left span of a message (profile picture or time) */
+.left {
+    align-self: center;
+    justify-self: center;
+}
+
+.profileImage.left {
+    max-width: 100%;
+    max-height: 100%;
+    width: fit-content;
+    height: 100%;
+}
+
+.profileImage.left > img {
+    border-radius: 100%;
+}
+
+time.left {
+    height: fit-content;
+    visibility: hidden;
+}
+
+.message:hover {
+    backdrop-filter: brightness(80%);
+}
+
+.message:hover time.left {
+    visibility: visible;
+}
+
+/* Successor of a previous message (sent by the same person) */
+.same {
+    grid-template-rows: 1fr;
+}
+
+.botTag {
+	color: purple;
+}

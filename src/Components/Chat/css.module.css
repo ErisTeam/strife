@@ -49,11 +49,6 @@
 
 	ol {
 		/* TODO:Figure out a way to get rid of this calc */
-		height: 100%;
-
-		display: flex;
-		flex-direction: column;
-		gap: 0.5em;
 		overflow-y: scroll;
 
 		&::-webkit-scrollbar {
@@ -251,9 +246,6 @@
 	}
 }
 
-.messageSame {
-	display: flex;
-}
 .messageText {
 	.list {
 		position: relative;
@@ -291,4 +283,7 @@
 }
 .fileDrop {
 	filter: blur(0.5em);
+}
+.TEST > li:not(:first-child):not([class*="same"]) {
+    margin-top: 1em;
 }

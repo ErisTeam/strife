@@ -180,7 +180,7 @@ export default function Chat() {
 	});
 	return (
 		<main class={style.main} classList={{ [style.fileDrop]: isDragging() }} ref={mainref}>
-			<ol ref={chatref}>
+			<ol class={style.TEST} ref={chatref}>
 				{renderableMessages()}
 				<Show when={isVoiceChannel()}>
 					<li>

@@ -1,0 +1,5 @@
+/* WARN: This implementation relies on the fact that messages sent by the same user (one after another) have the 'same' class.
+ * if the name changes it also must change here! */
+.list > li:not(:first-child):not([class*="same"]) {
+    margin-top: 1em;
+}

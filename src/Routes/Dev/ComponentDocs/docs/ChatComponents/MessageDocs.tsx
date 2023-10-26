@@ -2,6 +2,7 @@ import { useAppState } from '../../../../../AppState';
 import Message from '../../../../../Components/Chat/Message';
 import { Message as MessageType } from '../../../../../types/Messages';
 import style from './../../ComponentDocs.module.css';
+import listStyle from './../../assets/messageList.module.css';
 import { SameMessageMockup, SingleMessageMockup, TwoUsersMessageMockup } from '../../assets/messageMockups';
 import { JSX } from 'solid-js';
 
@@ -12,7 +13,7 @@ function renderMockupMessages(messages: MessageType[]) {
         result.push(<Message message={messages[i]} same={(i === 0) ? false : (messages[i].author.id === messages[i-1].author.id)} />);
     }
 
-    return result;
+    return (<ol class={listStyle.list}>{result}</ol>);
 }
 
 // Needs guild and channel id
