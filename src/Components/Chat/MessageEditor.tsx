@@ -48,6 +48,8 @@ export default function MessageEditor(props: MessageEditorProps) {
 			}
 			if (e.key == 'Enter' && !e.shiftKey) {
 				console.log('send');
+			} else if (e.key == 'Backspace' && textarea.innerText.length < 1) {
+				setIsTyping(false);
 			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
 				setIsTyping(true);
 
