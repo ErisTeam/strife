@@ -109,28 +109,8 @@ export default function Chat() {
 		};
 	}
 	const [isDragging, setIsDragging] = createSignal(false);
+	let lastAuthor = '';
 
-	const renderableMessages = createMemo(() => {
-		const renderableMessages = [];
-		let lastAuthor = '';
-
-		const messagesToRender = messages();
-		if (!messagesToRender) return [];
-		console.log('messagesToRender', messagesToRender);
-		for (let i = 0; i < messagesToRender.length; i++) {
-			if (
-				messagesToRender[i].author.id == lastAuthor
-				//&& messagesToRender[i].timestamp - messagesToRender[i - 1].timestamp < 1000 * 60 * 7
-			) {
-				renderableMessages.push(<Message same={true} message={messagesToRender[i]} updateMessage={updateMessage} />);
-			} else {
-				renderableMessages.push(<Message message={messagesToRender[i]} updateMessage={updateMessage} />);
-				lastAuthor = messagesToRender[i].author.id as string;
-			}
-		}
-		console.log('renderableMessages', renderableMessages);
-		return renderableMessages;
-	});
 	let mainref: HTMLDivElement;
 
 	onMount(() => {
@@ -178,15 +158,20 @@ export default function Chat() {
 		};
 		scrollToBottom();
 	});
+
 	return (
 		<main class={style.main} classList={{ [style.fileDrop]: isDragging() }} ref={mainref}>
 			<ol class={style.TEST} ref={chatref}>
-				{renderableMessages()}
-				<Show when={isVoiceChannel()}>
-					<li>
-						<button onclick={startVoice}>Join Voice Channel</button>
-					</li>
-				</Show>
+				<For each={messages()}>
+					{(message) => {
+						if (message.author.id == lastAuthor) {
+							return <Message same={true} message={message} updateMessage={updateMessage} />;
+						} else {
+							lastAuthor = message.author.id as string;
+							return <Message message={message} updateMessage={updateMessage} />;
+						}
+					}}
+				</For>
 			</ol>
 
 			<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
