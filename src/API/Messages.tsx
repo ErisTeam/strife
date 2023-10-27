@@ -572,6 +572,8 @@ export default {
 			body: formData,
 		});
 		if (response.status == 200) {
+			const json = await response.json();
+			console.log(json);
 			return true;
 		} else {
 			const json = await response.json();
