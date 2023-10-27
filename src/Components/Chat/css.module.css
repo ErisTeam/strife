@@ -46,6 +46,28 @@
 	height: fit-content;
 	display: flex;
 	flex-direction: column;
+	> ul {
+		background-color: violet;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		li {
+			display: flex;
+			align-items: center;
+			position: relative;
+			button {
+				position: absolute;
+				top: 0;
+				right: 0;
+				background-color: pink;
+			}
+			img {
+				height: 2em;
+				width: 2em;
+				object-fit: cover;
+			}
+		}
+	}
 	.editorWrapper {
 		display: flex;
 		.buttonContainer {

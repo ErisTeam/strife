@@ -1,30 +1,39 @@
-import { Accessor, For, Setter, createSignal } from 'solid-js';
+import { Accessor, For, Setter, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
-import { open } from '@tauri-apps/api/dialog';
+import { message, open } from '@tauri-apps/api/dialog';
 import API from '../../API';
 import MessageEditor from './MessageEditor';
+import { Message as MessageType } from '../../types/Messages';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { UploadFile } from './Chat';
 type MessageUpdaterProps = {
-	channelId: string;
-	messageId: string;
+	message: MessageType;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
 	setIsEditing: Setter<boolean>;
-	msgText: string;
 };
 export default function MessageUpdater(props: MessageUpdaterProps) {
-	const [msgText, setMsgText] = createSignal(props.msgText);
+	const [msgText, setMsgText] = createSignal(props.message.content);
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 
 	console.log('updater props', props);
 
 	function updateMessage() {
-		API.Messages.editMessage(props.channelId, props.messageId, msgText(), files());
+		API.Messages.editMessage(props.message.channel_id, props.message.id, msgText(), files());
 		props.setIsEditing(false);
 	}
+	// TODO:ADD BUTTON
 	function cancel() {
 		props.setIsEditing(false);
 	}
+	onMount(() => {
+		props.message.attachments.forEach((attachment) => {
+			console.log('test2');
+			setFiles((files) => [
+				...files,
+				{ name: attachment.filename, attachmentId: attachment.id, attachmentUrl: attachment.url },
+			]);
+		});
+	});
 	function uploadFile() {
 		open({
 			multiple: true,
@@ -57,6 +66,19 @@ export default function MessageUpdater(props: MessageUpdaterProps) {
 										X
 									</button>
 									<img style="width: 50px; height:50px" src={assetUrl} alt="lol" />
+								</li>
+							);
+						} else if (file.attachmentUrl) {
+							return (
+								<li>
+									<button
+										onClick={() => {
+											setFiles((files) => files.filter((f) => f != file));
+										}}
+									>
+										X
+									</button>
+									<img style="width: 50px; height:50px" src={file.attachmentUrl} alt="lol" />
 								</li>
 							);
 						} else {

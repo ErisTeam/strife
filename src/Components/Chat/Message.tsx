@@ -88,12 +88,7 @@ const Message = (props: MessageProps) => {
 				</Show>
 
 				<Show when={isEditing()} fallback={<p class={style.text}>{formattedMessage()}</p>}>
-					<MessageUpdater
-						channelId={message.channel_id}
-						setIsEditing={setIsEditing}
-						msgText={message.content}
-						messageId={message.id}
-					/>
+					<MessageUpdater setIsEditing={setIsEditing} message={message} />
 				</Show>
 
 				<Attachments attachments={message.attachments} />

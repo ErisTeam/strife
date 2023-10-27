@@ -503,37 +503,6 @@ export default {
 		embeds: any[] = [],
 		mentions: any[] = [],
 	) {
-		// const jsonPayload = {
-		// 	content: content,
-		// 	embeds: [
-		// 		{
-		// 			title: 'Hello, Embed!',
-		// 			description: 'This is an embedded message.',
-		// 			thumbnail: {
-		// 				url: 'attachment://myfilename.png',
-		// 			},
-		// 			image: {
-		// 				url: 'attachment://mygif.gif',
-		// 			},
-		// 		},
-		// 	],
-		// 	message_reference: {
-		// 		message_id: '233648473390448641',
-		// 	},
-		// 	attachments: [
-		// 		{
-		// 			id: 0,
-		// 			description: 'Image of a cute little cat',
-		// 			filename: 'myfilename.png',
-		// 		},
-		// 		{
-		// 			id: 1,
-		// 			description: 'Rickroll gif',
-		// 			filename: 'mygif.gif',
-		// 		},
-		// 	],
-		// };
-		// formData.append('payload_json', JSON.stringify(jsonPayload));
 		const token = await API.getToken();
 		const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
@@ -593,18 +562,13 @@ export default {
 		const url = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
 
 		const formData = new FormData();
+		let attachmentObjects = [];
 
-		content ? formData.append('content', content) : null;
 		for (let i = 0; i < attachments.length; i++) {
-			let fileName;
-			let fileBlob;
 			const attachment = attachments[i];
-			console.log(attachment, typeof attachment);
-			if (typeof attachment != 'string') {
-				fileName = attachment.name;
-				fileBlob = attachment.blob;
-				console.log(fileName, fileBlob);
-			} else {
+			if (typeof attachment == 'string') {
+				let fileName;
+				let fileBlob;
 				if (attachment.includes('/')) {
 					fileName = attachment.split('/')[attachment.split('/').length - 1];
 				} else {
@@ -612,13 +576,28 @@ export default {
 				}
 				const filearray = await fs.readBinaryFile(attachment);
 				fileBlob = new Blob([filearray]);
-				console.log(fileName, filearray);
+				formData.append(`files[${i}]`, fileBlob, fileName);
+				attachmentObjects.push({ id: i, filename: fileName });
+			} else if (!attachment.attachmentId) {
+				let fileName;
+				let fileBlob;
+				fileName = attachment.name;
+				fileBlob = attachment.blob;
+				attachmentObjects.push({ id: i, filename: fileName });
+				formData.append(`files[${i}]`, fileBlob, fileName);
+			} else if (attachment.attachmentId) {
+				attachmentObjects.push({ id: attachment.attachmentId, filename: attachment.name });
 			}
-			console.log('sending', fileName);
-
-			formData.append(`files[${i}]`, fileBlob, fileName);
 		}
-		console.warn('formData', formData);
+		// I DONT LIKE USING JSON PAYLOAD BUT I COULDNT GET IT TO WORK WITH THE ATTACHMENTS WITH FORMDATA
+		const jsonPayload = {
+			content: content,
+			attachments: attachmentObjects,
+		};
+		formData.append('payload_json', JSON.stringify(jsonPayload));
+		for (const entry of formData.entries()) {
+			console.log(entry);
+		}
 		const response = await fetch(url, {
 			method: 'PATCH',
 			headers: {
