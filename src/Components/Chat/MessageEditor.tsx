@@ -12,7 +12,8 @@ type MessageEditorProps = {
 const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
 export default function MessageEditor(props: MessageEditorProps) {
-	const [editor, setEditor] = createSignal<any>();
+	console.log('editor text', props.text());
+	const [editor, setEditor] = createSignal<any>(API.Messages.formatMarkdownToJSXPreserve(props.text()));
 	const [isTyping, setIsTyping] = createSignal(false);
 	let textarea: HTMLDivElement;
 	createEffect(() => {
@@ -41,6 +42,7 @@ export default function MessageEditor(props: MessageEditorProps) {
 				}
 			}
 		});
+
 		textarea.addEventListener('keyup', (e) => {
 			props.setText(textarea.innerText);
 			if (e.key == 'Enter' && e.shiftKey) {
@@ -77,9 +79,6 @@ export default function MessageEditor(props: MessageEditorProps) {
 	});
 	return (
 		<div class={style.editor}>
-			<Show when={!isTyping()}>
-				<div class={style.placeholder}>PLACEHOLDER TEXT</div>
-			</Show>
 			<div
 				title="TEMP"
 				class={style.textarea}

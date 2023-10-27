@@ -40,6 +40,26 @@
 		}
 	}
 }
+.messageUpdater {
+	background-color: red;
+	width: 100%;
+	height: fit-content;
+	display: flex;
+	flex-direction: column;
+	.editorWrapper {
+		display: flex;
+		.buttonContainer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			button {
+				background-color: blue;
+				width: 5em;
+				padding: 0.25em;
+			}
+		}
+	}
+}
 .main {
 	height: 100%;
 	width: 100%;
@@ -284,6 +304,6 @@
 .fileDrop {
 	filter: blur(0.5em);
 }
-.TEST > li:not(:first-child):not([class*="same"]) {
-    margin-top: 1em;
+.TEST > li:not(:first-child):not([class*='same']) {
+	margin-top: 1em;
 }

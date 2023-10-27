@@ -1,4 +1,4 @@
-import { For, Show, createMemo } from 'solid-js';
+import { For, Show, createMemo, createSignal } from 'solid-js';
 import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Message as MessageType } from '../../types/Messages';
@@ -7,11 +7,12 @@ import Attachments from './Attachments';
 import Embed from './Embed';
 import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
+import MessageUpdater from './MessageUpdater';
 
 type MessageProps = {
 	message: MessageType;
 
-    /** Should the message be treated as the successor of a previous one (sent by the same person), which will show it without a profile picture. */
+	/** Should the message be treated as the successor of a previous one (sent by the same person), which will show it without a profile picture. */
 	same?: boolean;
 
 	updateMessage?: (val: Partial<MessageType>) => void;
@@ -22,12 +23,12 @@ const Message = (props: MessageProps) => {
 	const AppState = useAppState();
 	const message = props.message;
 
-    // Time format
+	// Time format
 	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), { timeStyle: 'short' });
 
-    const time = createMemo(() => {
-        return intl.format(new Date(message.timestamp))
-    })
+	const time = createMemo(() => {
+		return intl.format(new Date(message.timestamp));
+	});
 
 	const formattedMessage = createMemo(() => {
 		const messageText = API.Messages.formatMarkdownToJSX(message.content);
@@ -49,23 +50,26 @@ const Message = (props: MessageProps) => {
 
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
-
-	/*const contextMenu = createContextMenu({
+	const [isEditing, setIsEditing] = createSignal(false);
+	const contextMenu = createContextMenu({
 		component: [MessageContextMenu],
-		data: message,
-	});*/
+		data: {
+			message: message,
+			setIsEditing: setIsEditing,
+			isEditing: isEditing,
+		},
+	});
 
-    /*use:contextMenu*/
 	return (
-		<li class={style.message} classList={{ [style.same]: props.same }} >
+		<li class={style.message} classList={{ [style.same]: props.same }} use:contextMenu>
 			<Show
-                when={props.same}
-                fallback={
-                    <button class={[style.left, style.profileImage].join(' ')}>
-                        <img src={profileImage()} alt={userName()} />
-                    </button>
-                }
-            >
+				when={props.same}
+				fallback={
+					<button class={[style.left, style.profileImage].join(' ')}>
+						<img src={profileImage()} alt={userName()} />
+					</button>
+				}
+			>
 				<time class={style.left}>{time()}</time>
 			</Show>
 
@@ -83,13 +87,18 @@ const Message = (props: MessageProps) => {
 					</div>
 				</Show>
 
-				<p class={style.text}>{formattedMessage()}</p>
+				<Show when={isEditing()} fallback={<p class={style.text}>{formattedMessage()}</p>}>
+					<MessageUpdater
+						channelId={message.channel_id}
+						setIsEditing={setIsEditing}
+						msgText={message.content}
+						messageId={message.id}
+					/>
+				</Show>
 
 				<Attachments attachments={message.attachments} />
 
-				<For each={message.embeds}>
-                    {(embed) => <Embed embed={embed} />}
-                </For>
+				<For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
 			</div>
 		</li>
 	);
