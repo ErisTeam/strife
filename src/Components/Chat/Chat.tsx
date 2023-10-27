@@ -132,9 +132,10 @@ export default function Chat() {
 			}
 			setIsDragging(false);
 		};
-		mainref.ondragover = (e) => {
+		mainref.ondragenter = (e) => {
 			e.preventDefault();
-			console.log('dragover');
+			console.log('dragenter', e);
+
 			setIsDragging(true);
 		};
 		mainref.ondragend = (e) => {
@@ -142,20 +143,14 @@ export default function Chat() {
 			console.log('dragend', e);
 			setIsDragging(false);
 		};
-		// YES I KNOW THAT IT WONT UNBLUR IF YOU DRAG OVER THE DEV DIV BUT I DONT CARE
-		mainref.ondragleave = (e) => {
-			e.preventDefault();
 
-			if (
-				e.pageX < mainref.offsetLeft ||
-				e.pageX > mainref.offsetLeft + mainref.clientWidth ||
-				e.pageY < mainref.offsetTop ||
-				e.pageY > mainref.offsetTop + mainref.clientHeight
-			) {
+		mainref.ondragleave = (e: DragEvent | MouseEvent) => {
+			e.preventDefault();
+			if (!mainref.contains(e.relatedTarget as Node)) {
 				setIsDragging(false);
-				console.log('dragleave', e);
 			}
 		};
+
 		scrollToBottom();
 	});
 
