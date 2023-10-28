@@ -19,6 +19,7 @@ export type UploadFile =
 			name: string;
 			blob?: Blob;
 			attachmentId?: string;
+			attachmentUrl?: string;
 	  };
 export default function Chat() {
 	const TabContext = useTabContext();

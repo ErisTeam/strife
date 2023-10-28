@@ -15,7 +15,7 @@ export default function MessageSender(props: MessageSenderProps) {
 	const [msgText, setMsgText] = createSignal('');
 
 	function sendMessage() {
-		API.Messages.sendMessage(props.channelId, msgText(), props.files());
+		API.Messages.sendMessage(props.channelId, null, msgText(), props.files(), false, [], [], false);
 		setMsgText('');
 		props.setFiles([]);
 	}

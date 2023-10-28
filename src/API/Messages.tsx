@@ -497,116 +497,69 @@ export default {
 	},
 	async sendMessage(
 		channelId: string,
+		messageId: string | null,
 		content: string = '',
-		attachments: UploadFile[] = [],
+		files: UploadFile[] = [],
 		isTTS: boolean = false,
 		embeds: any[] = [],
 		mentions: any[] = [],
+		isEditing: boolean = false,
 	) {
 		const token = await API.getToken();
-		const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+		const url = messageId
+			? `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`
+			: `https://discord.com/api/v10/channels/${channelId}/messages`;
 
 		const formData = new FormData();
+		let attachments = [];
 
-		content ? formData.append('content', content) : null;
-		for (let i = 0; i < attachments.length; i++) {
-			let fileName;
-			let fileBlob;
-			const attachment = attachments[i];
-			console.log(attachment, typeof attachment);
-			if (typeof attachment != 'string') {
-				fileName = attachment.name;
-				fileBlob = attachment.blob;
-				console.log(fileName, fileBlob);
-			} else {
-				if (attachment.includes('/')) {
-					fileName = attachment.split('/')[attachment.split('/').length - 1];
-				} else {
-					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
-				}
-				const filearray = await fs.readBinaryFile(attachment);
-				fileBlob = new Blob([filearray]);
-				console.log(fileName, filearray);
-			}
-			console.log('sending', fileName);
-
-			formData.append(`files[${i}]`, fileBlob, fileName);
-		}
-		console.warn('formData', formData);
-		const response = await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: token,
-			},
-			body: formData,
-		});
-		if (response.status == 200) {
-			const json = await response.json();
-			console.log(json);
-			return true;
-		} else {
-			const json = await response.json();
-			console.log(json);
-			return false;
-		}
-	},
-	async editMessage(
-		channelId: string,
-		messageId: string,
-		content: string = '',
-		attachments: UploadFile[] = [],
-		embeds: any[] = [],
-		mentions: any[] = [],
-	) {
-		const token = await API.getToken();
-		const url = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
-
-		const formData = new FormData();
-		let attachmentObjects = [];
-
-		for (let i = 0; i < attachments.length; i++) {
-			const attachment = attachments[i];
-			if (typeof attachment == 'string') {
+		for (let i = 0; i < files.length; i++) {
+			const file = files[i];
+			if (typeof file == 'string') {
 				let fileName;
 				let fileBlob;
-				if (attachment.includes('/')) {
-					fileName = attachment.split('/')[attachment.split('/').length - 1];
+				if (file.includes('/')) {
+					fileName = file.split('/')[file.split('/').length - 1];
 				} else {
-					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+					fileName = file.split('\\')[file.split('\\').length - 1];
 				}
-				const filearray = await fs.readBinaryFile(attachment);
+				const filearray = await fs.readBinaryFile(file);
 				fileBlob = new Blob([filearray]);
 				formData.append(`files[${i}]`, fileBlob, fileName);
-				attachmentObjects.push({ id: i, filename: fileName });
-			} else if (!attachment.attachmentId) {
+				attachments.push({ id: i, filename: fileName });
+			} else if (!file.attachmentId) {
 				let fileName;
 				let fileBlob;
-				fileName = attachment.name;
-				fileBlob = attachment.blob;
-				attachmentObjects.push({ id: i, filename: fileName });
+				fileName = file.name;
+				fileBlob = file.blob;
+				attachments.push({ id: i, filename: fileName });
 				formData.append(`files[${i}]`, fileBlob, fileName);
-			} else if (attachment.attachmentId) {
-				attachmentObjects.push({ id: attachment.attachmentId, filename: attachment.name });
+			} else if (file.attachmentId) {
+				attachments.push({ id: file.attachmentId, filename: file.name });
 			}
 		}
-		// I DONT LIKE USING JSON PAYLOAD BUT I COULDNT GET IT TO WORK WITH THE ATTACHMENTS WITH FORMDATA
+		// I DONT LIKE USING JSON PAYLOAD BUT I COULDNT GET IT TO WORK WITH THE files WITH FORMDATA
 		const jsonPayload = {
 			content: content,
-			attachments: attachmentObjects,
+			attachments: attachments,
 		};
 		formData.append('payload_json', JSON.stringify(jsonPayload));
 		for (const entry of formData.entries()) {
 			console.log(entry);
 		}
+
+		const method = isEditing ? 'PATCH' : 'POST';
+		console.log('method', method, 'url', url, 'token', token);
+
 		const response = await fetch(url, {
-			method: 'PATCH',
+			method: method,
 			headers: {
 				Authorization: token,
 			},
 			body: formData,
 		});
 		if (response.status == 200) {
-			const json = await response;
+			const json = await response.json();
 			console.log(json);
 			return true;
 		} else {
@@ -615,6 +568,7 @@ export default {
 			return false;
 		}
 	},
+
 	// get the cursor position from .editor start
 	getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
 		if (stat.done) return stat;
@@ -655,3 +609,43 @@ export default {
 		return range;
 	},
 };
+
+// 	async editMessage(
+// 		channelId: string,
+// 		messageId: string,
+// 		content: string = '',
+// 		attachments: UploadFile[] = [],
+// 		embeds: any[] = [],
+// 		mentions: any[] = [],
+// 	) {
+// 		const token = await API.getToken();
+// 		const url = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
+
+// 		const formData = new FormData();
+// 		let attachmentObjects = [];
+
+// 		for (let i = 0; i < attachments.length; i++) {
+// 			const attachment = attachments[i];
+// 			if (typeof attachment == 'string') {
+// 				let fileName;
+// 				let fileBlob;
+// 				if (attachment.includes('/')) {
+// 					fileName = attachment.split('/')[attachment.split('/').length - 1];
+// 				} else {
+// 					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+// 				}
+// 				const filearray = await fs.readBinaryFile(attachment);
+// 				fileBlob = new Blob([filearray]);
+// 				formData.append(`files[${i}]`, fileBlob, fileName);
+// 				attachmentObjects.push({ id: i, filename: fileName });
+// 			} else if (!attachment.attachmentId) {
+// 				let fileName;
+// 				let fileBlob;
+// 				fileName = attachment.name;
+// 				fileBlob = attachment.blob;
+// 				attachmentObjects.push({ id: i, filename: fileName });
+// 				formData.append(`files[${i}]`, fileBlob, fileName);
+// 			} else if (attachment.attachmentId) {
+// 				attachmentObjects.push({ id: attachment.attachmentId, filename: attachment.name });
+// 			}
+// 		}
