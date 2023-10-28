@@ -18,7 +18,7 @@ export default function MessageUpdater(props: MessageUpdaterProps) {
 	console.log('updater props', props);
 
 	function updateMessage() {
-		API.Messages.editMessage(props.message.channel_id, props.message.id, msgText(), files());
+		API.Messages.sendMessage(props.message.channel_id, props.message.id, msgText(), files(), false, [], [], true);
 		props.setIsEditing(false);
 	}
 	// TODO:ADD BUTTON
