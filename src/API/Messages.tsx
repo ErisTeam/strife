@@ -609,3 +609,43 @@ export default {
 		return range;
 	},
 };
+
+// 	async editMessage(
+// 		channelId: string,
+// 		messageId: string,
+// 		content: string = '',
+// 		attachments: UploadFile[] = [],
+// 		embeds: any[] = [],
+// 		mentions: any[] = [],
+// 	) {
+// 		const token = await API.getToken();
+// 		const url = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
+
+// 		const formData = new FormData();
+// 		let attachmentObjects = [];
+
+// 		for (let i = 0; i < attachments.length; i++) {
+// 			const attachment = attachments[i];
+// 			if (typeof attachment == 'string') {
+// 				let fileName;
+// 				let fileBlob;
+// 				if (attachment.includes('/')) {
+// 					fileName = attachment.split('/')[attachment.split('/').length - 1];
+// 				} else {
+// 					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
+// 				}
+// 				const filearray = await fs.readBinaryFile(attachment);
+// 				fileBlob = new Blob([filearray]);
+// 				formData.append(`files[${i}]`, fileBlob, fileName);
+// 				attachmentObjects.push({ id: i, filename: fileName });
+// 			} else if (!attachment.attachmentId) {
+// 				let fileName;
+// 				let fileBlob;
+// 				fileName = attachment.name;
+// 				fileBlob = attachment.blob;
+// 				attachmentObjects.push({ id: i, filename: fileName });
+// 				formData.append(`files[${i}]`, fileBlob, fileName);
+// 			} else if (attachment.attachmentId) {
+// 				attachmentObjects.push({ id: attachment.attachmentId, filename: attachment.name });
+// 			}
+// 		}
