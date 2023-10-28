@@ -28,11 +28,11 @@ export function TabWindow({ className }: { className?: string }) {
 								style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }}
 								class={outletStyle.outlet}
 							>
-								{/* <SuspenseErrorBoundary> */}
-								<TabContextProvider tab={tab}>
-									<Dynamic component={TabComponents[tab.component]} />
-								</TabContextProvider>
-								{/* </SuspenseErrorBoundary> */}
+								<SuspenseErrorBoundary>
+									<TabContextProvider tab={tab}>
+										<Dynamic component={TabComponents[tab.component]} />
+									</TabContextProvider>
+								</SuspenseErrorBoundary>
 							</div>
 						);
 					}}

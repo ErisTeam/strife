@@ -3,6 +3,7 @@ import { SettingsCategory, SettingsEntry as SettingsEntryType, SettingsGroup } f
 import { useAppState } from '../../AppState';
 import SettingsEntry from './SettingsEntry';
 import style from './Settings.module.css';
+import { Cog } from 'lucide-solid';
 
 export default (props: { group: SettingsGroup }) => {
 	const AppState = useAppState();

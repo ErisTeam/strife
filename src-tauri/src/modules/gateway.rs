@@ -26,6 +26,8 @@ use super::{ main_app::GatewayMessages, gateway_utils::Errors };
 #[derive(Debug, Clone)]
 #[allow(unused)]
 pub enum Messages {
+	/// used by the client when wanting to load the member list of a guild or subscribe to typing notifications
+	/// #Source: https://arandomnewaccount.gitlab.io/discord-unofficial-docs/lazy_guilds.html
 	RequestLazyGuilds(LazyGuilds),
 	UpdateVoiceState(VoiceStateUpdateSend),
 }
@@ -209,10 +211,6 @@ impl Gateway {
 								crate::discord::gateway_packets::DispatchedEvents::MessageDelete(_) => {
 									//TODO: Message delete
 								}
-								crate::discord::gateway_packets::DispatchedEvents::StartTyping(data) => {
-									println!("Start typing {:?}", data);
-									//TODO: implement
-								}
 								crate::discord::gateway_packets::DispatchedEvents::BurstCreditBalanceUpdate(_) => {
 									//TODO: Burst credit balance update
 								}
@@ -238,7 +236,7 @@ impl Gateway {
 							let last_sequece_number = connection_info.aditional_data.sequence_number
 								.as_ref()
 								.unwrap()
-								.clone(); //TODO: check if None possible
+								.clone(); //TODO: check if None possible (it is)
 
 							let packet = OutGoingPacket::new(
 								OutGoingPacketsData::Resume(Resume {
@@ -256,7 +254,7 @@ impl Gateway {
 				}
 
 				tokio_tungstenite::tungstenite::Message::Close(frame) => {
-					println!("aaaaaaaaaaaaaaaaaaaaa {:?}",frame);
+					println!("aaaaaaaaaaaaaaaaaaaaa {:?}", frame);
 					if let Some(frame) = frame {
 						match frame.code {
 							CloseCode::Library(code) => {
@@ -270,7 +268,7 @@ impl Gateway {
 							}
 						}
 					}
-					
+
 					return Err("Connection closed".into());
 				}
 				_ => {}

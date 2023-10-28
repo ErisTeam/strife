@@ -108,7 +108,7 @@ pub enum DispatchedEvents {
 	MessageDelete(MessageDelete),
 
 	///Sent when user starts typing
-	StartTyping(Box<TypingStart>),
+	TypingStart(Box<TypingStart>),
 
 	//Sent when a guild's voice server is updated. This is sent when initially connecting to voice, and when the current voice instance fails over to a new server.
 	VoiceServerUpdate(VoiceServerUpdate),
@@ -129,7 +129,7 @@ impl ToString for DispatchedEvents {
 			DispatchedEvents::SessionReplace(_) => "SessionReplace".to_string(),
 			DispatchedEvents::MessageCreate(_) => "MessageCreated".to_string(),
 			DispatchedEvents::MessageDelete(_) => "MessageDelete".to_string(),
-			DispatchedEvents::StartTyping(_) => "StartTyping".to_string(),
+			DispatchedEvents::TypingStart(_) => "StartTyping".to_string(),
 			DispatchedEvents::Unknown(_) => "Unknown".to_string(),
 			DispatchedEvents::ReadySupplemental(_) => "ReadySupplemental".to_string(),
 			DispatchedEvents::MessageUpdate(_) => "MessageUpdated".to_string(),
@@ -253,8 +253,8 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 										)
 									)?
 							),
-						"START_TYPING" =>
-							DispatchedEvents::StartTyping(
+						"TYPING_START" =>
+							DispatchedEvents::TypingStart(
 								serde_json
 									::from_value(inner.d)
 									.map_err(|x|

@@ -8,7 +8,12 @@ use tokio::runtime::Handle;
 use tokio::sync::RwLock;
 
 use crate::discord::gateway_packets::DispatchedEvents;
-use crate::discord::types::gateway::gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate };
+use crate::discord::types::gateway::gateway_packets_data::{
+	MessageEvent,
+	VoiceServerUpdate,
+	VoiceStateUpdate,
+	TypingStart,
+};
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
@@ -27,7 +32,7 @@ pub enum GatewayMessages {
 	NewMessage(MessageEvent),
 	EditedMessage(MessageEvent),
 	DeletedMessage(),
-	StartedTyping(),
+	TypingStarted(Box<TypingStart>),
 	Ready(UserData),
 	VoiceServerUpdate(VoiceServerUpdate),
 	VoiceStateUpdate(VoiceStateUpdate),
@@ -41,7 +46,7 @@ impl From<DispatchedEvents> for GatewayMessages {
 			DispatchedEvents::MessageCreate(data) => Self::NewMessage(data),
 			DispatchedEvents::MessageUpdate(data) => Self::EditedMessage(data),
 			DispatchedEvents::MessageDelete(_) => todo!(),
-			DispatchedEvents::StartTyping(_) => todo!(),
+			DispatchedEvents::TypingStart(data) => Self::TypingStarted(data),
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => todo!(),
 			DispatchedEvents::Unknown(_) => panic!("Unknown event!"),
 			DispatchedEvents::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
@@ -223,7 +228,6 @@ impl MainApp {
 					})?;
 				}
 				GatewayMessages::DeletedMessage() => todo!("Deleted Message"),
-				GatewayMessages::StartedTyping() => todo!("Started Typing"),
 				GatewayMessages::Ready(data) => {
 					let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
 					user_id = data.user.id.clone();
@@ -239,15 +243,9 @@ impl MainApp {
 						ready_notify.notify_waiters();
 					}
 				}
-				GatewayMessages::VoiceServerUpdate(data) => {
+				data => {
 					handle.emit_all("gateway", webview_packets::GatewayEvent {
-						event: webview_packets::Gateway::VoiceServerUpdate(data),
-						user_id: user_id.clone(),
-					})?;
-				}
-				GatewayMessages::VoiceStateUpdate(data) => {
-					handle.emit_all("gateway", webview_packets::GatewayEvent {
-						event: webview_packets::Gateway::VoiceStateUpdate(data),
+						event: webview_packets::Gateway::from(data),
 						user_id: user_id.clone(),
 					})?;
 				}

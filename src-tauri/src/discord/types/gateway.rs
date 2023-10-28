@@ -140,7 +140,7 @@ pub mod gateway_packets_data {
 		pub heartbeat_interval: u64,
 	}
 
-	#[derive(Deserialize, Debug)]
+	#[derive(Serialize, Deserialize, Debug, Clone)]
 	pub struct TypingStart {
 		pub user_id: String,
 		pub timestamp: u64,
@@ -158,8 +158,8 @@ pub mod gateway_packets_data {
 	#[derive(Serialize, Debug, Clone)]
 	pub struct LazyGuilds {
 		pub guild_id: String,
-		pub channels: Vec<serde_json::Value>,
-		pub members: bool,
+		pub channels: Option<Vec<serde_json::Value>>,
+		pub members: Option<bool>,
 		pub threads: bool,
 		pub activities: bool,
 		pub typing: bool,

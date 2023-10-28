@@ -106,6 +106,7 @@ export default {
 		add(tab: Tab, replaceCurrent: boolean = false) {
 			const AppState = useAppState();
 			console.log('adding tab', tab);
+			//? batch is important here, otherwise tabs might not be updated correctly
 			batch(() => {
 				if (!replaceCurrent || AppState.tabs.length === 0) {
 					AppState.setTabsOrder((prev) => [...prev, AppState.tabs.length]);
@@ -115,8 +116,6 @@ export default {
 
 					return;
 				}
-
-				//? batch is important here, otherwise tabs might not be updated correctly
 
 				let tabIndex = AppState.currentTabIndex();
 				if (tabIndex === -1) {

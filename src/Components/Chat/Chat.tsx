@@ -12,6 +12,7 @@ import style from './css.module.css';
 import MessageEditor from './MessageEditor';
 import MessageSender from './MessageSender';
 import { listen } from '@tauri-apps/api/event';
+import { doc } from 'prettier';
 
 export type UploadFile =
 	| string
@@ -23,6 +24,7 @@ export type UploadFile =
 	  };
 export default function Chat() {
 	const TabContext = useTabContext();
+	const [typingUsers, setTypingUsers] = createSignal<any[]>([]);
 	console.log('TabContext', TabContext);
 	const AppState = useAppState();
 	let chatref: HTMLOListElement;
@@ -61,6 +63,37 @@ export default function Chat() {
 				scrollToBottom();
 			}
 		}
+	});
+	listener.on<any>('typingStart', (event) => {
+		if (event.data.channel_id !== TabContext.channelId) {
+			return;
+		}
+		console.log('typingStart', event);
+		if (typingUsers().findIndex((user) => user.user.member.user.id == event.data.user_id) != -1) {
+			setTypingUsers((prev) => {
+				const newUsers = prev.map((user) => {
+					if (user.user.member.user.id == event.data.user_id) {
+						return { ...user, left: 3 };
+					}
+					return user;
+				});
+				return newUsers;
+			});
+		} else {
+			setTypingUsers((prev) => [...prev, { left: 3, user: event.data }]);
+		}
+		console.log('typingUsers', typingUsers());
+		const end = setInterval(() => {
+			setTypingUsers((prev) => {
+				const newUsers = prev.map((user) => {
+					return { ...user, left: user.left - 1 };
+				});
+				return newUsers.filter((user) => user.left > 0);
+			});
+			if (typingUsers().length == 0) {
+				clearInterval(end);
+			}
+		}, 1000);
 	});
 
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
@@ -122,6 +155,7 @@ export default function Chat() {
 		// 	setIsVoiceChannel(true);
 		// }
 
+		invoke('request_lazy_guilds', { guildId: TabContext.guildId, userId: AppState.userId });
 		mainref.ondrop = (e) => {
 			e.preventDefault();
 			console.log('drop', e);
@@ -171,7 +205,34 @@ export default function Chat() {
 				</For>
 			</ol>
 
-			<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
+			<section>
+				<Show when={typingUsers().length > 0}>
+					<span class={style.typingUsers}>
+						<svg width="24" height="8" xmlns="http://www.w3.org/2000/svg" class={style.loadingAnimation}>
+							<circle cx="5" cy="3" r="2" fill="white">
+								<animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.1s" repeatCount="indefinite" />
+								<animate attributeName="r" id="a1" values="2;3;2" dur="1s" begin="0.1s" repeatCount="indefinite" />
+							</circle>
+							<circle cx="13" cy="3" r="2" fill="white">
+								<animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.2s" repeatCount="indefinite" />
+								<animate attributeName="r" id="a2" values="2;3;2" dur="1s" begin="0.2s" repeatCount="indefinite" />
+							</circle>
+							<circle cx="21" cy="3" r="2" fill="white">
+								<animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.3s" repeatCount="indefinite" />
+								<animate attributeName="r" id="a3" values="2;3;2" dur="1s" begin="0.3s" repeatCount="indefinite" />
+							</circle>
+						</svg>
+						<For each={typingUsers()}>
+							{(r) => {
+								console.log('r', r);
+								return <b>{r.user.member.user.global_name}</b>;
+							}}
+						</For>
+						is typing...
+					</span>
+				</Show>
+				<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
+			</section>
 		</main>
 	);
 }

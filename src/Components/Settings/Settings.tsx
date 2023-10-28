@@ -15,7 +15,7 @@ import { createStore, produce } from 'solid-js/store';
 import checkBoxes from '../../Styles/Checkboxes.module.css';
 import inputs from '../../Styles/Inputs.module.css';
 
-import { Import } from 'lucide-solid';
+import { Cog, FileDown, FileUp, Import } from 'lucide-solid';
 import SettingsEntry from './SettingsEntry';
 import { useAppState } from '../../AppState';
 import { Router } from '@solidjs/router';
@@ -57,7 +57,16 @@ export default function SettingsPage() {
 			<article class={style.groupContainer}>
 				<header class={style.header}>
 					<Show when={currentRoute().canBeLoadedFromFile}>
-						<input type="file" />
+						<button>
+							<FileDown stroke="red" />
+						</button>
+						<button
+							onclick={() => {
+								//Settings.save(currentRoute().groups)
+							}}
+						>
+							<FileUp stroke="red" />
+						</button>
 					</Show>
 				</header>
 				<For each={currentRoute().groups}>{(group) => <SettingsGroup group={group} />}</For>

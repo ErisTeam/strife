@@ -5,7 +5,7 @@ use tauri::State;
 
 use crate::{
 	main_app_state::MainState,
-	discord::types::{ user::CurrentUser, gateway::gateway_packets_data::VoiceStateUpdateSend },
+	discord::types::{ user::CurrentUser, gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds } },
 };
 
 #[tauri::command]
@@ -76,6 +76,30 @@ pub async fn send_voice_state_update(
 			})
 		).await
 		.map_err(|e| e.to_string())?;
+	Ok(())
+}
+#[tauri::command]
+pub async fn request_lazy_guilds(
+	guild_id: String,
+	user_id: String,
+	state: State<'_, Arc<MainState>>
+) -> Result<(), ()> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().expect("Not in main app");
+	println!("Requesting lazy guilds, user_id: {}, guild_id: {}", user_id, guild_id);
+	main_app
+		.send_to_gateway(
+			&user_id,
+			crate::modules::gateway::Messages::RequestLazyGuilds(LazyGuilds {
+				typing: true,
+				threads: true,
+				activities: true,
+				guild_id,
+				channels: None,
+				members: None,
+			})
+		).await
+		.unwrap();
 	Ok(())
 }
 

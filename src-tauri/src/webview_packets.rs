@@ -4,13 +4,16 @@
 // It's used here to make matching easier.
 use serde::{ Deserialize, Serialize };
 
-use crate::discord::types::{
-	guild::PartialGuild,
-	gateway::{
-		gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate },
-		voice_gateway_packets_data,
+use crate::{
+	discord::types::{
+		guild::PartialGuild,
+		gateway::{
+			gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate, TypingStart },
+			voice_gateway_packets_data,
+		},
+		user::CurrentUser,
 	},
-	user::CurrentUser,
+	modules::main_app::GatewayMessages,
 };
 pub mod auth {
 	use serde::{ Deserialize, Serialize };
@@ -100,11 +103,27 @@ pub enum Gateway {
 
 	VoiceStateUpdate(VoiceStateUpdate),
 
+	TypingStart(Box<TypingStart>),
+
 	Error {
 		message: String,
 	},
 	Started,
 }
+impl From<GatewayMessages> for Gateway {
+	fn from(value: GatewayMessages) -> Self {
+		match value {
+			GatewayMessages::NewMessage(data) => Self::MessageCreate(data),
+			GatewayMessages::EditedMessage(data) => Self::MessageUpdate(data),
+			GatewayMessages::DeletedMessage() => todo!(),
+			GatewayMessages::TypingStarted(data) => Self::TypingStart(data),
+			GatewayMessages::Ready(data) => Self::UserInfo(data.user),
+			GatewayMessages::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
+			GatewayMessages::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
+		}
+	}
+}
+
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GatewayEvent<T: Serialize + core::fmt::Debug + Clone> {
