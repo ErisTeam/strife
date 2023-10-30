@@ -27,7 +27,7 @@ export default function Attachments(props: AttachmentsProps) {
 						<a class={style.download} href={ats[i].url} target="_blank">
 							<Download />
 						</a>
-						<img src={ats[i].url} draggable ondragstart={() => {}} />
+						<img src={ats[i].url} draggable />
 					</li>,
 				);
 			}
