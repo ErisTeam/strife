@@ -86,14 +86,19 @@ const Message = (props: MessageProps) => {
                 </div>
             </Show>
 
-				<Show when={isEditing()} fallback={<p class={style.text}>{formattedMessage()}</p>}>
-					<MessageUpdater setIsEditing={setIsEditing} message={message} />
-				</Show>
+            <Show
+                when={isEditing()}
+                fallback={
+                    <div class={style.content}>
+                        <p class={style.text}>{formattedMessage()}</p>
+                        <Attachments attachments={message.attachments} />
+                    </div>
+                }
+            >
+                <MessageUpdater setIsEditing={setIsEditing} message={message} />
+            </Show>
 
-				<Attachments attachments={message.attachments} />
-
-				<For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
-			</div>
+            <For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
 		</li>
 	);
 };

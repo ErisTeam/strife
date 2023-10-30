@@ -1,3 +1,9 @@
+.attachments {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2em;
+}
+
 /* =======
  *  Image
  * ======= */
@@ -5,6 +11,11 @@
 .image > img {
     max-width: 18em;
     max-height: 18em;
+}
+
+.image {
+    width: min-content;
+    height: min-content;
 }
 
 
