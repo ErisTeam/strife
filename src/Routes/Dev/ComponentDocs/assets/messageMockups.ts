@@ -1,5 +1,5 @@
 import { Message } from "../../../../types/Messages";
-import { FrytakMockup, GamiMockup } from "./userMockUps";
+import { FrytakMockup, GamiMockup } from "./userMockups";
 
 export const SingleMessageMockup: Message[] = [
     {
@@ -126,7 +126,7 @@ export const TwoUsersMessageMockup: Message[] = [
 
         author: FrytakMockup,
         timestamp: 2435897897479666,
-        content: "Hihi, no uwu",
+        content: "Hihi, no uwu You will perish with the other non-furry creatures! Watching how I snuggle som wittwe fox to their death! x3",
 
         mentions: [],
         mention_roles: [],

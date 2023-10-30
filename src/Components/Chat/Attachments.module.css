@@ -1,0 +1,30 @@
+/* =======
+ *  Image
+ * ======= */
+.image,
+.image > img {
+    max-width: 18em;
+    max-height: 18em;
+}
+
+
+
+/* =======
+ *  Video
+ * ======= */
+.video,
+.video > video {
+    max-width: 26em;
+    max-height: 26em;
+}
+
+
+
+/* =======
+ *  Audio
+ * ======= */
+.audio,
+.audio > audio {
+    max-width: 18em;
+    max-height: 18em;
+}

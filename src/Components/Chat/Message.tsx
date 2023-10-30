@@ -73,19 +73,18 @@ const Message = (props: MessageProps) => {
 				<time class={style.left}>{time()}</time>
 			</Show>
 
-			<div class={style.right}>
-				<Show when={!props.same}>
-					<div class={style.info}>
-						<button class={style.userName}>
-							{userName()}
+            <Show when={!props.same}>
+                <div class={style.info}>
+                    <button class={style.userName}>
+                        {userName()}
 
-							<Show when={message.author.bot}>
-								<span class={style.botTag}> Bot</span>
-							</Show>
-						</button>
-						<time>{time()}</time>
-					</div>
-				</Show>
+                        <Show when={message.author.bot}>
+                            <span class={style.botTag}> Bot</span>
+                        </Show>
+                    </button>
+                    <time>{time()}</time>
+                </div>
+            </Show>
 
 				<Show when={isEditing()} fallback={<p class={style.text}>{formattedMessage()}</p>}>
 					<MessageUpdater setIsEditing={setIsEditing} message={message} />

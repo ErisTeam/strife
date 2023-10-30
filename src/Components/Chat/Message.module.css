@@ -1,7 +1,7 @@
 .message {
     display: grid;
-    grid-template-columns: 4em 1fr;
-    grid-template-rows: 2.4em 1fr;
+    grid-template-columns: 4.6em 1fr;
+    grid-template-rows: 1.2em 1fr;
 
     padding-top: 0.1em;
     padding-bottom: 0.1em;
@@ -12,44 +12,68 @@ time {
     color: var(--disabled-text);
 }
 
-.right {
+/* Main massage user name and time */
+.info {
+    height: fit-content;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    gap: 0.8em;
+}
 
-    .info {
-        display: flex;
-        gap: 0.8em;
-        align-items: center;
-
-        .userName {
-            font-weight: bold;
-        }
-    }
+.info.userName {
+    font-weight: bold;
 }
 
 /* Left span of a message (profile picture or time) */
 .left {
-    align-self: center;
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+
     justify-self: center;
 }
 
+time.left {
+    height: fit-content;
+    visibility: hidden;
+    align-self: center;
+}
+
 .profileImage.left {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 2.6em;
+    max-height: 2.6em;
     width: fit-content;
-    height: 100%;
+    height: fit-content;
 }
 
 .profileImage.left > img {
     border-radius: 100%;
 }
 
-time.left {
-    height: fit-content;
-    visibility: hidden;
+/* Main content of a message */
+.content {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+
+    display: flex;
+    flex-direction: column;
 }
 
+.text {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+
+    width: fit-content;
+    height: fit-content;
+}
+
+.message:not(.same) .content .text {
+    margin-top: 0.2em;
+}
+
+.attachments {
+    
+}
+
+/* Message hover effect */
 .message:hover {
     backdrop-filter: brightness(80%);
 }

@@ -1,9 +1,10 @@
 import { Download } from 'lucide-solid';
 import { JSXElement, Show, createSignal, onMount } from 'solid-js';
-import style from './css.module.css';
+import style from './Attachments.module.css';
 
 type AttachmentsProps = {
 	attachments: any[];
+    class?: string;
 };
 export default function Attachments(props: AttachmentsProps) {
 	//! REPLACE TYPE AFTER IT GETS ADDED TO PROTOBUF
@@ -24,9 +25,9 @@ export default function Attachments(props: AttachmentsProps) {
 			if (ats[i].content_type.includes('image')) {
 				images.push(
 					<li class={style.image}>
-						<a class={style.download} href={ats[i].url} target="_blank">
+						{/*<a class={style.download} href={ats[i].url} target="_blank">
 							<Download />
-						</a>
+						</a>*/}
 						<img src={ats[i].url} draggable ondragstart={() => {}} />
 					</li>,
 				);
@@ -34,9 +35,9 @@ export default function Attachments(props: AttachmentsProps) {
 			if (ats[i].content_type.includes('video')) {
 				videos.push(
 					<li class={style.video}>
-						<a class={style.download} href={ats[i].url} target="_blank">
+						{/*<a class={style.download} href={ats[i].url} target="_blank">
 							<Download />
-						</a>
+						</a>*/}
 						<video controls src={ats[i].url} />
 					</li>,
 				);
@@ -44,9 +45,9 @@ export default function Attachments(props: AttachmentsProps) {
 			if (ats[i].content_type.includes('audio')) {
 				audios.push(
 					<li>
-						<a class={style.download} href={ats[i].url} target="_blank">
+						{/*<a class={style.download} href={ats[i].url} target="_blank">
 							<Download />
-						</a>
+						</a>*/}
 						<span>{ats[i].filename}</span>
 						<audio controls src={ats[i].url} />
 					</li>,
@@ -60,13 +61,13 @@ export default function Attachments(props: AttachmentsProps) {
 	return (
 		<>
 			<Show when={formattedImages().length > 0 || formattedVideos().length > 0}>
-				<ul class={style.attachments}>
+				<ul class={[style.attachments, props.class].join(' ')}>
 					{formattedVideos()}
 					{formattedImages()}
 				</ul>
 			</Show>
 			<Show when={formattedAudios().length > 0}>
-				<ul class={style.audios}>{formattedAudios()}</ul>
+				<ul class={[style.audios, props.class].join(' ')}>{formattedAudios()}</ul>
 			</Show>
 		</>
 	);
