@@ -1,6 +1,6 @@
-import { For, Show, createMemo, createSignal } from 'solid-js';
+import { Accessor, For, Setter, Show, createMemo, createSignal } from 'solid-js';
 import { useAppState } from '../../AppState';
-import { Message as MessageType } from '../../types/Messages';
+import { MessageReference, Message as MessageType } from '../../types/Messages';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import Attachments from './Attachments';
 import Embed from './Embed';
@@ -16,7 +16,8 @@ type MessageProps = {
 	same?: boolean;
 
 	updateMessage?: (val: Partial<MessageType>) => void;
-	setReference?: (id: string) => void;
+	setReference?: Setter<MessageReference | null>;
+	reference?: Accessor<MessageReference | null>;
 };
 
 const Message = (props: MessageProps) => {
@@ -57,6 +58,7 @@ const Message = (props: MessageProps) => {
 			message: message,
 			setIsEditing: setIsEditing,
 			isEditing: isEditing,
+			setReference: props.setReference,
 		},
 	});
 

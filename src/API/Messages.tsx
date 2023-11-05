@@ -1,7 +1,7 @@
 import { fs } from '@tauri-apps/api';
 import UserMention from '../Components/Chat/UserMention';
 import { UploadFile } from '../Components/Chat/Chat';
-import { Message } from '@/types/Messages';
+import { Message, MessageReference } from '@/types/Messages';
 import { getToken } from './User';
 const userMentionRegex = '<@!?(\\d+)>';
 const channelMentionRegex = '<#(\\d+)>';
@@ -479,7 +479,20 @@ export async function sendMessage(
 	embeds: any[] = [],
 	mentions: any[] = [],
 	isEditing: boolean = false,
+	messageReference: MessageReference = null,
 ) {
+	console.log(
+		'sendMessage',
+		channelId,
+		messageId,
+		content,
+		files,
+		isTTS,
+		embeds,
+		mentions,
+		isEditing,
+		messageReference,
+	);
 	const token = await getToken();
 	const url = messageId
 		? `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`
@@ -517,6 +530,7 @@ export async function sendMessage(
 	const jsonPayload = {
 		content: content,
 		attachments: attachments,
+		message_reference: messageReference,
 	};
 	formData.append('payload_json', JSON.stringify(jsonPayload));
 	for (const entry of formData.entries()) {

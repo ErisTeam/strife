@@ -1,6 +1,6 @@
-import { PublicUser } from "./User";
-import { Role } from "./utils";
-import { channel } from "./Channel";
+import { PublicUser } from './User';
+import { Role } from './utils';
+import { channel } from './Channel';
 
 //TODO: add the rest of fields https://discord.com/developers/docs/resources/channel#message-object
 export type Message = {
@@ -77,4 +77,11 @@ export type EmbedField = {
 	name: string;
 	value: string;
 	inline?: boolean;
+};
+
+export type MessageReference = {
+	message_id?: string;
+	channel_id?: string;
+	guild_id?: string;
+	fail_if_not_exists?: boolean;
 };

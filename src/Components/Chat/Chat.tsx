@@ -2,7 +2,7 @@ import { convertFileSrc, invoke } from '@tauri-apps/api/tauri';
 import { For, Show, createEffect, createMemo, createResource, createSignal, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
-import { Message as MessageType } from '../../types/Messages';
+import { MessageReference, Message as MessageType } from '../../types/Messages';
 import { gatewayOneTimeListener, startGatewayListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
 import { open } from '@tauri-apps/api/dialog';
@@ -30,6 +30,7 @@ export default function Chat() {
 	let chatref: HTMLOListElement;
 
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
+	const [replyingTo, setReplyingTo] = createSignal<MessageReference | null>(null);
 
 	//TODO: make it possible to select multiple characters
 
@@ -192,14 +193,19 @@ export default function Chat() {
 
 	return (
 		<main class={style.main} classList={{ [style.fileDrop]: isDragging() }} ref={mainref}>
+			<Show when={replyingTo()}>
+				<h1>{replyingTo().channel_id}</h1>
+			</Show>
 			<ol class={style.TEST} ref={chatref}>
 				<For each={messages()}>
 					{(message) => {
 						if (message.author.id == lastAuthor) {
-							return <Message same={true} message={message} updateMessage={updateMessage} />;
+							return (
+								<Message setReference={setReplyingTo} same={true} message={message} updateMessage={updateMessage} />
+							);
 						} else {
 							lastAuthor = message.author.id as string;
-							return <Message message={message} updateMessage={updateMessage} />;
+							return <Message setReference={setReplyingTo} message={message} updateMessage={updateMessage} />;
 						}
 					}}
 				</For>
@@ -231,7 +237,13 @@ export default function Chat() {
 						is typing...
 					</span>
 				</Show>
-				<MessageSender files={files} setFiles={setFiles} channelId={TabContext.channelId} />
+				<MessageSender
+					reference={replyingTo}
+					setReference={setReplyingTo}
+					files={files}
+					setFiles={setFiles}
+					channelId={TabContext.channelId}
+				/>
 			</section>
 		</main>
 	);
