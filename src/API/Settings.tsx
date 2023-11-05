@@ -1,16 +1,15 @@
 import { createUniqueId } from 'solid-js';
-import API from '../API';
 import { SettingsCategory, SettingsEntry } from '../Components/Settings/SettingsTypes';
 import { StyleCategory, StyleEntries, StyleIds } from './settings/Style';
 import { BaseDirectory, exists, readTextFile, writeTextFile } from '@tauri-apps/api/fs';
 import { useAppState } from '../AppState';
 import { produce } from 'solid-js/store';
 
-const SettingsIds = {
+export const SettingsIds = {
 	Style: StyleIds,
 };
 
-const defaultSettings: {
+export const defaultSettings: {
 	categories: SettingsCategory[];
 	entries: (SettingsEntry | (() => SettingsEntry))[];
 } = {
@@ -41,7 +40,7 @@ const defaultSettings: {
 	],
 	entries: [].concat(StyleEntries),
 };
-function generateId() {
+export function generateId() {
 	return createUniqueId();
 }
 function getEntry(id: string) {
@@ -49,7 +48,7 @@ function getEntry(id: string) {
 	return AppState.settings.entries.find((e) => e.id === id);
 }
 
-function save(ob: { [key: string]: any }) {
+export function save(ob: { [key: string]: any }) {
 	let result: {
 		[key: string]: any;
 	} = {};
@@ -68,7 +67,7 @@ function save(ob: { [key: string]: any }) {
 	if (Object.keys(result).length == 0) return null;
 	return result;
 }
-async function load(ob: { [key: string]: any }, s: { [key: string]: any }) {
+export async function load(ob: { [key: string]: any }, s: { [key: string]: any }) {
 	Object.entries(ob).forEach(([key, value]) => {
 		if (s[key] == null) {
 			return;
@@ -92,7 +91,7 @@ async function load(ob: { [key: string]: any }, s: { [key: string]: any }) {
 	});
 }
 
-async function saveToFile() {
+export async function saveToFile() {
 	let result = save(SettingsIds);
 
 	console.log(result);
@@ -100,18 +99,8 @@ async function saveToFile() {
 	await writeTextFile('settings.json', JSON.stringify(result), { dir: BaseDirectory.AppData });
 }
 
-async function loadFromFile() {
+export async function loadFromFile() {
 	if (!(await exists('settings.json', { dir: BaseDirectory.AppData }))) return;
 	const content = JSON.parse(await readTextFile('settings.json', { dir: BaseDirectory.AppData }));
 	load(SettingsIds, content);
 }
-
-export default {
-	load,
-	loadFromFile,
-	save,
-	saveToFile,
-	defaultSettings,
-	ids: SettingsIds,
-	generateId,
-};

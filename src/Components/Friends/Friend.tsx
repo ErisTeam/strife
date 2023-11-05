@@ -6,7 +6,7 @@ import { useNavigate, useParams } from '@solidjs/router';
 import { useAppState } from '../../AppState';
 import { Tab } from '../../types';
 
-import API from '../../API';
+import { add, setAsCurrent } from '@/API/Tabs';
 
 //fallback icon provided by Lemony
 interface FriendProps {
@@ -45,16 +45,16 @@ const Friend = (props: FriendProps) => {
 			case 0:
 				console.log('left click', e.button);
 				if (listIndex == -1) {
-					API.Tabs.add(tab, true);
+					add(tab, true);
 				}
-				API.Tabs.setAsCurrent(tab);
+				setAsCurrent(tab);
 				break;
 			case 1:
 				console.log('middle click', e.button);
 				if (listIndex != -1) {
-					API.Tabs.setAsCurrent(listIndex);
+					setAsCurrent(listIndex);
 				} else {
-					API.Tabs.add(tab);
+					add(tab);
 				}
 
 				break;

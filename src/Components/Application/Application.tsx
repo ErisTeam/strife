@@ -13,21 +13,21 @@ import ControlPanel from '../ControlPanel/ControlPanel';
 
 import Dev from '../Dev/Dev';
 
-import API from '../../API';
 import { Guild } from '../../types/Guild';
 import ChannelList from '../ChannelList/ChannelList';
 import FriendsList from '../Friends/FriendsList';
 import TabWindow from '../Tabs/TabWindow';
+import { add, findByComponent, loadFromFile, swapOrderByIdx } from '@/API/Tabs';
 
 //TODO: move to routes
 const Application = () => {
 	const AppState = useAppState();
 
 	onMount(() => {
-		API.Tabs.loadFromFile()
+		loadFromFile()
 			.then((result) => {
 				if (!result) {
-					API.Tabs.add(
+					add(
 						{
 							title: 'Welcome',
 							component: 'welcomeTab',
@@ -36,8 +36,8 @@ const Application = () => {
 						true,
 					);
 				}
-				if (API.Tabs.findByComponent('settings') == -1) {
-					API.Tabs.add({
+				if (findByComponent('settings') == -1) {
+					add({
 						component: 'settings',
 						title: 'Settings',
 						icon: '⚙️',
@@ -54,7 +54,7 @@ const Application = () => {
 			<Dev>
 				<button
 					onclick={() => {
-						API.Tabs.swapOrderByIdx(0, 1);
+						swapOrderByIdx(0, 1);
 					}}
 				>
 					Ordering Test

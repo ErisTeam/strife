@@ -1,14 +1,14 @@
 import { For, createResource, onCleanup, onMount } from 'solid-js';
-import API from '../../API';
 import { useAppState } from '../../AppState';
 import Friend from './Friend';
 import FriendsTitle from './FriendsTitle';
 import style from './css.module.css';
+import { updateRelationships } from '@/API/User';
 
 function FriendsList(props: { className?: string }) {
 	const [friends] = createResource(async () => {
 		console.log('updating relationships');
-		await API.updateRelationships();
+		await updateRelationships();
 		return AppState.relationships;
 	});
 	let resizeRef: HTMLDivElement;

@@ -1,5 +1,4 @@
 import { For, Show, createMemo, createSignal } from 'solid-js';
-import API from '../../API';
 import { useAppState } from '../../AppState';
 import { Message as MessageType } from '../../types/Messages';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
@@ -8,6 +7,7 @@ import Embed from './Embed';
 import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
 import MessageUpdater from './MessageUpdater';
+import { formatMarkdownToJSX } from '@/API/Messages';
 
 type MessageProps = {
 	message: MessageType;
@@ -31,7 +31,7 @@ const Message = (props: MessageProps) => {
 	});
 
 	const formattedMessage = createMemo(() => {
-		const messageText = API.Messages.formatMarkdownToJSX(message.content);
+		const messageText = formatMarkdownToJSX(message.content);
 		console.log('messageText', messageText);
 		return messageText;
 	});
@@ -73,32 +73,32 @@ const Message = (props: MessageProps) => {
 				<time class={style.left}>{time()}</time>
 			</Show>
 
-            <Show when={!props.same}>
-                <div class={style.info}>
-                    <button class={style.userName}>
-                        {userName()}
+			<Show when={!props.same}>
+				<div class={style.info}>
+					<button class={style.userName}>
+						{userName()}
 
-                        <Show when={message.author.bot}>
-                            <span class={style.botTag}> Bot</span>
-                        </Show>
-                    </button>
-                    <time>{time()}</time>
-                </div>
-            </Show>
+						<Show when={message.author.bot}>
+							<span class={style.botTag}> Bot</span>
+						</Show>
+					</button>
+					<time>{time()}</time>
+				</div>
+			</Show>
 
-            <Show
-                when={isEditing()}
-                fallback={
-                    <div class={style.content}>
-                        <p class={style.text}>{formattedMessage()}</p>
-                        <Attachments attachments={message.attachments} />
-                    </div>
-                }
-            >
-                <MessageUpdater setIsEditing={setIsEditing} message={message} />
-            </Show>
+			<Show
+				when={isEditing()}
+				fallback={
+					<div class={style.content}>
+						<p class={style.text}>{formattedMessage()}</p>
+						<Attachments attachments={message.attachments} />
+					</div>
+				}
+			>
+				<MessageUpdater setIsEditing={setIsEditing} message={message} />
+			</Show>
 
-            <For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
+			<For each={message.embeds}>{(embed) => <Embed embed={embed} />}</For>
 		</li>
 	);
 };

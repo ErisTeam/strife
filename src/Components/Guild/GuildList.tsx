@@ -2,7 +2,6 @@
 import { onMount, For, createResource, Show, createEffect } from 'solid-js';
 
 // API
-import API from '../../API';
 import { useAppState } from '../../AppState';
 
 // Components
@@ -26,6 +25,7 @@ import FriendsTab from './FriendsTab';
 import GuildShadow from './GuildShadow';
 
 import { Guild as TGuild } from '../../types/Guild';
+import { updateGuilds } from '@/API/Guilds';
 interface GuildListProps {
 	className?: string;
 }
@@ -38,7 +38,7 @@ const GuildList = (props: GuildListProps) => {
 	const AppState = useAppState();
 
 	onMount(() => {
-		API.updateGuilds()
+		updateGuilds()
 			.then(() => {
 				const newItems = [];
 				for (let i = 1; i <= AppState.userGuilds.length; i++) {

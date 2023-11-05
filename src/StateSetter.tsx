@@ -4,8 +4,8 @@ import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
 import { t } from './Translation';
 import Dev from './Components/Dev/Dev';
-import API from './API';
 import { useAppState } from './AppState';
+import { activateUser } from './API/User';
 
 const TIME_UNTIL_REFETCH = 10;
 
@@ -24,7 +24,7 @@ const StateSetter = (props: Props) => {
 		console.log('res', res);
 		if (props.state === 'Application') {
 			try {
-				await API.activateUser(AppState.userId);
+				await activateUser(AppState.userId);
 			} catch (err) {
 				setError(err as Error);
 				startTimer(() => {

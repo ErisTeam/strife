@@ -1,7 +1,7 @@
 import { Accessor, Setter, Show, Signal, createEffect, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
-import API from '../../API';
 import { UploadFile } from './Chat';
+import { formatMarkdownToJSXPreserve, getCursorPosition, setCursorPosition } from '@/API/Messages';
 
 type MessageEditorProps = {
 	text: Accessor<string>;
@@ -13,7 +13,7 @@ const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
 export default function MessageEditor(props: MessageEditorProps) {
 	console.log('editor text', props.text());
-	const [editor, setEditor] = createSignal<any>(API.Messages.formatMarkdownToJSXPreserve(props.text()));
+	const [editor, setEditor] = createSignal<any>(formatMarkdownToJSXPreserve(props.text()));
 	const [isTyping, setIsTyping] = createSignal(false);
 	let textarea: HTMLDivElement;
 	createEffect(() => {
@@ -58,14 +58,14 @@ export default function MessageEditor(props: MessageEditorProps) {
 				if (MARKDOWN_KEYS.includes(e.key) || e.key == 'Backspace') {
 					const sel = window.getSelection();
 
-					const pos = API.Messages.getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
+					const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
 					if (sel.focusOffset === 0) pos.pos += 0.5;
 					setEditor(textarea.innerText);
 
-					setEditor(API.Messages.formatMarkdownToJSXPreserve(textarea.innerText));
+					setEditor(formatMarkdownToJSXPreserve(textarea.innerText));
 
 					sel.removeAllRanges();
-					const range = API.Messages.setCursorPosition(textarea, document.createRange(), {
+					const range = setCursorPosition(textarea, document.createRange(), {
 						pos: pos.pos,
 						done: false,
 					});

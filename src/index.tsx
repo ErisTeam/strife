@@ -12,18 +12,18 @@ import WindowDecoration from './Components/WindowDecoration/WindowDecoration';
 import StateSetter from './StateSetter';
 import ContextMenuTest from './Routes/Dev/ContextMenu/ContextMenuTest';
 import LoadingTest from './Routes/Dev/LoadingTest/LoadingTest';
-import MessageTest from './Routes/Dev/MessageTest/MessageTest';
 import ComponentDocs from './Routes/Dev/ComponentDocs/ComponentDocs';
 import Prev from './Routes/Dev/Prev';
 import Error from './Routes/Error/Error';
 import Login from './Routes/Login/Login';
 import './style.css';
-import Settings from './API/Settings';
-import API from './API';
+
+import { start } from './API/Style';
+import { defaultSettings, loadFromFile } from './API/Settings';
 
 const App: Component = () => {
 	onMount(() => {
-		const entries = Settings.defaultSettings.entries.map((e) => {
+		const entries = defaultSettings.entries.map((e) => {
 			if (typeof e == 'function') {
 				return e();
 			}
@@ -32,10 +32,10 @@ const App: Component = () => {
 		//TODO: remove this
 		const AppState = useAppState();
 		AppState.settings.setEntries(entries);
-		API.Style.start();
+		start();
 		console.log(AppState.settings);
 
-		Settings.loadFromFile();
+		loadFromFile();
 	});
 	const [id] = createResource(async () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
@@ -66,7 +66,6 @@ const App: Component = () => {
 
 	document.addEventListener('keydown', changeZoom);
 
-
 	return (
 		<Router>
 			<WindowDecoration />
@@ -88,7 +87,7 @@ const App: Component = () => {
 
 							<Route path="/dev" element={<StateSetter state={'Dev'} force={true} component={Outlet} />}>
 								<Route path="/contextmenutest" component={ContextMenuTest} />
-								<Route path="/messagetest" component={MessageTest} />
+
 								<Route path="/loadingtest" component={LoadingTest} />
 								<Route path="/login" component={Prev} />
 								<Route path="/test" component={ContextMenuTest} />

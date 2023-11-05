@@ -1,11 +1,11 @@
 import { For, Match, Show, Switch, createMemo } from 'solid-js';
 import { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
-import API from '../../API';
 import { useAppState } from '../../AppState';
 import openInBrowser from '../../API/anchor';
 import TwitterEmbed from './embeds/TwitterEmbed';
 import { X } from 'lucide-solid';
+import { formatMarkdownToJSX } from '@/API/Messages';
 export type EmbedProps = {
 	embed: EmbedType;
 	showCloseButton?: boolean;
@@ -47,7 +47,7 @@ export default function Embed(props: EmbedProps) {
 						</Match>
 					</Switch>
 					{props.embed.description && (
-						<p class={style.description}>{API.Messages.formatMarkdownToJSX(props.embed.description, [])}</p>
+						<p class={style.description}>{formatMarkdownToJSX(props.embed.description, [])}</p>
 					)}
 					<section class={style.fields}>
 						<For each={props.embed.fields || []}>

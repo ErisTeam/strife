@@ -7,8 +7,7 @@ import { A } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api/tauri';
 import { emit } from '@tauri-apps/api/event';
 
-// API
-import API from '../../API';
+// import from '../../;
 import { changeState } from '../../test';
 import { useAppState } from '../../AppState';
 
@@ -20,6 +19,8 @@ import SplashText from '../../Components/Dev/SplashText';
 import { AppState } from '../../types';
 import { t } from '../../Translation';
 import Switch from '../../Components/Switch/Switch';
+import { getRelationships } from '@/API/User';
+import { updateGuilds } from '@/API/Guilds';
 
 function Prev() {
 	const [a] = createResource(async () => {
@@ -68,9 +69,9 @@ function Prev() {
 					<A class={buttons.default} href="/dev/guildtest">
 						Guild Test
 					</A>
-                    <A class={buttons.default} href="/dev/componentdocs">
-                        Component Docs
-                    </A>
+					<A class={buttons.default} href="/dev/componentdocs">
+						Component Docs
+					</A>
 				</div>
 				<div>
 					<h2>Buttons</h2>
@@ -126,7 +127,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.getRelationships(AppState.userId));
+							console.log(await getRelationships(AppState.userId));
 						}}
 					>
 						Get Relationships
@@ -134,7 +135,7 @@ function Prev() {
 					<button
 						class={buttons.default}
 						onclick={async (e) => {
-							console.log(await API.updateGuilds());
+							console.log(await updateGuilds());
 						}}
 					>
 						Update Guilds

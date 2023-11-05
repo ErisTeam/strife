@@ -1,12 +1,13 @@
 import { expect, test } from 'vitest';
-import API from '../API';
+import { formatMarkdownToJSXPreserve } from '@api/Messages';
 import '@testing-library/jest-dom';
+
 test('plain text', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('hello');
+	const x = formatMarkdownToJSXPreserve('hello');
 	expect(x).toStrictEqual([<>hello</>]);
 });
 test('bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('**hello**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('**hello**').flat(Infinity);
 
 	expect(x).toEqual(
 		<>
@@ -17,7 +18,7 @@ test('bold', () => {
 	);
 });
 test('bold italic', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('***hello***').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('***hello***').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">**</span>
@@ -33,7 +34,7 @@ test('bold italic', () => {
 	);
 });
 test('italic', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('*hello*').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('*hello*').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">*</span>
@@ -43,7 +44,7 @@ test('italic', () => {
 	);
 });
 test('underline', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('__hello__').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('__hello__').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">__</span>
@@ -53,7 +54,7 @@ test('underline', () => {
 	);
 });
 test('strikethrough', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('~~hello~~').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('~~hello~~').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">~~</span>
@@ -63,7 +64,7 @@ test('strikethrough', () => {
 	);
 });
 test('all combined', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('~~__***hello***__~~').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('~~__***hello***__~~').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">~~</span>
@@ -85,11 +86,11 @@ test('all combined', () => {
 	);
 });
 test('header 1', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('# hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('# hello').flat(Infinity);
 	expect(x).toStrictEqual(['# ', 'hello']);
 });
 test('header 1 with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('# **hello**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('# **hello**').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			# <span class="mdSuggestion">**</span>
@@ -99,19 +100,19 @@ test('header 1 with bold', () => {
 	);
 });
 test('header 2', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('## hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('## hello').flat(Infinity);
 	expect(x).toStrictEqual(['## ', 'hello']);
 });
 test('header 3', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('### hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('### hello').flat(Infinity);
 	expect(x).toStrictEqual(['### ', 'hello']);
 });
 test('link', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('[hello](https://google.com)');
+	const x = formatMarkdownToJSXPreserve('[hello](https://google.com)');
 	expect(x).toStrictEqual(['[hello](https://google.com)']);
 });
 test('code', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('`hello`').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('`hello`').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">`</span>
@@ -121,7 +122,7 @@ test('code', () => {
 	);
 });
 test('code with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('`**hello**`').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('`**hello**`').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">`</span>
@@ -131,7 +132,7 @@ test('code with bold', () => {
 	);
 });
 test('codeblock with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('```**hello**```').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('```**hello**```').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">```</span>
@@ -142,11 +143,11 @@ test('codeblock with bold', () => {
 });
 
 test('list', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('- hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('- hello').flat(Infinity);
 	expect(x).toStrictEqual(['- ', 'hello']);
 });
 test('list with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('- **hello**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('- **hello**').flat(Infinity);
 	const expected = [
 		'- ',
 		<>
@@ -158,11 +159,11 @@ test('list with bold', () => {
 	expect(x).toStrictEqual(expected.flat(Infinity));
 });
 test('indented list', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve(' - hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve(' - hello').flat(Infinity);
 	expect(x).toStrictEqual([' - ', 'hello']);
 });
 test('indented list with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve(' - **hello**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve(' - **hello**').flat(Infinity);
 	const expected = [
 		' - ',
 		<>
@@ -174,11 +175,11 @@ test('indented list with bold', () => {
 	expect(x).toStrictEqual(expected.flat(Infinity));
 });
 test('quote', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('> quote').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('> quote').flat(Infinity);
 	expect(x).toStrictEqual(['> ', 'quote']);
 });
 test('quote with bold', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('> **quote**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('> **quote**').flat(Infinity);
 	const expected = [
 		'> ',
 		<>
@@ -190,7 +191,7 @@ test('quote with bold', () => {
 	expect(x).toStrictEqual(expected.flat(Infinity));
 });
 test('spoiler', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('||hello||').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('||hello||').flat(Infinity);
 	const expected = [
 		<>
 			<span class="mdSuggestion">||</span>
@@ -201,9 +202,9 @@ test('spoiler', () => {
 	expect(x).toStrictEqual(expected.flat(Infinity));
 });
 test('monster', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve(
-		'*italics* _alternate italics_ **bold** __underline__ ~~Strikethrough~~',
-	).flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('*italics* _alternate italics_ **bold** __underline__ ~~Strikethrough~~').flat(
+		Infinity,
+	);
 	const expected = [
 		<>
 			<span class="mdSuggestion">*</span>
@@ -222,20 +223,20 @@ test('monster', () => {
 	expect(x).toStrictEqual(expected.flat(Infinity));
 });
 test('fake header', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('#### Header');
+	const x = formatMarkdownToJSXPreserve('#### Header');
 	expect(x).toStrictEqual([<>#### Header</>]);
 });
 
 test('alternate list', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('* hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('* hello').flat(Infinity);
 	expect(x).toStrictEqual(['* ', 'hello']);
 });
 test('alternate indented list', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve(' * hello').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve(' * hello').flat(Infinity);
 	expect(x).toStrictEqual([' * ', 'hello']);
 });
 test('weird edge case', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('_z_').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('_z_').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			<span class="mdSuggestion">_</span>
@@ -245,12 +246,12 @@ test('weird edge case', () => {
 	);
 });
 test('link with italic in url', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('https://reddit.com/r/super_test_yes').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('https://reddit.com/r/super_test_yes').flat(Infinity);
 	expect(x).toStrictEqual(['https://reddit.com/r/super_test_yes']);
 });
 
 test('link with italic in url plus bold test', () => {
-	const x = API.Messages.formatMarkdownToJSXPreserve('https://reddit.com/r/super_test_yes **test**').flat(Infinity);
+	const x = formatMarkdownToJSXPreserve('https://reddit.com/r/super_test_yes **test**').flat(Infinity);
 	expect(x).toStrictEqual(
 		<>
 			https://reddit.com/r/super_test_yes<> </>

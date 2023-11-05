@@ -1,10 +1,10 @@
 import { Accessor, For, Setter, createSignal } from 'solid-js';
 import style from './css.module.css';
 import { open } from '@tauri-apps/api/dialog';
-import API from '../../API';
 import MessageEditor from './MessageEditor';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { UploadFile } from './Chat';
+import { sendMessage } from '@/API/Messages';
 type MessageSenderProps = {
 	channelId: string;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
@@ -14,8 +14,8 @@ type MessageSenderProps = {
 export default function MessageSender(props: MessageSenderProps) {
 	const [msgText, setMsgText] = createSignal('');
 
-	function sendMessage() {
-		API.Messages.sendMessage(props.channelId, null, msgText(), props.files(), false, [], [], false);
+	function sendMsg() {
+		sendMessage(props.channelId, null, msgText(), props.files(), false, [], [], false);
 		setMsgText('');
 		props.setFiles([]);
 	}
@@ -79,7 +79,7 @@ export default function MessageSender(props: MessageSenderProps) {
 				<MessageEditor setText={setMsgText} text={msgText} files={props.files} setFiles={props.setFiles} />
 
 				<div class={style.buttonContainer}>
-					<button class={style.send} onClick={sendMessage}>
+					<button class={style.send} onClick={sendMsg}>
 						Send
 					</button>
 				</div>

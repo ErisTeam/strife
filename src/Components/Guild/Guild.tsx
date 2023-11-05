@@ -6,13 +6,13 @@ import { useAppState } from '../../AppState';
 
 // Style
 import style from './css.module.css';
-import API from '../../API';
 import { t } from '../../Translation';
 
 import { Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
 import { Guild as TGuild } from '../../types/Guild';
+import { getInitials } from '@/API/Utils';
 type GuildProps = {
 	// index: number;
 	className?: string;
@@ -78,7 +78,7 @@ const Guild = (props: GuildProps) => {
 			>
 				<Show
 					when={props.guild?.properties?.icon}
-					fallback={<h1 class={style.fallbackText}>{API.getInitials(props.guild.properties.name)}</h1>}
+					fallback={<h1 class={style.fallbackText}>{getInitials(props.guild.properties.name)}</h1>}
 				>
 					<img src={props.guild.properties.icon} alt={t.guild.logoAlt({ guildName: props.guild.properties.name })} />
 				</Show>

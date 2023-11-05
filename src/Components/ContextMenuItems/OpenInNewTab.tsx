@@ -1,8 +1,8 @@
 import { useMenu } from '../ContextMenu/ContextMenu';
-import API from '../../API';
 import { Channel } from '../../types/Channel';
 import { useAppState } from '../../AppState';
 import { createTextChannelTab } from '../Tabs/TabUtils';
+import { add, setAsCurrent } from '@/API/Tabs';
 
 export default () => {
 	const menu = useMenu<{ channel: Channel }>();
@@ -17,9 +17,9 @@ export default () => {
 					(t) => t.component == 'textChannel' && t.channelId == menu.channel.id,
 				);
 				if (listIndex != -1) {
-					API.Tabs.setAsCurrent(listIndex);
+					setAsCurrent(listIndex);
 				} else {
-					API.Tabs.add(createTextChannelTab(menu.channel));
+					add(createTextChannelTab(menu.channel));
 				}
 				menu.closeMenu();
 			}}

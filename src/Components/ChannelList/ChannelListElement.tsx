@@ -8,9 +8,10 @@ import { Component, JSX, Match, Switch, createMemo, createSignal } from 'solid-j
 import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import { Dynamic } from 'solid-js/web';
-import API from '../../API';
 import { createTextChannelTab } from '../Tabs/TabUtils';
 import { Tab } from '../../types';
+import { add, setAsCurrent } from '@/API/Tabs';
+import { getChannelIcon } from '@/API/Channels';
 
 interface ChannelProps {
 	data: ChannelType;
@@ -37,17 +38,17 @@ export default (props: ChannelProps) => {
 			case 0:
 				console.log('left click', e.button);
 				if (listIndex == -1) {
-					API.Tabs.add(tab, true);
+					add(tab, true);
 				} else {
-					API.Tabs.setAsCurrent(listIndex);
+					setAsCurrent(listIndex);
 				}
 				break;
 			case 1:
 				console.log('middle click', e.button);
 				if (listIndex != -1) {
-					API.Tabs.setAsCurrent(listIndex);
+					setAsCurrent(listIndex);
 				} else {
-					API.Tabs.add(tab);
+					add(tab);
 				}
 
 				break;
@@ -55,7 +56,7 @@ export default (props: ChannelProps) => {
 	}
 
 	const channelIcon = createMemo((): string | Component => {
-		const { emoji, newName } = API.getChannelIcon(props.data);
+		const { emoji, newName } = getChannelIcon(props.data);
 		setDisplayName(newName);
 		console.log('emoji', emoji);
 

@@ -22,8 +22,6 @@ import { Router } from '@solidjs/router';
 import SettingsGroup from './SettingsGroup';
 
 import style from './Settings.module.css';
-import Settings from '../../API/Settings';
-import API from '../../API';
 import Dev from '../Dev/Dev';
 import { useTabContext } from '../Tabs/TabUtils';
 

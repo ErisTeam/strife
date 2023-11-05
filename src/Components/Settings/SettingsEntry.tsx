@@ -11,10 +11,10 @@ import { Dynamic } from 'solid-js/web';
 import { RotateCcw, X } from 'lucide-solid';
 import { CssNumberPropertySetting, CssPropertyType, CustomSettings, SettingsEntry } from './SettingsTypes';
 import style from './Settings.module.css';
-import API from '../../API';
 import CssPropertyInput from './CssPropertyInput';
 import Checkbox from '../Checkbox/Checkbox';
-import Settings from '../../API/Settings';
+import { hslToHexCss } from '@/API/Style';
+import { saveToFile } from '@/API/Settings';
 
 function updateSettingsEntry(index: number, newValue: any) {
 	const AppState = useAppState();
@@ -34,7 +34,7 @@ function updateSettingsEntry(index: number, newValue: any) {
 	dispatchEvent(new CustomEvent(`settingsChanged`, { detail: { id: entry.id } }));
 
 	console.log(AppState.settings.entries);
-	Settings.saveToFile();
+	saveToFile();
 }
 
 export default (props: { setting: SettingsEntry; index: number }) => {
@@ -43,7 +43,7 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 
 		if (props.setting.type == 'ColorPicker') {
 			if (value.startsWith('hsl')) {
-				value = API.Style.hslToHexCss(value);
+				value = hslToHexCss(value);
 			}
 		}
 

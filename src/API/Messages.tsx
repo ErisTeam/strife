@@ -1,7 +1,8 @@
 import { fs } from '@tauri-apps/api';
-import API from '../API';
 import UserMention from '../Components/Chat/UserMention';
 import { UploadFile } from '../Components/Chat/Chat';
+import { Message } from '@/types/Messages';
+import { getToken } from './User';
 const userMentionRegex = '<@!?(\\d+)>';
 const channelMentionRegex = '<#(\\d+)>';
 const roleMentionRegex = '<@&(\\d+)>';
@@ -119,533 +120,490 @@ function getMarkdownIndexes(split: string): Array<[number, string]> {
 	return markdownIndexes.sort((a, b) => a[0] - b[0]);
 }
 
-export default {
-	formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
-		if (content == undefined) return '';
-		let splits = content.split(allHTMLOutsides);
-		splits = fixSplits(splits);
-		if (splits.length == 0) return '';
-		if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
-			return this.formatMentions(splits[0], mentions);
+export function formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
+	if (content == undefined) return '';
+	let splits = content.split(allHTMLOutsides);
+	splits = fixSplits(splits);
+	if (splits.length == 0) return '';
+	if (splits.length == 1 && !splits[0].match(markdownVerifier)) {
+		return formatMentions(splits[0], mentions);
+	}
+
+	const results = splits.map((split) => {
+		const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
+
+		if (split.match(regex.outsides.link)) {
+			const matches = split.matchAll(regex.insides.link).next();
+			return (
+				<a href={matches.value[2]} class="mdLink">
+					{matches.value[1]}
+				</a>
+			);
+		}
+		if (split.match(linkRegex)) {
+			return split;
+		}
+		if (split.match(emojiRegex)) {
+			// TODO:ADD EMOJI FORMATTING
+			return split;
+		}
+		if (split.match(mentionsRegex)) {
+			return formatMentions(split, mentions);
 		}
 
-		const results = splits.map((split) => {
-			const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
+		if (markdownIndexes.length == 0) {
+			return formatMarkdownToJSX(split);
+		}
 
-			if (split.match(regex.outsides.link)) {
-				const matches = split.matchAll(regex.insides.link).next();
+		switch (markdownIndexes[0][1]) {
+			case '**': {
+				return <b>{formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>;
+			}
+			case '*': {
+				return <i>{formatMarkdownToJSX(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>;
+			}
+			case '~~': {
+				return <s>{formatMarkdownToJSX(split.matchAll(regex.insides.strikethrough).next().value[2], mentions)}</s>;
+			}
+			case '__': {
+				return <u>{formatMarkdownToJSX(split.matchAll(regex.insides.underline).next().value[2], mentions)}</u>;
+			}
+			case '_': {
+				return <i>{formatMarkdownToJSX(split.matchAll(regex.insides.alternateItalic).next().value[2], mentions)}</i>;
+			}
+			case '- ': {
 				return (
-					<a href={matches.value[2]} class="mdLink">
-						{matches.value[1]}
-					</a>
+					<span class="mdList">
+						{formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[2], mentions)}
+					</span>
 				);
 			}
-			if (split.match(linkRegex)) {
-				return split;
+			case '* ': {
+				return (
+					<span class="mdList">
+						{formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[4], mentions)}
+					</span>
+				);
 			}
-			if (split.match(emojiRegex)) {
-				// TODO:ADD EMOJI FORMATTING
-				return split;
+			case ' - ': {
+				console.log('indented list');
+				console.log(split);
+				return (
+					<span class="mdIndentedList">
+						{formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions)}
+					</span>
+				);
 			}
-			if (split.match(mentionsRegex)) {
-				return this.formatMentions(split, mentions);
+			case ' * ': {
+				return (
+					<span class="mdIndentedList">
+						{formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[4], mentions)}
+					</span>
+				);
+			}
+			case '```': {
+				return <pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>;
+			}
+			case '`': {
+				return <code>{split.matchAll(regex.insides.code).next().value[2]}</code>;
+			}
+			case '#': {
+				return <h4>{formatMarkdownToJSX(split.matchAll(regex.insides.header1).next().value[1], mentions)}</h4>;
+			}
+			case '##': {
+				return <h5>{formatMarkdownToJSX(split.matchAll(regex.insides.header2).next().value[1], mentions)}</h5>;
+			}
+			case '###': {
+				return <h6>{formatMarkdownToJSX(split.matchAll(regex.insides.header3).next().value[1], mentions)}</h6>;
+			}
+			case '> ': {
+				return <q>{formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1], mentions)}</q>;
+			}
+			case '||': {
+				return (
+					<span class="mdSpoiler">
+						{formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
+					</span>
+				);
 			}
 
-			if (markdownIndexes.length == 0) {
-				return this.formatMarkdownToJSX(split);
+			default: {
+				return formatMarkdownToJSX(split);
+			}
+		}
+	});
+
+	return [...results] as Element[];
+}
+
+export function formatMarkdownToJSXPreserve(content: string, mentions: any[] = []): Element[] | Element | string {
+	if (content == undefined) return '';
+	let splits = content.split(allHTMLOutsides);
+	splits = fixSplits(splits);
+	if (splits.length == 0) return '';
+
+	console.log('splits', splits);
+	const results = splits.map((split) => {
+		const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
+
+		if (!split.match(markdownVerifier)) {
+			return formatMentions(split, mentions);
+		}
+		if (split.match(linkRegex)) {
+			return split;
+		}
+		if (split.match(emojiRegex)) {
+			// TODO:ADD EMOJI FORMATTING
+			return split;
+		}
+		if (split.match(mentionsRegex)) {
+			return formatMentions(split, mentions);
+		}
+		if (markdownIndexes.length == 0) {
+			return formatMarkdownToJSXPreserve(split);
+		}
+		switch (markdownIndexes[0][1]) {
+			case '**': {
+				return (
+					<>
+						<span class="mdSuggestion">**</span>
+						<b>{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>
+						<span class="mdSuggestion">**</span>
+					</>
+				);
+			}
+			case '*': {
+				console.log('split', split);
+				return (
+					<>
+						<span class="mdSuggestion">*</span>
+						<i>{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>
+						<span class="mdSuggestion">*</span>
+					</>
+				);
+			}
+			case '~~': {
+				return (
+					<>
+						<span class="mdSuggestion">~~</span>
+
+						<s>{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.strikethrough).next().value[2], mentions)}</s>
+						<span class="mdSuggestion">~~</span>
+					</>
+				);
+			}
+			case '__': {
+				return (
+					<>
+						<span class="mdSuggestion">__</span>
+						<u>{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.underline).next().value[2], mentions)}</u>
+						<span class="mdSuggestion">__</span>
+					</>
+				);
+			}
+			case '_': {
+				return (
+					<>
+						<span class="mdSuggestion">_</span>
+						<i>
+							{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.alternateItalic).next().value[2], mentions)}
+						</i>
+						<span class="mdSuggestion">_</span>
+					</>
+				);
 			}
 
-			switch (markdownIndexes[0][1]) {
-				case '**': {
-					return <b>{this.formatMarkdownToJSX(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>;
-				}
-				case '*': {
-					return <i>{this.formatMarkdownToJSX(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>;
-				}
-				case '~~': {
-					return (
-						<s>{this.formatMarkdownToJSX(split.matchAll(regex.insides.strikethrough).next().value[2], mentions)}</s>
-					);
-				}
-				case '__': {
-					return <u>{this.formatMarkdownToJSX(split.matchAll(regex.insides.underline).next().value[2], mentions)}</u>;
-				}
-				case '_': {
-					return (
-						<i>{this.formatMarkdownToJSX(split.matchAll(regex.insides.alternateItalic).next().value[2], mentions)}</i>
-					);
-				}
-				case '- ': {
-					return (
-						<span class="mdList">
-							{this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[2], mentions)}
-						</span>
-					);
-				}
-				case '* ': {
-					return (
-						<span class="mdList">
-							{this.formatMarkdownToJSX(split.matchAll(regex.insides.list).next().value[4], mentions)}
-						</span>
-					);
-				}
-				case ' - ': {
-					console.log('indented list');
-					console.log(split);
-					return (
-						<span class="mdIndentedList">
-							{this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[2], mentions)}
-						</span>
-					);
-				}
-				case ' * ': {
-					return (
-						<span class="mdIndentedList">
-							{this.formatMarkdownToJSX(split.matchAll(regex.insides.indentedList).next().value[4], mentions)}
-						</span>
-					);
-				}
-				case '```': {
-					return <pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>;
-				}
-				case '`': {
-					return <code>{split.matchAll(regex.insides.code).next().value[2]}</code>;
-				}
-				case '#': {
-					return <h4>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header1).next().value[1], mentions)}</h4>;
-				}
-				case '##': {
-					return <h5>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header2).next().value[1], mentions)}</h5>;
-				}
-				case '###': {
-					return <h6>{this.formatMarkdownToJSX(split.matchAll(regex.insides.header3).next().value[1], mentions)}</h6>;
-				}
-				case '> ': {
-					return <q>{this.formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1], mentions)}</q>;
-				}
-				case '||': {
-					return (
+			case '```': {
+				return (
+					<>
+						<span class="mdSuggestion">```</span>
+						<pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>
+						<span class="mdSuggestion">```</span>
+					</>
+				);
+			}
+			case '`': {
+				return (
+					<>
+						<span class="mdSuggestion">`</span>
+						<code>{split.matchAll(regex.insides.code).next().value[2]}</code>
+						<span class="mdSuggestion">`</span>
+					</>
+				);
+			}
+
+			case '||': {
+				return (
+					<>
+						<span class="mdSuggestion">||</span>
 						<span class="mdSpoiler">
-							{this.formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
+							{formatMarkdownToJSXPreserve(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
 						</span>
-					);
-				}
-
-				default: {
-					return this.formatMarkdownToJSX(split);
-				}
+						<span class="mdSuggestion">||</span>
+					</>
+				);
 			}
-		});
-
-		return [...results] as Element[];
-	},
-	formatMarkdownToJSXPreserve(content: string, mentions: any[] = []): Element[] | Element | string {
-		if (content == undefined) return '';
-		let splits = content.split(allHTMLOutsides);
-		splits = fixSplits(splits);
-		if (splits.length == 0) return '';
-
-		console.log('splits', splits);
-		const results = splits.map((split) => {
-			const markdownIndexes: Array<[number, string]> = getMarkdownIndexes(split);
-
-			if (!split.match(markdownVerifier)) {
-				return this.formatMentions(split, mentions);
+			case '#': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.header1).next().value[1], mentions);
+				return <># {inside}</>;
 			}
-			if (split.match(linkRegex)) {
-				return split;
+			case '##': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.header2).next().value[1], mentions);
+				return <>## {inside}</>;
 			}
-			if (split.match(emojiRegex)) {
-				// TODO:ADD EMOJI FORMATTING
-				return split;
+			case '###': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.header3).next().value[1], mentions);
+				return <>### {inside}</>;
 			}
-			if (split.match(mentionsRegex)) {
-				return this.formatMentions(split, mentions);
+			case '> ': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.quote).next().value[1], mentions);
+				return (
+					<>
+						{'> '}
+						{inside}
+					</>
+				);
 			}
-			if (markdownIndexes.length == 0) {
-				return this.formatMarkdownToJSXPreserve(split);
+			case '- ': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[2], mentions);
+				return <>- {inside}</>;
 			}
-			switch (markdownIndexes[0][1]) {
-				case '**': {
-					return (
-						<>
-							<span class="mdSuggestion">**</span>
-							<b>{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.bold).next().value[2], mentions)}</b>
-							<span class="mdSuggestion">**</span>
-						</>
-					);
-				}
-				case '*': {
-					console.log('split', split);
-					return (
-						<>
-							<span class="mdSuggestion">*</span>
-							<i>{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.italic).next().value[2], mentions)}</i>
-							<span class="mdSuggestion">*</span>
-						</>
-					);
-				}
-				case '~~': {
-					return (
-						<>
-							<span class="mdSuggestion">~~</span>
-
-							<s>
-								{this.formatMarkdownToJSXPreserve(
-									split.matchAll(regex.insides.strikethrough).next().value[2],
-									mentions,
-								)}
-							</s>
-							<span class="mdSuggestion">~~</span>
-						</>
-					);
-				}
-				case '__': {
-					return (
-						<>
-							<span class="mdSuggestion">__</span>
-							<u>
-								{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.underline).next().value[2], mentions)}
-							</u>
-							<span class="mdSuggestion">__</span>
-						</>
-					);
-				}
-				case '_': {
-					return (
-						<>
-							<span class="mdSuggestion">_</span>
-							<i>
-								{this.formatMarkdownToJSXPreserve(
-									split.matchAll(regex.insides.alternateItalic).next().value[2],
-									mentions,
-								)}
-							</i>
-							<span class="mdSuggestion">_</span>
-						</>
-					);
-				}
-
-				case '```': {
-					return (
-						<>
-							<span class="mdSuggestion">```</span>
-							<pre class="codeblock">{split.matchAll(regex.insides.codeBlock).next().value[2]}</pre>
-							<span class="mdSuggestion">```</span>
-						</>
-					);
-				}
-				case '`': {
-					return (
-						<>
-							<span class="mdSuggestion">`</span>
-							<code>{split.matchAll(regex.insides.code).next().value[2]}</code>
-							<span class="mdSuggestion">`</span>
-						</>
-					);
-				}
-
-				case '||': {
-					return (
-						<>
-							<span class="mdSuggestion">||</span>
-							<span class="mdSpoiler">
-								{this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
-							</span>
-							<span class="mdSuggestion">||</span>
-						</>
-					);
-				}
-				case '#': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.header1).next().value[1],
-						mentions,
-					);
-					return <># {inside}</>;
-				}
-				case '##': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.header2).next().value[1],
-						mentions,
-					);
-					return <>## {inside}</>;
-				}
-				case '###': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.header3).next().value[1],
-						mentions,
-					);
-					return <>### {inside}</>;
-				}
-				case '> ': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.quote).next().value[1],
-						mentions,
-					);
-					return (
-						<>
-							{'> '}
-							{inside}
-						</>
-					);
-				}
-				case '- ': {
-					const inside = this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[2], mentions);
-					return <>- {inside}</>;
-				}
-				case '* ': {
-					const inside = this.formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[4], mentions);
-					return <>* {inside}</>;
-				}
-				case ' - ': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.indentedList).next().value[2],
-						mentions,
-					);
-					return <> - {inside}</>;
-				}
-				case ' * ': {
-					const inside = this.formatMarkdownToJSXPreserve(
-						split.matchAll(regex.insides.indentedList).next().value[4],
-						mentions,
-					);
-					return (
-						<>
-							{' * '}
-							{inside}
-						</>
-					);
-				}
-
-				default: {
-					return this.formatMarkdownToJSXPreserve(split);
-				}
+			case '* ': {
+				const inside = formatMarkdownToJSXPreserve(split.matchAll(regex.insides.list).next().value[4], mentions);
+				return <>* {inside}</>;
 			}
-		});
+			case ' - ': {
+				const inside = formatMarkdownToJSXPreserve(
+					split.matchAll(regex.insides.indentedList).next().value[2],
+					mentions,
+				);
+				return <> - {inside}</>;
+			}
+			case ' * ': {
+				const inside = formatMarkdownToJSXPreserve(
+					split.matchAll(regex.insides.indentedList).next().value[4],
+					mentions,
+				);
+				return (
+					<>
+						{' * '}
+						{inside}
+					</>
+				);
+			}
 
-		return [...results] as Element[];
-	},
+			default: {
+				return formatMarkdownToJSXPreserve(split);
+			}
+		}
+	});
 
-	formatMarkdownToHTML(content: string) {
-		const split = content.split(ruleSplitter);
-		const combined: string[] = [];
-		let isInText = false;
+	return [...results] as Element[];
+}
 
-		split.forEach((s) => {
-			if (s == undefined) s = '';
-			if (s && s.match(ruleSplitter) != null) {
+export function formatMarkdownToHTML(content: string) {
+	const split = content.split(ruleSplitter);
+	const combined: string[] = [];
+	let isInText = false;
+
+	split.forEach((s) => {
+		if (s == undefined) s = '';
+		if (s && s.match(ruleSplitter) != null) {
+			combined.push(s);
+			isInText = false;
+		} else {
+			if (!isInText) {
 				combined.push(s);
-				isInText = false;
+				isInText = true;
 			} else {
-				if (!isInText) {
-					combined.push(s);
-					isInText = true;
-				} else {
-					combined[combined.length - 1] += s;
-				}
+				combined[combined.length - 1] += s;
 			}
-		});
+		}
+	});
 
-		for (let i = 0; i < combined.length; i++) {
-			if (combined[i].match(ruleSplitter) != null) {
-				codeRules.forEach(([rule, template]) => {
-					//this error is just plain wrong
-					combined[i] = combined[i].replaceAll(rule, template);
-				});
+	for (let i = 0; i < combined.length; i++) {
+		if (combined[i].match(ruleSplitter) != null) {
+			codeRules.forEach(([rule, template]) => {
+				//this error is just plain wrong
+				combined[i] = combined[i].replaceAll(rule, template);
+			});
+		} else {
+			rules.forEach(([rule, template]) => {
+				//this error is just plain wrong
+				combined[i] = combined[i].replaceAll(rule, template);
+			});
+		}
+	}
+
+	return combined.join('');
+}
+
+export function formatMentions(content: string, mentionsInput: any[]) {
+	const mentions =
+		content.match(mentionsRegex)?.map((match) => {
+			let element;
+			if (match.match(userMentionRegex)) {
+				element = <UserMention mentioned_user={mentionsInput.find((mention) => match.includes(mention.id))} />;
+			} else if (match.match(channelMentionRegex)) {
+				element = <mark style={{ background: 'green' }}>{match}</mark>;
+			} else if (match.match(roleMentionRegex)) {
+				element = <mark style={{ background: 'yellow' }}>{match}</mark>;
+			} else if (match.match(commandMentionRegex)) {
+				element = <mark style={{ background: 'red' }}>{match}</mark>;
 			} else {
-				rules.forEach(([rule, template]) => {
-					//this error is just plain wrong
-					combined[i] = combined[i].replaceAll(rule, template);
-				});
+				element = <mark style={{ background: 'black' }}>{match}</mark>;
 			}
+			return { match: match, element: element };
+		}) || [];
+
+	const regex = mentions.map((e) => e.match).join('|');
+	if (regex.length == 0) return <>{content}</>;
+
+	const split = content.split(new RegExp(regex, 'gm'));
+	const a = [];
+	for (let i = 0; i < split.length; i++) {
+		a.push(split[i]);
+		if (i < mentions.length) {
+			a.push(mentions[i].element);
 		}
+	}
 
-		return combined.join('');
-	},
+	return <>{...a}</>;
+}
+export async function sendMessage(
+	channelId: string,
+	messageId: string | null,
+	content: string = '',
+	files: UploadFile[] = [],
+	isTTS: boolean = false,
+	embeds: any[] = [],
+	mentions: any[] = [],
+	isEditing: boolean = false,
+) {
+	const token = await getToken();
+	const url = messageId
+		? `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`
+		: `https://discord.com/api/v10/channels/${channelId}/messages`;
 
-	formatMentions(content: string, mentionsInput: any[]) {
-		const mentions =
-			content.match(mentionsRegex)?.map((match) => {
-				let element;
-				if (match.match(userMentionRegex)) {
-					element = <UserMention mentioned_user={mentionsInput.find((mention) => match.includes(mention.id))} />;
-				} else if (match.match(channelMentionRegex)) {
-					element = <mark style={{ background: 'green' }}>{match}</mark>;
-				} else if (match.match(roleMentionRegex)) {
-					element = <mark style={{ background: 'yellow' }}>{match}</mark>;
-				} else if (match.match(commandMentionRegex)) {
-					element = <mark style={{ background: 'red' }}>{match}</mark>;
-				} else {
-					element = <mark style={{ background: 'black' }}>{match}</mark>;
-				}
-				return { match: match, element: element };
-			}) || [];
+	const formData = new FormData();
+	let attachments = [];
 
-		const regex = mentions.map((e) => e.match).join('|');
-		if (regex.length == 0) return <>{content}</>;
-
-		const split = content.split(new RegExp(regex, 'gm'));
-		const a = [];
-		for (let i = 0; i < split.length; i++) {
-			a.push(split[i]);
-			if (i < mentions.length) {
-				a.push(mentions[i].element);
+	for (let i = 0; i < files.length; i++) {
+		const file = files[i];
+		if (typeof file == 'string') {
+			let fileName;
+			let fileBlob;
+			if (file.includes('/')) {
+				fileName = file.split('/')[file.split('/').length - 1];
+			} else {
+				fileName = file.split('\\')[file.split('\\').length - 1];
 			}
+			const filearray = await fs.readBinaryFile(file);
+			fileBlob = new Blob([filearray]);
+			formData.append(`files[${i}]`, fileBlob, fileName);
+			attachments.push({ id: i, filename: fileName });
+		} else if (!file.attachmentId) {
+			let fileName;
+			let fileBlob;
+			fileName = file.name;
+			fileBlob = file.blob;
+			attachments.push({ id: i, filename: fileName });
+			formData.append(`files[${i}]`, fileBlob, fileName);
+		} else if (file.attachmentId) {
+			attachments.push({ id: file.attachmentId, filename: file.name });
 		}
+	}
+	// I DONT LIKE USING JSON PAYLOAD BUT I COULDNT GET IT TO WORK WITH THE files WITH FORMDATA
+	const jsonPayload = {
+		content: content,
+		attachments: attachments,
+	};
+	formData.append('payload_json', JSON.stringify(jsonPayload));
+	for (const entry of formData.entries()) {
+		console.log(entry);
+	}
 
-		return <>{...a}</>;
-	},
-	async sendMessage(
-		channelId: string,
-		messageId: string | null,
-		content: string = '',
-		files: UploadFile[] = [],
-		isTTS: boolean = false,
-		embeds: any[] = [],
-		mentions: any[] = [],
-		isEditing: boolean = false,
-	) {
-		const token = await API.getToken();
-		const url = messageId
-			? `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`
-			: `https://discord.com/api/v10/channels/${channelId}/messages`;
+	const method = isEditing ? 'PATCH' : 'POST';
+	console.log('method', method, 'url', url, 'token', token);
 
-		const formData = new FormData();
-		let attachments = [];
+	const response = await fetch(url, {
+		method: method,
+		headers: {
+			Authorization: token,
+		},
+		body: formData,
+	});
+	if (response.status == 200) {
+		const json = await response.json();
+		console.log(json);
+		return true;
+	} else {
+		const json = await response.json();
+		console.log(json);
+		return false;
+	}
+}
 
-		for (let i = 0; i < files.length; i++) {
-			const file = files[i];
-			if (typeof file == 'string') {
-				let fileName;
-				let fileBlob;
-				if (file.includes('/')) {
-					fileName = file.split('/')[file.split('/').length - 1];
-				} else {
-					fileName = file.split('\\')[file.split('\\').length - 1];
-				}
-				const filearray = await fs.readBinaryFile(file);
-				fileBlob = new Blob([filearray]);
-				formData.append(`files[${i}]`, fileBlob, fileName);
-				attachments.push({ id: i, filename: fileName });
-			} else if (!file.attachmentId) {
-				let fileName;
-				let fileBlob;
-				fileName = file.name;
-				fileBlob = file.blob;
-				attachments.push({ id: i, filename: fileName });
-				formData.append(`files[${i}]`, fileBlob, fileName);
-			} else if (file.attachmentId) {
-				attachments.push({ id: file.attachmentId, filename: file.name });
-			}
-		}
-		// I DONT LIKE USING JSON PAYLOAD BUT I COULDNT GET IT TO WORK WITH THE files WITH FORMDATA
-		const jsonPayload = {
-			content: content,
-			attachments: attachments,
-		};
-		formData.append('payload_json', JSON.stringify(jsonPayload));
-		for (const entry of formData.entries()) {
-			console.log(entry);
-		}
+// get the cursor position from .editor start
+export function getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
+	if (stat.done) return stat;
 
-		const method = isEditing ? 'PATCH' : 'POST';
-		console.log('method', method, 'url', url, 'token', token);
-
-		const response = await fetch(url, {
-			method: method,
-			headers: {
-				Authorization: token,
-			},
-			body: formData,
-		});
-		if (response.status == 200) {
-			const json = await response.json();
-			console.log(json);
-			return true;
-		} else {
-			const json = await response.json();
-			console.log(json);
-			return false;
-		}
-	},
-
-	// get the cursor position from .editor start
-	getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
-		if (stat.done) return stat;
-
-		let currentNode = null;
-		if (parent.childNodes.length == 0) {
-			stat.pos += parent.textContent.length;
-		} else {
-			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
-				currentNode = parent.childNodes[i];
-				if (currentNode === node) {
-					stat.pos += offset;
-					stat.done = true;
-					return stat;
-				} else this.getCursorPosition(currentNode, node, offset, stat);
-			}
-		}
-		return stat;
-	},
-
-	//find the child node and relative position and set it on range
-	setCursorPosition(parent: Node, range: Range, stat: { pos: number; done: boolean }) {
-		if (stat.done) return range;
-
-		if (parent.childNodes.length == 0) {
-			if (parent.textContent.length >= stat.pos) {
-				range.setStart(parent, stat.pos);
+	let currentNode = null;
+	if (parent.childNodes.length == 0) {
+		stat.pos += parent.textContent.length;
+	} else {
+		for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+			currentNode = parent.childNodes[i];
+			if (currentNode === node) {
+				stat.pos += offset;
 				stat.done = true;
-			} else {
-				stat.pos = stat.pos - parent.textContent.length;
-			}
-		} else {
-			for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
-				const currentNode = parent.childNodes[i];
-				this.setCursorPosition(currentNode, range, stat);
-			}
+				return stat;
+			} else getCursorPosition(currentNode, node, offset, stat);
 		}
-		return range;
-	},
-};
+	}
+	return stat;
+}
 
-// 	async editMessage(
-// 		channelId: string,
-// 		messageId: string,
-// 		content: string = '',
-// 		attachments: UploadFile[] = [],
-// 		embeds: any[] = [],
-// 		mentions: any[] = [],
-// 	) {
-// 		const token = await API.getToken();
-// 		const url = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
+//find the child node and relative position and set it on range
+export function setCursorPosition(parent: Node, range: Range, stat: { pos: number; done: boolean }) {
+	if (stat.done) return range;
 
-// 		const formData = new FormData();
-// 		let attachmentObjects = [];
+	if (parent.childNodes.length == 0) {
+		if (parent.textContent.length >= stat.pos) {
+			range.setStart(parent, stat.pos);
+			stat.done = true;
+		} else {
+			stat.pos = stat.pos - parent.textContent.length;
+		}
+	} else {
+		for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+			const currentNode = parent.childNodes[i];
+			setCursorPosition(currentNode, range, stat);
+		}
+	}
+	return range;
+}
+/**
+ * Get messages of the given channel.
+ * @param channelId
+ * @returns
+ */
+export async function getMessages(channelId: string) {
+	const token = await getToken();
+	if (!token) {
+		console.error("No user token found! Can't get messages!");
+		return;
+	}
 
-// 		for (let i = 0; i < attachments.length; i++) {
-// 			const attachment = attachments[i];
-// 			if (typeof attachment == 'string') {
-// 				let fileName;
-// 				let fileBlob;
-// 				if (attachment.includes('/')) {
-// 					fileName = attachment.split('/')[attachment.split('/').length - 1];
-// 				} else {
-// 					fileName = attachment.split('\\')[attachment.split('\\').length - 1];
-// 				}
-// 				const filearray = await fs.readBinaryFile(attachment);
-// 				fileBlob = new Blob([filearray]);
-// 				formData.append(`files[${i}]`, fileBlob, fileName);
-// 				attachmentObjects.push({ id: i, filename: fileName });
-// 			} else if (!attachment.attachmentId) {
-// 				let fileName;
-// 				let fileBlob;
-// 				fileName = attachment.name;
-// 				fileBlob = attachment.blob;
-// 				attachmentObjects.push({ id: i, filename: fileName });
-// 				formData.append(`files[${i}]`, fileBlob, fileName);
-// 			} else if (attachment.attachmentId) {
-// 				attachmentObjects.push({ id: attachment.attachmentId, filename: attachment.name });
-// 			}
-// 		}
+	const url = `https://discord.com/api/v9/channels/${channelId}/messages?limit=50`;
+	const resDataponse = await fetch(url, {
+		method: 'GET',
+		headers: {
+			Authorization: token,
+		},
+	});
+
+	const resData = (await resDataponse.json()) as Message[];
+
+	return resData;
+}

@@ -1,12 +1,12 @@
 import { createResource, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import style from './css.module.css';
-import API from '../../API';
+import { getLocalUserInfo } from '@/API/User';
 function UserPanel() {
 	const appState = useAppState();
 
 	const [userInfo] = createResource(async () => {
-		const res = await API.getLocalUserInfo(appState.userId);
+		const res = await getLocalUserInfo(appState.userId);
 		console.log(res);
 		//TODO: store user info in app state
 		return res;

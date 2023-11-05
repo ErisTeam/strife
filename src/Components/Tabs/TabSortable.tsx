@@ -9,7 +9,7 @@ import { X } from 'lucide-solid';
 
 import { createSortable, useDragDropContext } from '@thisbeyond/solid-dnd';
 
-import API from '../../API';
+import { remove, setAsCurrent } from '@/API/Tabs';
 type TabProps = {
 	tab: Tab;
 	disabled?: boolean;
@@ -46,7 +46,7 @@ function TabSortable(props: TabProps) {
 					// console.log(state.active);
 					// if (state.active.draggableId) return;
 					// console.log(props.tab);
-					API.Tabs.setAsCurrent(tab);
+					setAsCurrent(tab);
 				}}
 			>
 				<Switch fallback={'❓'}>
@@ -71,7 +71,7 @@ function TabSortable(props: TabProps) {
 				disabled={props.disabled}
 				onClick={() => {
 					// if (state.active.draggableId) return;
-					API.Tabs.remove(tab);
+					remove(tab);
 				}}
 			>
 				<X />

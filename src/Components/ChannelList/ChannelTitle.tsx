@@ -19,6 +19,7 @@ import {
 import { Guild } from '../../types/Guild';
 import style from './css.module.css';
 import { createSignal } from 'solid-js';
+
 type GuildTitleProps = {
 	guild: Guild;
 };

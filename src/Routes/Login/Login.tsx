@@ -7,21 +7,21 @@ import { emit } from '@tauri-apps/api/event';
 
 // API
 import qrcode from 'qrcode';
-import { UserData } from '../../Components/Login/QRCode/QRCode';
-import API from './../../API';
+import { UserData } from '@components/Login/QRCode/QRCode';
 import { useAppState } from './../../AppState';
 import { useTaurListener } from './../../test';
 
 // Components
-import LoginBox from '../../Components/Login/LoginBox/LoginBox';
-import MFABox from '../../Components/Login/MFABox/MFABox';
-import QRCode from '../../Components/Login/QRCode/QRCode';
+import LoginBox from '@components/Login/LoginBox/LoginBox';
+import MFABox from '@components/Login/MFABox/MFABox';
+import QRCode from '@components/Login/QRCode/QRCode';
 
 // Style
 import HCaptcha from 'solid-hcaptcha';
-import Dev from '../../Components/Dev/Dev';
+import Dev from '@components/Dev/Dev';
 import { AuthEvents } from '../../types/Auth';
 import style from './Login.module.css';
+import { updateCurrentUserID } from '@/API/User';
 
 //TODO clean
 
@@ -64,7 +64,7 @@ const LoginPage = () => {
 				break;
 			}
 			case 'loginSuccess': {
-				appState.setUserId(input.userId);
+				appState.userId = input.userId;
 
 				console.log(appState.userId);
 
@@ -94,7 +94,7 @@ const LoginPage = () => {
 				break;
 			}
 			case 'verifySuccess': {
-				appState.setUserId(input.userId);
+				appState.userId = input.userId;
 
 				console.log(appState.userId);
 				console.log('verify success');
@@ -121,7 +121,7 @@ const LoginPage = () => {
 			}),
 		);
 		//TODO: check if correct usage
-		API.updateCurrentUserID().catch((e) => {
+		updateCurrentUserID().catch((e) => {
 			console.log(e);
 		});
 	}
@@ -150,15 +150,27 @@ const LoginPage = () => {
 	return (
 		<div class={[style.wrapper, style.background].join(' ')}>
 			<Dev>
-				<button onclick={() => { switchTo('mfa'); }} >
+				<button
+					onclick={() => {
+						switchTo('mfa');
+					}}
+				>
 					show MF
 				</button>
 
-				<button onclick={() => { switchTo('captcha'); }} >
+				<button
+					onclick={() => {
+						switchTo('captcha');
+					}}
+				>
 					show Captcha
 				</button>
 
-				<button onclick={() => { switchTo('login'); }} >
+				<button
+					onclick={() => {
+						switchTo('login');
+					}}
+				>
 					show Login
 				</button>
 			</Dev>

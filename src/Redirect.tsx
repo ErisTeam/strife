@@ -1,7 +1,7 @@
 import { onMount } from 'solid-js';
 import { useAppState } from './AppState';
-import API from './API';
 import { useNavigate } from '@solidjs/router';
+import { getToken } from './API/User';
 function Redirect() {
 	const AppState = useAppState();
 	const navigate = useNavigate();
@@ -10,7 +10,7 @@ function Redirect() {
 			navigate('/login');
 			console.log('navigated to login');
 		} else {
-			const token = API.getToken();
+			const token = getToken();
 			if (token == null) {
 				navigate('/login');
 				console.log('navigated to login');

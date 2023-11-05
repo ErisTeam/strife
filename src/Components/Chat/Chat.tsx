@@ -1,6 +1,5 @@
 import { convertFileSrc, invoke } from '@tauri-apps/api/tauri';
 import { For, Show, createEffect, createMemo, createResource, createSignal, onMount } from 'solid-js';
-import API from '../../API';
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { Message as MessageType } from '../../types/Messages';
@@ -13,6 +12,7 @@ import MessageEditor from './MessageEditor';
 import MessageSender from './MessageSender';
 import { listen } from '@tauri-apps/api/event';
 import { doc } from 'prettier';
+import { getMessages } from '@/API/Messages';
 
 export type UploadFile =
 	| string
@@ -99,7 +99,7 @@ export default function Chat() {
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
-		const messages = await API.getMessages(TabContext.channelId);
+		const messages = await getMessages(TabContext.channelId);
 		return messages.reverse();
 	});
 

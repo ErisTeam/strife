@@ -1,11 +1,11 @@
 import { Accessor, For, Setter, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
 import { message, open } from '@tauri-apps/api/dialog';
-import API from '../../API';
 import MessageEditor from './MessageEditor';
 import { Message as MessageType } from '../../types/Messages';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { UploadFile } from './Chat';
+import { sendMessage } from '@/API/Messages';
 type MessageUpdaterProps = {
 	message: MessageType;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
@@ -18,7 +18,7 @@ export default function MessageUpdater(props: MessageUpdaterProps) {
 	console.log('updater props', props);
 
 	function updateMessage() {
-		API.Messages.sendMessage(props.message.channel_id, props.message.id, msgText(), files(), false, [], [], true);
+		sendMessage(props.message.channel_id, props.message.id, msgText(), files(), false, [], [], true);
 		props.setIsEditing(false);
 	}
 	// TODO:ADD BUTTON

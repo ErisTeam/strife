@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import autoprefixer from 'autoprefixer';
 import postcss_nested from 'postcss-nested';
-
+import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
-	plugins: [solidPlugin()],
+	plugins: [tsconfigPaths(), solidPlugin()],
 	css: {
 		postcss: {
 			plugins: [autoprefixer, postcss_nested],

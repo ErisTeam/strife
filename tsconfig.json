@@ -13,6 +13,12 @@
 		"types": ["vite/client"],
 		"noEmit": true,
 		"isolatedModules": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@/*": ["./*"],
+			"@api/*": ["./API/*"],
+			"@components/*": ["./Components/*"]
+		}
 	}
 }
