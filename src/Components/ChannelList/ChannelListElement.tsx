@@ -34,6 +34,7 @@ export default (props: ChannelProps) => {
 
 		console.log('listIndex', listIndex);
 		const tab = createTextChannelTab(props.data);
+		console.log('tab', tab);
 		switch (e.button) {
 			case 0:
 				console.log('left click', e.button);
