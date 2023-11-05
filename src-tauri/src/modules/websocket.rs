@@ -3,7 +3,7 @@ use std::sync::Arc;
 use futures_util::{ stream::{ SplitSink, SplitStream }, StreamExt, SinkExt };
 use log::debug;
 use tokio::sync::{ Mutex, RwLock };
-use tokio_tungstenite::{ WebSocketStream, tungstenite::client::{ IntoClientRequest, self } };
+use tokio_tungstenite::WebSocketStream;
 
 use crate::Result;
 type Reader = SplitStream<WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>>;

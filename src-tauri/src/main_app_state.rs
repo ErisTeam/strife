@@ -1,6 +1,5 @@
 use std::{ sync::Arc, path::PathBuf };
 use log::error;
-use serde::Deserialize;
 use tauri::AppHandle;
 use tokio::sync::Mutex;
 use crate::{ event_manager::EventManager, modules::{ auth::Auth, main_app::MainApp, user_manager::UserManager } };

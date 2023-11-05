@@ -43,6 +43,7 @@ export default (props: ChannelProps) => {
 				} else {
 					setAsCurrent(listIndex);
 				}
+
 				break;
 			case 1:
 				console.log('middle click', e.button);

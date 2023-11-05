@@ -1,17 +1,13 @@
 // SolidJS
 import { useAppState } from '@/AppState';
-import { emit } from '@tauri-apps/api/event';
 // Tauri
-import { invoke } from '@tauri-apps/api/tauri';
 // API
 import { Tab, TabComponents, TabsFile } from '@/types';
 
 import { produce } from 'solid-js/store';
-import { Volume2 } from 'lucide-solid';
 
-import { CONSTANTS } from '@/Constants';
-import { Component, batch } from 'solid-js';
-import { exists, BaseDirectory, createDir, writeFile, readDir, readTextFile } from '@tauri-apps/api/fs';
+import { batch } from 'solid-js';
+import { exists, BaseDirectory, createDir, writeFile, readTextFile } from '@tauri-apps/api/fs';
 
 const sessionDataPath = 'session_data';
 const tabsPath = sessionDataPath + '/tabs.json';
@@ -47,7 +43,7 @@ export function setAsCurrent(tab: Tab | number) {
 	saveToFile().catch((err) => console.error(err));
 }
 
-export function remove(tab: Tab | number) {
+export function remove(tab: Tab | number, keepOrder: boolean = false) {
 	const AppState = useAppState();
 
 	const tabIndex = typeof tab == 'number' ? tab : AppState.tabs.indexOf(tab);
@@ -75,18 +71,20 @@ export function remove(tab: Tab | number) {
 	//? batch is important here, otherwise tabs might not be updated correctly
 	batch(() => {
 		AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
-		AppState.setTabsOrder((prev) => {
-			const idx = prev.indexOf(tabIndex);
-			prev.splice(idx, 1);
+		if (!keepOrder) {
+			AppState.setTabsOrder((prev) => {
+				const idx = prev.indexOf(tabIndex);
+				prev.splice(idx, 1);
 
-			prev = prev.map((order, index) => {
-				if (order > tabIndex) {
-					return order - 1;
-				}
-				return order;
+				prev = prev.map((order, index) => {
+					if (order > tabIndex) {
+						return order - 1;
+					}
+					return order;
+				});
+				return prev;
 			});
-			return prev;
-		});
+		}
 	});
 	saveToFile().catch((err) => console.error(err));
 }
@@ -114,21 +112,24 @@ export function add(tab: Tab, replaceCurrent: boolean = false) {
 			return;
 		}
 
-		AppState.setTabs(produce((tabs) => tabs.splice(tabIndex, 1)));
-		AppState.setTabs(AppState.tabs.length, tab);
-		const newTabIndex = AppState.tabs.length - 1;
-		AppState.setCurrentTabIndex(newTabIndex);
-		AppState.setTabsOrder((prev) => {
-			const originalTabOrder = prev.indexOf(tabIndex);
-			prev[originalTabOrder] = newTabIndex;
-			for (let i = originalTabOrder + 1; i < prev.length; i++) {
-				prev[i]--;
-			}
+		let currentOrder = AppState.tabsOrder().indexOf(tabIndex);
+		console.log('currentOrder', currentOrder, [...AppState.tabsOrder()]);
+		remove(tabIndex, true);
+		const newIndex = AppState.tabs.length;
+		AppState.setCurrentTabIndex(newIndex);
+		AppState.setTabs(newIndex, tab);
 
+		AppState.setTabsOrder((prev) => {
+			prev = prev.map((index) => {
+				if (index > tabIndex) {
+					return index - 1;
+				}
+				return index;
+			});
+			prev[currentOrder] = newIndex;
 			return prev;
 		});
-
-		AppState.setCurrentTabIndex(tabIndex);
+		console.log('currentOrder', currentOrder, AppState.tabsOrder());
 	});
 	saveToFile().catch((err) => console.error(err));
 }

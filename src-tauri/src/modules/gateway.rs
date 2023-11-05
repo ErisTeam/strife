@@ -4,12 +4,7 @@ use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
 use log::{ debug, error, warn, trace };
 use tauri::AppHandle;
 use tokio::{ net::TcpStream, sync::{ Mutex, RwLock } };
-use tokio_tungstenite::{
-	WebSocketStream,
-	MaybeTlsStream,
-	connect_async_tls_with_config,
-	tungstenite::{ protocol::frame::coding::CloseCode, Message },
-};
+use tokio_tungstenite::{ tungstenite::{ protocol::frame::coding::CloseCode, Message } };
 
 use crate::{
 	discord::{

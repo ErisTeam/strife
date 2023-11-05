@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::sync::{ Arc, Weak };
 
-use futures_util::future::ok;
 use log::{ debug, error, warn };
 use tauri::{ AppHandle, Manager };
 use tokio::runtime::Handle;

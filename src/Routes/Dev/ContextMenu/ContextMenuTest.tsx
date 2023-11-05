@@ -1,5 +1,5 @@
 import { Accessor, Setter, Show, createSignal } from 'solid-js';
-import { Channel, Guild } from '../../../discord';
+
 import { Portal } from 'solid-js/web';
 import ContextMenu, { useMenu } from '../../../Components/ContextMenu/ContextMenu';
 
@@ -9,6 +9,8 @@ import {
 	createContextMenu as createContextMenu,
 } from '../../../Components/ContextMenuNew/ContextMenu';
 import { useAppState } from '../../../AppState';
+import { Channel } from '../../../types/Channel';
+import { Guild } from '../../../types/Guild';
 
 interface channelContextMenu {
 	channel: Accessor<Channel>;

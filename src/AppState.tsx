@@ -3,10 +3,13 @@ import { JSX, createContext, createSignal, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
 import { Locale } from './Translation';
-import { Guild, Relationship } from './discord';
+
 import { Tab } from './types';
 import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsTypes';
 import { defaultSettings } from '@api/Settings';
+import Settings from './API/Settings';
+import { Relationship } from './types/User';
+import { Guild } from './types/Guild';
 
 const userId = '';
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
@@ -17,6 +20,7 @@ const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('v
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
 
+// value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
 const [locale, setLocale] = createSignal<Locale>('en_US');
