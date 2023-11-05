@@ -199,13 +199,25 @@ export default function Chat() {
 			<ol class={style.TEST} ref={chatref}>
 				<For each={messages()}>
 					{(message) => {
+						let msgRef;
+						if (message.message_reference) {
+							msgRef = messages().find((msg) => msg.id == message.message_reference.message_id);
+						}
 						if (message.author.id == lastAuthor) {
 							return (
-								<Message setReference={setReplyingTo} same={true} message={message} updateMessage={updateMessage} />
+								<Message
+									refMsg={msgRef}
+									setReference={setReplyingTo}
+									same={true}
+									message={message}
+									updateMessage={updateMessage}
+								/>
 							);
 						} else {
 							lastAuthor = message.author.id as string;
-							return <Message setReference={setReplyingTo} message={message} updateMessage={updateMessage} />;
+							return (
+								<Message refMsg={msgRef} setReference={setReplyingTo} message={message} updateMessage={updateMessage} />
+							);
 						}
 					}}
 				</For>

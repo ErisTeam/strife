@@ -18,11 +18,13 @@ type MessageProps = {
 	updateMessage?: (val: Partial<MessageType>) => void;
 	setReference?: Setter<MessageReference | null>;
 	reference?: Accessor<MessageReference | null>;
+	refMsg?: MessageType;
 };
 
 const Message = (props: MessageProps) => {
 	const AppState = useAppState();
 	const message = props.message;
+	console.warn('message', message);
 
 	// Time format
 	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), { timeStyle: 'short' });
@@ -48,6 +50,14 @@ const Message = (props: MessageProps) => {
 			return '/Friends/fallback.png';
 		}
 	});
+	const refMsgImage = createMemo(() => {
+		if (!props.refMsg) return;
+		if (props.refMsg.author.avatar) {
+			return `https://cdn.discordapp.com/avatars/${props.refMsg.author.id}/${props.refMsg.author.avatar}.webp?size=80`;
+		} else {
+			return '/Friends/fallback.png';
+		}
+	});
 
 	//TODO: make embeds work
 	function formatEmbed(embed: any) {}
@@ -64,6 +74,14 @@ const Message = (props: MessageProps) => {
 
 	return (
 		<li class={style.message} classList={{ [style.same]: props.same }} use:contextMenu>
+			<Show when={props.refMsg}>
+				<div>
+					Reply to
+					<img src={refMsgImage()} alt={props.refMsg.author.global_name || props.refMsg.author.username} />{' '}
+					<span>{props.refMsg.author.global_name || props.refMsg.author.username}</span>
+					<p>{props.refMsg.content}</p>
+				</div>
+			</Show>
 			<Show
 				when={props.same}
 				fallback={
