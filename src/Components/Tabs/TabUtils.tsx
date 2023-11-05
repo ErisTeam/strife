@@ -5,7 +5,7 @@ import { getGuildIconFromChannel } from '@/API/Guilds';
 
 export function createTextChannelTab(channel: Channel): Tab {
 	// const { emoji, newName } = API.getChannelIcon(channel);
-
+	console.log('chuj');
 	return {
 		title: channel.name,
 		icon: getGuildIconFromChannel(channel),
