@@ -88,13 +88,14 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 						<SwitchInput value={value()} onChange={updateSetting} />
 					</Match>
 					<Match when={props.setting.type == 'TextInput'}>
-						<input type="text" value={value()} class={inputs.default} oninput={updateSetting} />
+						<input title="PLACEHOLDER" type="text" value={value()} class={inputs.default} oninput={updateSetting} />
 					</Match>
 					<Match when={props.setting.type == 'NumberInput'}>
-						<input type="number" value={value()} class={inputs.default} oninput={updateSetting} />
+						<input title="PLACEHOLDER" type="number" value={value()} class={inputs.default} oninput={updateSetting} />
 					</Match>
 					<Match when={props.setting.type == 'DateInput'}>
 						<input
+							title="PLACEHOLDER"
 							type="date"
 							value={(value() as Date).toISOString().split('T')[0]}
 							class={inputs.default}
@@ -103,6 +104,7 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 					</Match>
 					<Match when={props.setting.type == 'ColorPicker'}>
 						<input
+							title="PLACEHOLDER"
 							type="color"
 							value={value()}
 							class={inputs.default + ' ' + inputs.colorPicker}

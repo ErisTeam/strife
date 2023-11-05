@@ -34,7 +34,7 @@ export default (props: { group: SettingsGroup }) => {
 			<h2 class={style.title + ' ' + style.g}>{props.group.title}</h2>
 			<span class={style.description + ' ' + style.g}>{props.group.description}</span>
 			<Show when={props.group.canBeLoadedFromFile}>
-				<input type="file" class={style.loadFromFile} />
+				<input title="PLACEHOLDER" type="file" class={style.loadFromFile} />
 			</Show>
 
 			<Show when={options().length == 0}>

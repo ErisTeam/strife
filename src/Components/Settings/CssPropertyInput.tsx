@@ -6,6 +6,7 @@ export default (props: { value: CssPropertyType; units: string[]; onChange?: (va
 	return (
 		<section class={inputs.default}>
 			<input
+				title="CssPropertyInput" //PLACEHOLDER
 				type="number"
 				value={props.value.value}
 				oninput={(e) =>
@@ -16,6 +17,7 @@ export default (props: { value: CssPropertyType; units: string[]; onChange?: (va
 				}
 			/>
 			<select
+				title="CssPropertyInput" //PLACEHOLDER
 				onchange={(e) => {
 					props.onChange({
 						value: props.value.value,

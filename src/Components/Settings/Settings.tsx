@@ -55,10 +55,11 @@ export default function SettingsPage() {
 			<article class={style.groupContainer}>
 				<header class={style.header}>
 					<Show when={currentRoute().canBeLoadedFromFile}>
-						<button>
+						<button title="PLACEHOLDER">
 							<FileDown stroke="red" />
 						</button>
 						<button
+							title="PLACEHOLDER"
 							onclick={() => {
 								//Settings.save(currentRoute().groups)
 							}}

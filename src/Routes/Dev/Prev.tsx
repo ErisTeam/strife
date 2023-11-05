@@ -151,6 +151,7 @@ function Prev() {
 					<div>
 						<h2>States</h2>
 						<select
+							title="PLACEHOLDER"
 							class={buttons.default}
 							style={{ width: '100%' }}
 							onchange={(e) => {
@@ -174,6 +175,7 @@ function Prev() {
 					<div>
 						<h2>Set locale</h2>
 						<select
+							title="PLACEHOLDER"
 							class={buttons.default}
 							style={{ width: '100%' }}
 							onchange={(e) => {
