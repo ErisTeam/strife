@@ -18,6 +18,7 @@ import SettingsEntry from '../Settings/SettingsEntry';
 import { SettingsIds } from '@/API/Settings';
 import Category from './Recipients/RecipientCategory';
 import { addAdditionalGuildDataToState, requestLazyGuilds } from '@/API/Guilds';
+import Person from '../Friends/Person';
 
 export type UploadFile =
 	| string
@@ -302,7 +303,40 @@ export default function Chat() {
 										</li>
 									);
 								} else {
-									return <li> User {recipient.member.user.global_name || recipient.member.user.username}</li>;
+									let img;
+
+									if (recipient.member.user.avatar) {
+										img = `https://cdn.discordapp.com/avatars/${recipient.member.user.id}/${recipient.member.user.avatar}.webp?size=32`;
+									} else {
+										img = '/Friends/fallback.png';
+									}
+									let status;
+									if (recipient.member.presence.activities.length) {
+										switch (
+											recipient.member.presence.activities[recipient.member.presence.activities.length - 1].type
+										) {
+											case 0: {
+												status =
+													'Playing ' +
+													recipient.member.presence.activities[recipient.member.presence.activities.length - 1].name;
+												break;
+											}
+											case 4: {
+												status =
+													recipient.member.presence.activities[recipient.member.presence.activities.length - 1].state;
+											}
+										}
+									} else {
+										status = 'offline';
+									}
+
+									return (
+										<Person
+											img={img}
+											name={recipient.member.user.global_name || recipient.member.user.username}
+											status={status}
+										/>
+									);
 								}
 							}}
 						</For>
