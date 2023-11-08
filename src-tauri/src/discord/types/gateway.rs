@@ -136,7 +136,7 @@ pub mod gateway_packets_data {
 		pub message: Message,
 		pub mentions: Vec<GuildMember>,
 
-		pub member: GuildMember,
+		pub member: Option<GuildMember>,
 
 		pub guild_id: String,
 	}
