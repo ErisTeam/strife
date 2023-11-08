@@ -18,7 +18,7 @@ const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
-const [openedChannelsAdditionalData, setOpenedChannelsAdditionalData] = createStore<any>(); //Used to display correct channelsset to null to hide
+const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] = createStore<any>(); //Used to display correct channelsset to null to hide
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
@@ -59,8 +59,8 @@ const ContextValue = {
 	setCurrentState,
 	channelsSize,
 	setChannelsSize,
-	openedChannelsAdditionalData,
-	setOpenedChannelsAdditionalData,
+	openedGuildsAdditionalData,
+	setOpenedGuildsAdditionalData,
 
 	settings: {
 		categories: settingsCategories,

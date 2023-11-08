@@ -16,9 +16,8 @@ import { getMessages } from '@/API/Messages';
 import SettingsGroup from '../Settings/SettingsGroup';
 import SettingsEntry from '../Settings/SettingsEntry';
 import { SettingsIds } from '@/API/Settings';
-import { addAdditionalChannelDataToState, getChannelById } from '@/API/Channels';
 import Category from './Recipients/RecipientCategory';
-import { requestLazyGuilds } from '@/API/Guilds';
+import { addAdditionalGuildDataToState, requestLazyGuilds } from '@/API/Guilds';
 
 export type UploadFile =
 	| string
@@ -165,7 +164,6 @@ export default function Chat() {
 	let lastAuthor = '';
 
 	let mainref: HTMLDivElement;
-
 	onMount(() => {
 		// const channel = API.getChannelById(TabContext.guildId, TabContext.type); //TODO: Move VoiceChannels to their own component
 		// if (channel && channel.type == CONSTANTS.GUILD_VOICE) {
@@ -178,10 +176,14 @@ export default function Chat() {
 		 	threads: true,
 		 	activities: true,
 		 });*/
+
+		addAdditionalGuildDataToState('1085131579652845609');
+
 		requestLazyGuilds(AppState.userId(), TabContext.guildId, {
 			channels: { [TabContext.channelId]: [0, 99] },
 		});
-		addAdditionalChannelDataToState(TabContext.channelId);
+
+		console.warn('test', AppState.openedGuildsAdditionalData['1085131579652845609']);
 		mainref.ondrop = (e) => {
 			e.preventDefault();
 			console.log('drop', e);
@@ -285,9 +287,26 @@ export default function Chat() {
 
 			<section class={style.recipentsList}>
 				<ol>
-					{/* <For each={getChannelById(TabContext.guildId, TabContext.channelId).recipients || []}>
-						{(recipient) => <Category recipients={recipient} />}
-					</For> */}
+					<Show when={AppState.openedGuildsAdditionalData['1085131579652845609']}>
+						<For each={AppState.openedGuildsAdditionalData['1085131579652845609']?.recipients}>
+							{(recipient) => {
+								if (recipient['group']) {
+									return (
+										<li>
+											Group{' '}
+											{
+												AppState.openedGuildsAdditionalData['1085131579652845609'].groups.find(
+													(x) => x.id == recipient.group.id,
+												).name
+											}
+										</li>
+									);
+								} else {
+									return <li> User {recipient.member.user.global_name || recipient.member.user.username}</li>;
+								}
+							}}
+						</For>
+					</Show>
 				</ol>
 			</section>
 		</main>
