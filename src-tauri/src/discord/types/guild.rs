@@ -78,6 +78,7 @@ pub struct GuildMember {
 	pub user: Option<PublicUser>,
 	pub nick: Option<String>,
 	pub avatar: Option<String>,
+	#[serde(default)]
 	pub roles: Vec<String>,
 	pub joined_at: String,
 	pub premium_since: Option<String>,
