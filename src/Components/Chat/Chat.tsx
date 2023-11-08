@@ -16,7 +16,7 @@ import { getMessages } from '@/API/Messages';
 import SettingsGroup from '../Settings/SettingsGroup';
 import SettingsEntry from '../Settings/SettingsEntry';
 import { SettingsIds } from '@/API/Settings';
-import { getChannelById } from '@/API/Channels';
+import { addAdditionalChannelDataToState, getChannelById } from '@/API/Channels';
 import Category from './Recipients/RecipientCategory';
 import { requestLazyGuilds } from '@/API/Guilds';
 
@@ -181,6 +181,7 @@ export default function Chat() {
 		requestLazyGuilds(AppState.userId(), TabContext.guildId, {
 			channels: { [TabContext.channelId]: [0, 99] },
 		});
+		addAdditionalChannelDataToState(TabContext.channelId);
 		mainref.ondrop = (e) => {
 			e.preventDefault();
 			console.log('drop', e);
@@ -284,9 +285,9 @@ export default function Chat() {
 
 			<section class={style.recipentsList}>
 				<ol>
-					<For each={getChannelById(TabContext.guildId, TabContext.channelId).recipients || []}>
+					{/* <For each={getChannelById(TabContext.guildId, TabContext.channelId).recipients || []}>
 						{(recipient) => <Category recipients={recipient} />}
-					</For>
+					</For> */}
 				</ol>
 			</section>
 		</main>

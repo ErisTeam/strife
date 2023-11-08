@@ -4,6 +4,7 @@ import { Relationship } from '@/types/User';
 import { CONSTANTS } from '@/Constants';
 import { Volume2 } from 'lucide-solid';
 import { Component } from 'solid-js';
+import { getToken } from './User';
 export function channelFromRelationship(relationship: Relationship): Channel {
 	return {
 		...relationship,
@@ -69,4 +70,26 @@ export function getChannelById(guildId: string, channelId: string): Channel | un
 	}
 
 	return channel;
+}
+export function addAdditionalChannelDataToState(channelId: string) {
+	const AppState = useAppState();
+	getToken().then((token) => {
+		if (!token) {
+			console.error("No user token found! Can't get messages!");
+			return;
+		}
+		const url = `${CONSTANTS.API_URL}/${CONSTANTS.CHANNEL_API_URL}/${channelId}`;
+		const resDataponse = fetch(url, {
+			method: 'GET',
+			headers: {
+				Authorization: token,
+			},
+		}).then((res) =>
+			res.json().then((data) => {
+				console.log('addAdditionalChannelDataToState', data);
+				AppState.setOpenedChannelsAdditionalData(data.id, data);
+				console.log('addAdditionalChannelDataToState', AppState.openedChannelsAdditionalData);
+			}),
+		);
+	});
 }

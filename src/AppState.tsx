@@ -9,6 +9,7 @@ import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsT
 import { defaultSettings } from '@api/Settings';
 import { Relationship } from './types/User';
 import { Guild } from './types/Guild';
+import { Channel } from './types/Channel';
 
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
 
@@ -17,7 +18,7 @@ const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
-
+const [openedChannelsAdditionalData, setOpenedChannelsAdditionalData] = createStore<any>(); //Used to display correct channelsset to null to hide
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
@@ -58,6 +59,8 @@ const ContextValue = {
 	setCurrentState,
 	channelsSize,
 	setChannelsSize,
+	openedChannelsAdditionalData,
+	setOpenedChannelsAdditionalData,
 
 	settings: {
 		categories: settingsCategories,

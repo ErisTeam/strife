@@ -11,4 +11,6 @@ export const CONSTANTS = {
 	GUILD_STAGE_VOICE: 13,
 	GUILD_DIRECTORY: 14,
 	GUILD_FORUM: 15,
+	API_URL: 'https://discord.com/api/v10',
+	CHANNEL_API_URL: 'channels',
 };
