@@ -79,7 +79,7 @@ export function addAdditionalChannelDataToState(channelId: string) {
 			return;
 		}
 		const url = `${CONSTANTS.API_URL}/${CONSTANTS.CHANNEL_API_URL}/${channelId}`;
-		const resDataponse = fetch(url, {
+		fetch(url, {
 			method: 'GET',
 			headers: {
 				Authorization: token,
