@@ -7,6 +7,7 @@ export default (props: { children: JSX.Element | JSX.Element[] }) => {
 		<Suspense fallback={<Loading />}>
 			<ErrorBoundary
 				fallback={(err, reset) => {
+					console.error(err);
 					return (
 						<Loading
 							message={

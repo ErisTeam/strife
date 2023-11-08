@@ -2,8 +2,8 @@ import { For, Match, Show, Switch, createMemo } from 'solid-js';
 import { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
 import { useAppState } from '../../AppState';
-import openInBrowser from '../../API/anchor';
-import TwitterEmbed from './embeds/TwitterEmbed';
+
+import TwitterEmbed from './Embeds/TwitterEmbed';
 import { X } from 'lucide-solid';
 import { formatMarkdownToJSX } from '@/API/Messages';
 export type EmbedProps = {

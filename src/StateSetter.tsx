@@ -24,7 +24,7 @@ const StateSetter = (props: Props) => {
 		console.log('res', res);
 		if (props.state === 'Application') {
 			try {
-				await activateUser(AppState.userId);
+				await activateUser(AppState.userId());
 			} catch (err) {
 				setError(err as Error);
 				startTimer(() => {

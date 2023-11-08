@@ -9,10 +9,10 @@ import { getLocalUserInfo } from '@/API/User';
 export default function WelcomeTab() {
 	// const tabData = useTabContext();
 
-	const appState = useAppState();
+	const AppState = useAppState();
 
 	const [userInfo] = createResource(async () => {
-		const res = await getLocalUserInfo(appState.userId);
+		const res = await getLocalUserInfo(AppState.userId());
 		console.log(res);
 		return res;
 	});

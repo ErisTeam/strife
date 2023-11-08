@@ -326,6 +326,7 @@ impl Gateway {
 			match message {
 				Messages::RequestLazyGuilds(payload) => {
 					let payload = OutGoingPacket::lazy_guilds(payload).to_json()?;
+					println!("Sending lazy guilds: {:?}", payload);
 					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 				Messages::UpdateVoiceState(payload) => {

@@ -3,10 +3,10 @@ import { useAppState } from '../../AppState';
 import style from './css.module.css';
 import { getLocalUserInfo } from '@/API/User';
 function UserPanel() {
-	const appState = useAppState();
+	const AppState = useAppState();
 
 	const [userInfo] = createResource(async () => {
-		const res = await getLocalUserInfo(appState.userId);
+		const res = await getLocalUserInfo(AppState.userId());
 		console.log(res);
 		//TODO: store user info in app state
 		return res;

@@ -99,7 +99,9 @@ pub struct SessionReplaceData {
 	activities: Vec<serde_json::Value>,
 }
 pub mod gateway_packets_data {
-	use serde::{ Deserialize, Serialize };
+	use std::collections::HashMap;
+
+	use serde::{ Deserialize, Serialize, Serializer };
 
 	use crate::discord::types::{
 		guild::{ GuildMember, PartialGuild },
@@ -109,6 +111,16 @@ pub mod gateway_packets_data {
 	};
 
 	use super::{ Properties, Presence, ClientState, ReadState };
+
+	#[derive(Deserialize, Debug)]
+	pub struct GuildMemberListUpdate {
+		ops: Vec<serde_json::Value>,
+		online_count: u64,
+		member_count: u64,
+		id: String,
+		guild_id: String,
+		groups: Vec<serde_json::Value>,
+	}
 
 	#[derive(Deserialize, Debug)]
 	pub struct ReadySupplemental {
@@ -155,14 +167,31 @@ pub mod gateway_packets_data {
 		pub sequence_number: Option<u64>,
 	}
 
+	pub type LazyGuildsChannels = HashMap<String, [u64; 2]>;
+
+	fn serialize_lazy_guilds_channels<S>(value: &Option<LazyGuildsChannels>, serializer: S) -> Result<S::Ok, S::Error>
+		where S: Serializer
+	{
+		if let Some(value) = value {
+			let mut map = HashMap::new();
+			for (key, value) in value {
+				let mut vec = [value.clone()];
+				map.insert(key.clone(), vec);
+			}
+			return map.serialize(serializer);
+		}
+		serializer.serialize_none()
+	}
+
 	#[derive(Serialize, Debug, Clone)]
 	pub struct LazyGuilds {
 		pub guild_id: String,
-		pub channels: Option<Vec<serde_json::Value>>,
+		#[serde(serialize_with = "serialize_lazy_guilds_channels")]
+		pub channels: Option<LazyGuildsChannels>,
 		pub members: Option<bool>,
-		pub threads: bool,
-		pub activities: bool,
-		pub typing: bool,
+		pub threads: Option<bool>,
+		pub activities: Option<bool>,
+		pub typing: Option<bool>,
 	}
 
 	#[derive(Serialize, Debug, Clone)]

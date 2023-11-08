@@ -30,6 +30,7 @@
 		aspect-ratio: 1/1;
 		border-radius: 100%;
 	}
+	grid-column: 2/2;
 
 	border-radius: var(--round-medium);
 	background-color: var(--depth5);

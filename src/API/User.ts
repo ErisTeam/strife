@@ -27,14 +27,14 @@ export async function getLocalUserInfo(userId: string) {
  */
 export async function getToken(userId: string = ''): Promise<string | null> {
 	const AppState = useAppState();
-	if (!userId) userId = AppState.userId;
+	if (!userId) userId = AppState.userId();
 	return await invoke('get_token', { userId });
 }
 export async function updateRelationships() {
 	const AppState = useAppState();
 	AppState.setRelationships([]);
 	console.warn('updating relationships');
-	const relationships = await getRelationships(AppState.userId);
+	const relationships = await getRelationships(AppState.userId());
 	console.log(relationships);
 	AppState.setRelationships(relationships);
 }
@@ -42,6 +42,6 @@ export async function updateCurrentUserID() {
 	const response = await invoke('get_last_user');
 	const AppState = useAppState();
 
-	AppState.userId = response as string;
+	AppState.setUserId(response as string);
 	return;
 }

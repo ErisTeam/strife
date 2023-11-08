@@ -12,6 +12,7 @@ use crate::discord::types::gateway::gateway_packets_data::{
 	VoiceServerUpdate,
 	VoiceStateUpdate,
 	TypingStart,
+	LazyGuilds,
 };
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
@@ -92,6 +93,8 @@ impl ActivationState {
 pub struct MainApp {
 	pub users: RwLock<HashMap<String, ActivationState>>,
 
+	pub guilds_state: RwLock<HashMap<String, LazyGuilds>>,
+
 	pub voice_gateway: Arc<RwLock<Option<VoiceGateway>>>,
 }
 impl MainApp {
@@ -99,6 +102,7 @@ impl MainApp {
 		Self {
 			users: RwLock::new(HashMap::new()),
 			voice_gateway: Arc::new(RwLock::new(None)),
+			guilds_state: RwLock::new(HashMap::new()),
 		}
 	}
 

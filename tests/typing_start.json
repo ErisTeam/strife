@@ -1,0 +1,34 @@
+{
+	"t": "TYPING_START",
+	"s": 4,
+	"op": 0,
+	"d": {
+		"user_id": "413428675866787863",
+		"timestamp": 1698400603,
+		"member": {
+			"user": {
+				"username": "pietruszka123",
+				"public_flags": 0,
+				"id": "413428675866787863",
+				"global_name": "pietruszka123",
+				"display_name": "pietruszka123",
+				"discriminator": "0",
+				"bot": false,
+				"avatar_decoration_data": null,
+				"avatar": "29280468611f0324eb02190d181f606c"
+			},
+			"roles": ["1085477548579885096", "1085480348151984169", "1085499530432237588", "1085502363005112341"],
+			"premium_since": null,
+			"pending": false,
+			"nick": null,
+			"mute": false,
+			"joined_at": "2023-03-14T17:31:56.484000+00:00",
+			"flags": 0,
+			"deaf": false,
+			"communication_disabled_until": null,
+			"avatar": null
+		},
+		"channel_id": "1085167939327639592",
+		"guild_id": "1085131579652845609"
+	}
+}

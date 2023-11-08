@@ -13,6 +13,12 @@ import MessageSender from './MessageSender';
 import { listen } from '@tauri-apps/api/event';
 import { doc } from 'prettier';
 import { getMessages } from '@/API/Messages';
+import SettingsGroup from '../Settings/SettingsGroup';
+import SettingsEntry from '../Settings/SettingsEntry';
+import { SettingsIds } from '@/API/Settings';
+import { getChannelById } from '@/API/Channels';
+import Category from './Recipients/RecipientCategory';
+import { requestLazyGuilds } from '@/API/Guilds';
 
 export type UploadFile =
 	| string
@@ -32,12 +38,23 @@ export default function Chat() {
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 	const [replyingTo, setReplyingTo] = createSignal<MessageReference | null>(null);
 
+	const sortedRecipients = createMemo(() => {
+		// const channel = getChannelById(TabContext.guildId, TabContext.channelId);
+		// if (!channel) return [];
+		// const recipients = channel.recipients || [];
+		// let sorted = [];
+		// for (let i = 0; i < recipients.length; i++) {
+		// 	const recipient = recipients[i];
+		// 	if(recipient.)
+		// }
+	});
+
 	//TODO: make it possible to select multiple characters
 
 	function scrollToBottom() {
 		chatref.scrollTo(0, chatref.scrollHeight);
 	}
-	const listener = startGatewayListener(AppState.userId);
+	const listener = startGatewayListener(AppState.userId());
 	listener.on<any>('messageCreate', (event) => {
 		console.log(TabContext.channelId, event.data.channel_id, event.data.content);
 		if (event.data.channel_id === TabContext.channelId) {
@@ -115,7 +132,7 @@ export default function Chat() {
 
 	async function startVoice() {
 		await invoke('send_voice_state_update', {
-			userId: AppState.userId,
+			userId: AppState.userId(),
 			guildId: TabContext.tab.guildId,
 			channelId: TabContext.tab.guildId,
 		});
@@ -124,14 +141,14 @@ export default function Chat() {
 			console.log('event', event);
 		});
 
-		const voiceStateUpdate = await gatewayOneTimeListener(AppState.userId, 'voiceStateUpdate');
+		const voiceStateUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceStateUpdate');
 		console.log('voice_state', voiceStateUpdate);
-		const voiceServerUpdate = await gatewayOneTimeListener(AppState.userId, 'voiceServerUpdate');
+		const voiceServerUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceServerUpdate');
 		console.log('voice_server', voiceServerUpdate);
 
 		console.log(
 			await invoke('start_voice_gateway', {
-				userId: AppState.userId,
+				userId: AppState.userId(),
 				guildId: TabContext.guildId,
 				endpoint: voiceServerUpdate.data.endpoint,
 				voiceToken: voiceServerUpdate.data.token,
@@ -156,7 +173,14 @@ export default function Chat() {
 		// 	setIsVoiceChannel(true);
 		// }
 
-		invoke('request_lazy_guilds', { guildId: TabContext.guildId, userId: AppState.userId });
+		/* requestLazyGuilds(AppState.userId(), TabContext.guildId, {
+		 	typing: true,
+		 	threads: true,
+		 	activities: true,
+		 });*/
+		requestLazyGuilds(AppState.userId(), TabContext.guildId, {
+			channels: { [TabContext.channelId]: [0, 99] },
+		});
 		mainref.ondrop = (e) => {
 			e.preventDefault();
 			console.log('drop', e);
@@ -256,6 +280,14 @@ export default function Chat() {
 					setFiles={setFiles}
 					channelId={TabContext.channelId}
 				/>
+			</section>
+
+			<section class={style.recipentsList}>
+				<ol>
+					<For each={getChannelById(TabContext.guildId, TabContext.channelId).recipients || []}>
+						{(recipient) => <Category recipients={recipient} />}
+					</For>
+				</ol>
 			</section>
 		</main>
 	);

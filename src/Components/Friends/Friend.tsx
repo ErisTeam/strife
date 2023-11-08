@@ -21,8 +21,7 @@ const Friend = (props: FriendProps) => {
 	} else {
 		img = '/Friends/fallback.png';
 	}
-	const params = useParams();
-	const navigate = useNavigate();
+
 	const href = `/app/@me/${props.relationship.user.id}`;
 	const displayName = props.relationship.user.global_name || props.relationship.user.username;
 	const AppState = useAppState();
@@ -46,8 +45,9 @@ const Friend = (props: FriendProps) => {
 				console.log('left click', e.button);
 				if (listIndex == -1) {
 					add(tab, true);
+				} else {
+					setAsCurrent(tab);
 				}
-				setAsCurrent(tab);
 				break;
 			case 1:
 				console.log('middle click', e.button);

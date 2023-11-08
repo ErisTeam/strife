@@ -1,5 +1,5 @@
 // SolidJS
-import { JSX, createContext, createSignal, useContext } from 'solid-js';
+import { Accessor, Context, JSX, Setter, createContext, createSignal, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 // API
 import { Locale } from './Translation';
@@ -7,11 +7,9 @@ import { Locale } from './Translation';
 import { Tab } from './types';
 import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsTypes';
 import { defaultSettings } from '@api/Settings';
-import Settings from './API/Settings';
 import { Relationship } from './types/User';
 import { Guild } from './types/Guild';
 
-const userId = '';
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
 
 const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
@@ -43,7 +41,6 @@ const ContextValue = {
 
 	relationships,
 	setRelationships,
-	userId,
 
 	tabs,
 	setTabs,
@@ -71,11 +68,24 @@ const ContextValue = {
 };
 const AppState = createContext(ContextValue);
 
-export function AppStateProvider({ userId, children }: { userId: string; children: JSX.Element[] | JSX.Element }) {
-	ContextValue.userId = userId;
-	return <AppState.Provider value={ContextValue}>{children}</AppState.Provider>;
+export function AppStateProvider(props: { userId: string; children: JSX.Element[] | JSX.Element }) {
+	const [userId, setUserId] = createSignal(props.userId);
+	console.log('UserId', userId(), props);
+	return (
+		<AppState.Provider
+			value={
+				{
+					...ContextValue,
+					userId,
+					setUserId,
+				} as any
+			}
+		>
+			{props.children}
+		</AppState.Provider>
+	);
 }
 
 export function useAppState() {
-	return useContext(AppState);
+	return useContext(AppState) as typeof ContextValue & { userId: Accessor<string>; setUserId: Setter<string> };
 }

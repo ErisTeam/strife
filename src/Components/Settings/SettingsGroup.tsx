@@ -31,8 +31,8 @@ export default (props: { group: SettingsGroup }) => {
 	});
 	return (
 		<section class={style.group}>
-			<h2 class={style.title + ' ' + style.g}>{props.group.title}</h2>
-			<span class={style.description + ' ' + style.g}>{props.group.description}</span>
+			<h2 class={style.title}>{props.group.title}</h2>
+			<span class={style.description}>{props.group.description}</span>
 			<Show when={props.group.canBeLoadedFromFile}>
 				<input title="PLACEHOLDER" type="file" class={style.loadFromFile} />
 			</Show>

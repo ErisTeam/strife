@@ -1,11 +1,14 @@
-use std::sync::Arc;
+use std::{ sync::Arc, collections::HashMap };
 
 use log::{ debug, warn };
 use tauri::State;
 
 use crate::{
 	main_app_state::MainState,
-	discord::types::{ user::CurrentUser, gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds } },
+	discord::types::{
+		user::CurrentUser,
+		gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds, LazyGuildsChannels },
+	},
 };
 
 #[tauri::command]
@@ -82,21 +85,30 @@ pub async fn send_voice_state_update(
 pub async fn request_lazy_guilds(
 	guild_id: String,
 	user_id: String,
+	typing: Option<bool>,
+	threads: Option<bool>,
+	activities: Option<bool>,
+	channels: Option<LazyGuildsChannels>,
+	members: Option<bool>,
 	state: State<'_, Arc<MainState>>
 ) -> Result<(), ()> {
 	let state = state.state.read().await;
 	let main_app = state.main_app().expect("Not in main app");
 	println!("Requesting lazy guilds, user_id: {}, guild_id: {}", user_id, guild_id);
+
+	let a = main_app.guilds_state.write().await;
+	let b = a.get(&guild_id);
+
 	main_app
 		.send_to_gateway(
 			&user_id,
 			crate::modules::gateway::Messages::RequestLazyGuilds(LazyGuilds {
-				typing: true,
-				threads: true,
-				activities: true,
+				typing,
+				threads,
+				activities,
 				guild_id,
-				channels: None,
-				members: None,
+				channels,
+				members,
 			})
 		).await
 		.unwrap();

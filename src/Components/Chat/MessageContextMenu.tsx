@@ -15,7 +15,7 @@ export default function MessageContextMenu() {
 	const AppState = useAppState();
 	return (
 		<>
-			<Show when={authorId == AppState.userId}>
+			<Show when={authorId == AppState.userId()}>
 				<button
 					onClick={() => {
 						menu.setIsEditing(true);

@@ -5,6 +5,8 @@ import { useAppState } from '@/AppState';
 import { Guild } from '@/types/Guild';
 import { oneTimeListener } from '@/test';
 import { emit } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api';
+import { snowflake } from '@/types/utils';
 export function getGuildIconFromChannel(channel: Channel): string {
 	const AppState = useAppState();
 	const guild = AppState.userGuilds.find((g) => g.properties.id === channel.guild_id);
@@ -20,7 +22,8 @@ export async function updateGuilds() {
 	const AppState = useAppState();
 	AppState.setUserGuilds([]);
 
-	const guilds: Guild[] = await getGuilds(AppState.userId);
+	const guilds: Guild[] = await getGuilds(AppState.userId());
+	console.log('guilds', guilds);
 	//TODO: pietruszka pls make rust return channel with the guild_id already filled in       thx 😘
 	guilds.forEach((guild) => {
 		guild.channels.forEach((channel) => {
@@ -52,4 +55,27 @@ export async function updateGuilds() {
 	});
 	console.log(guilds);
 	AppState.setUserGuilds(guilds);
+}
+export async function requestLazyGuilds(
+	userId: string,
+	guildId: string,
+	options: {
+		typing?: boolean;
+		threads?: boolean;
+		activities?: boolean;
+		channels?: {
+			[key: snowflake]: [number, number];
+		};
+		members?: boolean;
+	},
+) {
+	await invoke('request_lazy_guilds', {
+		guildId: guildId,
+		userId: userId,
+		typing: options.typing,
+		threads: options.threads,
+		activities: options.activities,
+		channels: options.channels,
+		members: options.members,
+	});
 }
