@@ -1,9 +1,15 @@
+/* TODO: Change grids to flexes */
+
 .message {
     --column-width: 4.6em;
     --row-width: 1.2em;
     --message-padding: 2px;
     --reply-padding: 0.6em;
     --reply-pfp-size: 1.2em;
+    --max-reply-width: 64em;
+
+    max-width: 100%;
+    max-height: 100%;
 
     display: grid;
     grid-template-columns: var(--column-width) 1fr;
@@ -75,6 +81,10 @@
         .content {
             max-height: 100%;
             max-width: 100%;
+            /* TODO: My god, please, end my existance and make it work */
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
             padding-left: 0.8em;
             font-size: 0.75em;
             color: var(--less-disabled-text);

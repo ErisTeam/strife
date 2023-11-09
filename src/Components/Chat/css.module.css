@@ -350,6 +350,11 @@
 .fileDrop {
 	filter: blur(0.5em);
 }
+
+.TEST {
+    max-width: 100%;
+}
+
 .TEST > li:not(:first-child):not([class*='same']) {
 	margin-top: 1em;
 }

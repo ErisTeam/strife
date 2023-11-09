@@ -8,7 +8,6 @@ import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
 import MessageUpdater from './MessageUpdater';
 import { formatMarkdownToJSX } from '@/API/Messages';
-import { CornerUpRight } from 'lucide-solid';
 
 type MessageProps = {
 	message: MessageType;
@@ -25,6 +24,7 @@ type MessageProps = {
 const Message = (props: MessageProps) => {
 	const AppState = useAppState();
 	const message = props.message;
+    const reply = (props.refMsg !== undefined);
 	console.warn('message', message);
 
 	// Time format
@@ -74,7 +74,7 @@ const Message = (props: MessageProps) => {
 	});
 
 	return (
-		<li class={style.message} classList={{ [style.same]: props.same, [style.reply]: (props.refMsg !== undefined) }} use:contextMenu>
+		<li class={style.message} classList={{ [style.same]: props.same, [style.reply]: reply }} use:contextMenu>
             {/* Reply */}
             <Show when={props.refMsg}>
                 <div class={style.replyIcon}><div/></div>
@@ -86,7 +86,7 @@ const Message = (props: MessageProps) => {
             </Show>
 
 			<Show
-				when={props.same}
+				when={(props.same && !reply)}
 				fallback={
 					<button class={[style.left, style.profileImage].join(' ')}>
 						<img src={profileImage()} alt={userName()} />
@@ -96,7 +96,7 @@ const Message = (props: MessageProps) => {
 				<time class={style.left}>{time()}</time>
 			</Show>
 
-			<Show when={!props.same}>
+			<Show when={(!props.same || reply)}>
 				<div class={style.info}>
 					<button class={style.userName}>
 						{userName()}
