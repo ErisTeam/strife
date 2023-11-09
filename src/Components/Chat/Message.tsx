@@ -8,6 +8,7 @@ import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
 import MessageUpdater from './MessageUpdater';
 import { formatMarkdownToJSX } from '@/API/Messages';
+import { CornerUpRight } from 'lucide-solid';
 
 type MessageProps = {
 	message: MessageType;
@@ -73,15 +74,17 @@ const Message = (props: MessageProps) => {
 	});
 
 	return (
-		<li class={style.message} classList={{ [style.same]: props.same }} use:contextMenu>
-			<Show when={props.refMsg}>
-				<div>
-					Reply to
-					<img src={refMsgImage()} alt={props.refMsg.author.global_name || props.refMsg.author.username} />{' '}
-					<span>{props.refMsg.author.global_name || props.refMsg.author.username}</span>
-					<p>{props.refMsg.content}</p>
-				</div>
-			</Show>
+		<li class={style.message} classList={{ [style.same]: props.same, [style.reply]: (props.refMsg !== undefined) }} use:contextMenu>
+            {/* Reply */}
+            <Show when={props.refMsg}>
+                <div class={style.replyIcon}><div/></div>
+                <div class={style.replyContent}>
+                    <img class={style.profile} src={refMsgImage()} alt={props.refMsg.author.global_name || props.refMsg.author.username} />
+                    <span class={style.author}>{props.refMsg.author.global_name || props.refMsg.author.username}</span>
+                    <p class={style.content}>{props.refMsg.content}</p>
+                </div>
+            </Show>
+
 			<Show
 				when={props.same}
 				fallback={

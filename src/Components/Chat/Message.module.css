@@ -1,71 +1,131 @@
 .message {
+    --column-width: 4.6em;
+    --row-width: 1.2em;
+    --message-padding: 2px;
+    --reply-padding: 0.6em;
+    --reply-pfp-size: 1.2em;
+
     display: grid;
-    grid-template-columns: 4.6em 1fr;
-    grid-template-rows: 1.2em 1fr;
+    grid-template-columns: var(--column-width) 1fr;
+    grid-template-rows: 0 var(--row-width) 1fr;
 
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
+    padding-top: var(--message-padding);
+    padding-bottom: var(--message-padding);
 
-time {
-    font-size: 0.75em;
-    text-align: center;
-    color: var(--disabled-text);
-    height: min-content;
-}
+    .replyIcon {
+        max-height: 100%;
+        max-width: 100%;
+        height: 100%;
+        width: 100%;
 
-/* Main massage user name and time */
-.info {
-    height: fit-content;
-    display: flex;
-    align-items: center;
-    gap: 0.8em;
-}
+        --border-width: 0.2em;
+        --padding: 0.2em;
 
-.info .userName {
-    font-weight: bold;
-}
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
 
-/* Left span of a message (profile picture or time) */
-.left {
-    grid-column: 1 / 2;
-    grid-row: 1 / 3;
+        padding-bottom: var(--padding);
+        padding-right: var(--padding);
 
-    justify-self: center;
-}
+        div {
+            width: calc(50% + var(--border-width) / 2);
+            height: calc(var(--reply-padding) + (var(--reply-pfp-size) / 2) - (var(--border-width) / 2));
 
-time.left {
-    height: fit-content;
-    visibility: hidden;
-    align-self: center;
-}
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
 
-.profileImage.left {
-    max-width: 2.6em;
-    max-height: 2.6em;
-    width: fit-content;
-    height: fit-content;
-}
+            border-color: #ff0000;
+            border-radius: 1em;
+            border-width: var(--border-width);
+            border-style: solid;
 
-.profileImage.left > img {
-    border-radius: 100%;
-}
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 0;
+            border-bottom-style: none;
+            border-right-style: none;
+        }
+    }
 
-/* Main content of a message */
-.content {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
+    .replyContent {
+        max-height: 100%;
+        max-width: 100%;
+        height: fit-content;
 
-    display: flex;
-    flex-direction: column;
-}
+        grid-column: 2 / 3;
 
-.text {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
+        display: flex;
+        align-items: center;
 
-    width: fit-content;
-    height: fit-content;
+        .profile {
+            max-height: var(--reply-pfp-size);
+            max-width: var(--reply-pfp-size);
+            height: 100%;
+            border-radius: 100%;
+        }
+
+        .author {
+            max-height: 100%;
+            max-width: 100%;
+            padding-left: 0.4em;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .content {
+            max-height: 100%;
+            max-width: 100%;
+            padding-left: 0.8em;
+            font-size: 0.75em;
+            color: var(--less-disabled-text);
+        }
+
+        .content:hover {
+            cursor: pointer;
+            color: var(--text);
+        }
+    }
+
+    /* Left span of a message (profile picture or time) */
+    .left {
+        grid-column: 1 / 2;
+        grid-row: 2 / 4;
+
+        justify-self: center;
+    }
+
+    .info {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+
+        max-height: 100%;
+        max-width: 100%;
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        gap: 0.8em;
+
+        .userName {
+            max-height: 100%;
+            max-width: 100%;
+            height: 100%;
+            font-weight: bold;
+        }
+
+        .botTag {
+            max-height: 100%;
+            max-width: 100%;
+            height: 100%;
+            color: purple;
+        }
+    }
+
+    .content {
+        grid-column: 2 / 3;
+        grid-row: 3 / 4;
+    }
 }
 
 .message:not(.same) .content .text {
@@ -86,6 +146,41 @@ time.left {
     grid-template-rows: 1fr;
 }
 
-.botTag {
-	color: purple;
+.reply {
+    grid-template-rows: calc(var(--row-width) + var(--reply-padding)) var(--row-width) 1fr;
+}
+
+time {
+    max-height: 100%;
+    max-width: 100%;
+    height: 100%;
+    font-size: 0.75em;
+    text-align: center;
+    color: var(--disabled-text);
+    height: min-content;
+}
+
+time.left {
+    height: fit-content;
+    visibility: hidden;
+    align-self: center;
+}
+
+.profileImage.left {
+    max-width: 2.6em;
+    max-height: 2.6em;
+    width: fit-content;
+    height: fit-content;
+}
+
+.profileImage.left > img {
+    border-radius: 100%;
+}
+
+.text {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+
+    width: fit-content;
+    height: fit-content;
 }

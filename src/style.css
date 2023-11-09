@@ -134,6 +134,7 @@ pre {
 	--tertiary-hover: hsl(161, 100%, 36%); /* TODO */
 
 	--text: #ffffff;
+	--less-disabled-text: #c0c0c0;
 	--disabled-text: #a0a0a0;
 
 	/*=======================
