@@ -110,16 +110,61 @@ pub mod gateway_packets_data {
 		relationship::GatewayRelationship,
 	};
 
+	use self::guild_member_list_update::{ Ops, GuildGroup };
+
 	use super::{ Properties, Presence, ClientState, ReadState };
 
+	pub mod guild_member_list_update {
+		use serde::{ Deserializer, Deserialize, Serialize };
+
+		use crate::discord::types::guild::GuildMember;
+
+		pub type Ops = Vec<OpsItem>;
+		#[derive(Deserialize, Debug)]
+		pub struct OpsItem {
+			pub range: [u64; 2],
+			pub op: String,
+			pub items: Vec<GuildListItem>,
+		}
+
+		#[derive(Serialize, Deserialize, Debug, Clone)]
+		pub struct GuildGroup {
+			pub id: String,
+			pub count: Option<u32>,
+		}
+
+		//TODO: move to guild
+		#[derive(Serialize, Debug, Clone, Deserialize)]
+		#[serde(rename_all = "snake_case")]
+		pub enum GuildListItem {
+			Group(GuildGroup),
+			Member(GuildMember),
+		}
+		// impl<'de> Deserialize<'de> for GuildListItem {
+		// 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
+		// 		#[derive(Deserialize, Debug)]
+		// 		struct Inner {
+		// 			group: Option<serde_json::Value>,
+		// 			member: Option<serde_json::Value>,
+		// 		}
+		// 		let inner = Inner::deserialize(deserializer)?;
+		// 		if let Some(group) = inner.group {
+		// 			return Ok(Self::Group(GuildGroup::deserialize(group).map_err(serde::de::Error::custom)?));
+		// 		} else if let Some(member) = inner.member {
+		// 			return Ok(Self::Member(GuildMember::deserialize(member).map_err(serde::de::Error::custom)?));
+		// 		}
+		// 		Err(serde::de::Error::custom("No group or member"))
+		// 	}
+		// }
+	}
 	#[derive(Deserialize, Debug)]
 	pub struct GuildMemberListUpdate {
-		ops: Vec<serde_json::Value>,
-		online_count: u64,
-		member_count: u64,
-		id: String,
-		guild_id: String,
-		groups: Vec<serde_json::Value>,
+		pub ops: Ops,
+		pub online_count: u64,
+		pub member_count: u64,
+		pub id: String,
+		pub guild_id: String,
+		pub groups: Vec<GuildGroup>,
 	}
 
 	#[derive(Deserialize, Debug)]
@@ -175,7 +220,7 @@ pub mod gateway_packets_data {
 		if let Some(value) = value {
 			let mut map = HashMap::new();
 			for (key, value) in value {
-				let mut vec = [value.clone()];
+				let vec = [value.clone()];
 				map.insert(key.clone(), vec);
 			}
 			return map.serialize(serializer);

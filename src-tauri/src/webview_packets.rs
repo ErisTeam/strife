@@ -6,9 +6,15 @@ use serde::{ Deserialize, Serialize };
 
 use crate::{
 	discord::types::{
-		guild::PartialGuild,
+		guild::{ PartialGuild, strife::GuildListData },
 		gateway::{
-			gateway_packets_data::{ MessageEvent, VoiceServerUpdate, VoiceStateUpdate, TypingStart },
+			gateway_packets_data::{
+				MessageEvent,
+				VoiceServerUpdate,
+				VoiceStateUpdate,
+				TypingStart,
+				GuildMemberListUpdate,
+			},
 			voice_gateway_packets_data,
 		},
 		user::CurrentUser,
@@ -89,7 +95,7 @@ pub mod auth {
 
 /// # Information
 /// TODO
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(tag = "type", content = "data")]
 #[serde(rename_all = "camelCase")]
 pub enum Gateway {
@@ -105,11 +111,14 @@ pub enum Gateway {
 
 	TypingStart(Box<TypingStart>),
 
+	GuildMemberListUpdate(GuildListData),
+
 	Error {
 		message: String,
 	},
 	Started,
 }
+//TODO: change to try from
 impl From<GatewayMessages> for Gateway {
 	fn from(value: GatewayMessages) -> Self {
 		match value {
@@ -120,6 +129,7 @@ impl From<GatewayMessages> for Gateway {
 			GatewayMessages::Ready(data) => Self::UserInfo(data.user),
 			GatewayMessages::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
 			GatewayMessages::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
+			GatewayMessages::GuildMemberListUpdate(_) => todo!(),
 		}
 	}
 }

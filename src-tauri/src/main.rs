@@ -22,6 +22,7 @@ extern crate tokio;
 
 use std::sync::Arc;
 
+use fern::colors::{ ColoredLevelConfig, Color };
 use serde::Deserialize;
 use tauri::{ Manager, UserAttentionType };
 use tauri_plugin_log::LogTarget;
@@ -101,6 +102,13 @@ async fn main() {
 			tauri_plugin_log::Builder
 				::default()
 				.targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+				.with_colors(ColoredLevelConfig {
+					error: Color::Red,
+					warn: Color::Yellow,
+					info: Color::White,
+					debug: Color::Green,
+					trace: Color::BrightCyan,
+				})
 				.build()
 		)
 		.manage(main_state)

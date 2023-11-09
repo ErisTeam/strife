@@ -70,6 +70,11 @@ impl UserData {
 		}
 		None
 	}
+
+	pub fn get_guild_by_id(&self, id: &str) -> Option<&PartialGuild> {
+		self.guilds.iter().find(|guild| guild.properties.id == id)
+	}
+
 	pub fn get_user(&self, id: &str) -> Option<&PublicUser> {
 		self.users.iter().find(|user| user.id == id)
 	}

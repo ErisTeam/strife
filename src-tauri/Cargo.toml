@@ -73,7 +73,7 @@ tauri = { version = "1.5.0", features = [
 winrt-notification = "0.5.1"
 
 #Logging📋
-fern = "0.6.2"
+fern = { version = "0.6.2", features = ["colored"] }
 log = { version = "0.4.19", features = ["max_level_debug"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = [
 	"colored",
