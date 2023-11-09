@@ -8,8 +8,9 @@ import { Tab } from './types';
 import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsTypes';
 import { defaultSettings } from '@api/Settings';
 import { Relationship } from './types/User';
-import { Guild } from './types/Guild';
+import { Guild, GuildListUpdate } from './types/Guild';
 import { Channel } from './types/Channel';
+import { snowflake } from './types/utils';
 
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
 
@@ -18,7 +19,7 @@ const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
-const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] = createStore<any>(); //Used to display correct channelsset to null to hide
+const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] = createStore<Record<string, GuildListUpdate>>(); //Used to display correct channelsset to null to hide
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);

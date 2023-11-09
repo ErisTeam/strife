@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::mem;
 use std::sync::{ Arc, Weak };
 
 use log::{ debug, error, warn };
@@ -13,7 +14,9 @@ use crate::discord::types::gateway::gateway_packets_data::{
 	VoiceStateUpdate,
 	TypingStart,
 	LazyGuilds,
+	GuildMemberListUpdate,
 };
+use crate::discord::types::guild::strife::{ GuildListData, Group, GroupType };
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
@@ -36,7 +39,9 @@ pub enum GatewayMessages {
 	Ready(UserData),
 	VoiceServerUpdate(VoiceServerUpdate),
 	VoiceStateUpdate(VoiceStateUpdate),
+	GuildMemberListUpdate(GuildMemberListUpdate),
 }
+//TODO: change to try from
 impl From<DispatchedEvents> for GatewayMessages {
 	fn from(value: DispatchedEvents) -> Self {
 		match value {
@@ -51,6 +56,7 @@ impl From<DispatchedEvents> for GatewayMessages {
 			DispatchedEvents::Unknown(_) => panic!("Unknown event!"),
 			DispatchedEvents::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
 			DispatchedEvents::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
+			DispatchedEvents::GuildMemberListUpdate(data) => Self::GuildMemberListUpdate(data),
 		}
 	}
 }
@@ -193,7 +199,7 @@ impl MainApp {
 	) -> Result<()> {
 		loop {
 			let error = error_receiver.recv().await?;
-			debug!("Gateway error: {}", error);
+			error!("Gateway error: {}", error);
 			if let Some(gateway) = gateway.upgrade() {
 				let gateway = gateway.read().await;
 				gateway.stop();
@@ -245,6 +251,65 @@ impl MainApp {
 					if let Some(ready_notify) = ready_notify.upgrade() {
 						ready_notify.notify_waiters();
 					}
+				}
+				GatewayMessages::GuildMemberListUpdate(data) => {
+					let user_data = user_data.upgrade().ok_or("User data is no longer available")?;
+					let user_data = user_data.read().await;
+					let user_data = user_data.as_ref().ok_or("User data is no longer available")?;
+
+					let mut groups = Vec::new();
+					let mut recipients = Vec::new();
+					let mut start_index = 0;
+					for group in &data.ops[0].items {
+						match group {
+							//? without count
+							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Group(
+								group,
+							) => if let Some(guild) = user_data.get_guild_by_id(&data.guild_id) {
+								let group = data.groups
+									.iter()
+									.find(|new_group| new_group.id == group.id)
+									.unwrap();
+								debug!("Group: {:?}", group);
+								let count = group.count.unwrap();
+								let name_and_type = if
+									let Some(role) = guild.roles.iter().find(|role| role.id == group.id)
+								{
+									(role.name.clone(), GroupType::Role(role.id.clone()))
+								} else if group.id == "online" {
+									("online".to_string(), GroupType::Online)
+								} else if group.id == "offline" {
+									("offline".to_string(), GroupType::Offline)
+								} else {
+									("error".to_string(), GroupType::Custom("".to_string()))
+								};
+
+								let new_group = Group {
+									name: name_and_type.0,
+									r#type: name_and_type.1,
+									count: count,
+									start_index: start_index,
+								};
+								start_index += count;
+								groups.push(new_group);
+							}
+							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Member(
+								member,
+							) => recipients.push(member.clone()),
+						}
+					}
+
+					let guild_list = GuildListData {
+						online_count: data.online_count,
+						member_count: data.member_count,
+						guild_id: data.guild_id,
+						groups: groups,
+						recipients,
+					};
+					handle.emit_all("gateway", webview_packets::GatewayEvent {
+						event: webview_packets::Gateway::GuildMemberListUpdate(guild_list),
+						user_id: user_id.clone(),
+					})?;
 				}
 				data => {
 					handle.emit_all("gateway", webview_packets::GatewayEvent {

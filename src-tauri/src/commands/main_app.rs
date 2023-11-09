@@ -98,6 +98,9 @@ pub async fn request_lazy_guilds(
 
 	let a = main_app.guilds_state.write().await;
 	let b = a.get(&guild_id);
+	// if let Some(guild) = b {
+	// 	if(typing == guild.typing.unwrap() && )
+	// }
 
 	main_app
 		.send_to_gateway(

@@ -19,6 +19,8 @@ import { SettingsIds } from '@/API/Settings';
 import Category from './Recipients/RecipientCategory';
 import { addAdditionalGuildDataToState, requestLazyGuilds } from '@/API/Guilds';
 import Person from '../Friends/Person';
+import RecipientsList from './Recipients/RecipientsList';
+import { GuildListUpdate } from '@/types/Guild';
 
 export type UploadFile =
 	| string
@@ -100,6 +102,9 @@ export default function Chat() {
 		} else {
 			setTypingUsers((prev) => [...prev, { left: 3, user: event.data }]);
 		}
+		if (typingUsers().length > 1) {
+			return;
+		}
 		console.log('typingUsers', typingUsers());
 		const end = setInterval(() => {
 			setTypingUsers((prev) => {
@@ -112,6 +117,11 @@ export default function Chat() {
 				clearInterval(end);
 			}
 		}, 1000);
+	});
+	listener.on<{ data: GuildListUpdate }>('guildMemberListUpdate', (event) => {
+		console.log(event);
+
+		addAdditionalGuildDataToState(event.data);
 	});
 
 	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
@@ -177,8 +187,6 @@ export default function Chat() {
 		 	threads: true,
 		 	activities: true,
 		 });*/
-
-		addAdditionalGuildDataToState('1085131579652845609');
 
 		requestLazyGuilds(AppState.userId(), TabContext.guildId, {
 			channels: { [TabContext.channelId]: [0, 99] },
@@ -287,61 +295,7 @@ export default function Chat() {
 			</section>
 
 			<section class={style.recipentsList}>
-				<ol>
-					<Show when={AppState.openedGuildsAdditionalData['1085131579652845609']}>
-						<For each={AppState.openedGuildsAdditionalData['1085131579652845609']?.recipients}>
-							{(recipient) => {
-								if (recipient['group']) {
-									return (
-										<li>
-											Group{' '}
-											{
-												AppState.openedGuildsAdditionalData['1085131579652845609'].groups.find(
-													(x) => x.id == recipient.group.id,
-												).name
-											}
-										</li>
-									);
-								} else {
-									let img;
-
-									if (recipient.member.user.avatar) {
-										img = `https://cdn.discordapp.com/avatars/${recipient.member.user.id}/${recipient.member.user.avatar}.webp?size=32`;
-									} else {
-										img = '/Friends/fallback.png';
-									}
-									let status;
-									if (recipient.member.presence.activities.length) {
-										switch (
-											recipient.member.presence.activities[recipient.member.presence.activities.length - 1].type
-										) {
-											case 0: {
-												status =
-													'Playing ' +
-													recipient.member.presence.activities[recipient.member.presence.activities.length - 1].name;
-												break;
-											}
-											case 4: {
-												status =
-													recipient.member.presence.activities[recipient.member.presence.activities.length - 1].state;
-											}
-										}
-									} else {
-										status = 'offline';
-									}
-
-									return (
-										<Person
-											img={img}
-											name={recipient.member.user.global_name || recipient.member.user.username}
-											status={status}
-										/>
-									);
-								}
-							}}
-						</For>
-					</Show>
-				</ol>
+				<RecipientsList guildId={TabContext.guildId} />
 			</section>
 		</main>
 	);

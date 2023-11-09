@@ -17,6 +17,7 @@ use super::types::gateway::{
 		VoiceServerUpdate,
 		VoiceStateUpdate,
 		Resume,
+		GuildMemberListUpdate,
 	},
 	SessionReplaceData,
 };
@@ -119,6 +120,11 @@ pub enum DispatchedEvents {
 	///BURST_CREDIT_BALANCE_UPDATE {"replenished_today":false,"amount":2}
 	BurstCreditBalanceUpdate(serde_json::Value), //TODO implement
 
+	//Sent after [LazyGuilds] with channels and members
+	///
+	/// [`LazyGuilds`]: self::OutGoingPacketsData#variant.LazyGuilds
+	GuildMemberListUpdate(GuildMemberListUpdate),
+
 	///Fallback for unknown packets
 	Unknown(serde_json::Value),
 }
@@ -136,6 +142,7 @@ impl ToString for DispatchedEvents {
 			DispatchedEvents::BurstCreditBalanceUpdate(_) => "BurstCreditBalanceUpdate".to_string(),
 			DispatchedEvents::VoiceServerUpdate(_) => "VoiceServerUpdate".to_string(),
 			DispatchedEvents::VoiceStateUpdate(_) => "VoiceStateUpdate".to_string(),
+			DispatchedEvents::GuildMemberListUpdate(_) => "GuildMemberListUpdate".to_string(),
 		}
 	}
 }
@@ -318,7 +325,16 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 										)
 									)?
 							), //TODO: Implement
-
+						"GUILD_MEMBER_LIST_UPDATE" =>
+							DispatchedEvents::GuildMemberListUpdate(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng {} Packet {:?}", t, x)
+										)
+									)?
+							),
 						_ => DispatchedEvents::Unknown(inner.d),
 					};
 					IncomingPacketsData::DispatchedEvent(a)

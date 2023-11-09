@@ -22,3 +22,5 @@ pub mod gateway;
 pub mod relationship;
 
 pub mod protos;
+
+pub type SnowFlake = String;

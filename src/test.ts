@@ -5,6 +5,7 @@ import { getOwner, onCleanup } from 'solid-js';
 import { listen, Event, emit, TauriEvent } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api';
 import { AppState } from './types';
+import { snowflake } from './types/utils';
 
 type Listener = {
 	on: <T>(eventName: string, listener: (event: T) => void) => () => void;

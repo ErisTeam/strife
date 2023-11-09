@@ -84,6 +84,8 @@ pub struct GuildMember {
 	pub deaf: bool,
 	pub mute: bool,
 
+	pub presence: Option<serde_json::Value>, //TODO: create presence struct
+
 	///public flags
 	pub flags: UserFlags,
 	pub pending: bool,
@@ -157,4 +159,36 @@ pub enum NSFWLevel {
 	Explicit = 1,
 	Safe = 2,
 	AgeRestricted = 3,
+}
+
+pub mod strife {
+	use serde::Serialize;
+	use crate::discord::types::SnowFlake;
+	use super::GuildMember;
+
+	#[derive(Debug, Clone, Serialize)]
+	#[serde(tag = "type", content = "data")]
+	pub enum GroupType {
+		Role(SnowFlake),
+		Custom(String),
+		Online,
+		Offline,
+	}
+	#[derive(Debug, Clone, Serialize)]
+	pub struct Group {
+		pub name: String,
+		#[serde(flatten)]
+		pub r#type: GroupType,
+		pub count: u32,
+		pub start_index: u32,
+	}
+
+	#[derive(Debug, Clone, Serialize)]
+	pub struct GuildListData {
+		pub online_count: u64,
+		pub member_count: u64,
+		pub guild_id: SnowFlake,
+		pub groups: Vec<Group>,
+		pub recipients: Vec<GuildMember>,
+	}
 }
