@@ -232,7 +232,7 @@ export function formatMarkdownToJSX(content: string, mentions: any[] = []): Elem
 			}
 		}
 	});
-
+	//TODO: spread operator
 	return [...results] as Element[];
 }
 
@@ -397,7 +397,7 @@ export function formatMarkdownToJSXPreserve(content: string, mentions: any[] = [
 			}
 		}
 	});
-
+	//TODO: spread operator
 	return [...results] as Element[];
 }
 
@@ -467,7 +467,7 @@ export function formatMentions(content: string, mentionsInput: any[]) {
 			a.push(mentions[i].element);
 		}
 	}
-
+	//TODO: spread operator
 	return <>{...a}</>;
 }
 export async function sendMessage(

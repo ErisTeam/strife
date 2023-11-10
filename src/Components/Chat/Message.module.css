@@ -1,196 +1,197 @@
 /* TODO: Change grids to flexes */
 
 .message {
-    --column-width: 4.6em;
-    --row-width: 1.2em;
-    --message-padding: 2px;
-    --reply-padding: 0.6em;
-    --reply-pfp-size: 1.2em;
-    --max-reply-width: 64em;
+	--column-width: 4.6em;
+	--row-width: 1.2em;
+	--message-padding: 2px;
+	--reply-padding: 0.6em;
+	--reply-pfp-size: 1.2em;
+	--max-reply-width: 64em;
 
-    max-width: 100%;
-    max-height: 100%;
+	max-width: 100%;
+	/* max-height: 100%; */
 
-    display: grid;
-    grid-template-columns: var(--column-width) 1fr;
-    grid-template-rows: 0 var(--row-width) 1fr;
+	display: grid;
+	grid-template-columns: var(--column-width) 1fr;
+	grid-template-rows: 0 var(--row-width) [content] min-content [embed];
 
-    padding-top: var(--message-padding);
-    padding-bottom: var(--message-padding);
+	padding-top: var(--message-padding);
+	padding-bottom: var(--message-padding);
 
-    .replyIcon {
-        max-height: 100%;
-        max-width: 100%;
-        height: 100%;
-        width: 100%;
+	.replyIcon {
+		max-height: 100%;
+		max-width: 100%;
+		height: 100%;
+		width: 100%;
 
-        --border-width: 0.2em;
-        --padding: 0.2em;
+		--border-width: 0.2em;
+		--padding: 0.2em;
 
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-end;
+		display: flex;
+		justify-content: flex-end;
+		align-items: flex-end;
 
-        padding-bottom: var(--padding);
-        padding-right: var(--padding);
+		padding-bottom: var(--padding);
+		padding-right: var(--padding);
 
-        div {
-            width: calc(50% + var(--border-width) / 2);
-            height: calc(var(--reply-padding) + (var(--reply-pfp-size) / 2) - (var(--border-width) / 2));
+		div {
+			width: calc(50% + var(--border-width) / 2);
+			height: calc(var(--reply-padding) + (var(--reply-pfp-size) / 2) - (var(--border-width) / 2));
 
-            grid-column: 1 / 2;
-            grid-row: 1 / 2;
+			grid-column: 1 / 2;
+			grid-row: 1 / 2;
 
-            border-color: #ff0000;
-            border-radius: 1em;
-            border-width: var(--border-width);
-            border-style: solid;
+			border-color: #ff0000;
+			border-radius: 1em;
+			border-width: var(--border-width);
+			border-style: solid;
 
-            border-bottom-left-radius: 0;
-            border-top-right-radius: 0;
-            border-bottom-style: none;
-            border-right-style: none;
-        }
-    }
+			border-bottom-left-radius: 0;
+			border-top-right-radius: 0;
+			border-bottom-style: none;
+			border-right-style: none;
+		}
+	}
 
-    .replyContent {
-        max-height: 100%;
-        max-width: 100%;
-        height: fit-content;
+	.replyContent {
+		max-height: 100%;
+		max-width: 100%;
+		height: fit-content;
 
-        grid-column: 2 / 3;
+		grid-column: 2 / 3;
 
-        display: flex;
-        align-items: center;
+		display: flex;
+		align-items: center;
 
-        .profile {
-            max-height: var(--reply-pfp-size);
-            max-width: var(--reply-pfp-size);
-            height: 100%;
-            border-radius: 100%;
-        }
+		.profile {
+			max-height: var(--reply-pfp-size);
+			max-width: var(--reply-pfp-size);
+			height: 100%;
+			border-radius: 100%;
+		}
 
-        .author {
-            max-height: 100%;
-            max-width: 100%;
-            padding-left: 0.4em;
-            font-size: 0.75em;
-            font-weight: bold;
-        }
+		.author {
+			max-height: 100%;
+			max-width: 100%;
+			padding-left: 0.4em;
+			font-size: 0.75em;
+			font-weight: bold;
+		}
 
-        .content {
-            max-height: 100%;
-            max-width: 100%;
-            /* TODO: My god, please, end my existance and make it work */
-            overflow: hidden;
-            text-overflow: clip;
-            white-space: nowrap;
-            padding-left: 0.8em;
-            font-size: 0.75em;
-            color: var(--less-disabled-text);
-        }
+		.content {
+			max-height: 100%;
+			max-width: 100%;
+			/* TODO: My god, please, end my existance and make it work */
+			overflow: hidden;
+			text-overflow: clip;
+			white-space: nowrap;
+			padding-left: 0.8em;
+			font-size: 0.75em;
+			color: var(--less-disabled-text);
+		}
 
-        .content:hover {
-            cursor: pointer;
-            color: var(--text);
-        }
-    }
+		.content:hover {
+			cursor: pointer;
+			color: var(--text);
+		}
+	}
 
-    /* Left span of a message (profile picture or time) */
-    .left {
-        grid-column: 1 / 2;
-        grid-row: 2 / 4;
+	/* Left span of a message (profile picture or time) */
+	.left {
+		grid-column: 1 / 2;
+		grid-row: 2 / 4;
 
-        justify-self: center;
-    }
+		justify-self: center;
+	}
 
-    .info {
-        grid-column: 2 / 3;
-        grid-row: 2 / 3;
+	.info {
+		grid-column: 2 / 3;
+		grid-row: 2 / 3;
 
-        max-height: 100%;
-        max-width: 100%;
-        height: 100%;
-        width: 100%;
+		max-height: 100%;
+		max-width: 100%;
+		height: 100%;
+		width: 100%;
 
-        display: flex;
-        align-items: center;
-        gap: 0.8em;
+		display: flex;
+		align-items: center;
+		gap: 0.8em;
 
-        .userName {
-            max-height: 100%;
-            max-width: 100%;
-            height: 100%;
-            font-weight: bold;
-        }
+		.userName {
+			max-height: 100%;
+			max-width: 100%;
+			height: 100%;
+			font-weight: bold;
+		}
 
-        .botTag {
-            max-height: 100%;
-            max-width: 100%;
-            height: 100%;
-            color: purple;
-        }
-    }
+		.botTag {
+			max-height: 100%;
+			max-width: 100%;
+			height: 100%;
+			color: purple;
+		}
+	}
 
-    .content {
-        grid-column: 2 / 3;
-        grid-row: 3 / 4;
-    }
+	.content {
+		grid-column: 2 / 3;
+		grid-row: content;
+	}
 }
 
 .message:not(.same) .content .text {
-    margin-top: 0.2em;
+	margin-top: 0.2em;
 }
 
 /* Message hover effect */
 .message:hover {
-    backdrop-filter: brightness(80%);
+	backdrop-filter: brightness(80%);
 }
 
 .message:hover time.left {
-    visibility: visible;
+	visibility: visible;
 }
 
 /* Successor of a previous message (sent by the same person) */
 .same {
-    grid-template-rows: 1fr;
+	grid-template-rows: [content] min-content [embed];
 }
 
 .reply {
-    grid-template-rows: calc(var(--row-width) + var(--reply-padding)) var(--row-width) 1fr;
+	grid-template-rows: calc(var(--row-width) + var(--reply-padding)) var(--row-width) [content] min-content [embed];
 }
 
 time {
-    max-height: 100%;
-    max-width: 100%;
-    height: 100%;
-    font-size: 0.75em;
-    text-align: center;
-    color: var(--disabled-text);
-    height: min-content;
+	max-height: 100%;
+	max-width: 100%;
+	height: 100%;
+	font-size: 0.75em;
+	text-align: center;
+	color: var(--disabled-text);
+	height: min-content;
 }
 
 time.left {
-    height: fit-content;
-    visibility: hidden;
-    align-self: center;
+	height: fit-content;
+	visibility: hidden;
+	align-self: center;
 }
 
 .profileImage.left {
-    max-width: 2.6em;
-    max-height: 2.6em;
-    width: fit-content;
-    height: fit-content;
+	max-width: 2.6em;
+	max-height: 2.6em;
+	width: fit-content;
+	height: fit-content;
+	grid-row: span 2;
 }
 
 .profileImage.left > img {
-    border-radius: 100%;
+	border-radius: 100%;
 }
 
 .text {
-    grid-column: 2 / 3;
-    grid-row: 3 / 4;
+	grid-column: 2 / 3;
+	grid-row: 3 / 4;
 
-    width: fit-content;
-    height: fit-content;
+	width: fit-content;
+	height: fit-content;
 }

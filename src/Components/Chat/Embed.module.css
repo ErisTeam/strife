@@ -1,36 +1,6 @@
 .embed {
-	&:hover .closeButton {
-		display: flex;
-
-		&:hover {
-			background-color: rgb(199, 0, 0);
-		}
-	}
-	.closeButton {
-		display: none;
-		position: absolute;
-		z-index: 100;
-
-		transition: 0.2s;
-
-		cursor: pointer;
-
-		color: white;
-
-		justify-content: center;
-		align-items: center;
-
-		right: -0.5em;
-		top: -0.5em;
-		background-color: red;
-		padding: 0.2em;
-		width: 1.5em;
-		height: 1.5em;
-
-		aspect-ratio: 1/1;
-		border-radius: 100%;
-	}
 	grid-column: 2/2;
+	grid-row: embed;
 
 	border-radius: var(--round-medium);
 	background-color: var(--depth5);
@@ -82,6 +52,37 @@
 	.thumbnail {
 		grid-column: 2/2;
 		justify-self: end;
+	}
+	&:hover .closeButton {
+		display: flex;
+
+		&:hover {
+			background-color: rgb(199, 0, 0);
+		}
+	}
+	.closeButton {
+		display: none;
+		position: absolute;
+		z-index: 100;
+
+		transition: 0.2s;
+
+		cursor: pointer;
+
+		color: white;
+
+		justify-content: center;
+		align-items: center;
+
+		right: -0.5em;
+		top: -0.5em;
+		background-color: red;
+		padding: 0.2em;
+		width: 1.5em;
+		height: 1.5em;
+
+		aspect-ratio: 1/1;
+		border-radius: 100%;
 	}
 }
 .embed.twitter {

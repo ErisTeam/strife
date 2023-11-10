@@ -239,22 +239,19 @@ export default function Chat() {
 						if (message.message_reference) {
 							msgRef = messages().find((msg) => msg.id == message.message_reference.message_id);
 						}
-						if (message.author.id == lastAuthor) {
-							return (
-								<Message
-									refMsg={msgRef}
-									setReference={setReplyingTo}
-									same={true}
-									message={message}
-									updateMessage={updateMessage}
-								/>
-							);
-						} else {
-							lastAuthor = message.author.id as string;
-							return (
-								<Message refMsg={msgRef} setReference={setReplyingTo} message={message} updateMessage={updateMessage} />
-							);
+						let same = message.author.id == lastAuthor;
+						if (!same) {
+							lastAuthor = message.author.id;
 						}
+						return (
+							<Message
+								refMsg={msgRef}
+								same={same}
+								setReference={setReplyingTo}
+								message={message}
+								updateMessage={updateMessage}
+							/>
+						);
 					}}
 				</For>
 			</ol>
