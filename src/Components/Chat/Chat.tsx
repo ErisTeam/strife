@@ -226,6 +226,7 @@ export default function Chat() {
 		};
 
 		scrollToBottom();
+		console.log('recipients chat', AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients);
 	});
 
 	return (
@@ -267,6 +268,7 @@ export default function Chat() {
 					files={files}
 					setFiles={setFiles}
 					channelId={TabContext.channelId}
+					recipients={AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients || []}
 				/>
 			</section>
 

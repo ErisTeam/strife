@@ -3,6 +3,11 @@ import UserMention from '../Components/Chat/UserMention';
 import { UploadFile } from '../Components/Chat/Chat';
 import { Message, MessageReference } from '@/types/Messages';
 import { getToken } from './User';
+import { GuildMember } from '@/types/Guild';
+import { useAppState } from '@/AppState';
+
+export const mentionRegex = /(@\S+)/g;
+const mentionReplaceRule = /(@(\S+))/g;
 const userMentionRegex = '<@!?(\\d+)>';
 const channelMentionRegex = '<#(\\d+)>';
 const roleMentionRegex = '<@&(\\d+)>';
@@ -477,9 +482,10 @@ export async function sendMessage(
 	files: UploadFile[] = [],
 	isTTS: boolean = false,
 	embeds: any[] = [],
-	mentions: any[] = [],
+	mentions: GuildMember[] = [],
 	isEditing: boolean = false,
 	messageReference: MessageReference = null,
+	userId: string = null,
 ) {
 	console.log(
 		'sendMessage',
@@ -493,7 +499,22 @@ export async function sendMessage(
 		isEditing,
 		messageReference,
 	);
-	const token = await getToken();
+
+	let usernameIdPairs = mentions.map((mention) => {
+		return {
+			username: mention.user.username,
+			id: mention.user.id,
+		};
+	});
+	//replace all mentions with their ids
+	content = content.replaceAll(mentionReplaceRule, (match) => {
+		const user = usernameIdPairs.find((pair) => pair.username == match.substring(1));
+		if (user) return `<@${user.id}>`;
+		else return match;
+	});
+	console.log('content', content);
+
+	const token = await getToken(userId);
 	const url = messageId
 		? `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`
 		: `https://discord.com/api/v10/channels/${channelId}/messages`;

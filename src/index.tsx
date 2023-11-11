@@ -39,7 +39,7 @@ const App: Component = () => {
 	});
 	const [id] = createResource(async () => {
 		const users: { userId: string }[] = await invoke('get_users', {});
-		console.log(users);
+		console.log('index users', users);
 		if (users.length == 0) return null;
 		await invoke('close_splashscreen');
 		return users[0].userId;

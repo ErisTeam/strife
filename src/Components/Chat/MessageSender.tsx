@@ -1,4 +1,4 @@
-import { Accessor, For, Setter, createSignal } from 'solid-js';
+import { Accessor, For, Setter, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
 import { open } from '@tauri-apps/api/dialog';
 import MessageEditor from './MessageEditor';
@@ -6,6 +6,8 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { UploadFile } from './Chat';
 import { sendMessage } from '@/API/Messages';
 import { MessageReference } from '@/types/Messages';
+import { GuildMember } from '@/types/Guild';
+import { useAppState } from '@/AppState';
 type MessageSenderProps = {
 	channelId: string;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
@@ -13,9 +15,15 @@ type MessageSenderProps = {
 	setFiles: Setter<UploadFile[]>;
 	reference: Accessor<MessageReference | null>;
 	setReference: Setter<MessageReference | null>;
+	recipients: GuildMember[];
 };
 export default function MessageSender(props: MessageSenderProps) {
 	const [msgText, setMsgText] = createSignal('');
+	const [mentionList, setMentionList] = createSignal<GuildMember[]>([]);
+	const AppState = useAppState();
+	onMount(() => {
+		console.log('sender recipients', props.recipients);
+	});
 
 	function sendMsg() {
 		console.warn('WOOO');
@@ -23,7 +31,19 @@ export default function MessageSender(props: MessageSenderProps) {
 		if (props.reference()) {
 			console.log('props.reference()', props.reference());
 		}
-		sendMessage(props.channelId, null, msgText(), props.files(), false, [], [], false, props.reference());
+
+		sendMessage(
+			props.channelId,
+			null,
+			msgText(),
+			props.files(),
+			false,
+			[],
+			props.recipients,
+			false,
+			props.reference(),
+			AppState.userId(),
+		);
 		setMsgText('');
 		props.setFiles([]);
 	}
@@ -84,7 +104,15 @@ export default function MessageSender(props: MessageSenderProps) {
 						UPLOAD
 					</button>
 				</div>
-				<MessageEditor setText={setMsgText} text={msgText} files={props.files} setFiles={props.setFiles} />
+				<MessageEditor
+					recipients={props.recipients || []}
+					setText={setMsgText}
+					text={msgText}
+					files={props.files}
+					setFiles={props.setFiles}
+					setMentionList={setMentionList}
+					mentionList={mentionList}
+				/>
 
 				<div class={style.buttonContainer}>
 					<button class={style.send} onClick={sendMsg}>

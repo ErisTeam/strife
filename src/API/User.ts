@@ -25,8 +25,9 @@ export async function getLocalUserInfo(userId: string) {
  * Sends a request to the Rust API to get the user's token
  * @param user_id
  */
-export async function getToken(userId: string = ''): Promise<string | null> {
+export async function getToken(userId: string = null): Promise<string | null> {
 	const AppState = useAppState();
+	console.log('getting token', userId);
 	if (!userId) userId = AppState.userId();
 	return await invoke('get_token', { userId });
 }
