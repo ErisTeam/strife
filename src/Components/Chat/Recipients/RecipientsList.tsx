@@ -39,7 +39,7 @@ export default (props: RecipientsListProps) => {
 											}
 										}
 									} else {
-										status = 'offline';
+										status = recipient.presence.status;
 									}
 
 									return (
