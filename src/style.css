@@ -266,6 +266,12 @@ pre {
 	/* CHAT */
 	--chat-bgc: var(--depth3);
 	--chat-roundness: var(--round-large);
+	--sender-wrapper-bgc: var(--chat-bgc);
+	--sender-bgc: var(--depth4);
+	--sender-border-radius: var(--round-large);
+	--sender-uploads-border-radius: var(--round-large);
+	--sender-editor-bgc: var(--sender-bgc);
+	--sender-editor-placeholder-color: var(--disabled-text);
 	/* Misc */
 	--loading-bgc: var(--depth1);
 }

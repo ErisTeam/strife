@@ -8,6 +8,7 @@ import { sendMessage } from '@/API/Messages';
 import { MessageReference } from '@/types/Messages';
 import { GuildMember } from '@/types/Guild';
 import { useAppState } from '@/AppState';
+import { PlusCircle, Send, SendHorizonal } from 'lucide-solid';
 type MessageSenderProps = {
 	channelId: string;
 	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
@@ -100,8 +101,8 @@ export default function MessageSender(props: MessageSenderProps) {
 			</ul>
 			<div class={style.editorWrapper}>
 				<div class={style.buttonContainer}>
-					<button class={style.uploadTest} onClick={uploadFile}>
-						UPLOAD
+					<button title="TEMP UPLOAD" class={style.uploadTest} onClick={uploadFile}>
+						<PlusCircle />
 					</button>
 				</div>
 				<MessageEditor
@@ -115,8 +116,8 @@ export default function MessageSender(props: MessageSenderProps) {
 				/>
 
 				<div class={style.buttonContainer}>
-					<button class={style.send} onClick={sendMsg}>
-						Send
+					<button title="TEMP UPLOAD" class={style.send} onClick={sendMsg}>
+						<SendHorizonal />
 					</button>
 				</div>
 			</div>

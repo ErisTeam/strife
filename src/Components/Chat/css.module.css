@@ -5,7 +5,7 @@
 	gap: 0.2em;
 }
 
-.recipentsList {
+.recipientsList {
 	height: 100%;
 	min-width: 10em;
 	width: fit-content;
@@ -16,15 +16,50 @@
 	overflow-y: auto;
 	scrollbar-gutter: stable;
 }
+.senderWrapper {
+	padding: 1em;
+	padding-right: 2em;
+	background-color: var(--sender-wrapper-bg);
+}
+.editor {
+	contain: content;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	min-height: 2em;
+	max-height: 8em;
+	.placeholder {
+		pointer-events: none;
+		padding: 0.5em;
+		position: absolute;
+		top: 0;
+		left: 0;
+		color: var(--sender-editor-placeholder-color);
+	}
+	.textarea {
+		overflow-y: auto;
+		padding: 0.5em;
+		height: 100%;
+		width: 100%;
+		max-height: 8em;
+		background-color: var(--sender-edtior-bgc);
+		caret-color: var(--text);
+		cursor: text;
+	}
+}
 
 .messageSender {
-	background-color: red;
+	background-color: var(--sender-bgc);
+	border-radius: var(--sender-border-radius);
 	width: 100%;
 	height: fit-content;
 	display: flex;
 	flex-direction: column;
 	> ul {
-		background-color: violet;
+		background-color: var(--sender-bgc);
+		border-top-left-radius: var(--sender-uploads-border-radius);
+		border-top-right-radius: var(--sender-uploads-border-radius);
+
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -47,14 +82,19 @@
 	}
 	.editorWrapper {
 		display: flex;
+		align-items: center;
 		.buttonContainer {
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			padding: 0.25em;
+
 			button {
-				background-color: blue;
-				width: 5em;
-				padding: 0.25em;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 2em;
+				width: 2em;
 			}
 		}
 	}
@@ -120,30 +160,6 @@
 
 		grid-row: 1/2;
 		grid-column: 1/1;
-	}
-}
-.editor {
-	width: 100%;
-	height: 100%;
-	position: relative;
-	min-height: 2em;
-	max-height: 8em;
-	.placeholder {
-		pointer-events: none;
-		padding: 0.5em;
-		position: absolute;
-		top: 0;
-		left: 0;
-		color: pink;
-	}
-	.textarea {
-		overflow-y: auto;
-		padding: 0.5em;
-		height: 100%;
-		width: 100%;
-		background-color: gray;
-		caret-color: var(--text);
-		cursor: text;
 	}
 }
 

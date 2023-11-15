@@ -191,7 +191,7 @@ export default function Chat() {
 				<h1>{replyingTo().channel_id}</h1>
 			</Show>
 			{/* <Show when={messages()}>
-				<MessageListVirtualized messages={messages} />
+				<MessageListVirtualized messages={messages} updateMessage={updateMessage} setReplyingTo={setReplyingTo} />
 			</Show> */}
 			<ol class={style.TEST} ref={chatref}>
 				<For each={messages()}>
@@ -217,7 +217,7 @@ export default function Chat() {
 				</For>
 			</ol>
 
-			<section>
+			<section class={style.senderWrapper}>
 				<Show when={typingUsers().length > 0}>
 					<TypingStatus typingUsers={typingUsers} />
 				</Show>
@@ -231,7 +231,7 @@ export default function Chat() {
 				/>
 			</section>
 
-			<section class={style.recipentsList}>
+			<section class={style.recipientsList}>
 				<RecipientsList guildId={TabContext.guildId} />
 			</section>
 		</main>
