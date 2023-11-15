@@ -114,6 +114,9 @@ function fixSplits(splits: string[]) {
 function getMarkdownIndexes(split: string): Array<[number, string]> {
 	const markdownIndexes: Array<[number, string]> = [];
 
+	if (!split.match(markdownVerifier)) {
+		return markdownIndexes;
+	}
 	for (let i = 0; i < markdownChars.length; i++) {
 		const index = split.indexOf(markdownChars[i]);
 		if (!(markdownChars[i] == ' - ' && index > split.length / 2)) {
@@ -225,6 +228,7 @@ export function formatMarkdownToJSX(content: string, mentions: any[] = []): Elem
 				return <q>{formatMarkdownToJSX(split.matchAll(regex.insides.quote).next().value[1], mentions)}</q>;
 			}
 			case '||': {
+				console.log('spoiler', split);
 				return (
 					<span class="mdSpoiler">
 						{formatMarkdownToJSX(split.matchAll(regex.insides.spoiler).next().value[2], mentions)}
