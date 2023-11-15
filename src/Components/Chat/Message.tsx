@@ -19,12 +19,14 @@ type MessageProps = {
 	setReference?: Setter<MessageReference | null>;
 	reference?: Accessor<MessageReference | null>;
 	refMsg?: MessageType;
+	propsRef?: (node: Element) => void;
+	dataIndex?: number;
 };
 
 const Message = (props: MessageProps) => {
 	const AppState = useAppState();
 	const message = props.message;
-    const reply = (props.refMsg !== undefined);
+	const reply = props.refMsg !== undefined;
 	console.warn('message', message);
 
 	// Time format
@@ -74,19 +76,31 @@ const Message = (props: MessageProps) => {
 	});
 
 	return (
-		<li class={style.message} classList={{ [style.same]: props.same, [style.reply]: reply }} use:contextMenu>
-            {/* Reply */}
-            <Show when={props.refMsg}>
-                <div class={style.replyIcon}><div/></div>
-                <div class={style.replyContent}>
-                    <img class={style.profile} src={refMsgImage()} alt={props.refMsg.author.global_name || props.refMsg.author.username} />
-                    <span class={style.author}>{props.refMsg.author.global_name || props.refMsg.author.username}</span>
-                    <p class={style.content}>{props.refMsg.content}</p>
-                </div>
-            </Show>
+		<li
+			data-index={props.dataIndex}
+			ref={props.propsRef}
+			class={style.message}
+			classList={{ [style.same]: props.same, [style.reply]: reply }}
+			use:contextMenu
+		>
+			{/* Reply */}
+			<Show when={props.refMsg}>
+				<div class={style.replyIcon}>
+					<div />
+				</div>
+				<div class={style.replyContent}>
+					<img
+						class={style.profile}
+						src={refMsgImage()}
+						alt={props.refMsg.author.global_name || props.refMsg.author.username}
+					/>
+					<span class={style.author}>{props.refMsg.author.global_name || props.refMsg.author.username}</span>
+					<p class={style.content}>{props.refMsg.content}</p>
+				</div>
+			</Show>
 
 			<Show
-				when={(props.same && !reply)}
+				when={props.same && !reply}
 				fallback={
 					<button class={[style.left, style.profileImage].join(' ')}>
 						<img src={profileImage()} alt={userName()} />
@@ -96,7 +110,7 @@ const Message = (props: MessageProps) => {
 				<time class={style.left}>{time()}</time>
 			</Show>
 
-			<Show when={(!props.same || reply)}>
+			<Show when={!props.same || reply}>
 				<div class={style.info}>
 					<button class={style.userName}>
 						{userName()}

@@ -43,29 +43,31 @@ export default function MessageListVirtualized(props: MessageListVirtualizedProp
 						transform: `translateY(${items[0]?.start ?? 0}px)`,
 					}}
 				>
-					{items.map((virtualRow) => {
-						let msgRef;
-						if (props.messages()[virtualRow.index].message_reference) {
-							msgRef = props
-								.messages()
-								.find((msg) => msg.id == props.messages()[virtualRow.index].message_reference.message_id);
-						}
-						let same = props.messages()[virtualRow.index].author.id == lastAuthor;
-						if (!same) {
-							lastAuthor = props.messages()[virtualRow.index].author.id;
-						}
-						return (
-							<div data-index={virtualRow.index} ref={virtualizer.measureElement}>
+					<For each={items}>
+						{(virtualRow) => {
+							let msgRef;
+							if (props.messages()[virtualRow.index].message_reference) {
+								msgRef = props
+									.messages()
+									.find((msg) => msg.id == props.messages()[virtualRow.index].message_reference.message_id);
+							}
+							let same = props.messages()[virtualRow.index].author.id == lastAuthor;
+							if (!same) {
+								lastAuthor = props.messages()[virtualRow.index].author.id;
+							}
+							return (
 								<Message
+									dataIndex={virtualRow.index}
+									propsRef={virtualizer.measureElement}
 									refMsg={msgRef}
 									same={same}
 									setReference={props.setReplyingTo}
 									message={props.messages()[virtualRow.index]}
 									updateMessage={props.updateMessage}
 								/>
-							</div>
-						);
-					})}
+							);
+						}}
+					</For>
 				</div>
 			</div>
 		</ol>
