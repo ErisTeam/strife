@@ -8,7 +8,6 @@ import { UploadFile } from './Chat';
 import { sendMessage } from '@/API/Messages';
 type MessageUpdaterProps = {
 	message: MessageType;
-	//files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
 	setIsEditing: Setter<boolean>;
 };
 export default function MessageUpdater(props: MessageUpdaterProps) {

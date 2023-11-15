@@ -352,7 +352,9 @@
 }
 
 .TEST {
-    max-width: 100%;
+	max-width: 100%;
+	overflow: 'auto';
+	contain: 'strict';
 }
 
 .TEST > li:not(:first-child):not([class*='same']) {

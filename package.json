@@ -35,6 +35,7 @@
 		"@solid-primitives/i18n": "^2.0.0",
 		"@solidjs/meta": "^0.28.6",
 		"@solidjs/router": "^0.8.3",
+		"@tanstack/solid-virtual": "3.0.0-beta.68",
 		"@tauri-apps/api": "^1.5.1",
 		"@thisbeyond/solid-dnd": "^0.7.4",
 		"libsodium-wrappers": "^0.7.13",

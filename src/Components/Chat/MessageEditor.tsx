@@ -1,7 +1,7 @@
 import { Accessor, For, Setter, Show, Signal, createEffect, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
 import { UploadFile } from './Chat';
-import { formatMarkdownToJSXPreserve, getCursorPosition, setCursorPosition } from '@/API/Messages';
+import { formatMarkdownToJSXPreserve, getCursorPosition, mentionRegex, setCursorPosition } from '@/API/Messages';
 import { GuildMember } from '@/types/Guild';
 
 type MessageEditorProps = {
@@ -13,7 +13,6 @@ type MessageEditorProps = {
 	setMentionList: Setter<GuildMember[]>;
 	mentionList: Accessor<GuildMember[]>;
 };
-const mentionRegex = /(@\S+)/g;
 const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta'];
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
 export default function MessageEditor(props: MessageEditorProps) {

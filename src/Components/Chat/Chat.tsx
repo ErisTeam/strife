@@ -22,6 +22,7 @@ import Person from '../Friends/Person';
 import RecipientsList from './Recipients/RecipientsList';
 import { GuildListUpdate } from '@/types/Guild';
 import TypingStatus from './TypingStatus';
+import MessageListVirtualized from './MessageListVirtualized';
 
 export type UploadFile =
 	| string
@@ -41,22 +42,11 @@ export default function Chat() {
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 	const [replyingTo, setReplyingTo] = createSignal<MessageReference | null>(null);
 
-	const sortedRecipients = createMemo(() => {
-		// const channel = getChannelById(TabContext.guildId, TabContext.channelId);
-		// if (!channel) return [];
-		// const recipients = channel.recipients || [];
-		// let sorted = [];
-		// for (let i = 0; i < recipients.length; i++) {
-		// 	const recipient = recipients[i];
-		// 	if(recipient.)
-		// }
-	});
-
 	//TODO: make it possible to select multiple characters
 
-	function scrollToBottom() {
-		chatref.scrollTo(0, chatref.scrollHeight);
-	}
+	// function scrollToBottom() {
+	// 	chatref.scrollTo(0, chatref.scrollHeight);
+	// }
 	const listener = startGatewayListener(AppState.userId());
 	listener.on<any>('messageCreate', (event) => {
 		console.log(TabContext.channelId, event.data.channel_id, event.data.content);
@@ -80,9 +70,9 @@ export default function Chat() {
 			console.log('newMessage', newMessage);
 			setMessages(messages().concat(newMessage));
 
-			if (isAtBottom) {
-				scrollToBottom();
-			}
+			// if (isAtBottom) {
+			// 	scrollToBottom();
+			// }
 		}
 	});
 	listener.on<any>('typingStart', (event) => {
@@ -125,8 +115,6 @@ export default function Chat() {
 		addAdditionalGuildDataToState(event.data);
 	});
 
-	const [isVoiceChannel, setIsVoiceChannel] = createSignal(false);
-
 	const [messages, { mutate: setMessages }] = createResource(async () => {
 		const messages = await getMessages(TabContext.channelId);
 		return messages.reverse();
@@ -141,39 +129,7 @@ export default function Chat() {
 		});
 	}
 
-	async function startVoice() {
-		await invoke('send_voice_state_update', {
-			userId: AppState.userId(),
-			guildId: TabContext.tab.guildId,
-			channelId: TabContext.tab.guildId,
-		});
-
-		const listener = useTaurListener('voice_gateway', (event) => {
-			console.log('event', event);
-		});
-
-		const voiceStateUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceStateUpdate');
-		console.log('voice_state', voiceStateUpdate);
-		const voiceServerUpdate = await gatewayOneTimeListener(AppState.userId(), 'voiceServerUpdate');
-		console.log('voice_server', voiceServerUpdate);
-
-		console.log(
-			await invoke('start_voice_gateway', {
-				userId: AppState.userId(),
-				guildId: TabContext.guildId,
-				endpoint: voiceServerUpdate.data.endpoint,
-				voiceToken: voiceServerUpdate.data.token,
-				sessionId: voiceStateUpdate.data.session_id,
-			}),
-		);
-
-		window.sendToVoice = (data: string) => {
-			console.log('sending', data);
-			invoke('send_to_voice_gateway', { packet: JSON.stringify(data) });
-		};
-	}
 	const [isDragging, setIsDragging] = createSignal(false);
-	let lastAuthor = '';
 
 	let mainref: HTMLDivElement;
 	onMount(() => {
@@ -225,15 +181,18 @@ export default function Chat() {
 			}
 		};
 
-		scrollToBottom();
+		// scrollToBottom();
 		console.log('recipients chat', AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients);
 	});
-
+	let lastAuthor = '';
 	return (
 		<main class={style.main} classList={{ [style.fileDrop]: isDragging() }} ref={mainref}>
 			<Show when={replyingTo()}>
 				<h1>{replyingTo().channel_id}</h1>
 			</Show>
+			{/* <Show when={messages()}>
+				<MessageListVirtualized messages={messages} />
+			</Show> */}
 			<ol class={style.TEST} ref={chatref}>
 				<For each={messages()}>
 					{(message) => {
