@@ -1,4 +1,4 @@
-import { Accessor, For, Setter, Show, createMemo, createSignal } from 'solid-js';
+import { Accessor, For, Setter, Show, createMemo, createSignal, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import { MessageReference, Message as MessageType } from '../../types/Messages';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
@@ -74,11 +74,17 @@ const Message = (props: MessageProps) => {
 			setReference: props.setReference,
 		},
 	});
-
+	let liRef: HTMLLIElement;
+	onMount(() => {
+		if (props.dataIndex) {
+			liRef.setAttribute('data-index', props.dataIndex.toString());
+			props.propsRef(liRef);
+		}
+	});
 	return (
 		<li
 			data-index={props.dataIndex}
-			ref={props.propsRef}
+			ref={liRef}
 			class={style.message}
 			classList={{ [style.same]: props.same, [style.reply]: reply }}
 			use:contextMenu
