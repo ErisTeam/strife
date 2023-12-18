@@ -8,6 +8,7 @@
 .recipientsList {
 	height: 100%;
 	min-width: 10em;
+	max-width: 250px;
 	width: fit-content;
 
 	grid-row: 1/1;

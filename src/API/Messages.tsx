@@ -85,13 +85,7 @@ const markdownVerifier = new RegExp(
 	`${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}`,
 	'gm',
 );
-function addX(count: number) {
-	let returnString = '';
-	for (let i = 0; i < count; i++) {
-		returnString += 'x';
-	}
-	return returnString;
-}
+
 function fixSplits(splits: string[]) {
 	splits = splits.filter((s) => s != undefined && s != 'undefined' && s != '');
 
@@ -122,7 +116,7 @@ function getMarkdownIndexes(split: string): Array<[number, string]> {
 		if (!(markdownChars[i] == ' - ' && index > split.length / 2)) {
 			if (index != -1) markdownIndexes.push([index, markdownChars[i]]);
 		}
-		split = split.replaceAll(markdownChars[i], addX(markdownChars[i].length));
+		split = split.replaceAll(markdownChars[i], 'x'.repeat(markdownChars[i].length));
 	}
 
 	return markdownIndexes.sort((a, b) => a[0] - b[0]);

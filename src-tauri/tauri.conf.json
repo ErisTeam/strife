@@ -13,7 +13,7 @@
 
 	"tauri": {
 		"security": {
-			"csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
+			"csp": "default-src 'self'; img-src *; media-src *; asset: https://asset.localhost; connect-src 'self' https://discord.com/api/;"
 		},
 		"allowlist": {
 			"protocol": {
