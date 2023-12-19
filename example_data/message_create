@@ -26,7 +26,8 @@
 		"flags": Number(0), 
 		"joined_at": String("2023-08-01T05:02:31.063000+00:00"), 
 		"mute": Bool(false), "nick": Null, "pending": Bool(false), 
-		"premium_since": Null, "roles": Array []
+		"premium_since": Null, 
+		"roles": Array []
 	}, 
 	"mention_everyone": Bool(false), 
 	"mention_roles": Array [], 

@@ -1,6 +1,7 @@
 import { PublicUser } from './User';
 import { Role } from './utils';
 import { channel } from './Channel';
+import { GuildMember } from './Guild';
 
 //TODO: add the rest of fields https://discord.com/developers/docs/resources/channel#message-object
 export type Message = {
@@ -8,6 +9,7 @@ export type Message = {
 	channel_id: string;
 
 	author: PublicUser;
+	member?: GuildMember;
 	timestamp: number;
 	content: string;
 
@@ -17,6 +19,7 @@ export type Message = {
 
 	attachments: any[];
 	embeds: any[];
+	resolved?: any;
 };
 
 export type Embed = {

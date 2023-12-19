@@ -638,7 +638,8 @@ export async function getMessages(channelId: string) {
 		},
 	});
 
-	const resData = (await resDataponse.json()) as Message[];
+	const resData = await resDataponse.json();
+	console.log('GET MESSAGES RES DATA', resData);
 
 	return resData;
 }

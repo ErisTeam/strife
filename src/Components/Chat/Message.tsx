@@ -74,6 +74,7 @@ const Message = (props: MessageProps) => {
 			return '/Friends/fallback.png';
 		}
 	});
+	//REPLACE WITH CALL TO RUST
 	const senderRoles = createMemo(() => {
 		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients.filter(
 			(r) => r.user.id === message.author.id,
