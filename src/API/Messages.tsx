@@ -5,6 +5,7 @@ import { Message, MessageReference } from '@/types/Messages';
 import { getToken } from './User';
 import { GuildMember } from '@/types/Guild';
 import { useAppState } from '@/AppState';
+import { JSXElement } from 'solid-js';
 
 export const mentionRegex = /(@\S+)/g;
 const mentionReplaceRule = /(@(\S+))/g;
@@ -122,7 +123,7 @@ function getMarkdownIndexes(split: string): Array<[number, string]> {
 	return markdownIndexes.sort((a, b) => a[0] - b[0]);
 }
 
-export function formatMarkdownToJSX(content: string, mentions: any[] = []): Element[] | Element | string {
+export function formatMarkdownToJSX(content: string, mentions: any[] = []): JSXElement[] | JSXElement | string {
 	if (content == undefined) return '';
 	let splits = content.split(allHTMLOutsides);
 	splits = fixSplits(splits);
@@ -239,7 +240,7 @@ export function formatMarkdownToJSX(content: string, mentions: any[] = []): Elem
 	return [...results] as Element[];
 }
 
-export function formatMarkdownToJSXPreserve(content: string, mentions: any[] = []): Element[] | Element | string {
+export function formatMarkdownToJSXPreserve(content: string, mentions: any[] = []): JSXElement[] | JSXElement | string {
 	if (content == undefined) return '';
 	let splits = content.split(allHTMLOutsides);
 	splits = fixSplits(splits);
@@ -441,7 +442,7 @@ export function formatMarkdownToHTML(content: string) {
 	return combined.join('');
 }
 
-export function formatMentions(content: string, mentionsInput: any[]) {
+export function formatMentions(content: string, mentionsInput: any[]): JSXElement[] | JSXElement {
 	const mentions =
 		content.match(mentionsRegex)?.map((match) => {
 			let element;
@@ -631,6 +632,7 @@ export async function getMessages(channelId: string) {
 	const url = `https://discord.com/api/v9/channels/${channelId}/messages?limit=50`;
 	const resDataponse = await fetch(url, {
 		method: 'GET',
+
 		headers: {
 			Authorization: token,
 		},

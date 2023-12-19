@@ -1,4 +1,4 @@
-import { Accessor, For, Setter, Show, createMemo, createSignal, onMount } from 'solid-js';
+import { Accessor, For, Setter, Show, createEffect, createMemo, createSignal, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import { MessageReference, Message as MessageType } from '../../types/Messages';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
@@ -8,6 +8,7 @@ import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
 import MessageUpdater from './MessageUpdater';
 import { formatMarkdownToJSX } from '@/API/Messages';
+import { useTabContext } from '../Tabs/TabUtils';
 
 type MessageProps = {
 	message: MessageType;
@@ -28,6 +29,7 @@ const Message = (props: MessageProps) => {
 	const message = props.message;
 	const reply = props.refMsg !== undefined;
 	console.warn('message', message);
+	const TabContext = useTabContext();
 
 	// Time format
 	const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), { timeStyle: 'short' });
@@ -42,6 +44,17 @@ const Message = (props: MessageProps) => {
 		return messageText;
 	});
 
+	function ColorDecimalToHex(num: number) {
+		let arr = new ArrayBuffer(4); // an Int32 takes 4 bytes
+		let view = new DataView(arr);
+		view.setUint32(0, num, false); // byteOffset = 0; litteEndian = false
+		let r = view.getUint8(1);
+		let g = view.getUint8(2);
+		let b = view.getUint8(3);
+		let hexColor = '#' + r.toString(16) + g.toString(16) + b.toString(16);
+
+		return hexColor;
+	}
 	const userName = createMemo(() => {
 		return (message.author.global_name as string) || (message.author.username as string);
 	});
@@ -60,6 +73,37 @@ const Message = (props: MessageProps) => {
 		} else {
 			return '/Friends/fallback.png';
 		}
+	});
+	const senderRoles = createMemo(() => {
+		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients.filter(
+			(r) => r.user.id === message.author.id,
+		)[0]?.roles;
+	});
+	const senderGroups = createMemo(() => {
+		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups
+			.filter((g) => senderRoles()?.includes(g.data))
+			.map((g) => g.data);
+	});
+	const guildGroups = createMemo(() => {
+		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups;
+	});
+	const senderColor = createMemo(() => {
+		return ColorDecimalToHex(
+			AppState.userGuilds
+				.filter((g) => g.properties.id === TabContext.guildId)[0]
+				.roles.filter((r) => senderGroups()?.includes(r.id) && r.color)[0]?.color || 16777215,
+		);
+	});
+	createEffect(() => {
+		console.log(
+			'SENDER DATA',
+			message.author.username,
+			message,
+			senderRoles(),
+			senderGroups(),
+			guildGroups(),
+			senderColor(),
+		);
 	});
 
 	//TODO: make embeds work
@@ -81,6 +125,7 @@ const Message = (props: MessageProps) => {
 			props.propsRef(liRef);
 		}
 	});
+
 	return (
 		<li
 			data-index={props.dataIndex}
@@ -118,7 +163,7 @@ const Message = (props: MessageProps) => {
 
 			<Show when={!props.same || reply}>
 				<div class={style.info}>
-					<button class={style.userName}>
+					<button style={{ color: senderColor() }} class={style.userName}>
 						{userName()}
 
 						<Show when={message.author.bot}>
