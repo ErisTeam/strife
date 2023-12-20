@@ -3,17 +3,20 @@ import Person from '@/Components/Friends/Person';
 import { For } from 'solid-js';
 type RecipientsListProps = {
 	guildId: string;
+	listId: string;
 };
 export default (props: RecipientsListProps) => {
 	const AppState = useAppState();
+	console.log('recipients', props, AppState.openedGuildsAdditionalData);
 	return (
 		<ol>
-			<For each={AppState.openedGuildsAdditionalData[props.guildId]?.groups}>
+			<For each={AppState.openedGuildsAdditionalData[props.guildId]?.[props.listId]?.groups}>
 				{(group) => {
-					const recipients = AppState.openedGuildsAdditionalData[props.guildId].recipients.slice(
+					const recipients = AppState.openedGuildsAdditionalData[props.guildId]?.[props.listId]?.recipients.slice(
 						group.start_index,
 						group.start_index + group.count,
 					);
+					console.log('recipients', recipients, group);
 					return (
 						<li>
 							Group {group.name}

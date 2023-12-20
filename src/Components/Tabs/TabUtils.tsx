@@ -22,6 +22,6 @@ export function TabContextProvider(props: { tab: Tab; children: JSX.Element | JS
 	return <TabContext.Provider value={props.tab}>{props.children}</TabContext.Provider>;
 }
 
-export function useTabContext() {
-	return useContext(TabContext);
+export function useTabContext<T = unknown>() {
+	return useContext(TabContext) as Tab & T;
 }

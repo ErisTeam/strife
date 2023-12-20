@@ -11,6 +11,7 @@ import { TabComponents } from '../../types';
 import TabList from './TabList';
 import { TabContextProvider } from './TabUtils';
 import SuspenseErrorBoundary from '../SuspenseErrorBoundary/SuspenseErrorBoundary';
+import { produce } from 'solid-js/store';
 
 export function TabWindow({ className }: { className?: string }) {
 	const AppState = useAppState();
@@ -24,16 +25,18 @@ export function TabWindow({ className }: { className?: string }) {
 				<For each={AppState.tabs}>
 					{(tab, index) => {
 						return (
-							<div
-								style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }}
-								class={outletStyle.outlet}
-							>
-								<SuspenseErrorBoundary>
-									<TabContextProvider tab={tab}>
-										<Dynamic component={TabComponents[tab.component]} />
-									</TabContextProvider>
-								</SuspenseErrorBoundary>
-							</div>
+							<Show when={tab.wasOpened}>
+								<div
+									style={{ display: AppState.currentTabIndex() == index() ? null : 'none' }}
+									class={outletStyle.outlet}
+								>
+									<SuspenseErrorBoundary>
+										<TabContextProvider tab={tab}>
+											<Dynamic component={TabComponents[tab.component]} />
+										</TabContextProvider>
+									</SuspenseErrorBoundary>
+								</div>
+							</Show>
 						);
 					}}
 				</For>

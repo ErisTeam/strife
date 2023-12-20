@@ -142,10 +142,17 @@ export async function saveToFile() {
 	if (!doesDirExist) {
 		await createDir(sessionDataPath, { dir: dir });
 	}
+	let newTabs = AppState.tabs.slice().map((tab) => {
+		delete tab.wasOpened;
+		return tab;
+	});
+
+	console.log('saving tabs', newTabs);
+
 	const tabsFile: TabsFile = {
 		order: AppState.tabsOrder(),
 		current: AppState.currentTabIndex(),
-		tabs: AppState.tabs,
+		tabs: newTabs,
 	};
 
 	await writeFile(tabsPath, JSON.stringify(tabsFile), { dir: dir });

@@ -1,6 +1,6 @@
 import { Context, JSX, Show, createContext, createSignal, onCleanup, onMount, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import style from './ContextMenu.module.css';
+import style from '../ContextMenuNew/ContextMenu.module.css';
 const MenuContext = createContext<unknown>(null);
 
 interface MenuProviderData {

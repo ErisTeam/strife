@@ -36,17 +36,24 @@ export default function SettingsPage() {
 				<ol>
 					<For each={AppState.settings.categories}>
 						{(category) => (
-							<li
-								class={style.route}
-								classList={{ [style.routeActive]: currentRoute() == category }}
-								role="button"
-								onclick={() => {
-									console.log('click');
-									setCurrentRoute(category);
-								}}
-								title={category.description}
-							>
-								{category.title}
+							<li class={style.routeContainer}>
+								<button
+									class={style.route}
+									classList={{ [style.routeActive]: currentRoute() == category }}
+									title={category.description}
+									role="button"
+									onclick={() => {
+										console.log('click');
+										setCurrentRoute(category);
+									}}
+								>
+									{category.title}
+								</button>
+								<Show when={category == currentRoute()}>
+									<ol>
+										<For each={category.groups}>{(group) => <li title={group.description}>{group.title}</li>}</For>
+									</ol>
+								</Show>
 							</li>
 						)}
 					</For>

@@ -1,6 +1,6 @@
 // SolidJS
 import { Accessor, Context, JSX, Setter, createContext, createSignal, useContext } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createStore, produce } from 'solid-js/store';
 // API
 import { Locale } from './Translation';
 
@@ -19,7 +19,8 @@ const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
-const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] = createStore<Record<string, GuildListUpdate>>(); //Used to display correct channelsset to null to hide
+const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] =
+	createStore<Record<string, Record<string, GuildListUpdate>>>();
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
@@ -51,7 +52,18 @@ const ContextValue = {
 	locale,
 	setLocale,
 	currentTabIndex: currentTabIdx,
-	setCurrentTabIndex: setCurrentTabIdx,
+	setCurrentTabIndex: (index: number) => {
+		const tab = tabs[index];
+		if (!tab.wasOpened) {
+			setTabs(
+				index,
+				produce((tab) => {
+					tab.wasOpened = true;
+				}),
+			);
+		}
+		setCurrentTabIdx(index);
+	},
 	localeJsFormat,
 
 	currentGuild,

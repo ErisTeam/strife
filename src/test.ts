@@ -7,8 +7,8 @@ import { invoke } from '@tauri-apps/api';
 import { AppState } from './types';
 import { snowflake } from './types/utils';
 
-type Listener = {
-	on: <T>(eventName: string, listener: (event: T) => void) => () => void;
+type Listener<T> = {
+	on: <D>(eventName: string, listener: (event: T & D) => void) => () => void;
 	cleanup: () => void;
 };
 
@@ -27,7 +27,7 @@ interface GatewayEvent {
 	type: string;
 }
 
-function startListener<T extends { type: string }>(
+function startListener<T extends eventBase>(
 	eventName: string | TauriEvent,
 	condition: ((event: T) => boolean) | null = null,
 ) {
@@ -50,7 +50,7 @@ function startListener<T extends { type: string }>(
 		}
 	});
 	return {
-		on: <T>(eventName: string, listener: (event: T) => void) => {
+		on: <D>(eventName: string, listener: (event: T & D) => void) => {
 			listeners.add({ eventName, listener });
 			console.log('add listener', eventName);
 			return tryOnCleanup(listeners.delete.bind(listeners, { eventName, listener }));
@@ -59,10 +59,7 @@ function startListener<T extends { type: string }>(
 			console.log('a', clean_up);
 			clean_up().catch((e) => console.error(e));
 		},
-		events: {
-			onMessageCreate: (channelId: string) => onMessageCreate({} as Listener, channelId), //todo
-		},
-	} as Listener;
+	} as Listener<T>;
 }
 
 function startGatewayListener(userId: string) {
@@ -84,7 +81,7 @@ export interface messageCreate extends eventBase {
 		channel_id: string;
 	};
 }
-function onMessageCreate(listener: Listener, channelId: string) {
+function onMessageCreate(listener: Listener<GatewayEvent>, channelId: string) {
 	return listener.on<messageCreate>('messageCreate', (event) => {
 		if (event.data.channel_id === channelId) {
 			console.log('message', event);

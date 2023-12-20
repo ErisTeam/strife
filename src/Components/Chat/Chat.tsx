@@ -17,12 +17,17 @@ import SettingsGroup from '../Settings/SettingsGroup';
 import SettingsEntry from '../Settings/SettingsEntry';
 import { SettingsIds } from '@/API/Settings';
 import Category from './Recipients/RecipientCategory';
-import { addAdditionalGuildDataToState, requestLazyGuilds } from '@/API/Guilds';
+import {
+	addAdditionalGuildDataToState,
+	getListIdForChannel as computeChannelListHash,
+	requestLazyGuilds,
+} from '@/API/Guilds';
 import Person from '../Friends/Person';
 import RecipientsList from './Recipients/RecipientsList';
 import { GuildListUpdate } from '@/types/Guild';
 import TypingStatus from './TypingStatus';
 import MessageListVirtualized from './MessageListVirtualized';
+import { getChannelById } from '@/API/Channels';
 
 export type UploadFile =
 	| string
@@ -33,7 +38,7 @@ export type UploadFile =
 			attachmentUrl?: string;
 	  };
 export default function Chat() {
-	const TabContext = useTabContext();
+	const TabContext = useTabContext<{ channelId: string; guildId: string }>();
 	const [typingUsers, setTypingUsers] = createSignal<any[]>([]);
 	console.log('TabContext', TabContext);
 	const AppState = useAppState();
@@ -41,6 +46,8 @@ export default function Chat() {
 
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 	const [replyingTo, setReplyingTo] = createSignal<MessageReference | null>(null);
+
+	const hash = computeChannelListHash(getChannelById(TabContext.guildId, TabContext.channelId));
 
 	//TODO: make it possible to select multiple characters
 
@@ -145,9 +152,9 @@ export default function Chat() {
 		 	activities: true,
 		 });*/
 
-		requestLazyGuilds(AppState.userId(), TabContext.guildId, {
-			channels: { [TabContext.channelId]: [0, 99] },
-		});
+		if (!AppState.openedGuildsAdditionalData[TabContext.guildId]?.[hash]) {
+			requestLazyGuilds(AppState.userId(), TabContext.guildId, [TabContext.channelId]);
+		}
 
 		console.warn('test', AppState.openedGuildsAdditionalData['1085131579652845609']);
 		mainref.ondrop = (e) => {
@@ -232,7 +239,7 @@ export default function Chat() {
 			</section>
 
 			<section class={style.recipientsList}>
-				<RecipientsList guildId={TabContext.guildId} />
+				<RecipientsList guildId={TabContext.guildId} listId={hash} />
 			</section>
 		</main>
 	);

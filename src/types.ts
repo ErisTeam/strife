@@ -2,6 +2,7 @@ import { Component } from 'solid-js';
 import Chat from './Components/Chat/Chat';
 import WelcomeTab from './Components/Tabs/WelcomeTab';
 import SettingsPage from './Components/Settings/Settings';
+import VoiceChannel from './Components/VoiceChannel/VoiceChannel';
 
 type AppState = 'LoginScreen' | 'Application' | 'Dev';
 
@@ -15,14 +16,14 @@ export const TabComponents = {
 	textChannel: Chat,
 	welcomeTab: WelcomeTab,
 	settings: SettingsPage,
+	voiceChannel: VoiceChannel,
 };
 
 export interface Tab {
 	component: keyof typeof TabComponents;
 	title: string;
 	icon?: string | Component;
-	channelId?: string;
-	guildId?: string;
+	wasOpened?: boolean;
 	[x: string]: any; //TODO: make better type checking
 }
 

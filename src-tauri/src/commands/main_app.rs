@@ -1,6 +1,7 @@
-use std::{ sync::Arc, collections::HashMap };
+use std::{ sync::Arc, collections::HashMap, f32::consts::E };
 
-use log::{ debug, warn };
+use chrono::Duration;
+use log::{ debug, warn, info, error };
 use tauri::State;
 
 use crate::{
@@ -8,7 +9,10 @@ use crate::{
 	discord::types::{
 		user::CurrentUser,
 		gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds, LazyGuildsChannels },
+		channel,
+		SnowFlake,
 	},
+	modules::{ gateway::LazyGuildsMessage, main_app::GuildState },
 };
 
 #[tauri::command]
@@ -81,6 +85,47 @@ pub async fn send_voice_state_update(
 		.map_err(|e| e.to_string())?;
 	Ok(())
 }
+
+#[tauri::command]
+pub async fn request_channels_recipients(
+	guild_id: String,
+	user_id: String,
+	channels: Vec<SnowFlake>,
+	state: State<'_, Arc<MainState>>
+) -> Result<(), ()> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().ok_or("Not in main app").unwrap();
+	println!("Requesting channels recipients, user_id: {}, guild_id: {}", user_id, guild_id);
+
+	let mut guild_states = main_app.guilds_state.write().await;
+	let guild_state = if let Some(guild) = guild_states.get_mut(&guild_id) {
+		guild
+	} else {
+		guild_states.insert(guild_id.clone(), GuildState::default());
+		guild_states.get_mut(&guild_id).unwrap()
+	};
+
+	let mut lazy_channels = HashMap::new();
+	for channel in channels {
+		if let Some(s) = guild_state.channels.get_mut(&channel) {
+			let c = [*s, *s + 99];
+			lazy_channels.insert(channel.clone(), c);
+			*s += 100;
+		} else {
+			lazy_channels.insert(channel.clone(), [0, 99]);
+			guild_state.channels.insert(channel.clone(), 100);
+		}
+	}
+	let payload = LazyGuilds {
+		channels: Some(lazy_channels),
+		guild_id,
+		..Default::default()
+	};
+	main_app.send_to_gateway(&user_id, crate::modules::gateway::Messages::RequestLazyGuilds(payload)).await.unwrap();
+
+	Ok(())
+}
+
 #[tauri::command]
 pub async fn request_lazy_guilds(
 	guild_id: String,
@@ -88,7 +133,7 @@ pub async fn request_lazy_guilds(
 	typing: Option<bool>,
 	threads: Option<bool>,
 	activities: Option<bool>,
-	channels: Option<LazyGuildsChannels>,
+	channels: Option<Vec<(SnowFlake, bool)>>,
 	members: Option<bool>,
 	state: State<'_, Arc<MainState>>
 ) -> Result<(), ()> {
@@ -96,11 +141,36 @@ pub async fn request_lazy_guilds(
 	let main_app = state.main_app().expect("Not in main app");
 	println!("Requesting lazy guilds, user_id: {}, guild_id: {}", user_id, guild_id);
 
-	let a = main_app.guilds_state.write().await;
+	let mut typing = typing;
+	let mut threads = threads;
+	let mut activities = activities;
+	let mut members = members;
+
+	let a = main_app.guilds_state.read().await;
 	let b = a.get(&guild_id);
-	// if let Some(guild) = b {
-	// 	if(typing == guild.typing.unwrap() && )
-	// }
+
+	let channels = if let Some(channels) = channels {
+		let mut lazy_channels = HashMap::new();
+
+		if let Some(guild) = b {
+			for channel in channels {
+				if channel.1 {
+					lazy_channels.insert(channel.0, [0, 99]);
+					continue;
+				}
+				if let Some(last_index) = guild.channels.get(&channel.0) {
+					lazy_channels.insert(channel.0, [*last_index + 1, *last_index + 99]);
+				}
+			}
+		} else {
+			for channel in channels {
+				lazy_channels.insert(channel.0, [0, 99]);
+			}
+		}
+		Some(lazy_channels)
+	} else {
+		None
+	};
 
 	main_app
 		.send_to_gateway(
@@ -115,6 +185,15 @@ pub async fn request_lazy_guilds(
 			})
 		).await
 		.unwrap();
+	// let timeout = tokio::time::timeout(std::time::Duration::from_secs(10), reciver).await;
+	// if timeout.is_err() {
+	// 	error!("Request lazy guilds timed out");
+	// 	return Err(());
+	// } else {
+	// 	info!("Request lazy guilds finished");
+	// 	//
+	// }
+
 	Ok(())
 }
 

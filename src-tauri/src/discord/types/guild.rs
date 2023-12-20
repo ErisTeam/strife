@@ -190,5 +190,6 @@ pub mod strife {
 		pub guild_id: SnowFlake,
 		pub groups: Vec<Group>,
 		pub recipients: Vec<GuildMember>,
+		pub list_id: String,
 	}
 }

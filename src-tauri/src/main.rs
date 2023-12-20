@@ -71,10 +71,10 @@ fn enable_round_borders(window: tauri::Window) {
 
 	unsafe {
 		let margins = MARGINS {
-			cxLeftWidth: 0,
-			cxRightWidth: 0,
-			cyTopHeight: 0,
-			cyBottomHeight: 0,
+			cxLeftWidth: 1,
+			cxRightWidth: 1,
+			cyTopHeight: 1,
+			cyBottomHeight: 1,
 		};
 
 		let result = DwmExtendFrameIntoClientArea(hwnd, &margins);
@@ -144,6 +144,7 @@ async fn main() {
 				commands::main_app::start_voice_gateway,
 				commands::main_app::send_to_voice_gateway,
 				commands::main_app::request_lazy_guilds,
+				commands::main_app::request_channels_recipients,
 				test
 			]
 		)

@@ -14,7 +14,11 @@
 			flex-direction: column;
 			gap: 0.5em;
 		}
+		.routeContainer {
+			width: 100%;
+		}
 		.route {
+			width: 100%;
 			cursor: pointer;
 			transition: 0.2s background-color;
 			&:hover {

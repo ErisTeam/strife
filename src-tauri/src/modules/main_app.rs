@@ -6,6 +6,7 @@ use log::{ debug, error, warn };
 use tauri::{ AppHandle, Manager };
 use tokio::runtime::Handle;
 use tokio::sync::RwLock;
+use tokio::sync::oneshot::Sender;
 
 use crate::discord::gateway_packets::DispatchedEvents;
 use crate::discord::types::gateway::gateway_packets_data::{
@@ -95,11 +96,32 @@ impl ActivationState {
 		}
 	}
 }
+
+#[derive(Debug)]
+pub struct GuildState {
+	pub channels: HashMap<String, u64>,
+	pub members: bool,
+	pub threads: bool,
+	pub typing: bool,
+	pub activities: bool,
+}
+impl Default for GuildState {
+	fn default() -> Self {
+		Self {
+			channels: Default::default(),
+			members: Default::default(),
+			threads: Default::default(),
+			typing: Default::default(),
+			activities: Default::default(),
+		}
+	}
+}
+
 #[derive(Debug)]
 pub struct MainApp {
 	pub users: RwLock<HashMap<String, ActivationState>>,
 
-	pub guilds_state: RwLock<HashMap<String, LazyGuilds>>,
+	pub guilds_state: RwLock<HashMap<String, GuildState>>,
 
 	pub voice_gateway: Arc<RwLock<Option<VoiceGateway>>>,
 }
@@ -257,59 +279,72 @@ impl MainApp {
 					let user_data = user_data.read().await;
 					let user_data = user_data.as_ref().ok_or("User data is no longer available")?;
 
-					let mut groups = Vec::new();
-					let mut recipients = Vec::new();
-					let mut start_index = 0;
-					for group in &data.ops[0].items {
-						match group {
-							//? without count
-							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Group(
-								group,
-							) => if let Some(guild) = user_data.get_guild_by_id(&data.guild_id) {
-								let group = data.groups
-									.iter()
-									.find(|new_group| new_group.id == group.id)
-									.unwrap();
-								debug!("Group: {:?}", group);
-								let count = group.count.unwrap();
-								let name_and_type = if
-									let Some(role) = guild.roles.iter().find(|role| role.id == group.id)
-								{
-									(role.name.clone(), GroupType::Role(role.id.clone()))
-								} else if group.id == "online" {
-									("online".to_string(), GroupType::Online)
-								} else if group.id == "offline" {
-									("offline".to_string(), GroupType::Offline)
-								} else {
-									("error".to_string(), GroupType::Custom("".to_string()))
-								};
+					for item in &data.ops {
+						match &item.payload {
+							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::OpData::Sync(
+								payload,
+							) => {
+								let mut groups = Vec::new();
+								let mut recipients = Vec::new();
+								let mut start_index = 0;
+								for group in &payload.items {
+									match group {
+										//? without count
+										crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Group(
+											group,
+										) => if let Some(guild) = user_data.get_guild_by_id(&data.guild_id) {
+											let group = data.groups
+												.iter()
+												.find(|new_group| new_group.id == group.id)
+												.unwrap();
+											debug!("Group: {:?}", group);
+											let count = group.count.unwrap();
+											let name_and_type = if
+												let Some(role) = guild.roles.iter().find(|role| role.id == group.id)
+											{
+												(role.name.clone(), GroupType::Role(role.id.clone()))
+											} else if group.id == "online" {
+												("online".to_string(), GroupType::Online)
+											} else if group.id == "offline" {
+												("offline".to_string(), GroupType::Offline)
+											} else {
+												("error".to_string(), GroupType::Custom("".to_string()))
+											};
 
-								let new_group = Group {
-									name: name_and_type.0,
-									r#type: name_and_type.1,
-									count: count,
-									start_index: start_index,
+											let new_group = Group {
+												name: name_and_type.0,
+												r#type: name_and_type.1,
+												count: count,
+												start_index: start_index,
+											};
+											start_index += count;
+											groups.push(new_group);
+										}
+										crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Member(
+											member,
+										) => recipients.push(member.clone()),
+									}
+								}
+
+								let guild_list = GuildListData {
+									online_count: data.online_count,
+									member_count: data.member_count,
+									guild_id: data.guild_id.clone(),
+									groups: groups,
+									recipients,
+									list_id: data.id.clone(),
 								};
-								start_index += count;
-								groups.push(new_group);
+								handle.emit_all("gateway", webview_packets::GatewayEvent {
+									event: webview_packets::Gateway::GuildMemberListUpdate(guild_list),
+									user_id: user_id.clone(),
+								})?;
 							}
-							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Member(
-								member,
-							) => recipients.push(member.clone()),
+							crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::OpData::Update(
+								payload,
+							) => {}
+							_ => {}
 						}
 					}
-
-					let guild_list = GuildListData {
-						online_count: data.online_count,
-						member_count: data.member_count,
-						guild_id: data.guild_id,
-						groups: groups,
-						recipients,
-					};
-					handle.emit_all("gateway", webview_packets::GatewayEvent {
-						event: webview_packets::Gateway::GuildMemberListUpdate(guild_list),
-						user_id: user_id.clone(),
-					})?;
 				}
 				data => {
 					handle.emit_all("gateway", webview_packets::GatewayEvent {

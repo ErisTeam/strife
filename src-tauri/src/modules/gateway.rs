@@ -1,4 +1,4 @@
-use std::{ sync::Arc, io::Write, time::Duration };
+use std::{ sync::{ Arc, Weak }, io::Write, time::Duration, collections::HashMap };
 
 use futures_util::{ StreamExt, stream::{ SplitStream, SplitSink }, SinkExt };
 use log::{ debug, error, warn, trace };
@@ -28,6 +28,12 @@ pub enum Messages {
 }
 
 type ConnectionInfo = super::gateway_utils::ConnectionInfo<ConnectionData, GatewayMessages>;
+
+#[derive(Debug, Clone)]
+pub struct LazyGuildsMessage {
+	pub lazy_guilds: LazyGuilds,
+	pub sender: Weak<tokio::sync::oneshot::Sender<bool>>,
+}
 
 pub struct ConnectionData {
 	sequence_number: Option<u64>,
@@ -327,6 +333,7 @@ impl Gateway {
 				Messages::RequestLazyGuilds(payload) => {
 					let payload = OutGoingPacket::lazy_guilds(payload).to_json()?;
 					println!("Sending lazy guilds: {:?}", payload);
+
 					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 				Messages::UpdateVoiceState(payload) => {

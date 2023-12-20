@@ -58,7 +58,10 @@ export default function MessageListVirtualized(props: MessageListVirtualizedProp
 							return (
 								<Message
 									dataIndex={virtualRow.index}
-									propsRef={virtualizer.measureElement}
+									propsRef={(element) => {
+										element.setAttribute('data-index', virtualRow.index.toString());
+										virtualizer.measureElement;
+									}}
 									refMsg={msgRef}
 									same={same}
 									setReference={props.setReplyingTo}

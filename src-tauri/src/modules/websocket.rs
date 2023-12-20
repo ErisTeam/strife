@@ -48,6 +48,7 @@ impl WebSocket {
 		let mut reader = self.reader.lock().await;
 		let mut writer = self.writer.lock().await;
 		let request = if url.is_none() { self.request.read().await.clone() } else { url.unwrap() };
+		debug!("Reconnecting using: {:?}", request);
 		let (new_writer, new_reader) = Self::create_connection(request).await?;
 		*reader = new_reader;
 		*writer = new_writer;

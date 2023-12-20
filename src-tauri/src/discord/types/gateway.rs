@@ -119,11 +119,41 @@ pub mod gateway_packets_data {
 
 		use crate::discord::types::guild::GuildMember;
 
-		pub type Ops = Vec<OpsItem>;
+		pub type Ops = Vec<OpItem>;
+
+		#[derive(Serialize, Deserialize, Debug)]
+		#[serde(rename_all = "UPPERCASE")]
+		pub enum OpType {
+			Sync,
+			Insert,
+			Update,
+			Invalidate,
+			Delete,
+		}
 		#[derive(Deserialize, Debug)]
-		pub struct OpsItem {
+		pub struct OpItem {
+			#[serde(flatten)]
+			pub payload: OpData,
+			pub op: OpType,
+		}
+
+		#[derive(Deserialize, Debug)]
+		#[serde(untagged)]
+		pub enum OpData {
+			Sync(OpSync),
+			Update(OpUpdate),
+			Invalidate(),
+		}
+		#[derive(Deserialize, Debug)]
+		pub struct OpUpdate {
+			pub item: GuildGroup,
+			pub index: u64,
+		}
+
+		#[derive(Deserialize, Debug)]
+		pub struct OpSync {
 			pub range: [u64; 2],
-			pub op: String,
+
 			pub items: Vec<GuildListItem>,
 		}
 
@@ -140,22 +170,6 @@ pub mod gateway_packets_data {
 			Group(GuildGroup),
 			Member(GuildMember),
 		}
-		// impl<'de> Deserialize<'de> for GuildListItem {
-		// 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
-		// 		#[derive(Deserialize, Debug)]
-		// 		struct Inner {
-		// 			group: Option<serde_json::Value>,
-		// 			member: Option<serde_json::Value>,
-		// 		}
-		// 		let inner = Inner::deserialize(deserializer)?;
-		// 		if let Some(group) = inner.group {
-		// 			return Ok(Self::Group(GuildGroup::deserialize(group).map_err(serde::de::Error::custom)?));
-		// 		} else if let Some(member) = inner.member {
-		// 			return Ok(Self::Member(GuildMember::deserialize(member).map_err(serde::de::Error::custom)?));
-		// 		}
-		// 		Err(serde::de::Error::custom("No group or member"))
-		// 	}
-		// }
 	}
 	#[derive(Deserialize, Debug)]
 	pub struct GuildMemberListUpdate {
@@ -237,6 +251,18 @@ pub mod gateway_packets_data {
 		pub threads: Option<bool>,
 		pub activities: Option<bool>,
 		pub typing: Option<bool>,
+	}
+	impl Default for LazyGuilds {
+		fn default() -> Self {
+			Self {
+				guild_id: Default::default(),
+				channels: Default::default(),
+				members: Default::default(),
+				threads: Default::default(),
+				activities: Default::default(),
+				typing: Default::default(),
+			}
+		}
 	}
 
 	#[derive(Serialize, Debug, Clone)]

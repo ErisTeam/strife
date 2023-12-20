@@ -33,7 +33,13 @@ export default (props: ChannelProps) => {
 		const listIndex = AppState.tabs.findIndex((t: Tab) => t.component == 'textChannel' && t.channelId == props.data.id);
 
 		console.log('listIndex', listIndex);
+
 		const tab = createTextChannelTab(props.data);
+		if (props.data.type == 2) {
+			tab.component = 'voiceChannel';
+		}
+
+		tab.wasOpened = true;
 		console.log('tab', tab);
 		switch (e.button) {
 			case 0:

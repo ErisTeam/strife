@@ -65,5 +65,19 @@ mod tests {
 				}
 			}
 		}
+		fn guild_list_update() {
+			let json: IncomingPacket = serde_json
+				::from_reader(fs::File::open("../tests/ready supplemental.json").unwrap())
+				.unwrap();
+
+			match json.data {
+				IncomingPacketsData::DispatchedEvent(data) => {
+					//
+				}
+				d => {
+					panic!("json.data was {}", d.to_string());
+				}
+			}
+		}
 	}
 }

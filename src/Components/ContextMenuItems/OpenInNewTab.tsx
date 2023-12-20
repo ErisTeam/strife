@@ -1,5 +1,5 @@
 import { useMenu } from '../ContextMenu/ContextMenu';
-import { Channel } from '../../types/Channel';
+import { Channel, ChannelType } from '../../types/Channel';
 import { useAppState } from '../../AppState';
 import { createTextChannelTab } from '../Tabs/TabUtils';
 import { add, setAsCurrent } from '@/API/Tabs';
@@ -19,7 +19,11 @@ export default () => {
 				if (listIndex != -1) {
 					setAsCurrent(listIndex);
 				} else {
-					add(createTextChannelTab(menu.channel));
+					const tab = createTextChannelTab(menu.channel);
+					if (menu.channel.type == ChannelType.GuildVoice) {
+						tab.component = 'voiceChannel';
+					}
+					add(tab);
 				}
 				menu.closeMenu();
 			}}

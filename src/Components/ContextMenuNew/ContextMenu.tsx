@@ -12,7 +12,7 @@ import {
 } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 
-import style from '../ContextMenu/ContextMenu.module.css';
+import style from './ContextMenu.module.css';
 import { MenuProvider } from '../ContextMenu/ContextMenu';
 
 type position = { x: number; y: number };
