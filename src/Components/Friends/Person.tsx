@@ -2,12 +2,6 @@ import { Relationship } from '../../types/User';
 
 import style from './css.module.css';
 
-import { useNavigate, useParams } from '@solidjs/router';
-import { useAppState } from '../../AppState';
-import { Tab } from '../../types';
-
-import { add, setAsCurrent } from '@/API/Tabs';
-
 //fallback icon provided by Lemony
 interface FriendProps {
 	className?: string;

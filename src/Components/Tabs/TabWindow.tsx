@@ -1,17 +1,14 @@
 import { useAppState } from '../../AppState';
 
-import { For, Show, Suspense } from 'solid-js';
+import { For, Show } from 'solid-js';
 import outletStyle from '../Application/Application.module.css';
 
 import { Dynamic } from 'solid-js/web';
-
-import Loading from '../Loading/Loading';
 
 import { TabComponents } from '../../types';
 import TabList from './TabList';
 import { TabContextProvider } from './TabUtils';
 import SuspenseErrorBoundary from '../SuspenseErrorBoundary/SuspenseErrorBoundary';
-import { produce } from 'solid-js/store';
 
 export function TabWindow({ className }: { className?: string }) {
 	const AppState = useAppState();

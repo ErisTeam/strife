@@ -4,7 +4,7 @@ import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
 import { t } from '../../Translation';
 import { Tab } from '../../types';
-import { Dynamic, classList } from 'solid-js/web';
+import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
 
 import { createSortable, useDragDropContext } from '@thisbeyond/solid-dnd';

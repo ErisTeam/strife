@@ -3,7 +3,7 @@ import { For, Show, createEffect, createMemo, createResource, createSignal, onMo
 import { useAppState } from '../../AppState';
 import { CONSTANTS } from '../../Constants';
 import { MessageReference, Message as MessageType } from '../../types/Messages';
-import { gatewayOneTimeListener, startGatewayListener, useTaurListener } from '../../test';
+import { gatewayOneTimeListener, messageCreate, startGatewayListener, useTaurListener } from '../../test';
 import { useTabContext } from '../Tabs/TabUtils';
 import { open } from '@tauri-apps/api/dialog';
 import Message from './Message';
@@ -28,6 +28,7 @@ import { GuildListUpdate } from '@/types/Guild';
 import TypingStatus from './TypingStatus';
 import MessageListVirtualized from './MessageListVirtualized';
 import { getChannelById } from '@/API/Channels';
+import Dev from '../Dev/Dev';
 
 export type UploadFile =
 	| string
@@ -55,7 +56,7 @@ export default function Chat() {
 	// 	chatref.scrollTo(0, chatref.scrollHeight);
 	// }
 	const listener = startGatewayListener(AppState.userId());
-	listener.on<any>('messageCreate', (event) => {
+	listener.on<messageCreate>('messageCreate', (event) => {
 		console.log(TabContext.channelId, event.data.channel_id, event.data.content);
 		if (event.data.channel_id === TabContext.channelId) {
 			const newMessage = {
@@ -120,6 +121,10 @@ export default function Chat() {
 		console.log(event);
 
 		addAdditionalGuildDataToState(event.data);
+	});
+	listener.on<any>('GuildMembersChunk', (event) => {
+		console.log(event);
+		// addAdditionalGuildDataToState(event.data);
 	});
 
 	const [messages, { mutate: setMessages }] = createResource(async () => {
@@ -197,6 +202,30 @@ export default function Chat() {
 			<Show when={replyingTo()}>
 				<h1>{replyingTo().channel_id}</h1>
 			</Show>
+
+			<Dev>
+				<button
+					onclick={() => {
+						console.log(
+							messages()
+								.map((msg) => msg.author.id)
+								.filter((value, index, self) => self.indexOf(value) === index)
+								.filter((id) => id != AppState.userId()),
+						);
+						invoke('get_members_info', {
+							userId: AppState.userId(),
+							guildId: TabContext.guildId,
+							members: messages()
+								.map((msg) => msg.author.id)
+								.filter((value, index, self) => self.indexOf(value) === index)
+								.filter((id) => id != AppState.userId()),
+						});
+					}}
+				>
+					request users
+				</button>
+			</Dev>
+
 			{/* <Show when={messages()}>
 				<MessageListVirtualized messages={messages} updateMessage={updateMessage} setReplyingTo={setReplyingTo} />
 			</Show> */}

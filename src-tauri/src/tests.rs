@@ -65,6 +65,7 @@ mod tests {
 				}
 			}
 		}
+		#[test]
 		fn guild_list_update() {
 			let json: IncomingPacket = serde_json
 				::from_reader(fs::File::open("../tests/ready supplemental.json").unwrap())

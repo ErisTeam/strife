@@ -108,6 +108,7 @@ pub mod gateway_packets_data {
 		message::Message,
 		user::{ PublicUser, CurrentUser, GuildSettings },
 		relationship::GatewayRelationship,
+		SnowFlake,
 	};
 
 	use self::guild_member_list_update::{ Ops, GuildGroup };
@@ -115,7 +116,7 @@ pub mod gateway_packets_data {
 	use super::{ Properties, Presence, ClientState, ReadState };
 
 	pub mod guild_member_list_update {
-		use serde::{ Deserializer, Deserialize, Serialize };
+		use serde::{ Deserialize, Serialize };
 
 		use crate::discord::types::guild::GuildMember;
 
@@ -143,6 +144,7 @@ pub mod gateway_packets_data {
 			Sync(OpSync),
 			Update(OpUpdate),
 			Invalidate(),
+			Unknown,
 		}
 		#[derive(Deserialize, Debug)]
 		pub struct OpUpdate {
@@ -169,6 +171,7 @@ pub mod gateway_packets_data {
 		pub enum GuildListItem {
 			Group(GuildGroup),
 			Member(GuildMember),
+			Unknown,
 		}
 	}
 	#[derive(Deserialize, Debug)]
@@ -179,6 +182,12 @@ pub mod gateway_packets_data {
 		pub id: String,
 		pub guild_id: String,
 		pub groups: Vec<GuildGroup>,
+	}
+
+	#[derive(Deserialize, Debug, Serialize, Clone)]
+	pub struct GuildMembersChunk {
+		pub not_found: Vec<serde_json::Value>,
+		pub members: Vec<GuildMember>,
 	}
 
 	#[derive(Deserialize, Debug)]
@@ -290,6 +299,37 @@ pub mod gateway_packets_data {
 			}
 		}
 	}
+
+	#[derive(Serialize, Debug, Clone)]
+	pub struct RequestGuildMembers {
+		pub guild_id: SnowFlake,
+		///	string that username starts with, or an empty string to return all members (one of query or user_ids)
+		pub query: Option<String>,
+		///	maximum number of members to send matching the [query]; a limit of `0` can be used with an empty string [query] to return all members
+		///
+		/// [`query`]: self::RequestGuildMembers::query
+		pub limit: Option<i32>,
+		/// used to specify if we want the presences of the matched members
+		pub presences: Option<bool>,
+		/// used to specify which users you wish to fetch (one of query or user_ids)
+		pub user_ids: Option<Vec<SnowFlake>>,
+		/// nonce to identify the [Guild Members Chunk] response
+		///
+		/// [`Guild Members Chunk`]: https://discord.com/developers/docs/topics/gateway-events#guild-members-chunk
+		pub nonce: Option<String>,
+	}
+	impl RequestGuildMembers {
+		pub fn verify(&self) -> bool {
+			if self.query.is_some() && self.user_ids.is_some() {
+				return false;
+			}
+			if self.query.is_none() && self.user_ids.is_none() {
+				return false;
+			}
+			true
+		}
+	}
+
 	#[derive(Deserialize, Serialize, Debug, Clone)]
 	pub struct VoiceStateUpdate {
 		guild_id: Option<String>,

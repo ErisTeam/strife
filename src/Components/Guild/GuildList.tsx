@@ -1,17 +1,8 @@
-// SolidJS
-import { onMount, For, createResource, Show, createEffect } from 'solid-js';
-
-// API
+import { onMount, For } from 'solid-js';
 import { useAppState } from '../../AppState';
-
-// Components
 import Guild from './Guild';
-
-// Style
 import style from './css.module.css';
-
 import {
-	DragDropDebugger,
 	DragDropProvider,
 	DragDropSensors,
 	DragEvent,
@@ -23,7 +14,6 @@ import {
 import { createSignal } from 'solid-js';
 import FriendsTab from './FriendsTab';
 import GuildShadow from './GuildShadow';
-
 import { Guild as TGuild } from '../../types/Guild';
 import { updateGuilds } from '@/API/Guilds';
 interface GuildListProps {

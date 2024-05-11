@@ -1,29 +1,10 @@
-import {
-	Component,
-	For,
-	Match,
-	Show,
-	Switch,
-	createEffect,
-	createMemo,
-	createSignal,
-	observable,
-	onMount,
-} from 'solid-js';
-import { createStore, produce } from 'solid-js/store';
+import { For, Show, createSignal } from 'solid-js';
 
-import checkBoxes from '../../Styles/Checkboxes.module.css';
-import inputs from '../../Styles/Inputs.module.css';
-
-import { Cog, FileDown, FileUp, Import } from 'lucide-solid';
-import SettingsEntry from './SettingsEntry';
+import { FileDown, FileUp } from 'lucide-solid';
 import { useAppState } from '../../AppState';
-import { Router } from '@solidjs/router';
 import SettingsGroup from './SettingsGroup';
 
 import style from './Settings.module.css';
-import Dev from '../Dev/Dev';
-import { useTabContext } from '../Tabs/TabUtils';
 
 export default function SettingsPage() {
 	const AppState = useAppState();

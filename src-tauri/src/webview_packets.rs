@@ -14,6 +14,7 @@ use crate::{
 				VoiceStateUpdate,
 				TypingStart,
 				GuildMemberListUpdate,
+				GuildMembersChunk,
 			},
 			voice_gateway_packets_data,
 		},
@@ -113,6 +114,8 @@ pub enum Gateway {
 
 	GuildMemberListUpdate(GuildListData),
 
+	GuildMembersChunk(GuildMembersChunk),
+
 	Error {
 		message: String,
 	},
@@ -130,6 +133,7 @@ impl From<GatewayMessages> for Gateway {
 			GatewayMessages::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
 			GatewayMessages::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
 			GatewayMessages::GuildMemberListUpdate(_) => todo!(),
+			GatewayMessages::GuildMembersChunk(data) => Self::GuildMembersChunk(data),
 		}
 	}
 }

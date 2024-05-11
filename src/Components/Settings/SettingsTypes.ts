@@ -70,7 +70,7 @@ interface ColorPicker extends SettingsBase<string> {
 	type: 'ColorPicker';
 }
 
-export interface CustomSettings<P = object, V = any> extends SettingsBase<V> {
+export interface CustomSettings<P = object, V = unknown> extends SettingsBase<V> {
 	type: 'Custom';
 	component: Component;
 	props?: P;

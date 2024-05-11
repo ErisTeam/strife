@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { invoke } from '@tauri-apps/api';
 import { createResource, Match, Show, Switch } from 'solid-js';
 import { useAppState } from '../../AppState';
@@ -16,16 +19,16 @@ export default () => {
 		if (!state.userId) {
 			const id: string = await invoke('get_last_user', {});
 			console.log('last id', id);
-			state.setUserID(id);
+			state.setUserId(id);
 		}
 		console.log('id', state.userId);
-		if (state.userId == '362958640656941056') {
+		if (state.userId() == '362958640656941056') {
 			s.push('gfur');
 		}
 
 		const subReddit = s[Math.floor(Math.random() * s.length)];
 		const url = `https://www.reddit.com/r/${subReddit}/top.json?sort=top&t=${time}&limit=100"`;
-		const res = await (await fetch(url)).json();
+		const res: any = await (await fetch(url)).json();
 		console.log(res);
 		let count = 0;
 		while (count < 100) {

@@ -13,7 +13,7 @@ import { t } from '../../../Translation';
 export interface LoginBoxProps {
 	class?: string;
 	login: (name: string, password: string, captcha_token?: string) => Promise<void>;
-};
+}
 
 function LoginBox(prop: LoginBoxProps) {
 	const [name, setName] = createSignal('');
@@ -30,7 +30,7 @@ function LoginBox(prop: LoginBoxProps) {
 			}}
 		>
 			<h1 class={style.header}>{t.LoginPage.logIn()}</h1>
-			
+
 			{/* Name and password fields */}
 			<fieldset class={style.inputs}>
 				<input
@@ -46,12 +46,12 @@ function LoginBox(prop: LoginBoxProps) {
 					onChange={(e) => setPassword(e.currentTarget.value)}
 				/>
 			</fieldset>
-			
+
 			{/* Remember me and login button */}
 			<fieldset class={style.bottomPart}>
-				<label class={style.rememberMe} for='rememberMe'>
+				<label class={style.rememberMe} for="rememberMe">
 					<p>{t.LoginPage.rememberMe()}</p>
-					<Checkbox id='rememberMe'/>
+					<Checkbox id="rememberMe" />
 				</label>
 				<button class={[style.loginButton, buttons.default].join(' ')} type="submit">
 					{t.LoginPage.logIn()}

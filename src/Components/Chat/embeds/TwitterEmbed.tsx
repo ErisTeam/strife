@@ -1,9 +1,7 @@
 import { X } from 'lucide-solid';
 import { useAppState } from '../../../AppState';
-import { Embed } from '../../../types/Messages';
 import style from '../Embed.module.css';
 import { EmbedProps } from '../Embed';
-import { JSX } from 'solid-js';
 //TODO: translate component
 export default function TwitterEmbed(props: EmbedProps) {
 	const AppState = useAppState();

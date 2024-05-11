@@ -6,7 +6,6 @@ import { For, createEffect, createMemo, createSignal } from 'solid-js';
 import { Tab } from '../../types';
 
 import {
-	DragDropDebugger,
 	DragDropProvider,
 	DragDropSensors,
 	DragOverlay,
@@ -14,9 +13,8 @@ import {
 	DragEvent,
 	closestCorners,
 } from '@thisbeyond/solid-dnd';
-import TabShadow, { TEST } from './TabShadow';
+import TabShadow from './TabShadow';
 import TabSortable from './TabSortable';
-import Loading from '../Loading/Loading';
 export type Item = {
 	id: number;
 	tab: Tab;

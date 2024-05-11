@@ -2,7 +2,6 @@ import { invoke } from '@tauri-apps/api';
 import { Component, Show, createEffect, createResource, createSignal } from 'solid-js';
 import Loading from './Components/Loading/Loading';
 import { AppState } from './types';
-import { t } from './Translation';
 import Dev from './Components/Dev/Dev';
 import { useAppState } from './AppState';
 import { activateUser } from './API/User';
@@ -70,7 +69,7 @@ const StateSetter = (props: Props) => {
 							error() && (
 								<>
 									<h3>{error().toString()}</h3>
-									{/* TODO:FIX */}
+									{/* TODO: FIX */}
 									{/* <h3>{t.error({ time: timeLeft() })}</h3> */}
 								</>
 							)

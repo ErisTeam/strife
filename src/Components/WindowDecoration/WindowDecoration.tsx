@@ -1,7 +1,7 @@
 import { appWindow } from '@tauri-apps/api/window';
 import style from './css.module.css';
 import { Maximize, Minimize, Minus, X } from 'lucide-solid';
-import { Show, createEffect, createResource } from 'solid-js';
+import { Show, createResource } from 'solid-js';
 
 const WindowDecoration = () => {
 	const [isMaxmized, setIsMaxmized] = createResource(async () => {
@@ -10,6 +10,7 @@ const WindowDecoration = () => {
 	appWindow
 		.onResized(() => {
 			console.log('resized');
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			setIsMaxmized.refetch();
 		})
 		.catch((e) => console.log(e));

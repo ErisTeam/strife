@@ -75,35 +75,35 @@ const Message = (props: MessageProps) => {
 		}
 	});
 	//REPLACE WITH CALL TO RUST
-	const senderRoles = createMemo(() => {
-		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients.filter(
-			(r) => r.user.id === message.author.id,
-		)[0]?.roles;
-	});
-	const senderGroups = createMemo(() => {
-		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups
-			.filter((g) => senderRoles()?.includes(g.data))
-			.map((g) => g.data);
-	});
-	const guildGroups = createMemo(() => {
-		return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups;
-	});
-	const senderColor = createMemo(() => {
-		return ColorDecimalToHex(
-			AppState.userGuilds
-				.filter((g) => g.properties.id === TabContext.guildId)[0]
-				.roles.filter((r) => senderGroups()?.includes(r.id) && r.color)[0]?.color || 16777215,
-		);
-	});
+	// const senderRoles = createMemo(() => {
+	// 	return AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients.filter(
+	// 		(r) => r.user.id === message.author.id,
+	// 	)[0]?.roles;
+	// });
+	// const senderGroups = createMemo(() => {
+	// 	return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups
+	// 		.filter((g) => senderRoles()?.includes(g.data))
+	// 		.map((g) => g.data);
+	// });
+	// const guildGroups = createMemo(() => {
+	// 	return AppState.openedGuildsAdditionalData[TabContext.guildId]?.groups;
+	// });
+	// const senderColor = createMemo(() => {
+	// 	return ColorDecimalToHex(
+	// 		AppState.userGuilds
+	// 			.filter((g) => g.properties.id === TabContext.guildId)[0]
+	// 			.roles.filter((r) => senderGroups()?.includes(r.id) && r.color)[0]?.color || 16777215,
+	// 	);
+	// });
 	createEffect(() => {
 		console.log(
 			'SENDER DATA',
 			message.author.username,
 			message,
-			senderRoles(),
-			senderGroups(),
-			guildGroups(),
-			senderColor(),
+			// senderRoles(),
+			// senderGroups(),
+			// guildGroups(),
+			// senderColor(),
 		);
 	});
 
@@ -164,7 +164,7 @@ const Message = (props: MessageProps) => {
 
 			<Show when={!props.same || reply}>
 				<div class={style.info}>
-					<button style={{ color: senderColor() }} class={style.userName}>
+					<button class={style.userName}>
 						{userName()}
 
 						<Show when={message.author.bot}>

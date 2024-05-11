@@ -1,4 +1,3 @@
-import { JSX, createSignal, onMount } from 'solid-js';
 import style from './Checkbox.module.css';
 import { CheckIcon } from 'lucide-solid';
 
@@ -10,6 +9,7 @@ interface CheckboxProps {
 }
 
 export default function Checkbox(props: CheckboxProps) {
+	//TODO: add title for accessibility
 	return (
 		<div class={style.container}>
 			<input id={props.id} type="checkbox" class={style.default} onChange={props.onChange} checked={props.checked} />

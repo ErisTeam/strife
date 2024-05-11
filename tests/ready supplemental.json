@@ -1,0 +1,306 @@
+{
+	"t": "GUILD_MEMBER_LIST_UPDATE",
+	"s": 3,
+	"op": 0,
+	"d": {
+		"ops": [
+			{
+				"range": [0, 99],
+				"op": "SYNC",
+				"items": [
+					{ "group": { "id": "1085479289899712573" } },
+					{
+						"member": {
+							"user": {
+								"username": ".sekafi",
+								"public_flags": 0,
+								"id": "592396080553918469",
+								"global_name": "SeKaFi",
+								"display_name": "SeKaFi",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "5b79d1df33cc77c446bd3199b29a04cf"
+							},
+							"roles": ["1085503068604473345", "1085479289899712573"],
+							"presence": {
+								"user": { "id": "592396080553918469" },
+								"status": "online",
+								"client_status": { "desktop": "online" },
+								"broadcast": null,
+								"activities": [
+									{
+										"type": 4,
+										"state": "Gami to Furras",
+										"name": "Custom Status",
+										"id": "custom",
+										"created_at": 1706624087395
+									}
+								]
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-03-14T18:51:18.249000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{ "group": { "id": "online" } },
+					{
+						"member": {
+							"user": {
+								"username": "pietruszka132",
+								"public_flags": 0,
+								"id": "1046132529964519524",
+								"global_name": "pietruszka132",
+								"display_name": "pietruszka132",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": null
+							},
+							"roles": [],
+							"presence": {
+								"user": { "id": "1046132529964519524" },
+								"status": "online",
+								"client_status": { "web": "online" },
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-07-26T16:55:16.131000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{
+						"member": {
+							"user": {
+								"username": ".rekit.",
+								"public_flags": 128,
+								"id": "325598758173671424",
+								"global_name": "Rekit",
+								"display_name": "Rekit",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "dba0540cbd84bc633b2029fc61377ab2"
+							},
+							"roles": [],
+							"presence": {
+								"user": { "id": "325598758173671424" },
+								"status": "dnd",
+								"client_status": { "mobile": "dnd" },
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2024-01-01T18:00:38.585000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{ "group": { "id": "offline" } },
+					{
+						"member": {
+							"user": {
+								"username": "arai11",
+								"public_flags": 64,
+								"id": "711005668613554286",
+								"global_name": "Arai11",
+								"display_name": "Arai11",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "4311f2a3083260ba3b9cc99b9223bca7"
+							},
+							"roles": ["1159435068071231549", "1085480935975297046"],
+							"presence": {
+								"user": { "id": "711005668613554286" },
+								"status": "offline",
+								"client_status": {},
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-03-15T09:45:16.626000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{
+						"member": {
+							"user": {
+								"username": "Bocik",
+								"public_flags": 0,
+								"id": "413669201396367361",
+								"global_name": null,
+								"display_name": null,
+								"discriminator": "7567",
+								"bot": true,
+								"avatar_decoration_data": null,
+								"avatar": "018ac0041678d70e246ebec53f849e9a"
+							},
+							"roles": ["1158478677655433330"],
+							"presence": {
+								"user": { "id": "413669201396367361" },
+								"status": "offline",
+								"client_status": {},
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-10-02T19:00:40.368000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{
+						"member": {
+							"user": {
+								"username": "frytak",
+								"public_flags": 256,
+								"id": "362958640656941056",
+								"global_name": "Frytak",
+								"display_name": "Frytak",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "5f835ccc139450e2faab481b031024f8"
+							},
+							"roles": [
+								"1085503068604473345",
+								"1085477548579885096",
+								"1085480348151984169",
+								"1085499473335160842",
+								"1085501759365075026",
+								"1085480935975297046",
+								"1159435068071231549"
+							],
+							"presence": {
+								"user": { "id": "362958640656941056" },
+								"status": "offline",
+								"client_status": {},
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-03-14T09:25:29.383000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{
+						"member": {
+							"user": {
+								"username": "gami13",
+								"public_flags": 0,
+								"id": "309689147855994880",
+								"global_name": "Gami",
+								"display_name": "Gami",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "2b9588c5c2732e1fffbf33ee875388ec"
+							},
+							"roles": [
+								"1085499581766307910",
+								"1085477548579885096",
+								"1085480348151984169",
+								"1085499473335160842",
+								"1085499530432237588",
+								"1085480935975297046"
+							],
+							"presence": {
+								"user": { "id": "309689147855994880" },
+								"status": "offline",
+								"client_status": {},
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-03-14T17:44:10.498000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					},
+					{
+						"member": {
+							"user": {
+								"username": "pietruszka123",
+								"public_flags": 0,
+								"id": "413428675866787863",
+								"global_name": "pietruszka123",
+								"display_name": "pietruszka123",
+								"discriminator": "0",
+								"bot": false,
+								"avatar_decoration_data": null,
+								"avatar": "29280468611f0324eb02190d181f606c"
+							},
+							"roles": ["1085477548579885096", "1085480348151984169", "1085499530432237588", "1085502363005112341"],
+							"presence": {
+								"user": { "id": "413428675866787863" },
+								"status": "offline",
+								"client_status": {},
+								"broadcast": null,
+								"activities": []
+							},
+							"premium_since": null,
+							"pending": false,
+							"nick": null,
+							"mute": false,
+							"joined_at": "2023-03-14T17:31:56.484000+00:00",
+							"flags": 0,
+							"deaf": false,
+							"communication_disabled_until": null,
+							"avatar": null
+						}
+					}
+				]
+			}
+		],
+		"online_count": 3,
+		"member_count": 8,
+		"id": "everyone",
+		"guild_id": "1085131579652845609",
+		"groups": [
+			{ "id": "1085479289899712573", "count": 1 },
+			{ "id": "online", "count": 2 },
+			{ "id": "offline", "count": 5 }
+		]
+	}
+}

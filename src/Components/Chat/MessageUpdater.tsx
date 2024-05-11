@@ -1,6 +1,6 @@
-import { Accessor, For, Setter, createSignal, onMount } from 'solid-js';
+import { For, Setter, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
-import { message, open } from '@tauri-apps/api/dialog';
+import { open } from '@tauri-apps/api/dialog';
 import MessageEditor from './MessageEditor';
 import { Message as MessageType } from '../../types/Messages';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
@@ -16,8 +16,8 @@ export default function MessageUpdater(props: MessageUpdaterProps) {
 
 	console.log('updater props', props);
 
-	function updateMessage() {
-		sendMessage(props.message.channel_id, props.message.id, msgText(), files(), false, [], [], true);
+	async function updateMessage() {
+		await sendMessage(props.message.channel_id, props.message.id, msgText(), files(), false, [], [], true);
 		props.setIsEditing(false);
 	}
 	// TODO:ADD BUTTON

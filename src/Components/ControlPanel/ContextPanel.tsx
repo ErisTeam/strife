@@ -1,7 +1,7 @@
 import { Match, Switch } from 'solid-js';
 import style from './css.module.css';
 import { useAppState } from '../../AppState';
-import { Signal, CassetteTape, PhoneOff, ScreenShare, Phone } from 'lucide-solid';
+import { Signal, CassetteTape, PhoneOff, ScreenShare } from 'lucide-solid';
 function ContextPanel() {
 	const AppState = useAppState();
 	return (

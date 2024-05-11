@@ -1,5 +1,5 @@
 // SolidJS
-import { Accessor, Context, JSX, Setter, createContext, createSignal, useContext } from 'solid-js';
+import { Accessor, JSX, Setter, createContext, createSignal, useContext } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 // API
 import { Locale } from './Translation';
@@ -9,8 +9,6 @@ import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsT
 import { defaultSettings } from '@api/Settings';
 import { Relationship } from './types/User';
 import { Guild, GuildListUpdate } from './types/Guild';
-import { Channel } from './types/Channel';
-import { snowflake } from './types/utils';
 
 const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
 

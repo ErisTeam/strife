@@ -1,6 +1,5 @@
-use std::{ sync::Arc, collections::HashMap, f32::consts::E };
+use std::{ sync::Arc, collections::HashMap };
 
-use chrono::Duration;
 use log::{ debug, warn, info, error };
 use tauri::State;
 
@@ -8,11 +7,10 @@ use crate::{
 	main_app_state::MainState,
 	discord::types::{
 		user::CurrentUser,
-		gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds, LazyGuildsChannels },
-		channel,
+		gateway::gateway_packets_data::{ VoiceStateUpdateSend, LazyGuilds, RequestGuildMembers },
 		SnowFlake,
 	},
-	modules::{ gateway::LazyGuildsMessage, main_app::GuildState },
+	modules::main_app::GuildState,
 };
 
 #[tauri::command]
@@ -197,7 +195,35 @@ pub async fn request_lazy_guilds(
 	Ok(())
 }
 
+#[tauri::command]
+pub async fn get_members_info(
+	guild_id: String,
+	user_id: String,
+	members: Vec<SnowFlake>,
+	state: State<'_, Arc<MainState>>
+) -> Result<(), String> {
+	let state = state.state.read().await;
+	let main_app = state.main_app().expect("Not in main app");
+
+	main_app
+		.send_to_gateway(
+			&user_id,
+			crate::modules::gateway::Messages::RequestGuildMembers(RequestGuildMembers {
+				guild_id,
+				query: None,
+				limit: None,
+				presences: None,
+				user_ids: Some(members),
+				nonce: None,
+			})
+		).await
+		.unwrap();
+
+	Ok(())
+}
+
 //TODO: make all main_app events commands
+
 ///TEMPORARY COMMAND
 #[tauri::command]
 pub async fn start_voice_gateway(

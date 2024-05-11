@@ -18,6 +18,8 @@ use super::types::gateway::{
 		VoiceStateUpdate,
 		Resume,
 		GuildMemberListUpdate,
+		RequestGuildMembers,
+		GuildMembersChunk,
 	},
 	SessionReplaceData,
 };
@@ -44,6 +46,10 @@ pub enum OutGoingPacketsData {
 	///TODO: Description
 	/// opcode: `4`
 	VoiceStateUpdate(VoiceStateUpdateSend),
+
+	/// Request information about offline guild members in a large guild.
+	/// opcode: `8`
+	RequestGuildMembers(RequestGuildMembers),
 }
 #[derive(Serialize, Debug)]
 pub struct OutGoingPacket {
@@ -58,6 +64,7 @@ impl OutGoingPacket {
 			OutGoingPacketsData::Identify(_) => 2,
 			OutGoingPacketsData::LazyGuilds(_) => 14,
 			OutGoingPacketsData::VoiceStateUpdate(_) => 4,
+			OutGoingPacketsData::RequestGuildMembers(_) => 8,
 			_ => {
 				return Err("Invalid OutGoingPacketsData".into());
 			}
@@ -76,6 +83,9 @@ impl OutGoingPacket {
 	}
 	pub fn voice_state_update(v: VoiceStateUpdateSend) -> Self {
 		Self::new(OutGoingPacketsData::VoiceStateUpdate(v)).unwrap()
+	}
+	pub fn request_guild_members(v: RequestGuildMembers) -> Self {
+		Self::new(OutGoingPacketsData::RequestGuildMembers(v)).unwrap()
 	}
 
 	pub fn to_json(&self) -> crate::Result<String> {
@@ -125,6 +135,11 @@ pub enum DispatchedEvents {
 	/// [`LazyGuilds`]: self::OutGoingPacketsData#variant.LazyGuilds
 	GuildMemberListUpdate(GuildMemberListUpdate),
 
+	///Sent after [RequestGuildMembers] with members
+	///
+	/// [`RequestGuildMembers`]: self::OutGoingPacketsData#variant.RequestGuildMembers
+	GuildMembersChunk(GuildMembersChunk),
+
 	///Fallback for unknown packets
 	Unknown(serde_json::Value),
 }
@@ -143,6 +158,7 @@ impl ToString for DispatchedEvents {
 			DispatchedEvents::VoiceServerUpdate(_) => "VoiceServerUpdate".to_string(),
 			DispatchedEvents::VoiceStateUpdate(_) => "VoiceStateUpdate".to_string(),
 			DispatchedEvents::GuildMemberListUpdate(_) => "GuildMemberListUpdate".to_string(),
+			DispatchedEvents::GuildMembersChunk(_) => "GuildMembersChunk".to_string(),
 		}
 	}
 }
@@ -327,6 +343,16 @@ impl<'de> Deserialize<'de> for IncomingPacket {
 							), //TODO: Implement
 						"GUILD_MEMBER_LIST_UPDATE" =>
 							DispatchedEvents::GuildMemberListUpdate(
+								serde_json
+									::from_value(inner.d)
+									.map_err(|x|
+										serde::de::Error::custom(
+											format!("Error While deserializng {} Packet {:?}", t, x)
+										)
+									)?
+							),
+						"GUILD_MEMBERS_CHUNK" =>
+							DispatchedEvents::GuildMembersChunk(
 								serde_json
 									::from_value(inner.d)
 									.map_err(|x|

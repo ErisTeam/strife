@@ -10,7 +10,13 @@ use crate::{
 	discord::{
 		constants,
 		gateway_packets::{ OutGoingPacket, IncomingPacket, DispatchedEvents, OutGoingPacketsData },
-		types::gateway::gateway_packets_data::{ Identify, LazyGuilds, VoiceStateUpdateSend, Resume },
+		types::gateway::gateway_packets_data::{
+			Identify,
+			LazyGuilds,
+			VoiceStateUpdateSend,
+			Resume,
+			RequestGuildMembers,
+		},
 		user::UserData,
 	},
 	modules::websocket::WebSocket,
@@ -25,6 +31,8 @@ pub enum Messages {
 	/// #Source: https://arandomnewaccount.gitlab.io/discord-unofficial-docs/lazy_guilds.html
 	RequestLazyGuilds(LazyGuilds),
 	UpdateVoiceState(VoiceStateUpdateSend),
+
+	RequestGuildMembers(RequestGuildMembers),
 }
 
 type ConnectionInfo = super::gateway_utils::ConnectionInfo<ConnectionData, GatewayMessages>;
@@ -338,6 +346,10 @@ impl Gateway {
 				}
 				Messages::UpdateVoiceState(payload) => {
 					let payload = OutGoingPacket::voice_state_update(payload).to_json()?;
+					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
+				}
+				Messages::RequestGuildMembers(payload) => {
+					let payload = OutGoingPacket::request_guild_members(payload).to_json()?;
 					websocket.send(tokio_tungstenite::tungstenite::Message::Text(payload)).await?;
 				}
 			}

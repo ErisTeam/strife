@@ -12,7 +12,6 @@ import ChannelListElement from './ChannelListElement';
 import { ChannelType } from '../../types/Channel';
 import { Guild } from '../../types/Guild';
 import ChannelTitle from './ChannelTitle';
-import { invoke } from '@tauri-apps/api';
 
 interface ChannelListProps {
 	className?: string;

@@ -1,5 +1,3 @@
-import { useAppState } from '../../AppState';
-
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
 import { t } from '../../Translation';
@@ -7,8 +5,7 @@ import { t } from '../../Translation';
 import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
 
-import { Draggable, useDragDropContext } from '@thisbeyond/solid-dnd';
-import { Tab } from '../../types';
+import { Draggable } from '@thisbeyond/solid-dnd';
 import { Item } from './TabList';
 
 export function TEST(props: { activeDraggable: Draggable }) {

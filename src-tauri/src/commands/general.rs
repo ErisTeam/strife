@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{ sync::Arc, ops::{ Deref, DerefMut } };
 
 use log::{ debug, warn, error, info };
 use serde::Serialize;
@@ -28,7 +28,7 @@ pub enum GeneralError {
 
 /// ### Function
 ///	Sets the state of the app if it's not already set to the wanted value.
-/// 
+///
 /// ### Parameters
 /// `force` - If true, sets the provided state even if it's already set.
 #[tauri::command]
@@ -74,14 +74,16 @@ pub async fn set_state(
 }
 
 #[tauri::command]
-pub async fn close_splashscreen(window: tauri::Window) -> Result<()> {
+pub async fn close_splashscreen(sender_window: tauri::Window) -> core::result::Result<(), String> {
 	// Close splashscreen
-	if let Some(splashscreen) = window.get_window("splashscreen") {
-		splashscreen.close().unwrap(); //TODO: handle error
+	if let Some(splashscreen) = sender_window.get_window("splashscreen") {
+		splashscreen.close().unwrap();
 	}
+
 	// Show main window
-	window.get_window("main").unwrap().show().unwrap(); //TODO: handle error
-	info!("Closing Loading Screen");
+	let window = sender_window.get_window("main").ok_or("main window is None")?;
+	// window.show().map_err(|e| e.to_string())?;
+	info!("Closing Splashscreen");
 	Ok(())
 }
 

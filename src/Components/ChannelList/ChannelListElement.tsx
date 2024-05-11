@@ -4,7 +4,7 @@ import { Channel as ChannelType } from '../../types/Channel';
 // Style
 import style from './css.module.css';
 import { useAppState } from '../../AppState';
-import { Component, JSX, Match, Switch, createMemo, createSignal } from 'solid-js';
+import { Component, Match, Switch, createMemo, createSignal } from 'solid-js';
 import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import { Dynamic } from 'solid-js/web';
@@ -23,6 +23,7 @@ export default (props: ChannelProps) => {
 
 	const [displayName, setDisplayName] = createSignal(props.data.name);
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const contextMenu = createContextMenu({ component: [OpenInNewTab], data: { channel: props.data } });
 
 	function onMouseDown(e: MouseEvent) {

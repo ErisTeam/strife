@@ -32,11 +32,11 @@ function GuildTestElement() {
 
 function TestElement2() {
 	const appState = useAppState();
-	return <div>userId: {appState.userId}</div>;
+	return <div>userId: {appState.userId()}</div>;
 }
 
 function ContextChannel() {
-	const [channel, setChannel] = createSignal<Channel>({
+	const [channel] = createSignal<Channel>({
 		id: '123467807654',
 		guild_id: '123456789',
 		name: 'test',
@@ -68,7 +68,7 @@ function ContextChannel() {
 	);
 }
 function ContextGuild() {
-	const [guild, setGuild] = createSignal<Guild>({
+	const [guild] = createSignal<Guild>({
 		properties: {
 			id: '123456789',
 			name: 'test',
@@ -105,7 +105,7 @@ function ContextGuild() {
 }
 
 function ContextMenuNewTest() {
-	const [channel, setChannel] = createSignal<Channel>({
+	const [channel] = createSignal<Channel>({
 		id: '123467807654',
 		guild_id: '123456789',
 		name: 'test',

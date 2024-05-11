@@ -1,9 +1,6 @@
-import { invoke } from '@tauri-apps/api';
-import { gatewayOneTimeListener } from './test';
-
 interface GatewayPacket {
 	op: number;
-	d: any;
+	d: unknown;
 }
 
 interface Identify extends GatewayPacket {

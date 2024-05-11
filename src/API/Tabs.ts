@@ -116,8 +116,9 @@ export function add(tab: Tab, replaceCurrent: boolean = false) {
 		console.log('currentOrder', currentOrder, [...AppState.tabsOrder()]);
 		remove(tabIndex, true);
 		const newIndex = AppState.tabs.length;
-		AppState.setCurrentTabIndex(newIndex);
+		console.log('newIndex', newIndex);
 		AppState.setTabs(newIndex, tab);
+		AppState.setCurrentTabIndex(newIndex);
 
 		AppState.setTabsOrder((prev) => {
 			prev = prev.map((index) => {

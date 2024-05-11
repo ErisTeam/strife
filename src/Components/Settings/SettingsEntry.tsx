@@ -42,7 +42,7 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 		let value = props.setting.value == null ? props.setting.defaultValue : props.setting.value;
 
 		if (props.setting.type == 'ColorPicker') {
-			if (value.startsWith('hsl')) {
+			if (typeof value == 'string' && value.startsWith('hsl')) {
 				value = hslToHexCss(value);
 			}
 		}
@@ -82,20 +82,32 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 			<span class={style.input}>
 				<Switch>
 					<Match when={props.setting.type == 'Checkbox'}>
-						<Checkbox onChange={updateSetting} checked={value()} />
+						<Checkbox onChange={updateSetting} checked={value() as boolean} />
 					</Match>
 					<Match when={props.setting.type == 'Switch'}>
-						<SwitchInput value={value()} onChange={updateSetting} />
+						<SwitchInput value={value() as boolean} onChange={updateSetting} />
 					</Match>
 					<Match when={props.setting.type == 'TextInput'}>
-						<input title="PLACEHOLDER" type="text" value={value()} class={inputs.default} oninput={updateSetting} />
+						<input
+							title={props.setting.title}
+							type="text"
+							value={value() as string}
+							class={inputs.default}
+							oninput={updateSetting}
+						/>
 					</Match>
 					<Match when={props.setting.type == 'NumberInput'}>
-						<input title="PLACEHOLDER" type="number" value={value()} class={inputs.default} oninput={updateSetting} />
+						<input
+							title={props.setting.title}
+							type="number"
+							value={value() as number}
+							class={inputs.default}
+							oninput={updateSetting}
+						/>
 					</Match>
 					<Match when={props.setting.type == 'DateInput'}>
 						<input
-							title="PLACEHOLDER"
+							title={props.setting.title}
 							type="date"
 							value={(value() as Date).toISOString().split('T')[0]}
 							class={inputs.default}
@@ -104,9 +116,9 @@ export default (props: { setting: SettingsEntry; index: number }) => {
 					</Match>
 					<Match when={props.setting.type == 'ColorPicker'}>
 						<input
-							title="PLACEHOLDER"
+							title={props.setting.title}
 							type="color"
-							value={value()}
+							value={value() as string}
 							class={inputs.default + ' ' + inputs.colorPicker}
 							oninput={updateSetting}
 						/>

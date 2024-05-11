@@ -1,9 +1,8 @@
-import { Index, createResource } from 'solid-js';
+import { createResource } from 'solid-js';
 import { useAppState } from '../../AppState';
 // import { useTabContext } from './Tabs';
 
 import style from './Tabs.module.css';
-import { Message as MessageType } from '../../types/Messages';
 import { getLocalUserInfo } from '@/API/User';
 
 export default function WelcomeTab() {

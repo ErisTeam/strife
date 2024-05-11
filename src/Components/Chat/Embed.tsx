@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, createMemo } from 'solid-js';
+import { For, Match, Show, Switch } from 'solid-js';
 import { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
 import { useAppState } from '../../AppState';

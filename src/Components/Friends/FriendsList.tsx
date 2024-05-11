@@ -1,6 +1,5 @@
 import { For, createResource, onCleanup, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
-import Friend from './Friend';
 import FriendsTitle from './FriendsTitle';
 import style from './css.module.css';
 import { updateRelationships } from '@/API/User';
@@ -63,7 +62,7 @@ function FriendsList(props: { className?: string }) {
 						} else {
 							img = '/Friends/fallback.png';
 						}
-						let tab: Tab = {
+						const tab: Tab = {
 							component: 'textChannel',
 							title: friend.user.username,
 							icon: img,

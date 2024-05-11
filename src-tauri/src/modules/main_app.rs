@@ -9,6 +9,7 @@ use tokio::sync::RwLock;
 use tokio::sync::oneshot::Sender;
 
 use crate::discord::gateway_packets::DispatchedEvents;
+use crate::discord::types::SnowFlake;
 use crate::discord::types::gateway::gateway_packets_data::{
 	MessageEvent,
 	VoiceServerUpdate,
@@ -16,8 +17,10 @@ use crate::discord::types::gateway::gateway_packets_data::{
 	TypingStart,
 	LazyGuilds,
 	GuildMemberListUpdate,
+	GuildMembersChunk,
 };
 use crate::discord::types::guild::strife::{ GuildListData, Group, GroupType };
+use crate::discord::types::user::PublicUser;
 use crate::discord::user::UserData;
 use crate::{ Result, webview_packets, token_utils };
 
@@ -41,6 +44,7 @@ pub enum GatewayMessages {
 	VoiceServerUpdate(VoiceServerUpdate),
 	VoiceStateUpdate(VoiceStateUpdate),
 	GuildMemberListUpdate(GuildMemberListUpdate),
+	GuildMembersChunk(GuildMembersChunk),
 }
 //TODO: change to try from
 impl From<DispatchedEvents> for GatewayMessages {
@@ -58,6 +62,7 @@ impl From<DispatchedEvents> for GatewayMessages {
 			DispatchedEvents::VoiceServerUpdate(data) => Self::VoiceServerUpdate(data),
 			DispatchedEvents::VoiceStateUpdate(data) => Self::VoiceStateUpdate(data),
 			DispatchedEvents::GuildMemberListUpdate(data) => Self::GuildMemberListUpdate(data),
+			DispatchedEvents::GuildMembersChunk(data) => Self::GuildMembersChunk(data),
 		}
 	}
 }
@@ -100,7 +105,7 @@ impl ActivationState {
 #[derive(Debug)]
 pub struct GuildState {
 	pub channels: HashMap<String, u64>,
-	pub members: bool,
+	pub members: Vec<PublicUser>,
 	pub threads: bool,
 	pub typing: bool,
 	pub activities: bool,
@@ -109,7 +114,7 @@ impl Default for GuildState {
 	fn default() -> Self {
 		Self {
 			channels: Default::default(),
-			members: Default::default(),
+			members: Vec::new(),
 			threads: Default::default(),
 			typing: Default::default(),
 			activities: Default::default(),
@@ -119,9 +124,9 @@ impl Default for GuildState {
 
 #[derive(Debug)]
 pub struct MainApp {
-	pub users: RwLock<HashMap<String, ActivationState>>,
+	pub users: RwLock<HashMap<SnowFlake, ActivationState>>,
 
-	pub guilds_state: RwLock<HashMap<String, GuildState>>,
+	pub guilds_state: RwLock<HashMap<SnowFlake, GuildState>>,
 
 	pub voice_gateway: Arc<RwLock<Option<VoiceGateway>>>,
 }
@@ -323,6 +328,8 @@ impl MainApp {
 										crate::discord::types::gateway::gateway_packets_data::guild_member_list_update::GuildListItem::Member(
 											member,
 										) => recipients.push(member.clone()),
+
+										_ => {}
 									}
 								}
 
@@ -345,6 +352,12 @@ impl MainApp {
 							_ => {}
 						}
 					}
+				}
+				GatewayMessages::GuildMembersChunk(data) => {
+					handle.emit_all("gateway", webview_packets::GatewayEvent { //TODO: make a function
+						event: webview_packets::Gateway::GuildMembersChunk(data),
+						user_id: user_id.clone(),
+					})?;
 				}
 				data => {
 					handle.emit_all("gateway", webview_packets::GatewayEvent {

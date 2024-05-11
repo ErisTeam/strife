@@ -145,6 +145,7 @@ async fn main() {
 				commands::main_app::send_to_voice_gateway,
 				commands::main_app::request_lazy_guilds,
 				commands::main_app::request_channels_recipients,
+				commands::main_app::get_members_info,
 				test
 			]
 		)

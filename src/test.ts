@@ -1,11 +1,7 @@
-// SolidJS
 import { getOwner, onCleanup } from 'solid-js';
-
-// Tauri
 import { listen, Event, emit, TauriEvent } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api';
 import { AppState } from './types';
-import { snowflake } from './types/utils';
 
 type Listener<T> = {
 	on: <D>(eventName: string, listener: (event: T & D) => void) => () => void;
@@ -31,6 +27,7 @@ function startListener<T extends eventBase>(
 	eventName: string | TauriEvent,
 	condition: ((event: T) => boolean) | null = null,
 ) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const listeners = new Set<{ eventName: string; listener: (event: any) => void }>();
 	console.log('start gateway NEW', eventName);
 

@@ -1,10 +1,10 @@
 import { useTabContext } from '../Tabs/TabUtils';
 import style from './VoiceChannel.module.css';
 import buttons from '../../Styles/Buttons.module.css';
-import { gatewayOneTimeListener, messageCreate, startGatewayListener, startListener, useTaurListener } from '@/test';
+import { gatewayOneTimeListener, messageCreate, startListener } from '@/test';
 import { useAppState } from '@/AppState';
-import { event, invoke } from '@tauri-apps/api';
-import { createStore, produce } from 'solid-js/store';
+import { invoke } from '@tauri-apps/api';
+import { createStore } from 'solid-js/store';
 import { For } from 'solid-js';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import { useMenu } from '../ContextMenu/ContextMenu';
@@ -13,6 +13,7 @@ function formatTime(date: Date) {
 }
 
 function Log(props: { date: Date; message: string }) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const contextMenu = createContextMenu({
 		component: [
 			() => {
@@ -20,7 +21,7 @@ function Log(props: { date: Date; message: string }) {
 				return (
 					<button
 						onclick={() => {
-							navigator.clipboard.writeText(menu.message);
+							navigator.clipboard.writeText(menu.message).catch((e) => console.error(e));
 							menu.closeMenu();
 						}}
 					>
