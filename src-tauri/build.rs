@@ -16,6 +16,6 @@ fn proto_buf() -> Result<()> {
 	let mut prost_config = prost_build::Config::new();
 	prost_config.protoc_arg("--proto_path=../protoc-23.2/include/");
 
-	prost_config.compile_protos(&["src/proto/PreloadedUserSettings.proto"], &["src/"])?;
+	prost_config.compile_protos(&["src/proto/PreloadedUserSettings.proto", "src/proto/d.proto"], &["src/"])?;
 	Ok(())
 }
