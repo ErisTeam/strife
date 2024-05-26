@@ -1,7 +1,12 @@
-# Tauri + Solid + Typescript
+## Common
+1. Write protobuf types
 
-This template should help get you started developing with Tauri, Solid and Typescript in Vite.
+## Backend
+1. Split the current code into crates:
+    - `discord` - Types, discord specific logic (logging in), type conversion from discord types to ours
+    - `types` - Our protobuf types
+    - `tauri_backend`
+2. Rewrite `taruri_backend` to use a backend trait that will have functions such as `fetch-channel-messages`, `connect-to-websocket` that will allow us to easily reimplement those functions if we'd like to switch to our backend (from discord to our blazingly fast ultra hyper pro mega alfa sigma self hosted server).
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Frontend
+1. Reimplement for our new types.
