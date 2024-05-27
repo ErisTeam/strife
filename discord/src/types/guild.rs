@@ -156,8 +156,7 @@ pub enum PromptTypes {
 }
 
 /// https://discord.com/developers/docs/resources/guild#get-guild-widget-image-widget-style-options
-#[repr(u8)]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize_repr, Serialize_repr)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum WidgetStyle {
     Shield, // shield style widget with Discord icon and guild members online count (https://discord.com/api/guilds/81384788765712384/widget.png?style=shield)
