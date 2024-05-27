@@ -380,258 +380,262 @@ pub struct PromptOptionStucture {
 }
 
 
-/// https://discord.com/developers/docs/resources/guild#create-guild-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct CreateGuild {
-    pub name: String, // name of the guild (2-100 characters)
-    pub region: Option<String>, // voice region id (deprecated)
-    // TODO: pub icon?: image, // data base64 128x128 image for the guild icon
-    pub verification_level: Option<VerificationLevel>, // verification level
-    pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
-    pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
-    // TODO: pub roles?: array of role objects, // new guild roles
-    // TODO: pub channels?: array of partial channel objects, // new guild's channels
-    pub afk_channel_id: Option<Snowflake>, // id for afk channel
-    pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
-    pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
-    pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
-}
+pub mod http {
+    use super::*;
 
-/// https://discord.com/developers/docs/resources/guild#get-guild-query-string-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct GetGuild {
-    pub with_counts: Option<bool>, // when true, will return approximate member and presence counts for the guild (required: false) (default: false)
-}
+    /// https://discord.com/developers/docs/resources/guild#create-guild-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct CreateGuild {
+        pub name: String, // name of the guild (2-100 characters)
+        pub region: Option<String>, // voice region id (deprecated)
+        // TODO: pub icon?: image, // data base64 128x128 image for the guild icon
+        pub verification_level: Option<VerificationLevel>, // verification level
+        pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
+        pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
+        // TODO: pub roles?: array of role objects, // new guild roles
+        // TODO: pub channels?: array of partial channel objects, // new guild's channels
+        pub afk_channel_id: Option<Snowflake>, // id for afk channel
+        pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
+        pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
+        pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuild {
-    pub name: Option<String>, // guild name
-    pub region: Option<String>, // guild voice region id (deprecated)
-    pub verification_level: Option<VerificationLevel>, // verification level
-    pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
-    pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
-    pub afk_channel_id: Option<Snowflake>, // id for afk channel
-    pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
-    // TODO: pub icon: Option<image>, // data base64 1024x1024 png/jpeg/gif image for the guild icon (can be animated gif when the server has the ANIMATED_ICON feature)
-    pub owner_id: Option<Snowflake>, // user id to transfer guild ownership to (must be owner)
-    // TODO: pub splash: Option<image>, // data base64 16:9 png/jpeg image for the guild splash (when the server has the INVITE_SPLASH feature)
-    // TODO: pub discovery_splash: Option<image>, // data base64 16:9 png/jpeg image for the guild discovery splash (when the server has the DISCOVERABLE feature)
-    // TODO: pub banner: Option<image>, // data base64 16:9 png/jpeg image for the guild banner (when the server has the BANNER feature; can be animated gif when the server has the ANIMATED_BANNER feature)
-    pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
-    pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
-    pub rules_channel_id: Option<Snowflake>, // the id of the channel where Community guilds display rules and/or guidelines
-    pub public_updates_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive notices from Discord
-    pub preferred_locale: Option<String>, // the preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US"
-    pub features: Option<Vec<GuildFeature>>, // enabled guild features
-    pub description: Option<String>, // the description for the guild
-    pub premium_progress_bar_enabled: Option<bool>, // whether the guild's boost progress bar should be enabled
-    pub safety_alerts_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive safety alerts from Discord
-}
+    /// https://discord.com/developers/docs/resources/guild#get-guild-query-string-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct GetGuild {
+        pub with_counts: Option<bool>, // when true, will return approximate member and presence counts for the guild (required: false) (default: false)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#create-guild-channel-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct CreateGuildChannel {
-    pub name: String, // channel name (1-100 characters) (Channel type: All)
-    // TODO: pub r#type: Option<integer>, // the type of channel (Channel type: All)
-    pub topic: Option<String>, // channel topic (0-1024 characters) (Channel type: Text, Announcement, Forum, Media)
-    /// https://discord.com/developers/docs/resources/guild#guild-object-guild-features
-    /// For voice channels, normal servers can set bitrate up to 96000, servers with Boost level 1 can set up to 128000, servers with Boost level 2 can set up to 256000, and servers with Boost level 3 or the VIP_REGIONS guild feature can set up to 384000. For stage channels, bitrate can be set up to 64000.
-    pub bitrate: Option<u64>, // the bitrate (in bits) of the voice or stage channel; min 8000 (Channel type: Voice, Stage)
-    pub user_limit: Option<u64>, // the user limit of the voice channel (Channel type: Voice, Stage)
-    pub rate_limit_per_user: Option<u64>, // amount of seconds a user has to wait before sending another message (0-21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected (Channel type: Text, Voice, Stage, Forum, Media)
-    // TODO: Potentially an enum???
-    pub position: Option<u64>, // sorting position of the channel (Channel type: All)
-    /// In each overwrite object, the allow and deny keys can be omitted or set to null, which both default to "0".
-    // TODO: pub permission_overwrites: Option<array of partial overwrite objects>, // the channel's permission overwrites (Channel type: All)
-    pub parent_id: Option<Snowflake>, // id of the parent category for a channel (Channel type: Text, Voice, Announcement, Stage, Forum, Media)
-    pub nsfw: Option<bool>, // whether the channel is nsfw (Channel type: Text, Voice, Announcement, Stage, Forum)
-    pub rtc_region: Option<String>, // channel voice region id of the voice or stage channel, automatic when set to null (Channel type: Voice, Stage)
-    pub video_quality_mode: Option<u64>, // the camera video quality mode of the voice channel (Channel type: Voice, Stage)
-    pub default_auto_archive_duration: Option<u64>, // the default duration that the clients use (not the API) for newly created threads in the channel, in minutes, to automatically archive the thread after recent activity (Channel type: Text, Announcement, Forum, Media)
-    // TODO: pub default_reaction_emoji: Option<default reaction object>, // emoji to show in the add reaction button on a thread in a GUILD_FORUM or a GUILD_MEDIA channel (Channel type: Forum, Media)
-    // TODO: pub available_tags: Option<array of tag objects>, // set of tags that can be used in a GUILD_FORUM or a GUILD_MEDIA channel (Channel type: Forum, Media)
-    // TODO: pub default_sort_order: Option<integer>, // the default sort order type used to order posts in GUILD_FORUM and GUILD_MEDIA channels (Channel type: Forum, Media)
-    // TODO: pub default_forum_layout: Option<integer>, // the default forum layout view used to display posts in GUILD_FORUM channels (Channel type: Forum)
-    pub default_thread_rate_limit_per_user: Option<u64>, // the initial rate_limit_per_user to set on newly created threads in a channel. this field is copied to the thread at creation time and does not live update. (Channel type: Text, Announcement, Forum, Media)
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuild {
+        pub name: Option<String>, // guild name
+        pub region: Option<String>, // guild voice region id (deprecated)
+        pub verification_level: Option<VerificationLevel>, // verification level
+        pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
+        pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
+        pub afk_channel_id: Option<Snowflake>, // id for afk channel
+        pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
+        // TODO: pub icon: Option<image>, // data base64 1024x1024 png/jpeg/gif image for the guild icon (can be animated gif when the server has the ANIMATED_ICON feature)
+        pub owner_id: Option<Snowflake>, // user id to transfer guild ownership to (must be owner)
+        // TODO: pub splash: Option<image>, // data base64 16:9 png/jpeg image for the guild splash (when the server has the INVITE_SPLASH feature)
+        // TODO: pub discovery_splash: Option<image>, // data base64 16:9 png/jpeg image for the guild discovery splash (when the server has the DISCOVERABLE feature)
+        // TODO: pub banner: Option<image>, // data base64 16:9 png/jpeg image for the guild banner (when the server has the BANNER feature; can be animated gif when the server has the ANIMATED_BANNER feature)
+        pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
+        pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
+        pub rules_channel_id: Option<Snowflake>, // the id of the channel where Community guilds display rules and/or guidelines
+        pub public_updates_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive notices from Discord
+        pub preferred_locale: Option<String>, // the preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US"
+        pub features: Option<Vec<GuildFeature>>, // enabled guild features
+        pub description: Option<String>, // the description for the guild
+        pub premium_progress_bar_enabled: Option<bool>, // whether the guild's boost progress bar should be enabled
+        pub safety_alerts_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive safety alerts from Discord
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildChannelPosition {
-    pub id: Snowflake, // channel id
-    // TODO: pub position?: ?integer, // sorting position of the channel
-    pub lock_permissions: Option<bool>, // syncs the permission overwrites with the new parent, if moving to a new category
-    pub parent_id: Option<Snowflake>, // the new parent ID for the channel that is moved
-}
+    /// https://discord.com/developers/docs/resources/guild#create-guild-channel-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct CreateGuildChannel {
+        pub name: String, // channel name (1-100 characters) (Channel type: All)
+        // TODO: pub r#type: Option<integer>, // the type of channel (Channel type: All)
+        pub topic: Option<String>, // channel topic (0-1024 characters) (Channel type: Text, Announcement, Forum, Media)
+        /// https://discord.com/developers/docs/resources/guild#guild-object-guild-features
+        /// For voice channels, normal servers can set bitrate up to 96000, servers with Boost level 1 can set up to 128000, servers with Boost level 2 can set up to 256000, and servers with Boost level 3 or the VIP_REGIONS guild feature can set up to 384000. For stage channels, bitrate can be set up to 64000.
+        pub bitrate: Option<u64>, // the bitrate (in bits) of the voice or stage channel; min 8000 (Channel type: Voice, Stage)
+        pub user_limit: Option<u64>, // the user limit of the voice channel (Channel type: Voice, Stage)
+        pub rate_limit_per_user: Option<u64>, // amount of seconds a user has to wait before sending another message (0-21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected (Channel type: Text, Voice, Stage, Forum, Media)
+        // TODO: Potentially an enum???
+        pub position: Option<u64>, // sorting position of the channel (Channel type: All)
+        /// In each overwrite object, the allow and deny keys can be omitted or set to null, which both default to "0".
+        // TODO: pub permission_overwrites: Option<array of partial overwrite objects>, // the channel's permission overwrites (Channel type: All)
+        pub parent_id: Option<Snowflake>, // id of the parent category for a channel (Channel type: Text, Voice, Announcement, Stage, Forum, Media)
+        pub nsfw: Option<bool>, // whether the channel is nsfw (Channel type: Text, Voice, Announcement, Stage, Forum)
+        pub rtc_region: Option<String>, // channel voice region id of the voice or stage channel, automatic when set to null (Channel type: Voice, Stage)
+        pub video_quality_mode: Option<u64>, // the camera video quality mode of the voice channel (Channel type: Voice, Stage)
+        pub default_auto_archive_duration: Option<u64>, // the default duration that the clients use (not the API) for newly created threads in the channel, in minutes, to automatically archive the thread after recent activity (Channel type: Text, Announcement, Forum, Media)
+        // TODO: pub default_reaction_emoji: Option<default reaction object>, // emoji to show in the add reaction button on a thread in a GUILD_FORUM or a GUILD_MEDIA channel (Channel type: Forum, Media)
+        // TODO: pub available_tags: Option<array of tag objects>, // set of tags that can be used in a GUILD_FORUM or a GUILD_MEDIA channel (Channel type: Forum, Media)
+        // TODO: pub default_sort_order: Option<integer>, // the default sort order type used to order posts in GUILD_FORUM and GUILD_MEDIA channels (Channel type: Forum, Media)
+        // TODO: pub default_forum_layout: Option<integer>, // the default forum layout view used to display posts in GUILD_FORUM channels (Channel type: Forum)
+        pub default_thread_rate_limit_per_user: Option<u64>, // the initial rate_limit_per_user to set on newly created threads in a channel. this field is copied to the thread at creation time and does not live update. (Channel type: Text, Announcement, Forum, Media)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#list-active-guild-threads-response-body
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ListActiveGuildThreads {
-    // TODO: pub threads: array of channel objects, // the active threads
-    // TODO: pub members: array of thread members objects, // a thread member object for each returned thread the current user has joined
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildChannelPosition {
+        pub id: Snowflake, // channel id
+        // TODO: pub position?: ?integer, // sorting position of the channel
+        pub lock_permissions: Option<bool>, // syncs the permission overwrites with the new parent, if moving to a new category
+        pub parent_id: Option<Snowflake>, // the new parent ID for the channel that is moved
+    }
 
-/// https://discord.com/developers/docs/resources/guild#list-guild-members-query-string-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ListGuildMembers {
-    pub limit: u64, // max number of members to return (1-1000) (Default: 1)
-    pub after: Snowflake, // the highest user id in the previous page (Default: 0)
-}
+    /// https://discord.com/developers/docs/resources/guild#list-active-guild-threads-response-body
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ListActiveGuildThreads {
+        // TODO: pub threads: array of channel objects, // the active threads
+        // TODO: pub members: array of thread members objects, // a thread member object for each returned thread the current user has joined
+    }
 
-/// https://discord.com/developers/docs/resources/guild#search-guild-members-query-string-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct SearchGuildMembers {
-    pub query: String, // Query string to match username(s) and nickname(s) against. (Default: "")
-    pub limit: Option<u64>, // max number of members to return (1-1000) (Default: 1)
-}
+    /// https://discord.com/developers/docs/resources/guild#list-guild-members-query-string-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ListGuildMembers {
+        pub limit: u64, // max number of members to return (1-1000) (Default: 1)
+        pub after: Snowflake, // the highest user id in the previous page (Default: 0)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#add-guild-member-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct AddGuildMember {
-    pub access_token: String, // an oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild 
-    pub nick: Option<String>, // value to set user's nickname to (Permission: MANAGE_NICKNAMES)
-    pub roles: Option<Vec<Snowflake>>, // array of role ids the member is assigned (Permission: MANAGE_ROLES)
-    pub mute: Option<bool>, // whether the user is muted in voice channels (Permission: MUTE_MEMBERS)
-    pub deaf: Option<bool>, // whether the user is deafened in voice channels (Permission: DEAFEN_MEMBERS)
-}
+    /// https://discord.com/developers/docs/resources/guild#search-guild-members-query-string-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct SearchGuildMembers {
+        pub query: String, // Query string to match username(s) and nickname(s) against. (Default: "")
+        pub limit: Option<u64>, // max number of members to return (1-1000) (Default: 1)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-member-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildMember {
-    pub nick: Option<String>, // value to set user's nickname to (Permissions: MANAGE_NICKNAMES)
-    pub roles: Option<Vec<Snowflake>>, // array of role ids the member is assigned (Permissions: MANAGE_ROLES)
-    pub mute: Option<bool>, // whether the user is muted in voice channels. Will throw a 400 error if the user is not in a voice channel (Permissions: MUTE_MEMBERS)
-    pub deaf: Option<bool>, // whether the user is deafened in voice channels. Will throw a 400 error if the user is not in a voice channel (Permissions: DEAFEN_MEMBERS)
-    pub channel_id: Option<Snowflake>, // id of channel to move user to (if they are connected to voice) (Permissions: MOVE_MEMBERS)
-    // TODO: pub communication_disabled_until: Option<ISO8601>, // timestamp when the user's timeout will expire and the user will be able to communicate in the guild again (up to 28 days in the future), set to null to remove timeout. Will throw a 403 error if the user has the ADMINISTRATOR permission or is the owner of the guild (Permissions: MODERATE_MEMBERS)
-    pub flags: Option<GuildMemberFlags>, // guild member flags (Permissions: MANAGE_GUILD or MANAGE_ROLES or (MODERATE_MEMBERS and KICK_MEMBERS and BAN_MEMBERS))
-}
+    /// https://discord.com/developers/docs/resources/guild#add-guild-member-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct AddGuildMember {
+        pub access_token: String, // an oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the guild 
+        pub nick: Option<String>, // value to set user's nickname to (Permission: MANAGE_NICKNAMES)
+        pub roles: Option<Vec<Snowflake>>, // array of role ids the member is assigned (Permission: MANAGE_ROLES)
+        pub mute: Option<bool>, // whether the user is muted in voice channels (Permission: MUTE_MEMBERS)
+        pub deaf: Option<bool>, // whether the user is deafened in voice channels (Permission: DEAFEN_MEMBERS)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-current-member-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyCurrentMember {
-    pub nick: Option<String>, // value to set user's nickname to (Permissions: CHANGE_NICKNAME)
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-member-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildMember {
+        pub nick: Option<String>, // value to set user's nickname to (Permissions: MANAGE_NICKNAMES)
+        pub roles: Option<Vec<Snowflake>>, // array of role ids the member is assigned (Permissions: MANAGE_ROLES)
+        pub mute: Option<bool>, // whether the user is muted in voice channels. Will throw a 400 error if the user is not in a voice channel (Permissions: MUTE_MEMBERS)
+        pub deaf: Option<bool>, // whether the user is deafened in voice channels. Will throw a 400 error if the user is not in a voice channel (Permissions: DEAFEN_MEMBERS)
+        pub channel_id: Option<Snowflake>, // id of channel to move user to (if they are connected to voice) (Permissions: MOVE_MEMBERS)
+        // TODO: pub communication_disabled_until: Option<ISO8601>, // timestamp when the user's timeout will expire and the user will be able to communicate in the guild again (up to 28 days in the future), set to null to remove timeout. Will throw a 403 error if the user has the ADMINISTRATOR permission or is the owner of the guild (Permissions: MODERATE_MEMBERS)
+        pub flags: Option<GuildMemberFlags>, // guild member flags (Permissions: MANAGE_GUILD or MANAGE_ROLES or (MODERATE_MEMBERS and KICK_MEMBERS and BAN_MEMBERS))
+    }
 
-/// https://discord.com/developers/docs/resources/guild#get-guild-bans-query-string-params
-/// Provide a user id to before and after for pagination. Users will always be returned in ascending order by user.id. If both before and after are provided, only before is respected.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct GetGuildBans {
-    pub limit: Option<u64>, // number of users to return (up to maximum 1000) (Default: 1000)
-    pub before: Option<Snowflake>, // snowflake consider only users before given user id (Default: null)
-    pub after: Option<Snowflake>, // snowflake consider only users after given user id (Default: null)
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-current-member-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyCurrentMember {
+        pub nick: Option<String>, // value to set user's nickname to (Permissions: CHANGE_NICKNAME)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#create-guild-ban-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct CreateGuildBan {
-    pub delete_message_days: Option<u64>, // number of days to delete messages for (0-7) (deprecated) (Default: 0)
-    pub delete_message_seconds: Option<u64>, // number of seconds to delete messages for, between 0 and 604800 (7 days) (Default: 0)
-}
+    /// https://discord.com/developers/docs/resources/guild#get-guild-bans-query-string-params
+    /// Provide a user id to before and after for pagination. Users will always be returned in ascending order by user.id. If both before and after are provided, only before is respected.
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct GetGuildBans {
+        pub limit: Option<u64>, // number of users to return (up to maximum 1000) (Default: 1000)
+        pub before: Option<Snowflake>, // snowflake consider only users before given user id (Default: null)
+        pub after: Option<Snowflake>, // snowflake consider only users after given user id (Default: null)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct BulkGuildBan {
-    pub user_ids: Vec<Snowflake>, // list of user ids to ban (max 200) 
-    pub delete_message_seconds: Option<u64>, // number of seconds to delete messages for, between 0 and 604800 (7 days) 0
-}
+    /// https://discord.com/developers/docs/resources/guild#create-guild-ban-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct CreateGuildBan {
+        pub delete_message_days: Option<u64>, // number of days to delete messages for (0-7) (deprecated) (Default: 0)
+        pub delete_message_seconds: Option<u64>, // number of seconds to delete messages for, between 0 and 604800 (7 days) (Default: 0)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-bulk-ban-response
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct BulkGuildBanResponse {
-    pub banned_users: Vec<Snowflake>, // list of user ids, that were successfully banned
-    pub failed_users: Vec<Snowflake>, // list of user ids, that were not banned
-}
+    /// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct BulkGuildBan {
+        pub user_ids: Vec<Snowflake>, // list of user ids to ban (max 200) 
+        pub delete_message_seconds: Option<u64>, // number of seconds to delete messages for, between 0 and 604800 (7 days) 0
+    }
 
-/// https://discord.com/developers/docs/resources/guild#create-guild-role-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct CreateGuildRole {
-    pub name: String, // name of the role, max 100 characters (Default: "new role")
-    pub permissions: String, // bitwise value of the enabled/disabled permissions (Default: @everyone permissions in guild)
-    pub color: u64, // RGB color value (Default: 0)
-    pub hoist: bool, // whether the role should be displayed separately in the sidebar (Default: false)
-    // TODO: pub icon: ?image, // data the role's icon image (if the guild has the ROLE_ICONS feature) (Default: null)
-    pub unicode_emoji: String, // the role's unicode emoji as a standard emoji (if the guild has the ROLE_ICONS feature) (Default: null)
-    pub mentionable: bool, // whether the role should be mentionable (Default: false)
-}
+    /// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-bulk-ban-response
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct BulkGuildBanResponse {
+        pub banned_users: Vec<Snowflake>, // list of user ids, that were successfully banned
+        pub failed_users: Vec<Snowflake>, // list of user ids, that were not banned
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-role-positions-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildRolePosition {
-    pub id: Snowflake, // role
-    // TODO: pub position?: ?integer, // sorting position of the role
-}
+    /// https://discord.com/developers/docs/resources/guild#create-guild-role-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct CreateGuildRole {
+        pub name: String, // name of the role, max 100 characters (Default: "new role")
+        pub permissions: String, // bitwise value of the enabled/disabled permissions (Default: @everyone permissions in guild)
+        pub color: u64, // RGB color value (Default: 0)
+        pub hoist: bool, // whether the role should be displayed separately in the sidebar (Default: false)
+        // TODO: pub icon: ?image, // data the role's icon image (if the guild has the ROLE_ICONS feature) (Default: null)
+        pub unicode_emoji: String, // the role's unicode emoji as a standard emoji (if the guild has the ROLE_ICONS feature) (Default: null)
+        pub mentionable: bool, // whether the role should be mentionable (Default: false)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-role-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildRole {
-    pub name: Option<String>, // name of the role, max 100 characters
-    pub permissions: Option<String>, // bitwise value of the enabled/disabled permissions
-    pub color: Option<u64>, // RGB color value
-    pub hoist: Option<bool>, // whether the role should be displayed separately in the sidebar
-    // TODO: pub icon: Option<image>, // data the role's icon image (if the guild has the ROLE_ICONS feature)
-    pub unicode_emoji: Option<String>, // the role's unicode emoji as a standard emoji (if the guild has the ROLE_ICONS feature)
-    pub mentionable: Option<bool>, // whether the role should be mentionable
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-role-positions-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildRolePosition {
+        pub id: Snowflake, // role
+        // TODO: pub position?: ?integer, // sorting position of the role
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-mfa-level-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildMFALevel {
-    pub level: MFALevel,
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-role-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildRole {
+        pub name: Option<String>, // name of the role, max 100 characters
+        pub permissions: Option<String>, // bitwise value of the enabled/disabled permissions
+        pub color: Option<u64>, // RGB color value
+        pub hoist: Option<bool>, // whether the role should be displayed separately in the sidebar
+        // TODO: pub icon: Option<image>, // data the role's icon image (if the guild has the ROLE_ICONS feature)
+        pub unicode_emoji: Option<String>, // the role's unicode emoji as a standard emoji (if the guild has the ROLE_ICONS feature)
+        pub mentionable: Option<bool>, // whether the role should be mentionable
+    }
 
-/// https://discord.com/developers/docs/resources/guild#get-guild-prune-count-query-string-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct GetGuildPruneCount {
-    pub days: u64, // number of days to count prune for (1-30) (Default: 7)
-    // TODO: This might not be a string but an array in the newer version, look into the API
-    pub include_roles: String, //role(s) to include (Default: none)
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-mfa-level-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildMFALevel {
+        pub level: MFALevel,
+    }
 
-/// https://discord.com/developers/docs/resources/guild#begin-guild-prune-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct BeginGuildPrune {
-    pub days: u64, // number of days to prune (1-30) (Default: 7)
-    pub compute_prune_count: bool, // whether pruned is returned, discouraged for large guilds (Default: true)
-    pub include_roles: Vec<Snowflake>, // role(s) to include (Default: none)
-    pub reason: Option<String>, // reason for the prune (deprecated) 
-}
+    /// https://discord.com/developers/docs/resources/guild#get-guild-prune-count-query-string-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct GetGuildPruneCount {
+        pub days: u64, // number of days to count prune for (1-30) (Default: 7)
+        // TODO: This might not be a string but an array in the newer version, look into the API
+        pub include_roles: String, //role(s) to include (Default: none)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#get-guild-widget-image-query-string-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct GetGuildWidgetImage {
-    pub style: WidgetStyle, // style of the widget image returned (see below) (Default: shield)
-}
+    /// https://discord.com/developers/docs/resources/guild#begin-guild-prune-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct BeginGuildPrune {
+        pub days: u64, // number of days to prune (1-30) (Default: 7)
+        pub compute_prune_count: bool, // whether pruned is returned, discouraged for large guilds (Default: true)
+        pub include_roles: Vec<Snowflake>, // role(s) to include (Default: none)
+        pub reason: Option<String>, // reason for the prune (deprecated) 
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-welcome-screen-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildWelcomeScreen {
-    pub enabled: Option<bool>, // whether the welcome screen is enabled
-    pub welcome_channels: Option<Vec<WelcomeScreenChannel>>, // channels linked in the welcome screen and their display options
-    pub description: Option<String>, // the server description to show in the welcome screen
-}
+    /// https://discord.com/developers/docs/resources/guild#get-guild-widget-image-query-string-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct GetGuildWidgetImage {
+        pub style: WidgetStyle, // style of the widget image returned (see below) (Default: shield)
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-guild-onboarding-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyGuildOnboarding {
-    pub prompts: Vec<OnboardingPrompt>, // Prompts shown during onboarding and in customize community
-    pub default_channel_ids: Vec<Snowflake>, // Channel IDs that members get opted into automatically
-    pub enabled: bool, // Whether onboarding is enabled in the guild
-    pub mode: OnboardingMode, // Current mode of onboarding
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-welcome-screen-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildWelcomeScreen {
+        pub enabled: Option<bool>, // whether the welcome screen is enabled
+        pub welcome_channels: Option<Vec<WelcomeScreenChannel>>, // channels linked in the welcome screen and their display options
+        pub description: Option<String>, // the server description to show in the welcome screen
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-current-user-voice-state-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyCurrentUserVoiceState {
-    pub channel_id: Option<Snowflake>, // the id of the channel the user is currently in
-    pub suppress: Option<bool>, // toggles the user's suppress state
-    // TODO: pub request_to_speak_timestamp?: ?ISO8601, // timestamp sets the user's request to speak
-}
+    /// https://discord.com/developers/docs/resources/guild#modify-guild-onboarding-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuildOnboarding {
+        pub prompts: Vec<OnboardingPrompt>, // Prompts shown during onboarding and in customize community
+        pub default_channel_ids: Vec<Snowflake>, // Channel IDs that members get opted into automatically
+        pub enabled: bool, // Whether onboarding is enabled in the guild
+        pub mode: OnboardingMode, // Current mode of onboarding
+    }
 
-/// https://discord.com/developers/docs/resources/guild#modify-user-voice-state-json-params
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct ModifyUserVoiceState {
-    pub channel_id: Snowflake, // the id of the channel the user is currently in
-    pub suppress: Option<bool>, // toggles the user's suppress state
+    /// https://discord.com/developers/docs/resources/guild#modify-current-user-voice-state-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyCurrentUserVoiceState {
+        pub channel_id: Option<Snowflake>, // the id of the channel the user is currently in
+        pub suppress: Option<bool>, // toggles the user's suppress state
+        // TODO: pub request_to_speak_timestamp?: ?ISO8601, // timestamp sets the user's request to speak
+    }
+
+    /// https://discord.com/developers/docs/resources/guild#modify-user-voice-state-json-params
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyUserVoiceState {
+        pub channel_id: Snowflake, // the id of the channel the user is currently in
+        pub suppress: Option<bool>, // toggles the user's suppress state
+    }
 }
