@@ -1,0 +1,12 @@
+[package]
+name = "discord"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "1.0.100"
+serde_repr = "0.1.14"
+serde = { version = "1.0.167", features = ["derive"] }

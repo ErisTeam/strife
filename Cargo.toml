@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "src-tauri",
+    "discord"
+]
+
+[workspace.package]
+authors = ["Pietruszka123", "Frytak", "Gami"]
