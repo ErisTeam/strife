@@ -1,3 +1,5 @@
+pub type Snowflake = u64;
+
 pub mod guild;
 //pub mod attachment;
 //pub mod channel;
@@ -14,5 +16,3 @@ pub mod guild;
 //pub mod gateway;
 //pub mod relationship;
 //pub mod protos;
-
-//pub type SnowFlake = String;
