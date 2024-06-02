@@ -7,7 +7,7 @@ import Embed from './Embed';
 import MessageContextMenu from './MessageContextMenu';
 import style from './Message.module.css';
 import MessageUpdater from './MessageUpdater';
-import { formatMarkdownToJSX } from '@/API/Messages';
+import { formatMarkdownToHTML, formatMarkdownToJSX } from '@/API/Messages';
 import { useTabContext } from '../Tabs/TabUtils';
 
 type MessageProps = {
@@ -25,6 +25,7 @@ type MessageProps = {
 };
 
 const Message = (props: MessageProps) => {
+	let messageField: HTMLDivElement;
 	const AppState = useAppState();
 	const message = props.message;
 	const reply = props.refMsg !== undefined;
@@ -39,40 +40,38 @@ const Message = (props: MessageProps) => {
 	});
 
 	const formattedMessage = createMemo(() => {
-		const messageText = formatMarkdownToJSX(message.content);
+		const messageText = formatMarkdownToHTML(message.content);
 		console.log('messageText', messageText);
 		return messageText;
 	});
 
 	function ColorDecimalToHex(num: number) {
-		let arr = new ArrayBuffer(4); // an Int32 takes 4 bytes
-		let view = new DataView(arr);
+		const arr = new ArrayBuffer(4); // an Int32 takes 4 bytes
+		const view = new DataView(arr);
 		view.setUint32(0, num, false); // byteOffset = 0; litteEndian = false
-		let r = view.getUint8(1);
-		let g = view.getUint8(2);
-		let b = view.getUint8(3);
-		let hexColor = '#' + r.toString(16) + g.toString(16) + b.toString(16);
+		const r = view.getUint8(1);
+		const g = view.getUint8(2);
+		const b = view.getUint8(3);
+		const hexColor = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
 
 		return hexColor;
 	}
 	const userName = createMemo(() => {
-		return (message.author.global_name as string) || (message.author.username as string);
+		return message.author.global_name || message.author.username;
 	});
 
 	const profileImage = createMemo(() => {
 		if (message.author.avatar) {
 			return `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=80`;
-		} else {
-			return '/Friends/fallback.png';
 		}
+		return '/Friends/fallback.png';
 	});
 	const refMsgImage = createMemo(() => {
 		if (!props.refMsg) return;
 		if (props.refMsg.author.avatar) {
 			return `https://cdn.discordapp.com/avatars/${props.refMsg.author.id}/${props.refMsg.author.avatar}.webp?size=80`;
-		} else {
-			return '/Friends/fallback.png';
 		}
+		return '/Friends/fallback.png';
 	});
 	//REPLACE WITH CALL TO RUST
 	// const senderRoles = createMemo(() => {
@@ -125,6 +124,7 @@ const Message = (props: MessageProps) => {
 			liRef.setAttribute('data-index', props.dataIndex.toString());
 			props.propsRef(liRef);
 		}
+		messageField.innerHTML = formatMarkdownToHTML(message.content);
 	});
 
 	return (
@@ -179,7 +179,9 @@ const Message = (props: MessageProps) => {
 				when={isEditing()}
 				fallback={
 					<div class={style.content}>
-						<p class={style.text}>{formattedMessage()}</p>
+						<p class={style.text} ref={messageField}>
+							{formattedMessage()}
+						</p>
 						<Attachments attachments={message.attachments} />
 					</div>
 				}

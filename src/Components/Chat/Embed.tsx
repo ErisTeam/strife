@@ -5,7 +5,7 @@ import { useAppState } from '../../AppState';
 
 import TwitterEmbed from './Embeds/TwitterEmbed';
 import { X } from 'lucide-solid';
-import { formatMarkdownToJSX } from '@/API/Messages';
+import { formatMarkdownToHTML } from '@/API/Messages';
 export type EmbedProps = {
 	embed: EmbedType;
 	showCloseButton?: boolean;
@@ -47,7 +47,7 @@ export default function Embed(props: EmbedProps) {
 						</Match>
 					</Switch>
 					{props.embed.description && (
-						<p class={style.description}>{formatMarkdownToJSX(props.embed.description, [])}</p>
+						<p class={style.description}>{formatMarkdownToHTML(props.embed.description, [])}</p>
 					)}
 					<section class={style.fields}>
 						<For each={props.embed.fields || []}>

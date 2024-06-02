@@ -17,14 +17,15 @@ const DISABLED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift
 const MARKDOWN_KEYS = ['*', '_', 'Dead', '`'];
 export default function MessageEditor(props: MessageEditorProps) {
 	console.log('editor text', props.text());
-	const [editor, setEditor] = createSignal<any>(formatMarkdownToJSXPreserve(props.text()));
+	//TODO: Readd Formatting
+	const [editor, setEditor] = createSignal<any>(props.text());
 	const [isTyping, setIsTyping] = createSignal(false);
 	const [showMentions, setShowMentions] = createSignal(false);
 	const [currentMention, setCurrentMention] = createSignal('');
 
 	let textarea: HTMLDivElement;
 	createEffect(() => {
-		if (props.text() == '') {
+		if (props.text() === '') {
 			textarea.innerHTML = '';
 			setIsTyping(false);
 		}
@@ -35,7 +36,9 @@ export default function MessageEditor(props: MessageEditorProps) {
 		console.warn('recipients', props.recipients);
 
 		if (showMentions() && currentMention() && props.recipients) {
-			let members = props.recipients.filter((member) => member.user.username.startsWith(currentMention().substring(1)));
+			const members = props.recipients.filter((member) =>
+				member.user.username.startsWith(currentMention().substring(1)),
+			);
 			props.setMentionList(members);
 			console.log('mentionList', props.mentionList());
 		}
@@ -46,7 +49,7 @@ export default function MessageEditor(props: MessageEditorProps) {
 			e.preventDefault();
 
 			if (!e.clipboardData.files[0]) {
-				let text = e.clipboardData.getData('text');
+				const text = e.clipboardData.getData('text');
 
 				const selection = window.getSelection();
 				if (!selection.rangeCount) return;
@@ -55,8 +58,8 @@ export default function MessageEditor(props: MessageEditorProps) {
 				selection.collapseToEnd();
 			} else {
 				for (let i = 0; i < e.clipboardData.files.length; i++) {
-					let blob = e.clipboardData.files[i];
-					let fileName = blob.name;
+					const blob = e.clipboardData.files[i];
+					const fileName = blob.name;
 					props.setFiles((files) => [...files, { name: fileName, blob: blob }]);
 				}
 			}
@@ -65,14 +68,14 @@ export default function MessageEditor(props: MessageEditorProps) {
 		textarea.addEventListener('keyup', (e) => {
 			props.setText(textarea.innerText);
 
-			if (e.key == 'Enter' && e.shiftKey) {
+			if (e.key === 'Enter' && e.shiftKey) {
 				console.log('newLine');
 			}
-			if (e.key == 'Enter' && !e.shiftKey) {
+			if (e.key === 'Enter' && !e.shiftKey) {
 				console.log('send');
-			} else if (e.key == 'Backspace' && textarea.innerText.length < 1) {
+			} else if (e.key === 'Backspace' && textarea.innerText.length < 1) {
 				setIsTyping(false);
-			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key == 'a' && e.ctrlKey) && !(e.key == 'v' && e.metaKey)) {
+			} else if (!DISABLED_KEYS.includes(e.key) && !(e.key === 'a' && e.ctrlKey) && !(e.key === 'v' && e.metaKey)) {
 				setIsTyping(true);
 
 				const sel = window.getSelection();
@@ -86,8 +89,8 @@ export default function MessageEditor(props: MessageEditorProps) {
 				//word ends at closest space after cursor
 				let wordEnd = pos.pos;
 				console.log('wordEnd', wordEnd);
-				if (wordEnd == -1) wordEnd = textarea.innerText.length;
-				if (wordStart == -1) wordStart = 0;
+				if (wordEnd === -1) wordEnd = textarea.innerText.length;
+				if (wordStart === -1) wordStart = 0;
 				const word = textarea.innerText.substring(wordStart, wordEnd);
 
 				console.log('word', word);
@@ -100,14 +103,14 @@ export default function MessageEditor(props: MessageEditorProps) {
 					setShowMentions(false);
 					setCurrentMention('');
 				}
-				if (MARKDOWN_KEYS.includes(e.key) || e.key == 'Backspace') {
+				if (MARKDOWN_KEYS.includes(e.key) || e.key === 'Backspace') {
 					const sel = window.getSelection();
 
 					const pos = getCursorPosition(textarea, sel.focusNode, sel.focusOffset, { pos: 0, done: false });
 					if (sel.focusOffset === 0) pos.pos += 0.5;
 					setEditor(textarea.innerText);
-
-					setEditor(formatMarkdownToJSXPreserve(textarea.innerText));
+					//TODO: Readd Formatting
+					setEditor(textarea.innerText);
 
 					sel.removeAllRanges();
 					const range = setCursorPosition(textarea, document.createRange(), {

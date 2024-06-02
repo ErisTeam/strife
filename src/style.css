@@ -356,8 +356,20 @@ h6 {
 	font-weight: 900;
 	font-size: 1.3em;
 }
+blockquote{
+	border : 1px solid red;
+}
 a.mdLink {
 	color: aqua;
+}
+span.mdList{
+	color: red;
+
+}
+span.mdIndentedList{
+	color: blue;
+	padding-left: 1em;
+
 }
 .mdSpoiler {
 	background-color: aqua;
