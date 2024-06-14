@@ -75,6 +75,30 @@ const rules = [
 	[regex.insides.spoiler, '<span class="mdSpoiler">$2</span>'],
 	[regex.insides.quote, '<blockquote>$1</blockquote>'],
 ];
+//* = &ast;
+//# = &num;
+//~ = &tilde;
+//_ = &lowbar;
+//| = &verbar;
+//> = &gt;
+//` = &grave;
+const codeRulesPreserve = [
+	[regex.insides.codeBlock, '<span class="mdHint">&grave;&grave;&grave;</span><pre class="codeblock">$2</pre><span class="mdHint">&grave;&grave;&grave;</span>'],
+	[regex.insides.code, '<span class="mdHint">&grave;</span><code>$2</code><span class="mdHint">&grave;</span>'],
+];
+const rulesPreserve=[
+	[regex.insides.header3, '<span class="mdHint">&num;&num;&num;</span><h6>$1</h6>'],
+	[regex.insides.header2, '<span class="mdHint">&num;&num;</span><h5>$1</h5>'],
+	[regex.insides.header1, '<span class="mdHint">&num;</span><h4>$1</h4>'],
+	[regex.insides.bold, '<span class="mdHint">&ast;&ast;</span><b>$2</b><span class="mdHint">&ast;&ast;</span>'],
+	[regex.insides.italic, '<span class="mdHint">&ast;</span><i>$2</i><span class="mdHint">&ast;</span>'],
+	[regex.insides.strikethrough, '<span class="mdHint">&tilde;&tilde</span><s>$2</s><span class="mdHint">&tilde;&tilde</span>'],
+	[regex.insides.underline, '<span class="mdHint">&lowbar;&lowbar;</span><u>$2</u><span class="mdHint">&lowbar;&lowbar;</span>'],
+	[regex.insides.alternateItalic, '<span class="mdHint">&lowbar;</span><i>$2</i><span class="mdHint">&lowbar;</span>'],
+	[regex.insides.spoiler, '<span class="mdHint">&verbar;&verbar;</span><span class="mdSpoiler">$2</span><span class="mdHint">&verbar;&verbar;</span>'],
+	[regex.insides.quote, '<span class="mdHint">&gt; </span><blockquote>$1</blockquote>'],
+];
+
 const allHTMLOutsides = new RegExp(
 	`${emojiRegex.source}|${mentionsRegex.source}|${regex.outsides.link.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
 	'gms',
@@ -152,6 +176,53 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
 			if (match) {
 				const replaced = c.replaceAll(regex, replacement as string);
 				combined[combined.indexOf(c)] = formatMarkdownToHTML(replaced, false);
+			}
+		}
+	}
+	console.log('combined joined', combined.join(''));
+	return combined.join('');
+}
+export function formatMarkdownToHTMLPreserve(c: string, sanitize = true) {
+	let content = c;
+	if (sanitize) content = escapeHtml(content);
+	const split = content.split(allHTMLOutsides);
+	const combined = fixSplits(split);
+	// const formatted = '';
+	console.log('combined', combined);
+	// console.log('combined', combined);
+	for (const c of combined) {
+		// console.log(c);
+		if (c.match(regex.insides.codeBlock)) {
+			console.log('code', c);
+
+			const [regex, replacement] = codeRulesPreserve[0];
+			const match = c.match(regex);
+			if (match) {
+				const replaced = c.replaceAll(regex, replacement as string);
+				combined[combined.indexOf(c)] = replaced;
+			}
+
+			continue;
+		}
+		if (c.match(regex.insides.code)) {
+			console.log('code', c);
+
+			const [regex, replacement] = codeRulesPreserve[1];
+			const match = c.match(regex);
+			if (match) {
+				const replaced = c.replaceAll(regex, replacement as string);
+				combined[combined.indexOf(c)] = replaced;
+			}
+
+			continue;
+		}
+
+		for (const rule of rulesPreserve) {
+			const [regex, replacement] = rule;
+			const match = c.match(regex);
+			if (match) {
+				const replaced = c.replaceAll(regex, replacement as string);
+				combined[combined.indexOf(c)] = formatMarkdownToHTMLPreserve(replaced, false);
 			}
 		}
 	}
