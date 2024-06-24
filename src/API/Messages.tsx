@@ -83,24 +83,36 @@ const rules = [
 //> = &gt;
 //` = &grave;
 const codeRulesPreserve = [
-	[regex.insides.codeBlock, '<span class="mdHint">&grave;&grave;&grave;</span><pre class="codeblock">$2</pre><span class="mdHint">&grave;&grave;&grave;</span>'],
+	[
+		regex.insides.codeBlock,
+		'<span class="mdHint">&grave;&grave;&grave;</span><pre class="codeblock">$2</pre><span class="mdHint">&grave;&grave;&grave;</span>',
+	],
 	[regex.insides.code, '<span class="mdHint">&grave;</span><code>$2</code><span class="mdHint">&grave;</span>'],
 ];
-const rulesPreserve=[
+const rulesPreserve = [
 	[regex.insides.header3, '<span class="mdHint">&num;&num;&num;</span><h6>$1</h6>'],
 	[regex.insides.header2, '<span class="mdHint">&num;&num;</span><h5>$1</h5>'],
 	[regex.insides.header1, '<span class="mdHint">&num;</span><h4>$1</h4>'],
 	[regex.insides.bold, '<span class="mdHint">&ast;&ast;</span><b>$2</b><span class="mdHint">&ast;&ast;</span>'],
 	[regex.insides.italic, '<span class="mdHint">&ast;</span><i>$2</i><span class="mdHint">&ast;</span>'],
-	[regex.insides.strikethrough, '<span class="mdHint">&tilde;&tilde</span><s>$2</s><span class="mdHint">&tilde;&tilde</span>'],
-	[regex.insides.underline, '<span class="mdHint">&lowbar;&lowbar;</span><u>$2</u><span class="mdHint">&lowbar;&lowbar;</span>'],
+	[
+		regex.insides.strikethrough,
+		'<span class="mdHint">&tilde;&tilde</span><s>$2</s><span class="mdHint">&tilde;&tilde</span>',
+	],
+	[
+		regex.insides.underline,
+		'<span class="mdHint">&lowbar;&lowbar;</span><u>$2</u><span class="mdHint">&lowbar;&lowbar;</span>',
+	],
 	[regex.insides.alternateItalic, '<span class="mdHint">&lowbar;</span><i>$2</i><span class="mdHint">&lowbar;</span>'],
-	[regex.insides.spoiler, '<span class="mdHint">&verbar;&verbar;</span><span class="mdSpoiler">$2</span><span class="mdHint">&verbar;&verbar;</span>'],
+	[
+		regex.insides.spoiler,
+		'<span class="mdHint">&verbar;&verbar;</span><span class="mdSpoiler">$2</span><span class="mdHint">&verbar;&verbar;</span>',
+	],
 	[regex.insides.quote, '<span class="mdHint">&gt; </span><blockquote>$1</blockquote>'],
 ];
 
 const allHTMLOutsides = new RegExp(
-	`${emojiRegex.source}|${mentionsRegex.source}|${regex.outsides.link.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
+	`${emojiRegex.source}|${mentionsRegex.source}|${regex.insides.link.source}|${regex.insides.header3.source}|${regex.insides.header2.source}|${regex.insides.header1.source}|${regex.insides.bold.source}|${regex.insides.italic.source}|${regex.insides.strikethrough.source}|${regex.insides.underline.source}|${regex.insides.alternateItalic.source}|${regex.insides.link.source}|${regex.insides.list.source}|${regex.insides.indentedList.source}|${regex.insides.codeBlock.source}|${regex.insides.code.source}|${regex.insides.quote.source}|${regex.insides.spoiler.source}|(.+?)`,
 	'gms',
 );
 function escapeHtml(input: string): string {
