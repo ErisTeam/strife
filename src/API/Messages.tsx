@@ -74,9 +74,9 @@ const rules = [
 	[regex.insides.indentedList, '<span class="mdIndentedList">$2</span>'],
 	[regex.insides.spoiler, '<span class="mdSpoiler">$2</span>'],
 	[regex.insides.quote, '<blockquote>$1</blockquote>'],
-] as const;
+];
 const allHTMLOutsides = new RegExp(
-	`${emojiRegex.source}|${mentionsRegex.source}|${regex.insides.link.source}|${regex.insides.header3.source}|${regex.insides.header2.source}|${regex.insides.header1.source}|${regex.insides.bold.source}|${regex.insides.italic.source}|${regex.insides.strikethrough.source}|${regex.insides.underline.source}|${regex.insides.alternateItalic.source}|${regex.insides.link.source}|${regex.insides.list.source}|${regex.insides.indentedList.source}|${regex.insides.codeBlock.source}|${regex.insides.code.source}|${regex.insides.quote.source}|${regex.insides.spoiler.source}|(.+?)`,
+	`${emojiRegex.source}|${mentionsRegex.source}|${regex.outsides.link.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
 	'gms',
 );
 function escapeHtml(input: string): string {
@@ -116,8 +116,11 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
 	if (sanitize) content = escapeHtml(content);
 	const split = content.split(allHTMLOutsides);
 	const combined = fixSplits(split);
+	// const formatted = '';
 	console.log('combined', combined);
+	// console.log('combined', combined);
 	for (const c of combined) {
+		// console.log(c);
 		if (c.match(regex.insides.codeBlock)) {
 			console.log('code', c);
 
@@ -152,6 +155,7 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
 			}
 		}
 	}
+	console.log('combined joined', combined.join(''));
 	return combined.join('');
 }
 
