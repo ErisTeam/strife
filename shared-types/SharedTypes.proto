@@ -78,13 +78,13 @@ message GuildProperties{
 
 
 enum NSFWLevel{
-	DEFAULT =0;
+	NSFW_DEFAULT =0;
 	EXPLICIT = 1;
 	SAFE= 2;
 	AGE_RESTRICTED =3;
 }
 enum GuildHubType{
-	DEFAULT =0;
+	GUILD_DEFAULT =0;
 	HIGH_SCHOOL=1;
 	COLLEGE=2;
 }
@@ -121,9 +121,8 @@ message StageInstance{
 }
 
 enum StageInstancePrivacyLevel{
-	PUBLIC=1;
-	GUILD_ONLY=2;
-
+	PUBLIC=0;
+	STAGE_GUILD_ONLY=1;
 }
 message Role{
 
@@ -143,7 +142,7 @@ message Role{
 
 }
 enum RoleFlags{
-	IN_PROMPT=1;
+	IN_PROMPT=0;
 
 }
 message RoleTags{
@@ -173,20 +172,20 @@ message GuildScheduledEvent{
 	optional string image=16;
 }
 enum GuildScheduledEventPrivacyLevel{
-	GUILD_ONLY=2;
+	GUILD_ONLY=0;
 
 }
 enum GuildScheduledEventStatus{
-	SCHEDULED=1;
-	ACTIVE=2;
-	COMPLETED=3;
-	CANCELED=4;
+	SCHEDULED=0;
+	ACTIVE=1;
+	COMPLETED=2;
+	CANCELED=3;
 
 }
 enum GuildScheduledEventType{
-	STAGE_INSTANCE=1;
-	VOICE=2;
-	EXTERNAL=3;
+	STAGE_INSTANCE=0;
+	VOICE=1;
+	EXTERNAL=2;
 }
 message GuildScheduledEventMetadata{
 	optional string location=1;
@@ -248,8 +247,8 @@ message Channel{
 
 }
 enum ChannelSortOrder{
-	LATEST_ACTIVITY=1;
-	CREATION_DATE=2;
+	LATEST_ACTIVITY=0;
+	CREATION_DATE=1;
 }
 enum ForumLayout{
 	NOT_SET=0;
@@ -306,8 +305,8 @@ enum ChannelType{
 
 }
 enum VideoQualityMode{
-	AUTO=1;
-	FULL=2;
+	AUTO=0;
+	FULL=1;
 
 }
 message OverwriteObject{
@@ -323,9 +322,9 @@ enum OverwriteType{
 
 }
 enum ApplicationComandTypes{
-	CHAT_INPUT=1;
-	USER=2;
-	MESSAGE=3;
+	CHAT_INPUT=0;
+	USER=1;
+	MESSAGE=2;
 }
 
 message ApplicationCommandCounts{
@@ -335,14 +334,14 @@ message ApplicationCommandCounts{
 
 }
 enum StickerType{
-	STANDARD=1;
+	STANDARD=0;
 	GUILD=1;
 }
 enum StickerFormatType{
-	PNG=1;
-	APNG=2;
-	LOTTie=3;
-	GIF=4;
+	PNG=0;
+	APNG=1;
+	LOTTie=2;
+	GIF=3;
 }
 
 message User{

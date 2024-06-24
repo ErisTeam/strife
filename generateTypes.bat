@@ -1,0 +1,2 @@
+protoc --ts_proto_opt=esModuleInterop=true --ts_proto_opt=enumsAsLiterals=true --ts_proto_opt=outputJsonMethods=false --ts_proto_opt=env=browser --ts_proto_out="./src/types" --prost_out=types/src --proto_path ./shared-types ./shared-types/*.proto 
+PAUSE
