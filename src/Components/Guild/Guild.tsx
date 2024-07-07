@@ -6,13 +6,13 @@ import { useAppState } from '../../AppState';
 
 // Style
 import style from './css.module.css';
-import { t } from '../../Translation';
 
 import { type Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
 import type { Guild as TGuild } from '../../types/Guild';
 import { getInitials } from '@/API/Utils';
+import { useTrans } from '@/Translation';
 type GuildProps = {
   // index: number;
   className?: string;
@@ -21,6 +21,8 @@ type GuildProps = {
 };
 
 export function Guild(props: GuildProps) {
+  const t = useTrans();
+
   const AppState = useAppState();
 
   let toolTipRef: HTMLElement;

@@ -8,7 +8,7 @@ import { Checkbox } from '../../Checkbox/Checkbox';
 
 /* Solid */
 import { createSignal } from 'solid-js';
-import { t } from '../../../Translation';
+import { useTrans } from '@/Translation';
 
 export interface LoginBoxProps {
   class?: string;
@@ -20,6 +20,8 @@ export interface LoginBoxProps {
 }
 
 export function LoginBox(prop: LoginBoxProps) {
+  const t = useTrans();
+
   const [name, setName] = createSignal('');
   const [password, setPassword] = createSignal('');
 

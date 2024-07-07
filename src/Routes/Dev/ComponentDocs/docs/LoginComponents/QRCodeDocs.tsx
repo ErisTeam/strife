@@ -1,9 +1,12 @@
+import { useTrans } from '@/Translation';
 import { QRCode } from '../../../../../Components/Login/QRCode/QRCode';
 import QRCodeSRC from './../../assets/QRcode.jpg';
-import { t } from './../../../../../Translation';
+
 import style from './../../ComponentDocs.module.css';
 
 export function QRCodeDocs() {
+  const t = useTrans();
+
   return (
     <article class={style.component}>
       <section>

@@ -1,20 +1,20 @@
-import { snowflake } from "./utils";
+import type { Snowflake } from "./utils";
 
 //TODO: add the rest of channel types
 export interface channel {
-	id: snowflake;
+	id: Snowflake;
 	type: ChannelType;
-	guild_id?: snowflake;
+	guild_id?: Snowflake;
 	name: string;
 }
 
 export interface GroupDmChannel extends channel {
 	type: ChannelType.GroupDM;
-	guild_id: '@me';
+	guild_id: "@me";
 	recipients?: any[];
 	icon?: string;
-	owner_id: snowflake;
-	application_id?: snowflake;
+	owner_id: Snowflake;
+	application_id?: Snowflake;
 	managed?: boolean;
 }
 

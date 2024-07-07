@@ -1,4 +1,4 @@
-import { snowflake } from './utils';
+import type { Snowflake } from "./utils";
 
 export type user_affinities = { user_id: string; affinity: number };
 export type UsersResponse = {
@@ -78,7 +78,7 @@ export enum OtherUserFlags {
 }
 
 export interface PublicUser {
-	id: snowflake; // The user's id.
+	id: Snowflake; // The user's id.
 	discriminator: string; // The user's Discord-tag.
 	username: string; // The user's username, not unique across the platform.
 	global_name?: string; //The user's display name, if it is set. For bots, this is the application name.

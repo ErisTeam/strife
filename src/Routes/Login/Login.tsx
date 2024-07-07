@@ -1,7 +1,7 @@
 // SolidJS
 import { useNavigate } from '@solidjs/router';
 import { createSignal } from 'solid-js';
-import { t } from '../../Translation';
+
 // Tauri
 import { emit } from '@tauri-apps/api/event';
 
@@ -22,10 +22,13 @@ import { Dev } from '@components/Dev/Dev';
 import type { AuthEvents } from '../../types/Auth';
 import style from './Login.module.css';
 import { updateCurrentUserID } from '@/API/User';
+import { useTrans } from '@/Translation';
 
 //TODO clean
 
 export function LoginPage() {
+  const t = useTrans();
+
   // Data of the user that scans the QR Code
   // If set to undefined the component will go back to showing the QR Code
   const [userData, setUserData] = createSignal<UserData>();

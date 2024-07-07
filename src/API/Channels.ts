@@ -2,9 +2,7 @@ import type { Channel } from "@/types/Channel";
 import { useAppState } from "@/AppState";
 import type { Relationship } from "@/types/User";
 import { CONSTANTS } from "@/Constants";
-import { Volume2 } from "lucide-solid";
-import type { Component } from "solid-js";
-import { getToken } from "./User";
+
 export function channelFromRelationship(relationship: Relationship): Channel {
 	return {
 		...relationship,
@@ -15,11 +13,14 @@ export function channelFromRelationship(relationship: Relationship): Channel {
 		position: 0,
 	};
 }
-export function getChannelIcon(channel: Channel): { emoji: string | Component; newName: string } {
+export function getChannelIcon(channel: Channel): {
+	emoji: string | Element;
+	newName: string;
+} {
 	//extract emoji from name
 	const emojiReg = channel.name.match(/\p{Extended_Pictographic}/gu);
 
-	let emoji: string | Component = "#";
+	let emoji: string | Element = "#";
 	let newName = channel.name;
 
 	if (emojiReg != null) {
@@ -33,7 +34,7 @@ export function getChannelIcon(channel: Channel): { emoji: string | Component; n
 				emoji = "#";
 				break;
 			case CONSTANTS.GUILD_VOICE:
-				emoji = Volume2;
+				emoji = "🔊";
 				break;
 			case CONSTANTS.GUILD_CATEGORY:
 				emoji = "📁";

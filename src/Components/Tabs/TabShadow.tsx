@@ -1,18 +1,20 @@
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
-import { t } from '../../Translation';
 
 import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
 
 import type { Draggable } from '@thisbeyond/solid-dnd';
 import type { Item } from './TabList';
+import { useTrans } from '@/Translation';
 
 export function TEST(props: { activeDraggable: Draggable }) {
   return <div>{props.activeDraggable.id}</div>;
 }
 
 export function TabShadow(props: { items: Item[]; itemId: number }) {
+  const t = useTrans();
+
   const tab = createMemo(() => {
     return props.items.find((t) => t.id === props.itemId)?.tab;
   });

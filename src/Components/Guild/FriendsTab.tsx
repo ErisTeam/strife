@@ -5,9 +5,12 @@ import { onCleanup, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 
 // Style
-import { t } from '../../Translation';
+
 import style from './css.module.css';
+import { useTrans } from '@/Translation';
 export function FriendsTab() {
+  const t = useTrans();
+
   const AppState = useAppState();
 
   let toolTipRef: HTMLElement;

@@ -1,7 +1,7 @@
-import { PublicUser } from "./User";
-import { Role } from "./utils";
-import { channel } from "./Channel";
-import { GuildMember } from "./Guild";
+import type { PublicUser } from "./User";
+import type { Role } from "./utils";
+import type { channel } from "./Channel";
+import type { GuildMember } from "./Guild";
 
 //TODO: add the rest of fields https://discord.com/developers/docs/resources/channel#message-object
 export type Message = {
