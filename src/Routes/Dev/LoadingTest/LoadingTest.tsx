@@ -2,6 +2,7 @@
 import style from './LoadingTest.module.css';
 
 import buttons from '../../../Styles/Buttons.module.css';
+import { StateSetter } from '@/StateSetter';
 
 export function LoadingTest() {
   return (

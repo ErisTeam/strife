@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api';
 import {
   type Component,
+  type JSXElement,
   Show,
   createEffect,
   createResource,
@@ -18,6 +19,7 @@ type Props = {
   state: AppState;
   force?: boolean;
   component: Component;
+  children?: JSXElement;
 };
 
 export function StateSetter(props: Props) {
@@ -99,6 +101,7 @@ export function StateSetter(props: Props) {
 					}}
 				> */}
         <props.component />
+        {/* {props.children} */}
         {/* </ErrorBoundary> */}
       </Show>
     </>

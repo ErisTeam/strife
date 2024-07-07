@@ -17,10 +17,11 @@ import buttons from '../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
 import { SplashText } from '../../Components/Dev/SplashText';
 import type { AppState } from '../../types';
-import { t } from '../../Translation';
-import { Switch } from '../../Components/Switch/Switch';
+
 import { getRelationships } from '@/API/User';
 import { updateGuilds } from '@/API/Guilds';
+import { useTrans } from '@/Translation';
+import { StateSetter } from '@/StateSetter';
 
 export function Prev() {
   const [a] = createResource(async () => {
@@ -28,6 +29,7 @@ export function Prev() {
   });
 
   console.log('Prev');
+  const t = useTrans();
 
   const [image, setImage] = createSignal('');
 

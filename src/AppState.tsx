@@ -9,7 +9,7 @@ import {
 } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 // API
-import type { Locale } from './Translation';
+import type { Locales } from './Translation';
 
 import type { Tab } from './types';
 import type {
@@ -32,7 +32,7 @@ const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] =
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
-const [locale, setLocale] = createSignal<Locale>('en_US');
+const [locale, setLocale] = createSignal<Locales>('en-US');
 
 const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1);
 

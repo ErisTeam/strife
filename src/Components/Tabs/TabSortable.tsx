@@ -2,7 +2,7 @@ import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { Match, Switch, createMemo } from 'solid-js';
-import { t } from '../../Translation';
+
 import type { Tab } from '../../types';
 import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
@@ -10,12 +10,15 @@ import { X } from 'lucide-solid';
 import { createSortable, useDragDropContext } from '@thisbeyond/solid-dnd';
 
 import { remove, setAsCurrent } from '@/API/Tabs';
+import { useTrans } from '@/Translation';
 type TabProps = {
   tab: Tab;
   disabled?: boolean;
   id: number;
 };
 export function TabSortable(props: TabProps) {
+  const t = useTrans();
+
   const AppState = useAppState();
 
   const tab = props.tab;

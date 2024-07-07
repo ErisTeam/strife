@@ -14,6 +14,7 @@ import { ChannelList } from '../ChannelList/ChannelList';
 import { FriendsList } from '../Friends/FriendsList';
 import { TabWindow } from '../Tabs/TabWindow';
 import { add, findByComponent, loadFromFile, swapOrderByIdx } from '@/API/Tabs';
+import { StateSetter } from '@/StateSetter';
 
 //TODO: move to routes
 export function Application() {

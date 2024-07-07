@@ -3,10 +3,10 @@ import { Show } from 'solid-js';
 
 // Style
 import style from './css.module.css';
-import { t } from '../../Translation';
 
 import type { Guild as TGuild } from '../../types/Guild';
 import { getInitials } from '@/API/Utils';
+import { useTrans } from '@/Translation';
 
 interface GuildProps {
   className?: string;
@@ -14,6 +14,8 @@ interface GuildProps {
 }
 
 export function GuildShadow(props: GuildProps) {
+  const t = useTrans();
+
   if (!props.guild) return <div>Null</div>;
   return (
     <li class={style.guild}>
