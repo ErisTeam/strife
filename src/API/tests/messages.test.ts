@@ -46,9 +46,7 @@ test("Markdown formatting of underline italic text", () => {
 	expect(text).toBe("<u><i>underline italic text</i></u>");
 });
 test("Markdown formatting of all styles together", () => {
-	const text = formatMarkdownToHTML(
-		"__**~~underline bold strikethrough text~~**__",
-	);
+	const text = formatMarkdownToHTML("__**~~underline bold strikethrough text~~**__");
 
 	expect(text).toBe("<u><b><s>underline bold strikethrough text</s></b></u>");
 });

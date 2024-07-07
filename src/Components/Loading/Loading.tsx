@@ -1,14 +1,14 @@
-import { JSX } from 'solid-js';
+import type { JSX } from 'solid-js';
 import style from './Loading.module.css';
 type Props = {
-	message?: JSX.Element;
+  message?: JSX.Element;
 };
-export default (props: Props) => {
-	return (
-		<div class={style.main}>
-			<img class={style.logo} src="/icons/128x128.png" alt="" />
+export function Loading(props: Props) {
+  return (
+    <div class={style.main}>
+      <img class={style.logo} src="/icons/128x128.png" alt="" />
 
-			{props.message ? props.message : <h3 class={style.loading}>Loading</h3>}
-		</div>
-	);
-};
+      {props.message ? props.message : <h3 class={style.loading}>Loading</h3>}
+    </div>
+  );
+}

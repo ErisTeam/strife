@@ -8,84 +8,98 @@ import { useAppState } from '../../AppState';
 import style from './css.module.css';
 import { t } from '../../Translation';
 
-import { Id, useDragDropContext } from '@thisbeyond/solid-dnd';
+import { type Id, useDragDropContext } from '@thisbeyond/solid-dnd';
 import { createSortable } from '@thisbeyond/solid-dnd';
 
-import { Guild as TGuild } from '../../types/Guild';
+import type { Guild as TGuild } from '../../types/Guild';
 import { getInitials } from '@/API/Utils';
 type GuildProps = {
-	// index: number;
-	className?: string;
-	guild?: TGuild;
-	id?: Id;
+  // index: number;
+  className?: string;
+  guild?: TGuild;
+  id?: Id;
 };
 
-const Guild = (props: GuildProps) => {
-	const AppState = useAppState();
+export function Guild(props: GuildProps) {
+  const AppState = useAppState();
 
-	let toolTipRef: HTMLElement;
-	let ref: HTMLLIElement;
-	const sortable = createSortable(props.id);
-	const [state, actions] = useDragDropContext();
+  let toolTipRef: HTMLElement;
+  let ref: HTMLLIElement;
+  const sortable = createSortable(props.id);
+  const [state, actions] = useDragDropContext();
 
-	function updateRelativeYPositon() {
-		const boundingRect = ref.getBoundingClientRect();
+  function updateRelativeYPositon() {
+    const boundingRect = ref.getBoundingClientRect();
 
-		toolTipRef.style.top = `${boundingRect.top + window.scrollY + boundingRect.height / 2}px`;
-	}
+    toolTipRef.style.top = `${
+      boundingRect.top + window.scrollY + boundingRect.height / 2
+    }px`;
+  }
 
-	onCleanup(() => {
-		ref.parentElement?.parentElement?.removeEventListener('scroll', updateRelativeYPositon);
-		window.removeEventListener('keydown', zoomChange);
-	});
-	onMount(() => {
-		const boundingRect = ref.getBoundingClientRect();
+  onCleanup(() => {
+    ref.parentElement?.parentElement?.removeEventListener(
+      'scroll',
+      updateRelativeYPositon
+    );
+    window.removeEventListener('keydown', zoomChange);
+  });
+  onMount(() => {
+    const boundingRect = ref.getBoundingClientRect();
 
-		window.addEventListener('keydown', zoomChange);
-		toolTipRef.style.left = `${boundingRect.width}px`;
+    window.addEventListener('keydown', zoomChange);
+    toolTipRef.style.left = `${boundingRect.width}px`;
 
-		ref.parentElement.parentElement.addEventListener('scroll', updateRelativeYPositon);
-		updateRelativeYPositon();
-	});
-	actions.onDragEnd(() => {
-		updateRelativeYPositon();
-	});
+    ref.parentElement.parentElement.addEventListener(
+      'scroll',
+      updateRelativeYPositon
+    );
+    updateRelativeYPositon();
+  });
+  actions.onDragEnd(() => {
+    updateRelativeYPositon();
+  });
 
-	function zoomChange(e: KeyboardEvent) {
-		if (e.ctrlKey && (e.key === '=' || e.key === '-')) {
-			updateRelativeYPositon();
-		}
-	}
+  function zoomChange(e: KeyboardEvent) {
+    if (e.ctrlKey && (e.key === '=' || e.key === '-')) {
+      updateRelativeYPositon();
+    }
+  }
 
-	return (
-		<li
-			use:sortable
-			class={style.guild}
-			classList={{
-				[style.opacity]: sortable.isActiveDraggable,
-				[style.transform]: !!state.active.draggable,
-			}}
-			ref={ref}
-		>
-			<button
-				onclick={() => {
-					if (AppState.currentGuild() !== props.guild) {
-						AppState.setCurrentGuild(props.guild);
-					} else {
-						AppState.setCurrentGuild(null);
-					}
-				}}
-			>
-				<Show
-					when={props.guild?.properties?.icon}
-					fallback={<h1 class={style.fallbackText}>{getInitials(props.guild.properties.name)}</h1>}
-				>
-					<img src={props.guild.properties.icon} alt={t.guild.logoAlt({ guildName: props.guild.properties.name })} />
-				</Show>
-			</button>
-			<aside ref={toolTipRef}>{props.guild.properties.name}</aside>
-		</li>
-	);
-};
-
-export default Guild;
+  return (
+    <li
+      use:sortable
+      class={style.guild}
+      classList={{
+        [style.opacity]: sortable.isActiveDraggable,
+        [style.transform]: !!state.active.draggable,
+      }}
+      ref={ref}
+    >
+      <button
+        type="button"
+        onclick={() => {
+          if (AppState.currentGuild() !== props.guild) {
+            AppState.setCurrentGuild(props.guild);
+          } else {
+            AppState.setCurrentGuild(null);
+          }
+        }}
+      >
+        <Show
+          when={props.guild?.properties?.icon}
+          fallback={
+            <h1 class={style.fallbackText}>
+              {getInitials(props.guild.properties.name)}
+            </h1>
+          }
+        >
+          <img
+            src={props.guild.properties.icon}
+            alt={t.guild.logoAlt({ guildName: props.guild.properties.name })}
+          />
+        </Show>
+      </button>
+      <aside ref={toolTipRef}>{props.guild.properties.name}</aside>
+    </li>
+  );
+}

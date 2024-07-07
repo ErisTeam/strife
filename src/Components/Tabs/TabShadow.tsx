@@ -5,43 +5,50 @@ import { t } from '../../Translation';
 import { Dynamic } from 'solid-js/web';
 import { X } from 'lucide-solid';
 
-import { Draggable } from '@thisbeyond/solid-dnd';
-import { Item } from './TabList';
+import type { Draggable } from '@thisbeyond/solid-dnd';
+import type { Item } from './TabList';
 
 export function TEST(props: { activeDraggable: Draggable }) {
-	return <div>{props.activeDraggable.id}</div>;
+  return <div>{props.activeDraggable.id}</div>;
 }
 
-function TabShadow(props: { items: Item[]; itemId: number }) {
-	const tab = createMemo(() => {
-		return props.items.find((t) => t.id == props.itemId)?.tab;
-	});
+export function TabShadow(props: { items: Item[]; itemId: number }) {
+  const tab = createMemo(() => {
+    return props.items.find((t) => t.id === props.itemId)?.tab;
+  });
 
-	if (!tab()) return <div>Null</div>;
-	console.log(tab());
+  if (!tab()) return <div>Null</div>;
+  console.log(tab());
 
-	return (
-		<li class={style.tab}>
-			<button disabled={true}>
-				<Switch fallback={'❓'}>
-					<Match when={typeof tab().icon === 'function'}>
-						<Dynamic component={tab().icon} />
-					</Match>
-					<Match when={typeof tab().icon === 'string' && (tab().icon as string).startsWith('http')}>
-						{/* TODO: Add translation string to alt text */}
-						<img src={tab().icon as string} alt={t.guild.logoAlt({ guildName: tab().title })} />
-					</Match>
-					<Match when={typeof tab().icon === 'string'}>
-						<i>{tab().icon as string}</i>
-					</Match>
-				</Switch>
+  return (
+    <li class={style.tab}>
+      <button disabled={true} type="button">
+        <Switch fallback={'❓'}>
+          <Match when={typeof tab().icon === 'function'}>
+            <Dynamic component={tab().icon} />
+          </Match>
+          <Match
+            when={
+              typeof tab().icon === 'string' &&
+              (tab().icon as string).startsWith('http')
+            }
+          >
+            {/* TODO: Add translation string to alt text */}
+            <img
+              src={tab().icon as string}
+              alt={t.guild.logoAlt({ guildName: tab().title })}
+            />
+          </Match>
+          <Match when={typeof tab().icon === 'string'}>
+            <i>{tab().icon as string}</i>
+          </Match>
+        </Switch>
 
-				<span>{tab().title}</span>
-			</button>
-			<button disabled={true}>
-				<X />
-			</button>
-		</li>
-	);
+        <span>{tab().title}</span>
+      </button>
+      <button type="button" disabled={true}>
+        <X />
+      </button>
+    </li>
+  );
 }
-export default TabShadow;

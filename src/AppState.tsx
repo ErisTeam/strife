@@ -1,24 +1,34 @@
 // SolidJS
-import { Accessor, JSX, Setter, createContext, createSignal, useContext } from 'solid-js';
+import {
+  type Accessor,
+  type JSX,
+  type Setter,
+  createContext,
+  createSignal,
+  useContext,
+} from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 // API
-import { Locale } from './Translation';
+import type { Locale } from './Translation';
 
-import { Tab } from './types';
-import { SettingsCategory, SettingsEntry } from './Components/Settings/SettingsTypes';
+import type { Tab } from './types';
+import type {
+  SettingsCategory,
+  SettingsEntry,
+} from './Components/Settings/SettingsTypes';
 import { defaultSettings } from '@api/Settings';
-import { Relationship } from './types/User';
-import { Guild, GuildListUpdate } from './types/Guild';
-
-const [basicUserData, setBasicUserData] = createSignal<any>(null); //display name, avatar, login status
+import type { Relationship } from './types/User';
+import type { Guild, GuildListUpdate } from './types/Guild';
 
 const [userGuilds, setUserGuilds] = createStore<Guild[]>([]);
 
-const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>('voice');
+const [currentState, setCurrentState] = createSignal<'text' | 'voice' | null>(
+  'voice'
+);
 const [relationships, setRelationships] = createStore<Relationship[]>([]);
 const [channelsSize, setChannelsSize] = createSignal<number>(250);
 const [openedGuildsAdditionalData, setOpenedGuildsAdditionalData] =
-	createStore<Record<string, Record<string, GuildListUpdate>>>();
+  createStore<Record<string, Record<string, GuildListUpdate>>>();
 // value is the index of the tab in the tabs array
 const [tabsOrder, setTabsOrder] = createSignal<number[]>([]);
 const [tabs, setTabs] = createStore<Tab[]>([]);
@@ -26,80 +36,90 @@ const [locale, setLocale] = createSignal<Locale>('en_US');
 
 const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1);
 
-const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(null); //Used to display correct channelsset to null to hide
+const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(
+  null
+); //Used to display correct channelsset to null to hide
 const localeJsFormat = () => {
-	const locale = useAppState().locale();
+  const locale = useAppState().locale();
 
-	return locale.replace('_', '-');
+  return locale.replace('_', '-');
 };
 
-const [settingsCategories, setSettingsCategories] = createStore<SettingsCategory[]>(defaultSettings.categories);
+const [settingsCategories, setSettingsCategories] = createStore<
+  SettingsCategory[]
+>(defaultSettings.categories);
 const [settingsEntries, setSettingsEntries] = createStore<SettingsEntry[]>([]);
 
 const ContextValue = {
-	userGuilds,
-	setUserGuilds,
+  userGuilds,
+  setUserGuilds,
 
-	relationships,
-	setRelationships,
+  relationships,
+  setRelationships,
 
-	tabs,
-	setTabs,
-	tabsOrder,
-	setTabsOrder,
-	locale,
-	setLocale,
-	currentTabIndex: currentTabIdx,
-	setCurrentTabIndex: (index: number) => {
-		const tab = tabs[index];
-		if (!tab.wasOpened) {
-			setTabs(
-				index,
-				produce((tab) => {
-					tab.wasOpened = true;
-				}),
-			);
-		}
-		setCurrentTabIdx(index);
-	},
-	localeJsFormat,
+  tabs,
+  setTabs,
+  tabsOrder,
+  setTabsOrder,
+  locale,
+  setLocale,
+  currentTabIndex: currentTabIdx,
+  setCurrentTabIndex: (index: number) => {
+    const tab = tabs[index];
+    if (!tab.wasOpened) {
+      setTabs(
+        index,
+        produce((tab) => {
+          tab.wasOpened = true;
+        })
+      );
+    }
+    setCurrentTabIdx(index);
+  },
+  localeJsFormat,
 
-	currentGuild,
-	setCurrentGuild,
-	currentState,
-	setCurrentState,
-	channelsSize,
-	setChannelsSize,
-	openedGuildsAdditionalData,
-	setOpenedGuildsAdditionalData,
+  currentGuild,
+  setCurrentGuild,
+  currentState,
+  setCurrentState,
+  channelsSize,
+  setChannelsSize,
+  openedGuildsAdditionalData,
+  setOpenedGuildsAdditionalData,
 
-	settings: {
-		categories: settingsCategories,
-		setCategories: setSettingsCategories,
-		entries: settingsEntries,
-		setEntries: setSettingsEntries,
-	},
+  settings: {
+    categories: settingsCategories,
+    setCategories: setSettingsCategories,
+    entries: settingsEntries,
+    setEntries: setSettingsEntries,
+  },
 };
 const AppState = createContext(ContextValue);
 
-export function AppStateProvider(props: { userId: string; children: JSX.Element[] | JSX.Element }) {
-	const [userId, setUserId] = createSignal(props.userId);
-	console.log('UserId', userId(), props);
-	return (
-		<AppState.Provider
-			value={
-				{
-					...ContextValue,
-					userId,
-					setUserId,
-				} as any
-			}
-		>
-			{props.children}
-		</AppState.Provider>
-	);
+export function AppStateProvider(props: {
+  userId: string;
+  children: JSX.Element[] | JSX.Element;
+}) {
+  const [userId, setUserId] = createSignal(props.userId);
+  console.log('UserId', userId(), props);
+  return (
+    <AppState.Provider
+      value={
+        {
+          ...ContextValue,
+          userId,
+          setUserId,
+        } as any
+      }
+    >
+      {props.children}
+    </AppState.Provider>
+  );
 }
 
 export function useAppState() {
-	return useContext(AppState) as typeof ContextValue & { userId: Accessor<string>; setUserId: Setter<string> };
+  return useContext(AppState) as typeof ContextValue & {
+    userId: Accessor<string>;
+    setUserId: Setter<string>;
+  };
 }

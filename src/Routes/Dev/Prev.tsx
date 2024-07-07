@@ -15,190 +15,199 @@ import { useAppState } from '../../AppState';
 import style from './prev.module.css';
 import buttons from '../../Styles/Buttons.module.css';
 import inputs from './Styles/Inputs.module.css';
-import SplashText from '../../Components/Dev/SplashText';
-import { AppState } from '../../types';
+import { SplashText } from '../../Components/Dev/SplashText';
+import type { AppState } from '../../types';
 import { t } from '../../Translation';
-import Switch from '../../Components/Switch/Switch';
+import { Switch } from '../../Components/Switch/Switch';
 import { getRelationships } from '@/API/User';
 import { updateGuilds } from '@/API/Guilds';
 
-function Prev() {
-	const [a] = createResource(async () => {
-		throw new Error('test');
-	});
+export function Prev() {
+  const [a] = createResource(async () => {
+    throw new Error('test');
+  });
 
-	console.log('Prev');
+  console.log('Prev');
 
-	const [image, setImage] = createSignal('');
+  const [image, setImage] = createSignal('');
 
-	const [state, setState] = createSignal<AppState>('Dev');
+  const [state, setState] = createSignal<AppState>('Dev');
 
-	const AppState = useAppState();
-	console.log('appState', AppState);
+  const AppState = useAppState();
+  console.log('appState', AppState);
 
-	return (
-		<div class={style.container}>
-			<h1>{AppState.userId()}</h1>
-			<div class={style.b}>
-				<div>
-					<h2>Links</h2>
-					<A class={buttons.default} href="/login">
-						Better Login
-					</A>
-					<A class={buttons.default} href="/app">
-						Application
-					</A>
-					<A class={buttons.default} href="/messagetest">
-						message test
-					</A>
-					<A class={buttons.default} href="/shugsgsrolfdghdflgddid">
-						Error Page
-					</A>
-					<h2>Dev</h2>
-					<A class={buttons.default} href="/dev/loadingtest">
-						Loading Test
-					</A>
+  return (
+    <div class={style.container}>
+      <h1>{AppState.userId()}</h1>
+      <div class={style.b}>
+        <div>
+          <h2>Links</h2>
+          <A class={buttons.default} href="/login">
+            Better Login
+          </A>
+          <A class={buttons.default} href="/app">
+            Application
+          </A>
+          <A class={buttons.default} href="/messagetest">
+            message test
+          </A>
+          <A class={buttons.default} href="/shugsgsrolfdghdflgddid">
+            Error Page
+          </A>
+          <h2>Dev</h2>
+          <A class={buttons.default} href="/dev/loadingtest">
+            Loading Test
+          </A>
 
-					<A class={buttons.default} href="/dev/test">
-						Context Menu Test
-					</A>
+          <A class={buttons.default} href="/dev/test">
+            Context Menu Test
+          </A>
 
-					<A class={buttons.default} href="/dev/translationtest">
-						Translation Test
-					</A>
-					<A class={buttons.default} href="/dev/guildtest">
-						Guild Test
-					</A>
-					<A class={buttons.default} href="/dev/componentdocs">
-						Component Docs
-					</A>
-				</div>
-				<div>
-					<h2>Buttons</h2>
-					<button
-						style={{ 'margin-top': '0.5rem' }}
-						class={buttons.default}
-						onClick={async () => {
-							await changeState('Application');
-						}}
-					>
-						change state to main
-					</button>
+          <A class={buttons.default} href="/dev/translationtest">
+            Translation Test
+          </A>
+          <A class={buttons.default} href="/dev/guildtest">
+            Guild Test
+          </A>
+          <A class={buttons.default} href="/dev/componentdocs">
+            Component Docs
+          </A>
+        </div>
+        <div>
+          <h2>Buttons</h2>
+          <button
+            type="button"
+            style={{ 'margin-top': '0.5rem' }}
+            class={buttons.default}
+            onClick={async () => {
+              await changeState('Application');
+            }}
+          >
+            change state to main
+          </button>
 
-					<SplashText text="REQUIRED">
-						<button
-							class={buttons.default + ' ' + style.fill}
-							onClick={async (e) => {
-								console.log(`activating user ${AppState.userId()}`);
-								const r = await invoke('activate_user', { userId: AppState.userId() });
-								console.log(r);
-							}}
-						>
-							Activate User
-						</button>
-					</SplashText>
-					<button
-						class={buttons.default}
-						onclick={() => {
-							setImage('aa');
-						}}
-					>
-						Error Test
-					</button>
-					<button
-						class={buttons.default}
-						onClick={async (e) => {
-							await invoke('test', {});
-						}}
-					>
-						Notification Test
-					</button>
-					<button
-						class={buttons.default}
-						onClick={async (e) => {
-							await emit('testReconnecting', { user_id: AppState.userId() });
-						}}
-					>
-						Test Reconnecting (Broken)
-					</button>
-				</div>
-				<div>
-					<h2>Commands and Events Tests</h2>
-					<button
-						class={buttons.default}
-						onclick={async (e) => {
-							console.log(await getRelationships(AppState.userId()));
-						}}
-					>
-						Get Relationships
-					</button>
-					<button
-						class={buttons.default}
-						onclick={async (e) => {
-							console.log(await updateGuilds());
-						}}
-					>
-						Update Guilds
-					</button>
-					<button
-						class={buttons.default}
-						onclick={async () => {
-							console.log(await invoke('get_users', {}));
-						}}
-					>
-						Get Users
-					</button>
-					<div>
-						<h2>States</h2>
-						<select
-							title="PLACEHOLDER"
-							class={buttons.default}
-							style={{ width: '100%' }}
-							onchange={(e) => {
-								setState(e.currentTarget.value as AppState);
-							}}
-						>
-							<option value="Application">Main app</option>
-							<option value="LoginScreen">Login</option>
-							<option value="Dev">Dev</option>
-							<option value="fdhkmffh">Error Test</option>
-						</select>
-						<button
-							onclick={() => {
-								changeState(state());
-							}}
-							class={buttons.default}
-						>
-							Change to Selected
-						</button>
-					</div>
-					<div>
-						<h2>Set locale</h2>
-						<select
-							title="PLACEHOLDER"
-							class={buttons.default}
-							style={{ width: '100%' }}
-							onchange={(e) => {
-								// @ts-ignore
-								AppState.setLocale(e.currentTarget.value);
-								console.log(AppState.locale());
-							}}
-						>
-							<option value="en_US">en_US</option>
-							<option value="pl_PL">pl_PL</option>
-						</select>
+          <SplashText text="REQUIRED">
+            <button
+              type="button"
+              class={`${buttons.default} ${style.fill}`}
+              onClick={async (e) => {
+                console.log(`activating user ${AppState.userId()}`);
+                const r = await invoke('activate_user', {
+                  userId: AppState.userId(),
+                });
+                console.log(r);
+              }}
+            >
+              Activate User
+            </button>
+          </SplashText>
+          <button
+            type="button"
+            class={buttons.default}
+            onclick={() => {
+              setImage('aa');
+            }}
+          >
+            Error Test
+          </button>
+          <button
+            type="button"
+            class={buttons.default}
+            onClick={async (e) => {
+              await invoke('test', {});
+            }}
+          >
+            Notification Test
+          </button>
+          <button
+            type="button"
+            class={buttons.default}
+            onClick={async (e) => {
+              await emit('testReconnecting', { user_id: AppState.userId() });
+            }}
+          >
+            Test Reconnecting (Broken)
+          </button>
+        </div>
+        <div>
+          <h2>Commands and Events Tests</h2>
+          <button
+            type="button"
+            class={buttons.default}
+            onclick={async (e) => {
+              console.log(await getRelationships(AppState.userId()));
+            }}
+          >
+            Get Relationships
+          </button>
+          <button
+            type="button"
+            class={buttons.default}
+            onclick={async (e) => {
+              console.log(await updateGuilds());
+            }}
+          >
+            Update Guilds
+          </button>
+          <button
+            type="button"
+            class={buttons.default}
+            onclick={async () => {
+              console.log(await invoke('get_users', {}));
+            }}
+          >
+            Get Users
+          </button>
+          <div>
+            <h2>States</h2>
+            <select
+              title="PLACEHOLDER"
+              class={buttons.default}
+              style={{ width: '100%' }}
+              onchange={(e) => {
+                setState(e.currentTarget.value as AppState);
+              }}
+            >
+              <option value="Application">Main app</option>
+              <option value="LoginScreen">Login</option>
+              <option value="Dev">Dev</option>
+              <option value="fdhkmffh">Error Test</option>
+            </select>
+            <button
+              type="button"
+              onclick={() => {
+                changeState(state());
+              }}
+              class={buttons.default}
+            >
+              Change to Selected
+            </button>
+          </div>
+          <div>
+            <h2>Set locale</h2>
+            <select
+              title="PLACEHOLDER"
+              class={buttons.default}
+              style={{ width: '100%' }}
+              onchange={(e) => {
+                // @ts-ignore
+                AppState.setLocale(e.currentTarget.value);
+                console.log(AppState.locale());
+              }}
+            >
+              <option value="en_US">en_US</option>
+              <option value="pl_PL">pl_PL</option>
+            </select>
 
-						<span>{t.hello({ name: 'test' })}</span>
-					</div>
-				</div>
-			</div>
-			<Show when={image() == 'aa'}>
-				{(() => {
-					return <div>{a()}</div>;
-				})()}
-			</Show>
-		</div>
-	);
+            <span>{t.hello({ name: 'test' })}</span>
+          </div>
+        </div>
+      </div>
+      <Show when={image() === 'aa'}>
+        {(() => {
+          return <div>{a()}</div>;
+        })()}
+      </Show>
+    </div>
+  );
 }
-
-export default Prev;

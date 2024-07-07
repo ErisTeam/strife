@@ -4,23 +4,24 @@ import { useAppState } from '../../AppState';
 
 import style from './Tabs.module.css';
 import { getLocalUserInfo } from '@/API/User';
+import type { User } from '@/types/User';
 
-export default function WelcomeTab() {
-	// const tabData = useTabContext();
+export function WelcomeTab() {
+  // const tabData = useTabContext();
 
-	const AppState = useAppState();
+  const AppState = useAppState();
 
-	const [userInfo] = createResource(async () => {
-		const res = await getLocalUserInfo(AppState.userId());
-		console.log(res);
-		return res;
-	});
+  const [userInfo] = createResource(async () => {
+    const res = await getLocalUserInfo(AppState.userId());
+    console.log(res);
+    return res as User;
+  });
 
-	console.log('WelcomeTab');
+  console.log('WelcomeTab');
 
-	return (
-		<div class={style.welcomeTab}>
-			<h1>Welcome: {userInfo()?.username}</h1>
-		</div>
-	);
+  return (
+    <div class={style.welcomeTab}>
+      <h1>Welcome: {userInfo()?.username}</h1>
+    </div>
+  );
 }

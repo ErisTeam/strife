@@ -1,6 +1,6 @@
-import { Role, snowflake } from './utils';
-import { channel, Channel } from './Channel';
-import { PublicUser, UserFlag as UserFlags } from './User';
+import { Role, snowflake } from "./utils";
+import { channel, Channel } from "./Channel";
+import { PublicUser, UserFlag as UserFlags } from "./User";
 
 export type guild_affinities = { guild_id: string; affinity: number };
 export type GuildsResponse = { guild_affinities: Array<guild_affinities> };
@@ -52,7 +52,7 @@ export interface GuildChannel extends channel {
 
 export interface GuildListGroup {
 	name: string;
-	type: 'Role' | 'Online' | 'Offline';
+	type: "Role" | "Online" | "Offline";
 	data?: string;
 	count: number;
 	start_index: number;
@@ -64,4 +64,5 @@ export interface GuildListUpdate {
 	guild_id: snowflake;
 	groups: GuildListGroup[];
 	recipients: GuildMember[];
+	list_id: snowflake;
 }

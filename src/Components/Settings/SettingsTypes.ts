@@ -1,4 +1,4 @@
-import { Component } from 'solid-js';
+import type { Component } from "solid-js";
 
 export interface SettingsCategory {
 	title: string;
@@ -33,23 +33,23 @@ interface NumberBasedSetting<V> extends SettingsBase<V> {
 	step?: number;
 }
 interface CheckBoxSetting extends SettingsBase<boolean> {
-	type: 'Checkbox';
+	type: "Checkbox";
 }
 interface SwitchSetting extends SettingsBase<boolean> {
-	type: 'Switch';
+	type: "Switch";
 }
 interface TextInputSetting extends SettingsBase<string> {
-	type: 'TextInput';
+	type: "TextInput";
 }
 interface NumberInput extends NumberBasedSetting<number> {
-	type: 'NumberInput';
+	type: "NumberInput";
 }
 //TODO: implement
 interface SliderSetting extends NumberBasedSetting<number> {
-	type: 'Slider';
+	type: "Slider";
 }
 interface SelectSetting extends SettingsBase<string> {
-	type: 'Select';
+	type: "Select";
 	options: string[];
 }
 export type CssPropertyType = {
@@ -57,21 +57,21 @@ export type CssPropertyType = {
 	unit: string;
 };
 export interface CssNumberPropertySetting extends NumberBasedSetting<CssPropertyType> {
-	type: 'CssNumberProperty';
+	type: "CssNumberProperty";
 	units: string[];
 }
 
 interface DateInput extends SettingsBase<Date | string> {
-	type: 'DateInput';
+	type: "DateInput";
 	maxDate?: Date; //TODO: implement
 	minDate?: Date; //TODO: implement
 }
 interface ColorPicker extends SettingsBase<string> {
-	type: 'ColorPicker';
+	type: "ColorPicker";
 }
 
 export interface CustomSettings<P = object, V = unknown> extends SettingsBase<V> {
-	type: 'Custom';
+	type: "Custom";
 	component: Component;
 	props?: P;
 	//replaces whole settings entry with custom component
@@ -89,13 +89,13 @@ export type SettingsEntry =
 	| CssNumberPropertySetting
 	| SliderSetting;
 export type SettingsTypes =
-	| 'Checkbox'
-	| 'Switch'
-	| 'TextInput'
-	| 'NumberInput'
-	| 'DateInput'
-	| 'ColorPicker'
-	| 'Slider'
-	| 'Select'
-	| 'CssNumberProperty'
-	| 'Custom';
+	| "Checkbox"
+	| "Switch"
+	| "TextInput"
+	| "NumberInput"
+	| "DateInput"
+	| "ColorPicker"
+	| "Slider"
+	| "Select"
+	| "CssNumberProperty"
+	| "Custom";

@@ -1,21 +1,20 @@
 import style from './css.module.css';
 import { Mic, Headphones, Video, Settings } from 'lucide-solid';
-function MediaPanel() {
-	return (
-		<div class={style.mediaPanel}>
-			<button>
-				<Mic />
-			</button>
-			<button>
-				<Headphones />
-			</button>
-			<button>
-				<Video />
-			</button>
-			<button>
-				<Settings />
-			</button>
-		</div>
-	);
+export function MediaPanel() {
+  return (
+    <div class={style.mediaPanel}>
+      <button type="button">
+        <Mic />
+      </button>
+      <button type="button">
+        <Headphones />
+      </button>
+      <button type="button">
+        <Video />
+      </button>
+      <button type="button">
+        <Settings />
+      </button>
+    </div>
+  );
 }
-export default MediaPanel;

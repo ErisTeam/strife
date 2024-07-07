@@ -7,7 +7,7 @@
 //
 // Sincerely, Frytak
 
-export type snowflake = string;
+export type Snowflake = string;
 
 export type Sticker = {};
 
