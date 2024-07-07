@@ -1,11 +1,9 @@
 use std::{ fs, io::Result };
 fn main() -> Result<()> {
-	proto_buf()?;
-	tauri_build::build();
-	Ok(())
+    compile_protobuf()
 }
 
-fn proto_buf() -> Result<()> {
+fn compile_protobuf() -> Result<()> {
 	let mut prost_config = prost_build::Config::new();
 	// prost_config.protoc_arg("--proto_path=../protoc-23.2/include/");
 	prost_config.compile_well_known_types();

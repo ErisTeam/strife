@@ -1,10 +1,9 @@
 [workspace]
 resolver = "2"
 
-members = [
-    "src-tauri",
-    "discord"
-]
+members = ["src-tauri", "discord"]
+exclude = ["disord/discord_macro"]
+
 
 [workspace.package]
 authors = ["Pietruszka123", "Frytak", "Gami"]

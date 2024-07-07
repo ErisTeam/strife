@@ -8,6 +8,7 @@
 		"devv": "tauri dev",
 		"tauri": "tauri",
 		"build": "vite build",
+		"build-types": "start generateTypes.bat",
 		"format": "prettier --write \"src/**/*.{js,jsx,tsx,ts}\"",
 		"test": "vitest"
 	},

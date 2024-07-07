@@ -66,19 +66,19 @@ fn close_loading(app: &mut tauri::App) -> Result<()> {
 }
 #[cfg(target_os = "windows")]
 fn enable_round_borders(window: tauri::Window) {
+	use log::debug;
 	use windows::Win32::{ Graphics::Dwm::DwmExtendFrameIntoClientArea, UI::Controls::MARGINS };
 	let hwnd = windows::Win32::Foundation::HWND(window.hwnd().unwrap().0);
+	let margins = MARGINS {
+		cxLeftWidth: 1,
+		cxRightWidth: 1,
+		cyTopHeight: 1,
+		cyBottomHeight: 1,
+	};
 
 	unsafe {
-		let margins = MARGINS {
-			cxLeftWidth: 1,
-			cxRightWidth: 1,
-			cyTopHeight: 1,
-			cyBottomHeight: 1,
-		};
-
 		let result = DwmExtendFrameIntoClientArea(hwnd, &margins);
-		println!("DwmSetWindowAttribute: {:?}", result);
+		debug!("DwmSetWindowAttribute: {:?}", result);
 	}
 }
 #[cfg(not(target_os = "windows"))]

@@ -40,8 +40,8 @@ pub fn add_token(m: &MainState, handle: tauri::AppHandle) {
 }
 pub fn clear_gateway_logs(handle: AppHandle) {
 	let path = handle.path_resolver().app_data_dir().unwrap();
-	let path = path.join(format!("gateway logs"));
-	if let Ok(_) = fs::remove_dir_all(path.clone()) {
+	let path = path.join("gateway logs");
+	if fs::remove_dir_all(path.clone()).is_ok() {
 		debug!("Removed gateway logs");
 	}
 	let _ = fs::create_dir(path);

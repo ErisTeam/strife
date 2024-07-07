@@ -11,7 +11,7 @@ rust-version = "1.70"
 
 [build-dependencies]
 tauri-build = { version = "1.5.0", features = [] }
-prost-build = "0.12.1"
+prost-build = "0.12.6"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.51.1", features = [
@@ -75,7 +75,7 @@ winrt-notification = "0.5.1"
 #Logging📋
 fern = { version = "0.6.2", features = ["colored"] }
 log = { version = "0.4.19", features = ["max_level_debug"] }
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = [
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = [
 	"colored",
 ] }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }

@@ -1,0 +1,6 @@
+{
+	"rust-analyzer.cargo.buildScripts.invocationLocation": "root",
+	"rust-analyzer.check.invocationLocation": "root",
+	"rust-analyzer.check.invocationStrategy": "once",
+	"rust-analyzer.check.workspace": false
+}
