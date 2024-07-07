@@ -1,17 +1,17 @@
-import { Channel } from '@/types/Channel';
-import { useAppState } from '@/AppState';
-import { Relationship } from '@/types/User';
-import { CONSTANTS } from '@/Constants';
-import { Volume2 } from 'lucide-solid';
-import { Component } from 'solid-js';
-import { getToken } from './User';
+import type { Channel } from "@/types/Channel";
+import { useAppState } from "@/AppState";
+import type { Relationship } from "@/types/User";
+import { CONSTANTS } from "@/Constants";
+import { Volume2 } from "lucide-solid";
+import type { Component } from "solid-js";
+import { getToken } from "./User";
 export function channelFromRelationship(relationship: Relationship): Channel {
 	return {
 		...relationship,
 		id: relationship.user.id,
 		name: relationship.user.username,
 		type: CONSTANTS.GUILD_TEXT,
-		guild_id: '@me',
+		guild_id: "@me",
 		position: 0,
 	};
 }
@@ -19,39 +19,39 @@ export function getChannelIcon(channel: Channel): { emoji: string | Component; n
 	//extract emoji from name
 	const emojiReg = channel.name.match(/\p{Extended_Pictographic}/gu);
 
-	let emoji: string | Component = '#';
+	let emoji: string | Component = "#";
 	let newName = channel.name;
 
 	if (emojiReg != null) {
 		//remove emoji from name
 		emoji = emojiReg[0];
-		const regEx = new RegExp(emojiReg[0], 'g');
-		newName = channel.name.replace(regEx, '');
+		const regEx = new RegExp(emojiReg[0], "g");
+		newName = channel.name.replace(regEx, "");
 	} else {
 		switch (channel.type) {
 			case CONSTANTS.GUILD_TEXT:
-				emoji = '#';
+				emoji = "#";
 				break;
 			case CONSTANTS.GUILD_VOICE:
 				emoji = Volume2;
 				break;
 			case CONSTANTS.GUILD_CATEGORY:
-				emoji = '📁';
+				emoji = "📁";
 				break;
 			case CONSTANTS.GUILD_ANNOUNCEMENT:
-				emoji = '📢';
+				emoji = "📢";
 				break;
 			case CONSTANTS.GUILD_DIRECTORY:
-				emoji = '📁';
+				emoji = "📁";
 				break;
 			case CONSTANTS.GUILD_FORUM:
-				emoji = '📰';
+				emoji = "📰";
 				break;
 			case CONSTANTS.GUILD_STAGE_VOICE:
-				emoji = '🎤';
+				emoji = "🎤";
 				break;
 			default:
-				emoji = '❓';
+				emoji = "❓";
 		}
 	}
 	return { emoji, newName };
@@ -60,12 +60,12 @@ export function getChannelById(guildId: string, channelId: string): Channel | un
 	const AppState = useAppState();
 	const guild = AppState.userGuilds.find((g) => g.properties.id === guildId);
 	if (!guild) {
-		console.error('Guild not found!');
+		console.error("Guild not found!");
 		return;
 	}
 	const channel = guild.channels.find((c) => c.id === channelId);
 	if (!channel) {
-		console.error('Channel not found!');
+		console.error("Channel not found!");
 		return;
 	}
 
