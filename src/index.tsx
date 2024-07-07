@@ -31,9 +31,8 @@ export function App() {
     });
     //TODO: remove this
     const AppState = useAppState();
-    AppState.settings.setEntries(entries);
+    AppState.setSett(entries);
     start();
-    console.log(AppState.settings);
 
     loadFromFile();
   });
