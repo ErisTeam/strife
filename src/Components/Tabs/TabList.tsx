@@ -13,8 +13,8 @@ import {
   type DragEvent,
   closestCorners,
 } from '@thisbeyond/solid-dnd';
-import TabShadow from './TabShadow';
-import TabSortable from './TabSortable';
+import { TabShadow } from './TabShadow';
+import { TabSortable } from './TabSortable';
 export type Item = {
   id: number;
   tab: Tab;

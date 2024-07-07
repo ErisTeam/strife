@@ -2,7 +2,7 @@ import { For, Show, createSignal } from 'solid-js';
 
 import { FileDown, FileUp } from 'lucide-solid';
 import { useAppState } from '../../AppState';
-import SettingsGroup from './SettingsGroup';
+import { SettingsGroupElement } from './SettingsGroup';
 
 import style from './Settings.module.css';
 
@@ -67,7 +67,7 @@ export function SettingsPage() {
           </Show>
         </header>
         <For each={currentRoute().groups}>
-          {(group) => <SettingsGroup group={group} />}
+          {(group) => <SettingsGroupElement group={group} />}
         </For>
       </article>
     </article>

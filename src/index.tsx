@@ -9,7 +9,7 @@ import { Application } from './Components/Application/Application';
 import { Dev } from './Components/Dev/Dev';
 import { Loading } from './Components/Loading/Loading';
 import { WindowDecoration } from './Components/WindowDecoration/WindowDecoration';
-import StateSetter from './StateSetter';
+import { StateSetter } from './StateSetter';
 import { ContextMenuTest } from './Routes/Dev/ContextMenu/ContextMenuTest';
 import { LoadingTest } from './Routes/Dev/LoadingTest/LoadingTest';
 import { ComponentDocs } from './Routes/Dev/ComponentDocs/ComponentDocs';

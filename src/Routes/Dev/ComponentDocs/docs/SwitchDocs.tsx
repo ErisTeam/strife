@@ -1,4 +1,4 @@
-import { Switch } from '../../../../Components/Switch/Switch';
+import { SwitchInput } from '../../../../Components/Switch/Switch';
 import style from './../ComponentDocs.module.css';
 
 export function SwitchDocs() {
@@ -9,11 +9,11 @@ export function SwitchDocs() {
       <div class={style.preview}>
         <div>
           <h4>Off: </h4>
-          <Switch />
+          <SwitchInput />
         </div>
         <div>
           <h4>On: </h4>
-          <Switch defaultChecked />
+          <SwitchInput defaultChecked />
         </div>
       </div>
     </section>

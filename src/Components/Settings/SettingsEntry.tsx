@@ -4,7 +4,7 @@ import { createStore, produce, reconcile } from 'solid-js/store';
 //import checkBoxes from '../../Styles/Checkboxes.module.css';
 import inputs from '../../Styles/Inputs.module.css';
 
-import SwitchInput from '../Switch/Switch';
+import { SwitchInput } from '../Switch/Switch';
 
 import { useAppState } from '../../AppState';
 import { Dynamic } from 'solid-js/web';

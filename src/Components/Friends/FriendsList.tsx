@@ -1,9 +1,9 @@
 import { For, createResource, onCleanup, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
-import FriendsTitle from './FriendsTitle';
+import { FriendsTitle } from './FriendsTitle';
 import style from './css.module.css';
 import { updateRelationships } from '@/API/User';
-import Person from './Person';
+import { Person } from './Person';
 import type { Tab } from '@/types';
 import { add, setAsCurrent } from '@/API/Tabs';
 

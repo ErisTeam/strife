@@ -4,14 +4,14 @@ import { type JSX, createMemo, onCleanup, onMount } from 'solid-js';
 // API
 import { useAppState } from '../../AppState';
 // Components
-import ChannelCategory from './ChannelListCategory';
+import { ChannelCategory } from './ChannelListCategory';
 
 //Style
 import style from './css.module.css';
-import ChannelListElement from './ChannelListElement';
+import { ChannelListElement } from './ChannelListElement';
 import { ChannelType } from '../../types/Channel';
 import type { Guild } from '../../types/Guild';
-import ChannelTitle from './ChannelTitle';
+import { ChannelTitle } from './ChannelTitle';
 
 interface ChannelListProps {
   className?: string;

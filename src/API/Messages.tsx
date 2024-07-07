@@ -1,5 +1,5 @@
 import { fs } from '@tauri-apps/api';
-import UserMention from '../Components/Chat/UserMention';
+import { UserMention } from '../Components/Chat/UserMention';
 import type { UploadFile } from '../Components/Chat/Chat';
 import type { Message, MessageReference } from '@/types/Messages';
 import { getToken } from './User';

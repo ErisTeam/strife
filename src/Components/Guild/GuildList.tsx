@@ -13,7 +13,7 @@ import {
 } from '@thisbeyond/solid-dnd';
 import { createSignal } from 'solid-js';
 import { FriendsTab } from './FriendsTab';
-import GuildShadow from './GuildShadow';
+import { GuildShadow } from './GuildShadow';
 import type { Guild as TGuild } from '../../types/Guild';
 import { updateGuilds } from '@/API/Guilds';
 interface GuildListProps {

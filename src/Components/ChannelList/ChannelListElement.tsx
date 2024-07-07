@@ -11,7 +11,7 @@ import {
   createMemo,
   createSignal,
 } from 'solid-js';
-import OpenInNewTab from '../ContextMenuItems/OpenInNewTab';
+import { OpenInNewTab } from '../ContextMenuItems/OpenInNewTab';
 import { createContextMenu } from '../ContextMenuNew/ContextMenu';
 import { Dynamic } from 'solid-js/web';
 import { createTextChannelTab } from '../Tabs/TabUtils';

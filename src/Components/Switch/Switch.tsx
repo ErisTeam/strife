@@ -13,7 +13,7 @@ type SwitchProps = {
   value?: boolean;
 };
 
-export function Switch(props: SwitchProps) {
+export function SwitchInput(props: SwitchProps) {
   return (
     <label class={style.switch}>
       <input

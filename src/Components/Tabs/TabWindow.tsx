@@ -8,7 +8,7 @@ import { Dynamic } from 'solid-js/web';
 import { TabComponents } from '../../types';
 import { TabList } from './TabList';
 import { TabContextProvider } from './TabUtils';
-import SuspenseErrorBoundary from '../SuspenseErrorBoundary/SuspenseErrorBoundary';
+import { SuspenseErrorBoundary } from '../SuspenseErrorBoundary/SuspenseErrorBoundary';
 
 export function TabWindow({ className }: { className?: string }) {
   const AppState = useAppState();

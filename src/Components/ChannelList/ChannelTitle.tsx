@@ -21,7 +21,7 @@ import { createSignal } from 'solid-js';
 type GuildTitleProps = {
   guild: Guild;
 };
-function ChannelTitle(props: GuildTitleProps) {
+export function ChannelTitle(props: GuildTitleProps) {
   const [isFolded, setFolded] = createSignal(true);
   const listElements = 14;
   return (
