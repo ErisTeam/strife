@@ -9,7 +9,7 @@
 		"indentStyle": "tab",
 		"indentWidth": 4,
 		"lineEnding": "lf",
-		"lineWidth": 100,
+		"lineWidth": 160,
 		"formatWithErrors": true
 	},
 	"linter": {
