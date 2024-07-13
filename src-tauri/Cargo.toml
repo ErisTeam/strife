@@ -11,10 +11,10 @@ rust-version = "1.70"
 
 [build-dependencies]
 tauri-build = { version = "1.5.0", features = [] }
-prost-build = "0.12.6"
+prost-build = "0.13.1"
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.51.1", features = [
+windows = { version = "0.58.0", features = [
 	"Win32_UI_WindowsAndMessaging",
 	"Win32_Foundation",
 	"Win32_Graphics_Dwm",
@@ -31,7 +31,7 @@ opt-level = 3 #speeds up RSA key generation
 rsa = "0.9.2"
 rand = "0.8.5"
 sha2 = "0.10.7"
-base64 = "0.21.2"
+base64 = "0.22.1"
 
 
 # Async functionality 🗼
@@ -83,14 +83,14 @@ tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", br
 chrono = "0.4.26"
 
 #protobuf
-prost = "0.12.1"
-prost-types = "0.12.1"
+prost = "0.13.1"
+prost-types = "0.13.1"
 
 
-reqwest = { version = "0.11.18", features = ["json"] }
+reqwest = { version = "0.12.5", features = ["json"] }
 
 #🕸socket
-tokio-tungstenite = { version = "0.21.0", features = [
+tokio-tungstenite = { version = "0.23.1", features = [
 	"rustls-tls-webpki-roots",
 ] }
 
