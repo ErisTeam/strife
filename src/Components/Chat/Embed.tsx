@@ -3,9 +3,9 @@ import type { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
 import { useAppState } from '../../AppState';
 
-import { TwitterEmbed } from './Embeds/TwitterEmbed';
 import { X } from 'lucide-solid';
 import { formatMarkdownToHTML } from '@/API/Messages';
+import { TwitterEmbed } from './embeds/TwitterEmbed';
 export type EmbedProps = {
   embed: EmbedType;
   showCloseButton?: boolean;

@@ -1,12 +1,12 @@
-import { For, type Setter, createSignal, onMount } from "solid-js";
-import style from "./css.module.css";
-import { open } from "@tauri-apps/plugin-dialog";
-import { MessageEditor } from "./MessageEditor";
-import type { Message as MessageType } from "../../types/Messages";
+import { For, type Setter, createSignal, onMount } from 'solid-js';
+import style from './css.module.css';
+import { open } from '@tauri-apps/plugin-dialog';
+import { MessageEditor } from './MessageEditor';
+import type { Message as MessageType } from '../../types/Messages';
 // import { convertFileSrc } from '@tauri-apps/api/core';
-import type { UploadFile } from "./Chat";
-import { sendMessage } from "@/API/Messages";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import type { UploadFile } from './Chat';
+import { sendMessage } from '@/API/Messages';
+import { convertFileSrc } from '@tauri-apps/api/core';
 type MessageUpdaterProps = {
   message: MessageType;
   setIsEditing: Setter<boolean>;
@@ -15,7 +15,7 @@ export function MessageUpdater(props: MessageUpdaterProps) {
   const [msgText, setMsgText] = createSignal(props.message.content);
   const [files, setFiles] = createSignal<UploadFile[]>([]);
 
-  console.log("updater props", props);
+  console.log('updater props', props);
 
   async function updateMessage() {
     await sendMessage(
@@ -36,7 +36,7 @@ export function MessageUpdater(props: MessageUpdaterProps) {
   }
   onMount(() => {
     for (const attachment of props.message.attachments) {
-      console.log("test2");
+      console.log('test2');
       setFiles((files) => [
         ...files,
         {
@@ -66,8 +66,8 @@ export function MessageUpdater(props: MessageUpdaterProps) {
       <ul>
         <For each={files()}>
           {(file) => {
-            if (typeof file === "string") {
-              const assetUrl = convertFileSrc(file, "asset");
+            if (typeof file === 'string') {
+              const assetUrl = convertFileSrc(file, 'asset');
 
               return (
                 <li>

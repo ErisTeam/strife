@@ -33,7 +33,7 @@
         "title": "PandaCord",
         "visible": false,
         "center": true,
-        "decorations": true,
+        "decorations": false,
         "dragDropEnabled": false
       },
       {
