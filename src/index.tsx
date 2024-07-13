@@ -23,6 +23,7 @@ import { defaultSettings, loadFromFile } from "./API/Settings";
 
 export function App() {
   onMount(() => {
+    console.log('is tauri', window.__TAURI__);
     const entries = defaultSettings.entries.map((e) => {
       if (typeof e === "function") {
         return e();
