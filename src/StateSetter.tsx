@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api';
+import { invoke } from "@tauri-apps/api/core";
 import {
   type Component,
   type JSXElement,
@@ -6,12 +6,12 @@ import {
   createEffect,
   createResource,
   createSignal,
-} from 'solid-js';
-import { Loading } from './Components/Loading/Loading';
-import type { AppState } from './types';
-import { Dev } from './Components/Dev/Dev';
-import { useAppState } from './AppState';
-import { activateUser } from './API/User';
+} from "solid-js";
+import { Loading } from "./Components/Loading/Loading";
+import type { AppState } from "./types";
+import { Dev } from "./Components/Dev/Dev";
+import { useAppState } from "./AppState";
+import { activateUser } from "./API/User";
 
 const TIME_UNTIL_REFETCH = 10;
 
@@ -27,12 +27,12 @@ export function StateSetter(props: Props) {
   const [error, setError] = createSignal<Error | null>(null);
 
   const [a, { refetch }] = createResource(async () => {
-    const res = await invoke('set_state', {
+    const res = await invoke("set_state", {
       newState: props.state,
       force: props.force,
     });
-    console.log('res', res);
-    if (props.state === 'Application') {
+    console.log("res", res);
+    if (props.state === "Application") {
       try {
         await activateUser(AppState.userId());
       } catch (err) {

@@ -1,4 +1,4 @@
-# workspace = { members = ["websocket_message_macro"] }
+
 # workspace = { members = ["discord_macro"] }
 [package]
 name = "discord"

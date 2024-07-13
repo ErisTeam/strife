@@ -3,7 +3,7 @@ import type { Embed as EmbedType } from '../../types/Messages';
 import style from './Embed.module.css';
 import { useAppState } from '../../AppState';
 
-import { TwitterEmbed } from './embeds/TwitterEmbed';
+import { TwitterEmbed } from './Embeds/TwitterEmbed';
 import { X } from 'lucide-solid';
 import { formatMarkdownToHTML } from '@/API/Messages';
 export type EmbedProps = {

@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { invoke } from '@tauri-apps/api';
-import { createResource, Match, Show, Switch } from 'solid-js';
-import { useAppState } from '../../AppState';
+import { invoke } from "@tauri-apps/api/core";
+import { createResource, Match, Show, Switch } from "solid-js";
+import { useAppState } from "../../AppState";
 
-const subReddits = ['aww'];
-const time = 'month';
+const subReddits = ["aww"];
+const time = "month";
 
-import style from './Error.module.css';
+import style from "./Error.module.css";
 export function ErrorElement() {
   const state = useAppState();
 
   const [image] = createResource(async () => {
-    console.log('fetching');
+    console.log("fetching");
     const s = subReddits;
 
     if (!state.userId) {
-      const id: string = await invoke('get_last_user', {});
-      console.log('last id', id);
+      const id: string = await invoke("get_last_user", {});
+      console.log("last id", id);
       state.setUserId(id);
     }
-    console.log('id', state.userId);
-    if (state.userId() === '362958640656941056') {
-      s.push('gfur');
+    console.log("id", state.userId);
+    if (state.userId() === "362958640656941056") {
+      s.push("gfur");
     }
 
     const subReddit = s[Math.floor(Math.random() * s.length)];
@@ -50,12 +50,12 @@ export function ErrorElement() {
       const child =
         res.data.children[Math.floor(Math.random() * res.data.children.length)];
       console.log(child.data.post_hint, child.data.is_gallery);
-      if (child.data.post_hint === 'image' && !child.data.is_gallery) {
-        return { type: 'image', src: child.data.url };
+      if (child.data.post_hint === "image" && !child.data.is_gallery) {
+        return { type: "image", src: child.data.url };
       }
-      if (child.data.post_hint === 'hosted:video') {
+      if (child.data.post_hint === "hosted:video") {
         return {
-          type: 'video',
+          type: "video",
           src: child.data.media.reddit_video.fallback_url,
         };
       }
@@ -64,8 +64,8 @@ export function ErrorElement() {
     }
 
     return {
-      type: 'image',
-      src: 'https://geographical.co.uk/wp-content/uploads/panda1200-1.jpg',
+      type: "image",
+      src: "https://geographical.co.uk/wp-content/uploads/panda1200-1.jpg",
     };
   });
   return (
@@ -79,7 +79,7 @@ export function ErrorElement() {
         }
       >
         <Switch>
-          <Match when={image()?.type === 'image'}>
+          <Match when={image()?.type === "image"}>
             <div>
               <img
                 class={style.media}
@@ -88,7 +88,7 @@ export function ErrorElement() {
               />
             </div>
           </Match>
-          <Match when={image()?.type === 'video'}>
+          <Match when={image()?.type === "video"}>
             <div class={style.media}>
               <video src={image()?.src} autoplay loop muted />
             </div>

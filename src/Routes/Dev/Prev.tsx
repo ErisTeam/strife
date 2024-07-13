@@ -1,47 +1,47 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // SolidJS
-import { createResource, createSignal, Show } from 'solid-js';
-import { A } from '@solidjs/router';
+import { createResource, createSignal, Show } from "solid-js";
+import { A } from "@solidjs/router";
 
 // Tauri
 
-import { emit } from '@tauri-apps/api/event';
+import { emit } from "@tauri-apps/api/event";
 
 // import from '../../;
-import { changeState } from '../../test';
-import { useAppState } from '../../AppState';
+import { changeState } from "../../test";
+import { useAppState } from "../../AppState";
 
 // Style
-import style from './prev.module.css';
-import buttons from '../../Styles/Buttons.module.css';
-import inputs from './Styles/Inputs.module.css';
-import { SplashText } from '../../Components/Dev/SplashText';
-import type { AppState } from '../../types';
+import style from "./prev.module.css";
+import buttons from "../../Styles/Buttons.module.css";
+import inputs from "./Styles/Inputs.module.css";
+import { SplashText } from "../../Components/Dev/SplashText";
+import type { AppState } from "../../types";
 
-import { getRelationships } from '@/API/User';
-import { updateGuilds } from '@/API/Guilds';
-import { useTrans } from '@/Translation';
-import { StateSetter } from '@/StateSetter';
-import { StateSetterNew } from '@/StateSetterNew';
-import { invoke } from '@tauri-apps/api';
+import { getRelationships } from "@/API/User";
+import { updateGuilds } from "@/API/Guilds";
+import { useTrans } from "@/Translation";
+import { StateSetter } from "@/StateSetter";
+import { StateSetterNew } from "@/StateSetterNew";
+import { invoke } from "@tauri-apps/api/core";
 
 export function Prev() {
   const [a] = createResource(async () => {
-    throw new Error('test');
+    throw new Error("test");
   });
 
-  console.log('Prev');
+  console.log("Prev");
   const t = useTrans();
 
-  const [image, setImage] = createSignal('');
+  const [image, setImage] = createSignal("");
 
-  const [state, setState] = createSignal<AppState>('Dev');
+  const [state, setState] = createSignal<AppState>("Dev");
 
   const AppState = useAppState();
-  console.log('appState', AppState);
+  console.log("appState", AppState);
 
   return (
-    <StateSetterNew state={'Dev'} force={true}>
+    <StateSetterNew state={"Dev"} force={true}>
       <div class={style.container}>
         <h1>{AppState.userId()}</h1>
         <div class={style.b}>
@@ -82,10 +82,10 @@ export function Prev() {
             <h2>Buttons</h2>
             <button
               type="button"
-              style={{ 'margin-top': '0.5rem' }}
+              style={{ "margin-top": "0.5rem" }}
               class={buttons.default}
               onClick={async () => {
-                await changeState('Application');
+                await changeState("Application");
               }}
             >
               change state to main
@@ -97,7 +97,7 @@ export function Prev() {
                 class={`${buttons.default} ${style.fill}`}
                 onClick={async (e) => {
                   console.log(`activating user ${AppState.userId()}`);
-                  const r = await invoke('activate_user', {
+                  const r = await invoke("activate_user", {
                     userId: AppState.userId(),
                   });
                   console.log(r);
@@ -110,7 +110,7 @@ export function Prev() {
               type="button"
               class={buttons.default}
               onclick={() => {
-                setImage('aa');
+                setImage("aa");
               }}
             >
               Error Test
@@ -119,7 +119,7 @@ export function Prev() {
               type="button"
               class={buttons.default}
               onClick={async (e) => {
-                await invoke('test', {});
+                await invoke("test", {});
               }}
             >
               Notification Test
@@ -128,7 +128,7 @@ export function Prev() {
               type="button"
               class={buttons.default}
               onClick={async (e) => {
-                await emit('testReconnecting', { user_id: AppState.userId() });
+                await emit("testReconnecting", { user_id: AppState.userId() });
               }}
             >
               Test Reconnecting (Broken)
@@ -158,7 +158,7 @@ export function Prev() {
               type="button"
               class={buttons.default}
               onclick={async () => {
-                console.log(await invoke('get_users', {}));
+                console.log(await invoke("get_users", {}));
               }}
             >
               Get Users
@@ -168,7 +168,7 @@ export function Prev() {
               <select
                 title="PLACEHOLDER"
                 class={buttons.default}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 onchange={(e) => {
                   setState(e.currentTarget.value as AppState);
                 }}
@@ -193,7 +193,7 @@ export function Prev() {
               <select
                 title="PLACEHOLDER"
                 class={buttons.default}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 onchange={(e) => {
                   // @ts-ignore
                   AppState.setLocale(e.currentTarget.value);
@@ -204,11 +204,11 @@ export function Prev() {
                 <option value="pl_PL">pl_PL</option>
               </select>
 
-              <span>{t.hello({ name: 'test' })}</span>
+              <span>{t.hello({ name: "test" })}</span>
             </div>
           </div>
         </div>
-        <Show when={image() === 'aa'}>
+        <Show when={image() === "aa"}>
           {(() => {
             return <div>{a()}</div>;
           })()}

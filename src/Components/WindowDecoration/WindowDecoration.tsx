@@ -1,15 +1,16 @@
-import style from './css.module.css';
-import { appWindow } from '@tauri-apps/api/window';
-import { Maximize, Minimize, Minus, X } from 'lucide-solid';
-import { Show, createResource } from 'solid-js';
+import style from "./css.module.css";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Maximize, Minimize, Minus, X } from "lucide-solid";
+import { Show, createResource } from "solid-js";
 
 export function WindowDecoration() {
+  const appWindow = getCurrentWindow();
   const [isMaxmized, setIsMaxmized] = createResource(async () => {
     return await appWindow.isMaximized();
   });
   appWindow
     .onResized(() => {
-      console.log('resized');
+      console.log("resized");
 
       setIsMaxmized.refetch();
     })

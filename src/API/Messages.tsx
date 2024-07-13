@@ -1,22 +1,22 @@
-import { fs } from '@tauri-apps/api';
-import { UserMention } from '../Components/Chat/UserMention';
-import type { UploadFile } from '../Components/Chat/Chat';
-import type { Message, MessageReference } from '@/types/Messages';
-import { getToken } from './User';
-import type { GuildMember } from '@/types/Guild';
-import type { JSXElement } from 'solid-js';
+import { readFile } from "@tauri-apps/plugin-fs";
+import { UserMention } from "../Components/Chat/UserMention";
+import type { UploadFile } from "../Components/Chat/Chat";
+import type { Message, MessageReference } from "@/types/Messages";
+import { getToken } from "./User";
+import type { GuildMember } from "@/types/Guild";
+import type { JSXElement } from "solid-js";
 
 export const mentionRegex = /(@\S+)/g;
 const mentionReplaceRule = /(@(\S+))/g;
-const userMentionRegex = '<@!?(\\d+)>';
-const channelMentionRegex = '<#(\\d+)>';
-const roleMentionRegex = '<@&(\\d+)>';
-const commandMentionRegex = '<\\/(\\w+):(\\d+)>';
+const userMentionRegex = "<@!?(\\d+)>";
+const channelMentionRegex = "<#(\\d+)>";
+const roleMentionRegex = "<@&(\\d+)>";
+const commandMentionRegex = "<\\/(\\w+):(\\d+)>";
 const emojiRegex = /(<:(?:.+):\d+>)/g;
 
 const mentionsRegex = new RegExp(
   `${userMentionRegex}|${channelMentionRegex}|${roleMentionRegex}|${commandMentionRegex}`,
-  'gm'
+  "gm"
 );
 
 const regex = {
@@ -58,22 +58,22 @@ const regex = {
 
 const codeRules = [
   [regex.insides.codeBlock, '<pre class="codeblock">$2</pre>'],
-  [regex.insides.code, '<code>$2</code>'],
+  [regex.insides.code, "<code>$2</code>"],
 ];
 const rules = [
-  [regex.insides.header3, '<h6>$1</h6>'],
-  [regex.insides.header2, '<h5>$1</h5>'],
-  [regex.insides.header1, '<h4>$1</h4>'],
-  [regex.insides.bold, '<b>$2</b>'],
-  [regex.insides.italic, '<i>$2</i>'],
-  [regex.insides.strikethrough, '<s>$2</s>'],
-  [regex.insides.underline, '<u>$2</u>'],
-  [regex.insides.alternateItalic, '<i>$2</i>'],
+  [regex.insides.header3, "<h6>$1</h6>"],
+  [regex.insides.header2, "<h5>$1</h5>"],
+  [regex.insides.header1, "<h4>$1</h4>"],
+  [regex.insides.bold, "<b>$2</b>"],
+  [regex.insides.italic, "<i>$2</i>"],
+  [regex.insides.strikethrough, "<s>$2</s>"],
+  [regex.insides.underline, "<u>$2</u>"],
+  [regex.insides.alternateItalic, "<i>$2</i>"],
   [regex.insides.link, '<a class="mdLink" href="$2">$1</a>'],
   [regex.insides.list, '<span class="mdList">$2 $4</span><br>'],
   [regex.insides.indentedList, '<span class="mdIndentedList">$2</span>'],
   [regex.insides.spoiler, '<span class="mdSpoiler">$2</span>'],
-  [regex.insides.quote, '<blockquote>$1</blockquote>'],
+  [regex.insides.quote, "<blockquote>$1</blockquote>"],
 ];
 //* = &ast;
 //# = &num;
@@ -131,15 +131,15 @@ const rulesPreserve = [
 
 const allHTMLOutsides = new RegExp(
   `${emojiRegex.source}|${mentionsRegex.source}|${regex.outsides.link.source}|${regex.outsides.header3.source}|${regex.outsides.header2.source}|${regex.outsides.header1.source}|${regex.outsides.bold.source}|${regex.outsides.italic.source}|${regex.outsides.strikethrough.source}|${regex.outsides.underline.source}|${regex.outsides.alternateItalic.source}|${regex.outsides.link.source}|${regex.outsides.list.source}|${regex.outsides.indentedList.source}|${regex.outsides.codeBlock.source}|${regex.outsides.code.source}|${regex.outsides.quote.source}|${regex.outsides.spoiler.source}|(.+?)`,
-  'gms'
+  "gms"
 );
 function escapeHtml(input: string): string {
   const map: { [key: string]: string } = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
 
   return input.replace(/[&<>"']/g, (m) => map[m]);
@@ -147,7 +147,7 @@ function escapeHtml(input: string): string {
 
 function fixSplits(s: string[]) {
   const splits = s.filter(
-    (s) => s !== undefined && s !== 'undefined' && s !== ''
+    (s) => s !== undefined && s !== "undefined" && s !== ""
   );
 
   const newSplits: string[] = [];
@@ -173,12 +173,12 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
   const split = content.split(allHTMLOutsides);
   const combined = fixSplits(split);
   // const formatted = '';
-  console.log('combined', combined);
+  console.log("combined", combined);
   // console.log('combined', combined);
   for (const c of combined) {
     // console.log(c);
     if (c.match(regex.insides.codeBlock)) {
-      console.log('code', c);
+      console.log("code", c);
 
       const [regex, replacement] = codeRules[0];
       const match = c.match(regex);
@@ -190,7 +190,7 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
       continue;
     }
     if (c.match(regex.insides.code)) {
-      console.log('code', c);
+      console.log("code", c);
 
       const [regex, replacement] = codeRules[1];
       const match = c.match(regex);
@@ -211,8 +211,8 @@ export function formatMarkdownToHTML(c: string, sanitize = true) {
       }
     }
   }
-  console.log('combined joined', combined.join(''));
-  return combined.join('');
+  console.log("combined joined", combined.join(""));
+  return combined.join("");
 }
 export function formatMarkdownToHTMLPreserve(c: string, sanitize = true) {
   let content = c;
@@ -220,12 +220,12 @@ export function formatMarkdownToHTMLPreserve(c: string, sanitize = true) {
   const split = content.split(allHTMLOutsides);
   const combined = fixSplits(split);
   // const formatted = '';
-  console.log('combined', combined);
+  console.log("combined", combined);
   // console.log('combined', combined);
   for (const c of combined) {
     // console.log(c);
     if (c.match(regex.insides.codeBlock)) {
-      console.log('code', c);
+      console.log("code", c);
 
       const [regex, replacement] = codeRulesPreserve[0];
       const match = c.match(regex);
@@ -237,7 +237,7 @@ export function formatMarkdownToHTMLPreserve(c: string, sanitize = true) {
       continue;
     }
     if (c.match(regex.insides.code)) {
-      console.log('code', c);
+      console.log("code", c);
 
       const [regex, replacement] = codeRulesPreserve[1];
       const match = c.match(regex);
@@ -261,8 +261,8 @@ export function formatMarkdownToHTMLPreserve(c: string, sanitize = true) {
       }
     }
   }
-  console.log('combined joined', combined.join(''));
-  return combined.join('');
+  console.log("combined joined", combined.join(""));
+  return combined.join("");
 }
 //TODO: Redo this
 export function formatMentions(
@@ -281,21 +281,21 @@ export function formatMentions(
           />
         );
       } else if (match.match(channelMentionRegex)) {
-        element = <mark style={{ background: 'green' }}>{match}</mark>;
+        element = <mark style={{ background: "green" }}>{match}</mark>;
       } else if (match.match(roleMentionRegex)) {
-        element = <mark style={{ background: 'yellow' }}>{match}</mark>;
+        element = <mark style={{ background: "yellow" }}>{match}</mark>;
       } else if (match.match(commandMentionRegex)) {
-        element = <mark style={{ background: 'red' }}>{match}</mark>;
+        element = <mark style={{ background: "red" }}>{match}</mark>;
       } else {
-        element = <mark style={{ background: 'black' }}>{match}</mark>;
+        element = <mark style={{ background: "black" }}>{match}</mark>;
       }
       return { match: match, element: element };
     }) || [];
 
-  const regex = mentions.map((e) => e.match).join('|');
+  const regex = mentions.map((e) => e.match).join("|");
   if (regex.length === 0) return <>{content}</>;
 
-  const split = content.split(new RegExp(regex, 'gm'));
+  const split = content.split(new RegExp(regex, "gm"));
   const a = [];
   for (let i = 0; i < split.length; i++) {
     a.push(split[i]);
@@ -310,7 +310,7 @@ export function formatMentions(
 export async function sendMessage(
   channelId: string,
   messageId: string | null,
-  contentInput = '',
+  contentInput = "",
   files: UploadFile[] = [],
   isTTS = false,
   embeds: string[] = [],
@@ -320,7 +320,7 @@ export async function sendMessage(
   userId: string = null
 ) {
   console.log(
-    'sendMessage',
+    "sendMessage",
     channelId,
     messageId,
     contentInput,
@@ -346,7 +346,7 @@ export async function sendMessage(
     if (user) return `<@${user.id}>`;
     return match;
   });
-  console.log('content', content);
+  console.log("content", content);
 
   const token = await getToken(userId);
   const url = messageId
@@ -358,15 +358,15 @@ export async function sendMessage(
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    if (typeof file === 'string') {
+    if (typeof file === "string") {
       let fileName: string;
 
-      if (file.includes('/')) {
-        fileName = file.split('/')[file.split('/').length - 1];
+      if (file.includes("/")) {
+        fileName = file.split("/")[file.split("/").length - 1];
       } else {
-        fileName = file.split('\\')[file.split('\\').length - 1];
+        fileName = file.split("\\")[file.split("\\").length - 1];
       }
-      const filearray = await fs.readBinaryFile(file);
+      const filearray = await readFile(file);
       const fileBlob = new Blob([filearray]);
       formData.append(`files[${i}]`, fileBlob, fileName);
       attachments.push({ id: i, filename: fileName });
@@ -385,13 +385,13 @@ export async function sendMessage(
     attachments: attachments,
     message_reference: messageReference,
   };
-  formData.append('payload_json', JSON.stringify(jsonPayload));
+  formData.append("payload_json", JSON.stringify(jsonPayload));
   for (const entry of formData.entries()) {
     console.log(entry);
   }
 
-  const method = isEditing ? 'PATCH' : 'POST';
-  console.log('method', method, 'url', url, 'token', token);
+  const method = isEditing ? "PATCH" : "POST";
+  console.log("method", method, "url", url, "token", token);
 
   const response = await fetch(url, {
     method: method,
@@ -468,7 +468,7 @@ export async function getMessages(channelId: string) {
 
   const url = `https://discord.com/api/v9/channels/${channelId}/messages?limit=50`;
   const resDataponse = await fetch(url, {
-    method: 'GET',
+    method: "GET",
 
     headers: {
       Authorization: token,
@@ -476,7 +476,7 @@ export async function getMessages(channelId: string) {
   });
 
   const resData = await resDataponse.json();
-  console.log('GET MESSAGES RES DATA', resData);
+  console.log("GET MESSAGES RES DATA", resData);
 
   return resData as Message[];
 }
