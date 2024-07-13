@@ -4,7 +4,7 @@ import { createResource, createSignal, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 
 // Tauri
-import { invoke } from '@tauri-apps/api/tauri';
+
 import { emit } from '@tauri-apps/api/event';
 
 // import from '../../;
@@ -23,6 +23,7 @@ import { updateGuilds } from '@/API/Guilds';
 import { useTrans } from '@/Translation';
 import { StateSetter } from '@/StateSetter';
 import { StateSetterNew } from '@/StateSetterNew';
+import { invoke } from '@tauri-apps/api';
 
 export function Prev() {
   const [a] = createResource(async () => {

@@ -109,7 +109,7 @@ mod tests {
 
         runtime.block_on(async {
             let result = websocket.start_websocket(
-                String::from(0),
+                0,
                 return_channel,
                 ECHO_SERVER.to_string()
             ).await;

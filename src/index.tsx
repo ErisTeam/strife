@@ -69,9 +69,8 @@ export function App() {
 
   return (
     <Router>
-      <WindowDecoration />
-
       <Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_IPC__}>
+        <WindowDecoration />
         <Show when={!id.loading} fallback={<Loading />}>
           <AppStateProvider userId={id()}>
             <Dev />

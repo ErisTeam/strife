@@ -1,11 +1,12 @@
 import { For, type Setter, createSignal, onMount } from 'solid-js';
 import style from './css.module.css';
-import { open } from '@tauri-apps/api/dialog';
+import { open } from '@tauri-apps/plugin-dialog';
 import { MessageEditor } from './MessageEditor';
 import type { Message as MessageType } from '../../types/Messages';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+// import { convertFileSrc } from '@tauri-apps/api/core';
 import type { UploadFile } from './Chat';
 import { sendMessage } from '@/API/Messages';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 type MessageUpdaterProps = {
   message: MessageType;
   setIsEditing: Setter<boolean>;

@@ -13,7 +13,8 @@ pub const VERIFY_SMS: &str = concatcp!(DISCORD_API, "/auth/mfa/sms");
 
 pub const VERIFY_TOTP: &str = concatcp!(DISCORD_API, "/auth/mfa/totp");
 
-pub const GATEWAY_CONNECT: &str = "wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream";
+pub const GATEWAY_CONNECT: &str =
+    "wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream";
 
 pub const GET_CHANNEL: &str = concatcp!(DISCORD_API, "/channels/");
 

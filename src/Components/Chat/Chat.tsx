@@ -1,4 +1,3 @@
-import { invoke } from '@tauri-apps/api/tauri';
 import { For, Show, createResource, createSignal, onMount } from 'solid-js';
 import { useAppState } from '../../AppState';
 import type {
@@ -21,6 +20,7 @@ import type { GuildListUpdate } from '@/types/Guild';
 import { TypingStatus } from './TypingStatus';
 import { getChannelById } from '@/API/Channels';
 import { Dev } from '../Dev/Dev';
+import { invoke } from '@tauri-apps/api';
 
 export type UploadFile =
   | string

@@ -6,15 +6,15 @@ import {
   onMount,
 } from 'solid-js';
 import style from './css.module.css';
-import { open } from '@tauri-apps/api/dialog';
+import { open } from '@tauri-apps/plugin-dialog';
 import { MessageEditor } from './MessageEditor';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
 import type { UploadFile } from './Chat';
 import { sendMessage } from '@/API/Messages';
 import type { MessageReference } from '@/types/Messages';
 import type { GuildMember } from '@/types/Guild';
 import { useAppState } from '@/AppState';
 import { PlusCircle, Send, SendHorizonal } from 'lucide-solid';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 type MessageSenderProps = {
   channelId: string;
   //files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down

@@ -9,11 +9,11 @@
 // }
 
 pub mod d {
-	include!(concat!(env!("OUT_DIR"), "/d.rs"));
+    include!(concat!(env!("OUT_DIR"), "/d.rs"));
 }
 
 impl Into<bool> for d::GamiToFurras {
-	fn into(self) -> bool {
-		return self.tak;
-	}
+    fn into(self) -> bool {
+        return self.tak;
+    }
 }

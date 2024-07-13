@@ -9,7 +9,7 @@ import {
   exists,
   readTextFile,
   writeTextFile,
-} from '@tauri-apps/api/fs';
+} from '@tauri-apps/plugin-fs';
 import { useAppState } from '../AppState';
 import { produce } from 'solid-js/store';
 

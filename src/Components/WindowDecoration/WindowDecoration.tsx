@@ -1,5 +1,5 @@
-import { appWindow } from '@tauri-apps/api/window';
 import style from './css.module.css';
+import { appWindow } from '@tauri-apps/api/window';
 import { Maximize, Minimize, Minus, X } from 'lucide-solid';
 import { Show, createResource } from 'solid-js';
 

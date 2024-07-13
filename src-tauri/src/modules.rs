@@ -1,5 +1,5 @@
-pub mod gateway;
 pub mod auth;
+pub mod gateway;
 
 pub mod gateway_utils;
 

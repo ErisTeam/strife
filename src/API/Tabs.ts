@@ -7,7 +7,8 @@ import type { Tab, TabComponents, TabsFile } from "@/types";
 import { produce } from "solid-js/store";
 
 import { batch } from "solid-js";
-import { exists, BaseDirectory, createDir, writeFile, readTextFile } from "@tauri-apps/api/fs";
+import { exists, BaseDirectory, writeFile, readTextFile } from "@tauri-apps/plugin-fs";
+import { createDir } from "@tauri-apps/api/fs";
 
 const sessionDataPath = "session_data";
 const tabsPath = `${sessionDataPath}/tabs.json`;
@@ -139,9 +140,9 @@ export async function saveToFile() {
 	const dir = BaseDirectory.AppData;
 	const AppState = useAppState();
 	// const filePath = this;
-	const doesDirExist = await exists(sessionDataPath, { dir: dir });
+	const doesDirExist = await exists(sessionDataPath, );
 	if (!doesDirExist) {
-		await createDir(sessionDataPath, { dir: dir });
+		await createDir(sessionDataPath, );
 	}
 	const newTabs = AppState.tabs.slice().map((tab) => {
 		tab.wasOpened = undefined;
@@ -156,23 +157,23 @@ export async function saveToFile() {
 		tabs: newTabs,
 	};
 
-	await writeFile(tabsPath, JSON.stringify(tabsFile), { dir: dir });
+	await writeFile(tabsPath, Buffer.from(JSON.stringify(tabsFile)));
 }
 export async function loadFromFile(): Promise<boolean> {
 	const AppState = useAppState();
 	const dir = BaseDirectory.AppData;
-	const doesDirExist = await exists(sessionDataPath, { dir: dir });
+	const doesDirExist = await exists(sessionDataPath);
 	if (!doesDirExist) {
 		console.warn("No session data folder found");
 		return false;
 	}
-	const doesFileExist = await exists(tabsPath, { dir: dir });
+	const doesFileExist = await exists(tabsPath,);
 	if (!doesFileExist) {
 		console.warn("No session data tabs file found");
 		return false;
 	}
 
-	const tabsFile = JSON.parse(await readTextFile(tabsPath, { dir: dir })) as TabsFile;
+	const tabsFile = JSON.parse(await readTextFile(tabsPath,)) as TabsFile;
 
 	const tabsOrder = tabsFile.order;
 	const currentTab = tabsFile.current;

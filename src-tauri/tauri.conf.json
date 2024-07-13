@@ -1,113 +1,91 @@
 {
-	"build": {
-		"beforeDevCommand": "pnpm dev",
-		"beforeBuildCommand": "pnpm build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist",
-		"withGlobalTauri": false
-	},
-	"package": {
-		"productName": "PandaCord",
-		"version": "0.0.0"
-	},
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": false,
+    "security": {
+      "csp": "default-src 'self'; img-src: *; media-src *; asset: https://asset.localhost; connect-src 'self' https://discord.com/api/;",
+      "assetProtocol": {
+        "enable": false,
+        "scope": []
+      },
+      "capabilities": [],
+      "dangerousDisableAssetCspModification": false,
+      "freezePrototype": false,
+      "pattern": {
+        "use": "brownfield"
+      }
+    },
 
-	"tauri": {
-		"security": {
-			"csp": "default-src 'self'; img-src: *; media-src *; asset: https://asset.localhost; connect-src 'self' https://discord.com/api/;"
-		},
-		"allowlist": {
-			"protocol": {
-				"all": true,
-				"asset": true,
-				"assetScope": ["**"]
-			},
-			"dialog": {
-				"all": true
-			},
-			"all": false,
-			"http": {
-				"all": true,
-				"request": true
-			},
-			"shell": {
-				"all": false,
-				"open": true
-			},
-			"notification": {
-				"all": true
-			},
-			"window": {
-				"all": false,
-				"close": true,
-				"hide": true,
-				"show": true,
-				"maximize": true,
-				"minimize": true,
-				"unmaximize": true,
-				"unminimize": true,
-				"startDragging": true
-			},
-			"fs": {
-				"all": true,
-				"scope": ["$APPDATA/*", "$APPDATA/*/*", "**"]
-			},
-			"path": {
-				"all": true
-			}
-		},
-		"bundle": {
-			"active": true,
-			"category": "DeveloperTool",
-			"copyright": "",
-			"deb": {
-				"depends": []
-			},
-			"externalBin": [],
-			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
-			"identifier": "com.TNaDc",
-			"longDescription": "",
-			"macOS": {
-				"entitlements": null,
-				"exceptionDomain": "",
-				"frameworks": [],
-				"providerShortName": null,
-				"signingIdentity": null
-			},
-			"resources": [],
-			"shortDescription": "",
-			"targets": "all",
-			"windows": {
-				"certificateThumbprint": null,
-				"digestAlgorithm": "sha256",
-				"timestampUrl": ""
-			}
-		},
-		"updater": {
-			"active": false
-		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"width": 800,
-				"minWidth": 300,
-				"minHeight": 300,
-				"height": 600,
-				"resizable": true,
-				"title": "PandaCord",
-				"visible": false,
-				"center": true,
-				"decorations": false,
-				"fileDropEnabled": false
-			},
-			{
-				"width": 200,
-				"height": 400,
-				"decorations": false,
-				"url": "/SplashScreen/splashscreen.html",
-				"label": "splashscreen",
-				"center": true,
-				"resizable": false
-			}
-		]
-	}
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "fullscreen": false,
+        "width": 800,
+        "minWidth": 300,
+        "minHeight": 300,
+        "height": 600,
+        "resizable": true,
+        "title": "PandaCord",
+        "visible": false,
+        "center": true,
+        "decorations": true,
+        "dragDropEnabled": false
+      },
+      {
+        "width": 200,
+        "height": 400,
+        "decorations": false,
+        "url": "/SplashScreen/splashscreen.html",
+        "label": "splashscreen",
+        "center": true,
+        "resizable": false
+      }
+    ]
+  },
+  "plugins": {
+    "fs": {
+      "scope": {
+        "allow": ["*"]
+      }
+    }
+  },
+
+  "productName": "PandaCord",
+  "version": "0.0.0",
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "targets": "all",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  }
 }

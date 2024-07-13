@@ -1,53 +1,55 @@
-use std::sync::{ Weak };
+use std::sync::Weak;
 
+use crate::{events, main_app_state::MainState};
 use serde::Deserialize;
-use tauri::{ AppHandle, Manager };
-use crate::{ events, main_app_state::MainState };
+use tauri::{AppHandle, Listener, Manager};
 
 #[derive(Debug)]
 pub struct EventManager {
-	state: Option<Weak<MainState>>,
-	event_listeners: Vec<tauri::EventHandler>,
+    state: Option<Weak<MainState>>,
+    event_listeners: Vec<tauri::EventId>,
 }
 
 impl EventManager {
-	pub fn new() -> Self {
-		Self {
-			state: None,
-			event_listeners: Vec::new(),
-		}
-	}
-	pub fn set_state(&mut self, state: Weak<MainState>) {
-		self.state = Some(state);
-	}
-	pub fn clear_listeners(&mut self, handle: AppHandle) {
-		//TODO: try to remove clone
-		for handler in self.event_listeners.clone().into_iter() {
-			handle.unlisten(handler);
-		}
-		self.event_listeners.clear();
-	}
-	#[allow(unused)]
-	pub fn register_debug(&mut self, handle: AppHandle) {
-		let state = self.state.clone();
+    pub fn new() -> Self {
+        Self {
+            state: None,
+            event_listeners: Vec::new(),
+        }
+    }
+    pub fn set_state(&mut self, state: Weak<MainState>) {
+        self.state = Some(state);
+    }
+    pub fn clear_listeners(&mut self, handle: AppHandle) {
+        //TODO: try to remove clone
+        for handler in self.event_listeners.clone().into_iter() {
+            handle.unlisten(handler);
+        }
+        self.event_listeners.clear();
+    }
+    #[allow(unused)]
+    pub fn register_debug(&mut self, handle: AppHandle) {
+        let state = self.state.clone();
 
-		#[derive(Deserialize, Debug)]
-		struct Message {
-			user_id: String,
-		}
-		//todo test Reconnecting
-	}
+        #[derive(Deserialize, Debug)]
+        struct Message {
+            user_id: String,
+        }
+        //todo test Reconnecting
+    }
 
-	//TODO: return Result
-	pub fn register_for_login_screen(&mut self, handle: AppHandle) {
-		let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
+    //TODO: return Result
+    pub fn register_for_login_screen(&mut self, handle: AppHandle) {
+        let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
 
-		self.event_listeners.extend(events::auth::get_all_events(state, handle.clone()));
-	}
-	//TODO: return Result
-	pub fn register_for_main_app(&mut self, handle: AppHandle) {
-		let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
+        self.event_listeners
+            .extend(events::auth::get_all_events(state, handle.clone()));
+    }
+    //TODO: return Result
+    pub fn register_for_main_app(&mut self, handle: AppHandle) {
+        let state = self.state.as_ref().unwrap().upgrade().unwrap().clone();
 
-		self.event_listeners.extend(events::main_app::get_all_events(state, handle.clone()));
-	}
+        self.event_listeners
+            .extend(events::main_app::get_all_events(state, handle.clone()));
+    }
 }

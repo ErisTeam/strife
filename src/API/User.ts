@@ -2,7 +2,8 @@ import type { Relationship } from "@/types/User";
 import { emit } from "@tauri-apps/api/event";
 import { oneTimeListener } from "@/test";
 import { useAppState } from "@/AppState";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
+
 export async function activateUser(userId: string) {
 	console.log("activating user", userId);
 	return await invoke("activate_user", { userId });
