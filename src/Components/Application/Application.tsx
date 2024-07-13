@@ -15,6 +15,7 @@ import { FriendsList } from '../Friends/FriendsList';
 import { TabWindow } from '../Tabs/TabWindow';
 import { add, findByComponent, loadFromFile, swapOrderByIdx } from '@/API/Tabs';
 import { StateSetter } from '@/StateSetter';
+import { StateSetterNew } from '@/StateSetterNew';
 
 //TODO: move to routes
 export function Application() {
@@ -47,41 +48,43 @@ export function Application() {
   console.log('CurrentGuild', !AppState.currentGuild());
 
   return (
-    <ContextMenusProvider>
-      <Dev>
-        <button
-          type="button"
-          onclick={() => {
-            swapOrderByIdx(0, 1);
-          }}
-        >
-          Ordering Test
-        </button>
-      </Dev>
+    <StateSetterNew state={'Application'} force={true}>
+      <ContextMenusProvider>
+        <Dev>
+          <button
+            type="button"
+            onclick={() => {
+              swapOrderByIdx(0, 1);
+            }}
+          >
+            Ordering Test
+          </button>
+        </Dev>
 
-      <div class={style.wrapper}>
-        <GuildList className={style.guilds} />
-        <div class={style.outer}>
-          <div id="ContextMenu" />
+        <div class={style.wrapper}>
+          <GuildList className={style.guilds} />
+          <div class={style.outer}>
+            <div id="ContextMenu" />
 
-          <Show when={!!AppState.currentGuild()}>
-            <Show
-              when={AppState.currentGuild() === 'friends'}
-              fallback={
-                <ChannelList
-                  className={style.channels}
-                  guild={AppState.currentGuild() as Guild}
-                />
-              }
-            >
-              <FriendsList className={style.channels} />
+            <Show when={!!AppState.currentGuild()}>
+              <Show
+                when={AppState.currentGuild() === 'friends'}
+                fallback={
+                  <ChannelList
+                    className={style.channels}
+                    guild={AppState.currentGuild() as Guild}
+                  />
+                }
+              >
+                <FriendsList className={style.channels} />
+              </Show>
             </Show>
-          </Show>
 
-          <TabWindow className={style.inner} />
+            <TabWindow className={style.inner} />
+          </div>
+          <ControlPanel className={style.controlPanel} />
         </div>
-        <ControlPanel className={style.controlPanel} />
-      </div>
-    </ContextMenusProvider>
+      </ContextMenusProvider>
+    </StateSetterNew>
   );
 }

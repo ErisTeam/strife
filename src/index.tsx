@@ -1,6 +1,6 @@
 // SolidJS
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
-import { Outlet, Route, Router, Routes } from '@solidjs/router';
+import { Route, Router, Routes } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api';
 import { type Component, DEV, Show, createResource, onMount } from 'solid-js';
 import { render } from 'solid-js/web';
@@ -31,7 +31,7 @@ export function App() {
     });
     //TODO: remove this
     const AppState = useAppState();
-    AppState.setSett(entries);
+    AppState.settings.setEntries(entries);
     start();
 
     loadFromFile();
@@ -75,60 +75,23 @@ export function App() {
         <Show when={!id.loading} fallback={<Loading />}>
           <AppStateProvider userId={id()}>
             <Dev />
-
             <Routes>
-              {/* <Redirect /> */}
-              <Route
-                path="/dev"
-                element={<StateSetter state={'Dev'} component={Outlet} />}
-              >
-                <Route path="/loadingtest" component={LoadingTest} />
-              </Route>
+              <Route path="/loadingtest" component={LoadingTest} />
 
-              <Route
-                path="/login"
-                element={
-                  <StateSetter
-                    state={'LoginScreen'}
-                    force={true}
-                    component={LoginPage}
-                  />
-                }
-              />
+              <Route path="/login" component={LoginPage} />
 
-              <Route
-                path="/"
-                element={
-                  <StateSetter state={'Dev'} force={true} component={Prev} />
-                }
-              />
+              <Route path="/" component={Prev} />
 
-              <Route
-                path="/dev"
-                element={
-                  <StateSetter state={'Dev'} force={true} component={Outlet} />
-                }
-              >
+              <Route path="/dev">
                 <Route path="/contextmenutest" component={ContextMenuTest} />
 
                 <Route path="/loadingtest" component={LoadingTest} />
-                <Route path="/login" component={Prev} />
-                <Route path="/test" component={ContextMenuTest} />
                 <Route path="/componentdocs" component={ComponentDocs} />
               </Route>
 
               <Route path="/login" component={LoginPage} />
 
-              <Route
-                path="/app"
-                element={
-                  <StateSetter
-                    state={'Application'}
-                    force={true}
-                    component={Application}
-                  />
-                }
-              />
+              <Route path="/app" component={Application} />
               <Route path="*" component={ErrorElement} />
             </Routes>
           </AppStateProvider>

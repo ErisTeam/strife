@@ -23,6 +23,7 @@ import type { AuthEvents } from '../../types/Auth';
 import style from './Login.module.css';
 import { updateCurrentUserID } from '@/API/User';
 import { useTrans } from '@/Translation';
+import { StateSetterNew } from '@/StateSetterNew';
 
 //TODO clean
 
@@ -161,104 +162,106 @@ export function LoginPage() {
   }
 
   return (
-    <div class={[style.wrapper, style.background].join(' ')}>
-      <Dev>
-        <button
-          type="button"
-          onclick={() => {
-            switchTo('mfa');
-          }}
-        >
-          show MF
-        </button>
+    <StateSetterNew state={'LoginScreen'} force={true}>
+      <div class={[style.wrapper, style.background].join(' ')}>
+        <Dev>
+          <button
+            type="button"
+            onclick={() => {
+              switchTo('mfa');
+            }}
+          >
+            show MF
+          </button>
 
-        <button
-          type="button"
-          onclick={() => {
-            switchTo('captcha');
-          }}
-        >
-          show Captcha
-        </button>
+          <button
+            type="button"
+            onclick={() => {
+              switchTo('captcha');
+            }}
+          >
+            show Captcha
+          </button>
 
-        <button
-          type="button"
-          onclick={() => {
-            switchTo('login');
-          }}
-        >
-          show Login
-        </button>
-      </Dev>
+          <button
+            type="button"
+            onclick={() => {
+              switchTo('login');
+            }}
+          >
+            show Login
+          </button>
+        </Dev>
 
-      {/* Main Page */}
-      <div class={[style.container, classes().login].join(' ')}>
-        <LoginBox class={style.loginBox} login={login} />
+        {/* Main Page */}
+        <div class={[style.container, classes().login].join(' ')}>
+          <LoginBox class={style.loginBox} login={login} />
 
-        <QRCode
-          class={style.qrcode}
-          qrcode_src={image()}
-          fallback_src="/test.gif"
-          header={t.LoginPage.qrCodeLogin()}
-          paragraph={t.LoginPage.qrCodeParagraph()}
-          altParagraph={t.LoginPage.qrCodeParagrpahAlt()}
-          user_data={userData()}
-        />
-      </div>
+          <QRCode
+            class={style.qrcode}
+            qrcode_src={image()}
+            fallback_src="/test.gif"
+            header={t.LoginPage.qrCodeLogin()}
+            paragraph={t.LoginPage.qrCodeParagraph()}
+            altParagraph={t.LoginPage.qrCodeParagrpahAlt()}
+            user_data={userData()}
+          />
+        </div>
 
-      <div class={[style.container, classes().mfa].join(' ')}>
-        <MFABox verify={verifyLogin} />
-      </div>
+        <div class={[style.container, classes().mfa].join(' ')}>
+          <MFABox verify={verifyLogin} />
+        </div>
 
-      <div class={[style.container, classes().captcha].join(' ')}>
-        <div class={style.hcaptchaContainer}>
-          <h1 class={style.header}>{t.LoginPage.captchaHeader()}</h1>
-          <HCaptcha sitekey="" />
+        <div class={[style.container, classes().captcha].join(' ')}>
+          <div class={style.hcaptchaContainer}>
+            <h1 class={style.header}>{t.LoginPage.captchaHeader()}</h1>
+            <HCaptcha sitekey="" />
+          </div>
+        </div>
+
+        {/* Corner SVGS */}
+        <div class={style.leftBottom}>
+          <img
+            class={style.leftBottom1}
+            alt="Decorative SVG"
+            src="LoginPage/LeftBottom1.svg"
+          />
+          <img
+            class={style.leftBottom2}
+            alt="Decorative SVG"
+            src="LoginPage/LeftBottom2.svg"
+          />
+          <img
+            class={style.leftBottom3}
+            alt="Decorative SVG"
+            src="LoginPage/LeftBottom3.svg"
+          />
+        </div>
+        <div class={style.leftTop}>
+          <img
+            class={style.leftTop1}
+            alt="Decorative SVG"
+            src="LoginPage/LeftTop1.svg"
+          />
+          <img
+            class={style.leftTop2}
+            alt="Decorative SVG"
+            src="LoginPage/LeftTop2.svg"
+          />
+        </div>
+        <div class={style.rightTop}>
+          <img
+            class={style.rightTop1}
+            alt="Decorative SVG"
+            src="LoginPage/RightTop1.svg"
+          />
+          <img
+            class={style.rightTop2}
+            alt="Decorative SVG"
+            src="LoginPage/RightTop2.svg"
+          />
         </div>
       </div>
-
-      {/* Corner SVGS */}
-      <div class={style.leftBottom}>
-        <img
-          class={style.leftBottom1}
-          alt="Decorative SVG"
-          src="LoginPage/LeftBottom1.svg"
-        />
-        <img
-          class={style.leftBottom2}
-          alt="Decorative SVG"
-          src="LoginPage/LeftBottom2.svg"
-        />
-        <img
-          class={style.leftBottom3}
-          alt="Decorative SVG"
-          src="LoginPage/LeftBottom3.svg"
-        />
-      </div>
-      <div class={style.leftTop}>
-        <img
-          class={style.leftTop1}
-          alt="Decorative SVG"
-          src="LoginPage/LeftTop1.svg"
-        />
-        <img
-          class={style.leftTop2}
-          alt="Decorative SVG"
-          src="LoginPage/LeftTop2.svg"
-        />
-      </div>
-      <div class={style.rightTop}>
-        <img
-          class={style.rightTop1}
-          alt="Decorative SVG"
-          src="LoginPage/RightTop1.svg"
-        />
-        <img
-          class={style.rightTop2}
-          alt="Decorative SVG"
-          src="LoginPage/RightTop2.svg"
-        />
-      </div>
-    </div>
+    </StateSetterNew>
   );
 }

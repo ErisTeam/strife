@@ -14,6 +14,7 @@ import {
 import { useAppState } from '../../../AppState';
 import type { Channel } from '../../../types/Channel';
 import type { Guild } from '../../../types/Guild';
+import { StateSetterNew } from '@/StateSetterNew';
 
 interface channelContextMenu {
   channel: Accessor<Channel>;
@@ -172,26 +173,28 @@ export function ContextMenuTest() {
 
   const [show, setShow] = createSignal(false);
   return (
-    <div style={{ display: 'flex', 'flex-direction': 'column', gap: '1rem' }}>
-      <Portal>
-        <div id="ContexMenu" />
-      </Portal>
-      Test
-      <ContextGuild />
-      <ContextChannel />
-      <div>
-        <button type="button" onclick={() => setShow(!show())}>
-          Toggle
-        </button>
+    <StateSetterNew state={'Dev'} force={true}>
+      <div style={{ display: 'flex', 'flex-direction': 'column', gap: '1rem' }}>
+        <Portal>
+          <div id="ContexMenu" />
+        </Portal>
+        Test
+        <ContextGuild />
+        <ContextChannel />
+        <div>
+          <button type="button" onclick={() => setShow(!show())}>
+            Toggle
+          </button>
 
-        <SplashText text="New ContextMenu">ContextMenu</SplashText>
+          <SplashText text="New ContextMenu">ContextMenu</SplashText>
 
-        <ContextMenusProvider>
-          <Show when={show()}>
-            <ContextMenuNewTest />
-          </Show>
-        </ContextMenusProvider>
+          <ContextMenusProvider>
+            <Show when={show()}>
+              <ContextMenuNewTest />
+            </Show>
+          </ContextMenusProvider>
+        </div>
       </div>
-    </div>
+    </StateSetterNew>
   );
 }

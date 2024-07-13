@@ -28,17 +28,17 @@
 		"typescript": "^5.5.3",
 		"vite": "^5.3.3",
 		"vite-plugin-solid": "^2.10.2",
-		"vitest": "1.6.0"
+		"vitest": "2.0.2"
 	},
 	"dependencies": {
 		"@solid-primitives/i18n": "^2.1.1",
 		"@solidjs/meta": "^0.29.4",
 		"@solidjs/router": "^0.8.3",
-		"@tanstack/solid-virtual": "3.8.1",
+		"@tanstack/solid-virtual": "3.8.3",
 		"@tauri-apps/api": "^1.6.0",
 		"@thisbeyond/solid-dnd": "^0.7.5",
-		"libsodium-wrappers": "^0.7.13",
-		"lucide-solid": "^0.401.0",
+		"libsodium-wrappers": "^0.7.14",
+		"lucide-solid": "^0.408.0",
 		"murmurhash": "^2.0.1",
 		"qrcode": "^1.5.3",
 		"solid-hcaptcha": "^0.4.0",

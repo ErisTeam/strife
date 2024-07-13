@@ -45,7 +45,7 @@ export function Message(props: MessageProps) {
   const TabContext = useTabContext();
 
   // Time format
-  const intl = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
+  const intl = new Intl.DateTimeFormat(AppState.locale(), {
     timeStyle: 'short',
   });
 
