@@ -16,12 +16,29 @@ import { TabWindow } from '../Tabs/TabWindow';
 import { add, findByComponent, loadFromFile, swapOrderByIdx } from '@/API/Tabs';
 import { StateSetter } from '@/StateSetter';
 import { StateSetterNew } from '@/StateSetterNew';
+import { defaultSettings } from '@/API/Settings';
+import { start } from '@/API/Style';
 
 //TODO: move to routes
 export function Application() {
   const AppState = useAppState();
 
   onMount(() => {
+    console.log('is tauri', window.__TAURI__);
+    const entries = defaultSettings.entries.map((e) => {
+      if (typeof e === 'function') {
+        return e();
+      }
+      return e;
+    });
+    //TODO: remove this
+    const AppState = useAppState();
+    AppState.setSettingsEntries(entries);
+    start();
+
+    loadFromFile();
+    console.log('CurrentGuild', !AppState.currentGuild());
+
     loadFromFile()
       .then((result) => {
         if (!result) {
@@ -44,8 +61,6 @@ export function Application() {
       })
       .catch(console.error);
   });
-
-  console.log('CurrentGuild', !AppState.currentGuild());
 
   return (
     <StateSetterNew state={'Application'} force={true}>

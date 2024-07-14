@@ -87,22 +87,20 @@ export function ChannelListElement(props: ChannelProps) {
 
   const openRef: HTMLLIElement | undefined = undefined;
   return (
-    <>
-      <li class={style.channel} ref={openRef} use:contextMenu>
-        <button onMouseDown={onMouseDown} type="button">
-          <div class={style.channelIcon}>
-            <Switch>
-              <Match when={typeof channelIcon() === 'function'}>
-                <Dynamic component={channelIcon} />
-              </Match>
-              <Match when={typeof channelIcon() === 'string'}>
-                {channelIcon() as string}
-              </Match>
-            </Switch>
-          </div>
-          <span title={displayName()}>{displayName()}</span>
-        </button>
-      </li>
-    </>
+    <li class={style.channel} ref={openRef} use:contextMenu>
+      <button onMouseDown={onMouseDown} type="button">
+        <div class={style.channelIcon}>
+          <Switch>
+            <Match when={typeof channelIcon() === 'function'}>
+              <Dynamic component={channelIcon} />
+            </Match>
+            <Match when={typeof channelIcon() === 'string'}>
+              {channelIcon() as string}
+            </Match>
+          </Switch>
+        </div>
+        <span title={displayName()}>{displayName()}</span>
+      </button>
+    </li>
   );
 }

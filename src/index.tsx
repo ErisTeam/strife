@@ -22,21 +22,6 @@ import { start } from './API/Style';
 import { defaultSettings, loadFromFile } from './API/Settings';
 
 export function App() {
-  onMount(() => {
-    console.log('is tauri', window.__TAURI__);
-    const entries = defaultSettings.entries.map((e) => {
-      if (typeof e === 'function') {
-        return e();
-      }
-      return e;
-    });
-    //TODO: remove this
-    const AppState = useAppState();
-    AppState.settings.setEntries(entries);
-    start();
-
-    loadFromFile();
-  });
   const [id] = createResource(async () => {
     const users: { userId: string }[] = await invoke('get_users', {});
     console.log('index users', users);
