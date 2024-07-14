@@ -39,11 +39,6 @@ const [currentTabIdx, setCurrentTabIdx] = createSignal<number>(-1);
 const [currentGuild, setCurrentGuild] = createSignal<Guild | null | 'friends'>(
   null
 ); //Used to display correct channelsset to null to hide
-const localeJsFormat = () => {
-  const locale = useAppState().locale();
-
-  return locale.replace('_', '-');
-};
 
 const [settingsCategories, setSettingsCategories] = createStore<
   SettingsCategory[]
@@ -76,7 +71,6 @@ const ContextValue = {
     }
     setCurrentTabIdx(index);
   },
-  localeJsFormat,
 
   currentGuild,
   setCurrentGuild,
@@ -109,7 +103,10 @@ export function AppStateProvider(props: {
           ...ContextValue,
           userId,
           setUserId,
-        } as any
+        } as typeof ContextValue & {
+          userId: Accessor<string>;
+          setUserId: Setter<string>;
+        }
       }
     >
       {props.children}
@@ -118,8 +115,5 @@ export function AppStateProvider(props: {
 }
 
 export function useAppState() {
-  return useContext(AppState) as typeof ContextValue & {
-    userId: Accessor<string>;
-    setUserId: Setter<string>;
-  };
+  return useContext(AppState);
 }

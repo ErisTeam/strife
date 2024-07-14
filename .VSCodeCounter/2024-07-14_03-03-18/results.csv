@@ -1,0 +1,268 @@
+"filename", "language", "JSON", "TypeScript", "HTML", "JavaScript", "JSON with Comments", "Batch", "XML", "Rust", "TOML", "Markdown", "TypeScript JSX", "YAML", "CSS", "Protocol Buffers", "comment", "blank", "total"
+"c:\Users\gamin\Desktop\Projects\strife\Cargo.lock", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 5820, 0, 0, 0, 0, 0, 2, 608, 6430
+"c:\Users\gamin\Desktop\Projects\strife\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 4, 10
+"c:\Users\gamin\Desktop\Projects\strife\README.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 3, 13
+"c:\Users\gamin\Desktop\Projects\strife\biome.json", "JSON", 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 50
+"c:\Users\gamin\Desktop\Projects\strife\discord\Cargo.lock", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 1192, 0, 0, 0, 0, 0, 2, 152, 1346
+"c:\Users\gamin\Desktop\Projects\strife\discord\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 5, 11, 44
+"c:\Users\gamin\Desktop\Projects\strife\discord\discord_macro\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 2, 6, 19
+"c:\Users\gamin\Desktop\Projects\strife\discord\discord_macro\src\lib.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 4, 21, 102
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\lib.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 1, 16, 144
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\attachment.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\channel.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 153, 0, 0, 0, 0, 0, 0, 1, 28, 182
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\embed.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 2, 64
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\emoji.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\gateway.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 432, 0, 0, 0, 0, 0, 0, 12, 66, 510
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\guild.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 461, 0, 0, 0, 0, 0, 0, 118, 63, 642
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\interaction.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 1, 10
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\member.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\message.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 132, 0, 0, 0, 0, 0, 0, 3, 23, 158
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\mod.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 14, 2, 19
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\protos.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 3, 23
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\reaction.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 2, 10
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\relationship.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 5, 42
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\role.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 3, 27
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\sticker.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 6, 54
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\thread.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 1, 3, 17
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\user.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 29, 17, 174
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\types\voice.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 5, 23
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\websocket_connection.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 1, 8, 58
+"c:\Users\gamin\Desktop\Projects\strife\discord\src\websocket_trait.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 4, 11, 48
+"c:\Users\gamin\Desktop\Projects\strife\discord\websocket_message_macro\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 2, 5, 18
+"c:\Users\gamin\Desktop\Projects\strife\discord\websocket_message_macro\src\lib.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\generateTypes.bat", "Batch", 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"c:\Users\gamin\Desktop\Projects\strife\icon.svg", "XML", 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11
+"c:\Users\gamin\Desktop\Projects\strife\index.html", "HTML", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"c:\Users\gamin\Desktop\Projects\strife\package.json", "JSON", 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 55
+"c:\Users\gamin\Desktop\Projects\strife\pnpm-lock.yaml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2470, 0, 0, 0, 347, 2817
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom1.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom2.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom3.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftTop1.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftTop2.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\RightTop1.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\RightTop2.svg", "XML", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\gamin\Desktop\Projects\strife\public\SplashScreen\splashscreen.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 142, 0, 0, 6, 148
+"c:\Users\gamin\Desktop\Projects\strife\public\SplashScreen\splashscreen.html", "HTML", 0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 33
+"c:\Users\gamin\Desktop\Projects\strife\public\icon.svg", "XML", 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11
+"c:\Users\gamin\Desktop\Projects\strife\public\test.svg", "XML", 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14
+"c:\Users\gamin\Desktop\Projects\strife\shared-types\SharedTypes.proto", "Protocol Buffers", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 325, 0, 62, 387
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\Cargo.lock", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 4976, 0, 0, 0, 0, 0, 2, 532, 5510
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 16, 23, 105
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\build.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 2, 4, 29
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\capabilities\main.json", "JSON", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\capabilities\migrated.json", "JSON", 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\acl-manifests.json", "JSON", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\capabilities.json", "JSON", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\desktop-schema.json", "JSON", 6833, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6833
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\windows-schema.json", "JSON", 6833, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6833
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands\general.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 8, 12, 147
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands\main_app.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 11, 29, 295
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\dev.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 52, 0, 0, 0, 0, 0, 0, 34, 13, 99
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\constants.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 12, 26
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\gateway_packets.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 292, 0, 0, 0, 0, 0, 0, 108, 40, 440
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\http_packets.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 5, 59
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\idk.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 52, 0, 0, 0, 0, 0, 0, 2, 5, 59
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\remote_auth_packets.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 27, 9, 62
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 10, 27
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\attachment.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 2, 16
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\channel.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 153, 0, 0, 0, 0, 0, 0, 1, 28, 182
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\embed.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 3, 65
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\emoji.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\gateway.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 436, 0, 0, 0, 0, 0, 0, 12, 66, 514
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\guild.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 166, 0, 0, 0, 0, 0, 0, 5, 27, 198
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\interaction.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 2, 11
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\member.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\message.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 132, 0, 0, 0, 0, 0, 0, 3, 23, 158
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\protos.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 9, 3, 20
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\reaction.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 3, 11
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\relationship.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 5, 45
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\role.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 3, 27
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\sticker.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 6, 54
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\thread.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 1, 3, 17
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\user.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 138, 0, 0, 0, 0, 0, 0, 22, 12, 172
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\voice.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 6, 24
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\user.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 76, 0, 0, 0, 0, 0, 0, 1, 18, 95
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\voice_gateway_packets.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 123, 0, 0, 0, 0, 0, 0, 46, 23, 192
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\event_manager.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 0, 4, 8, 56
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\auth.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 1, 22, 164
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\debug.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\main_app.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 157, 0, 0, 0, 0, 0, 0, 3, 24, 184
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\main.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 130, 0, 0, 0, 0, 0, 0, 9, 31, 170
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\main_app_state.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 95, 0, 0, 0, 0, 0, 0, 1, 21, 117
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 7, 15
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\auth.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 542, 0, 0, 0, 0, 0, 0, 6, 51, 599
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\gateway.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 422, 0, 0, 0, 0, 0, 0, 24, 69, 515
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\gateway_utils.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 47, 15, 117
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\main_app.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 399, 0, 0, 0, 0, 0, 0, 8, 49, 456
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\remote_auth.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 349, 0, 0, 0, 0, 0, 0, 2, 55, 406
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\user_manager.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 2, 14, 120
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\voice_gateway.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 346, 0, 0, 0, 0, 0, 0, 0, 42, 388
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\websocket.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 0, 0, 0, 1, 8, 66
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\notifications.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 74, 0, 0, 0, 0, 0, 0, 8, 14, 96
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\Formated_Guilds.proto", "Protocol Buffers", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 9, 22
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\PreloadedUserSettings.proto", "Protocol Buffers", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 206, 0, 35, 241
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\d.proto", "Protocol Buffers", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 3, 8
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\tests.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 2, 9, 91
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\token_utils.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\webview_packets.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 161, 0, 0, 0, 0, 0, 0, 7, 19, 187
+"c:\Users\gamin\Desktop\Projects\strife\src-tauri\tauri.conf.json", "JSON", 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 92
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Channels.ts", "TypeScript", 0, 68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 75
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Guilds.ts", "TypeScript", 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 20, 202
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Messages.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 420, 0, 0, 0, 25, 38, 483
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Settings.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 117, 0, 0, 0, 1, 12, 130
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Style.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 192, 0, 0, 0, 26, 23, 241
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Tabs.ts", "TypeScript", 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 22, 199
+"c:\Users\gamin\Desktop\Projects\strife\src\API\User.ts", "TypeScript", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 50
+"c:\Users\gamin\Desktop\Projects\strife\src\API\Utils.ts", "TypeScript", 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11
+"c:\Users\gamin\Desktop\Projects\strife\src\API\anchor.d.ts", "TypeScript", 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"c:\Users\gamin\Desktop\Projects\strife\src\API\anchor.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"c:\Users\gamin\Desktop\Projects\strife\src\API\settings\Style.ts", "TypeScript", 0, 296, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 6, 304
+"c:\Users\gamin\Desktop\Projects\strife\src\API\tests\messages.test.ts", "TypeScript", 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 126
+"c:\Users\gamin\Desktop\Projects\strife\src\AppState.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 108, 0, 0, 0, 3, 15, 126
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Application\Application.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 0, 1, 3, 48
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Application\Application.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 1, 12, 91
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 0, 0, 0, 5, 17, 98
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelListCategory.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 3, 3, 38
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelListElement.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 4, 16, 109
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelTitle.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 157, 0, 0, 0, 0, 2, 159
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 214, 0, 5, 29, 248
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Attachments.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 9, 9, 42
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Attachments.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 10, 2, 82
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Chat.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 253, 0, 0, 0, 22, 23, 298
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Embed.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 217, 0, 3, 35, 255
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Embed.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 0, 5, 116
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Message.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 153, 0, 6, 39, 198
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Message.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 169, 0, 0, 0, 30, 18, 217
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageContextMenu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 2, 47
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageEditor.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 176, 0, 0, 0, 5, 13, 194
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageListVirtualized.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86, 0, 0, 0, 21, 7, 114
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageSender.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 146, 0, 0, 0, 3, 5, 154
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageUpdater.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 142, 0, 0, 0, 4, 5, 151
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\RecipientCategory.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 2, 22
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\Recipients.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\RecipientsList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 3, 83
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\TypingStatus.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 0, 0, 0, 0, 1, 77
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\UserMention.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 1, 3, 26
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 352, 0, 4, 24, 380
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\embeds\TwitterEmbed.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 9, 5, 125
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Checkbox\Checkbox.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 1, 7, 46
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Checkbox\Checkbox.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 2, 3, 26
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuItems\OpenInNewTab.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 4, 37
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\ContextMenu.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 4, 28
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\ContextMenu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 0, 0, 0, 11, 31, 262
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\contextMenu.d.ts", "TypeScript", 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenu\ContextMenu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 0, 12, 96
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\ContextPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 1, 43
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\ControlPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 1, 17
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\MediaPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 1, 21
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\UserPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 1, 4, 32
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 0, 1, 9, 91
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\DevTools\DevTools.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 5, 26
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\DevTools\DevTools.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 8, 41
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\Dev.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 3, 18
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\SplashText.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 6, 40
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\SplashText.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 5, 34
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\FriendsList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 0, 14, 119
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\FriendsTitle.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 1, 1, 12
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\Person.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 1, 5, 30
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 0, 14, 121
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\FriendsTab.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 72, 0, 0, 0, 5, 11, 88
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\Guild.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 4, 15, 108
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\GuildList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 0, 11, 105
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\GuildShadow.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 2, 6, 40
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 123, 0, 0, 20, 143
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Loading\Loading.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 137, 0, 0, 4, 141
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Loading\Loading.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 2, 15
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\LoginBox\LoginBox.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 5, 9, 72
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\MFABox\MFABox.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 0, 3, 8, 62
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\QRCode\QRCode.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 0, 0, 0, 2, 7, 52
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 108, 0, 1, 11, 120
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Popups\Popup.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\CssPropertyInput.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 2, 43
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\Settings.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 0, 0, 8, 124
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\Settings.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 0, 0, 0, 1, 6, 76
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsEntry.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 151, 0, 0, 0, 1, 16, 168
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsGroup.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 0, 5, 62
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsTypes.ts", "TypeScript", 0, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 102
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\SuspenseErrorBoundary\SuspenseErrorBoundary.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 2, 33
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Switch\Switch.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 8, 59
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Switch\Switch.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 1, 6, 29
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\Sortable.d.ts", "TypeScript", 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 0, 0, 0, 1, 13, 99
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabShadow.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 1, 9, 57
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabSortable.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 6, 13, 92
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabUtils.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 1, 6, 35
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabWindow.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 7, 47
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\Tabs.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 18, 105
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\WelcomeTab.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 2, 7, 28
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\VoiceChannel\VoiceChannel.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 3, 40
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\VoiceChannel\VoiceChannel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 171, 0, 0, 0, 1, 8, 180
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\WindowDecoration\WindowDecoration.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 4, 60
+"c:\Users\gamin\Desktop\Projects\strife\src\Components\WindowDecoration\css.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 6, 36
+"c:\Users\gamin\Desktop\Projects\strife\src\Constants.ts", "TypeScript", 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17
+"c:\Users\gamin\Desktop\Projects\strife\src\Locales\en_US.json", "JSON", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 42
+"c:\Users\gamin\Desktop\Projects\strife\src\Locales\pl_PL.json", "JSON", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 45
+"c:\Users\gamin\Desktop\Projects\strife\src\Redirect.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 2, 25
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\ComponentDocs.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 19, 97
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\ComponentDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 1, 9, 59
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\messageList.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 1, 6
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\messageMockups.ts", "TypeScript", 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 154
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\userMockUps.ts", "TypeScript", 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ButtonDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 2, 17
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ChatComponents\ChatDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 1, 4, 22
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ChatComponents\MessageDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 1, 10, 58
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\CheckboxDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 2, 22
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\InputDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 2, 15
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoadingDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 2, 14
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\LoginBoxDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 4, 38
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\MFABoxDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 4, 33
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\QRCodeDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 6, 47
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\SwitchDocs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 2, 22
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ContextMenu\ContextMenuTest.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 185, 0, 0, 0, 0, 16, 201
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\LoadingTest\LoadingTest.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 3, 20
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\LoadingTest\LoadingTest.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 1, 3, 34
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\Prev.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 197, 0, 0, 0, 7, 16, 220
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\prev.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 0, 0, 11, 79
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Error\Error.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 3, 60
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Error\Error.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 0, 0, 0, 23, 8, 122
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Login\Login.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 197, 0, 10, 29, 236
+"c:\Users\gamin\Desktop\Projects\strife\src\Routes\Login\Login.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 0, 0, 0, 12, 30, 268
+"c:\Users\gamin\Desktop\Projects\strife\src\StateSetter.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 0, 16, 7, 110
+"c:\Users\gamin\Desktop\Projects\strife\src\StateSetterNew.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86, 0, 0, 0, 15, 9, 110
+"c:\Users\gamin\Desktop\Projects\strife\src\Styles\Buttons.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 4, 20
+"c:\Users\gamin\Desktop\Projects\strife\src\Styles\Inputs.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 2, 23
+"c:\Users\gamin\Desktop\Projects\strife\src\Translation.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 106, 0, 0, 0, 0, 9, 115
+"c:\Users\gamin\Desktop\Projects\strife\src\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 0, 0, 0, 2, 16, 106
+"c:\Users\gamin\Desktop\Projects\strife\src\style.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 289, 0, 47, 53, 389
+"c:\Users\gamin\Desktop\Projects\strife\src\test.ts", "TypeScript", 0, 140, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 16, 161
+"c:\Users\gamin\Desktop\Projects\strife\src\types.ts", "TypeScript", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 6, 36
+"c:\Users\gamin\Desktop\Projects\strife\src\types\Auth.ts", "TypeScript", 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 57
+"c:\Users\gamin\Desktop\Projects\strife\src\types\Channel.ts", "TypeScript", 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 72
+"c:\Users\gamin\Desktop\Projects\strife\src\types\Guild.ts", "TypeScript", 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10, 69
+"c:\Users\gamin\Desktop\Projects\strife\src\types\Messages.ts", "TypeScript", 0, 68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 17, 92
+"c:\Users\gamin\Desktop\Projects\strife\src\types\SharedTypes.ts", "TypeScript", 0, 3160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 346, 3513
+"c:\Users\gamin\Desktop\Projects\strife\src\types\User.ts", "TypeScript", 0, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 32, 124
+"c:\Users\gamin\Desktop\Projects\strife\src\types\google\protobuf\timestamp.ts", "TypeScript", 0, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 108, 15, 199
+"c:\Users\gamin\Desktop\Projects\strife\src\types\google\protobuf\wrappers.ts", "TypeScript", 0, 409, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 62, 531
+"c:\Users\gamin\Desktop\Projects\strife\src\types\utils.ts", "TypeScript", 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 4, 24
+"c:\Users\gamin\Desktop\Projects\strife\src\voiceGateway.ts", "TypeScript", 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 41
+"c:\Users\gamin\Desktop\Projects\strife\test\SharedTypes.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 868, 0, 0, 0, 0, 0, 0, 84, 1, 953
+"c:\Users\gamin\Desktop\Projects\strife\test\SharedTypes.ts", "TypeScript", 0, 3160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 346, 3513
+"c:\Users\gamin\Desktop\Projects\strife\test\google\protobuf\timestamp.ts", "TypeScript", 0, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 108, 15, 199
+"c:\Users\gamin\Desktop\Projects\strife\test\google\protobuf\wrappers.ts", "TypeScript", 0, 409, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 62, 531
+"c:\Users\gamin\Desktop\Projects\strife\tests\hello.json", "JSON", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10
+"c:\Users\gamin\Desktop\Projects\strife\tests\ready WIP.json", "JSON", 306, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 307
+"c:\Users\gamin\Desktop\Projects\strife\tests\ready supplemental.json", "JSON", 306, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 307
+"c:\Users\gamin\Desktop\Projects\strife\tests\typing_start.json", "JSON", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"c:\Users\gamin\Desktop\Projects\strife\tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 25
+"c:\Users\gamin\Desktop\Projects\strife\types\Cargo.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 1, 4, 14
+"c:\Users\gamin\Desktop\Projects\strife\types\build.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 2, 3, 26
+"c:\Users\gamin\Desktop\Projects\strife\types\src\SharedTypes.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 868, 0, 0, 0, 0, 0, 0, 84, 1, 953
+"c:\Users\gamin\Desktop\Projects\strife\types\src\lib.rs", "Rust", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\gamin\Desktop\Projects\strife\vite.config.ts", "TypeScript", 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 2, 35
+"c:\Users\gamin\Desktop\Projects\strife\vitest.config.js", "JavaScript", 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 18
+"Total", "-", 14627, 8994, 42, 17, 24, 2, 57, 9198, 12119, 10, 6219, 2470, 2886, 549, 1633, 5090, 63937

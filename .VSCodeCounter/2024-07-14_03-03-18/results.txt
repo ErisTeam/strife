@@ -1,0 +1,397 @@
+Date : 2024-07-14 03:03:18
+Directory : c:\Users\gamin\Desktop\Projects\strife
+Total : 266 files,  57214 codes, 1633 comments, 5090 blanks, all 63937 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |         15 |     14,627 |          0 |         18 |     14,645 |
+| TOML               |          9 |     12,119 |         32 |      1,345 |     13,496 |
+| Rust               |         78 |      9,198 |        775 |      1,140 |     11,113 |
+| TypeScript         |         30 |      8,994 |        431 |      1,055 |     10,480 |
+| TypeScript JSX     |         82 |      6,219 |        305 |        663 |      7,187 |
+| CSS                |         31 |      2,886 |         90 |        394 |      3,370 |
+| YAML               |          1 |      2,470 |          0 |        347 |      2,817 |
+| Protocol Buffers   |          4 |        549 |          0 |        109 |        658 |
+| XML                |         10 |         57 |          0 |          7 |         64 |
+| HTML               |          2 |         42 |          0 |          7 |         49 |
+| JSON with Comments |          1 |         24 |          0 |          1 |         25 |
+| JavaScript         |          1 |         17 |          0 |          1 |         18 |
+| Markdown           |          1 |         10 |          0 |          3 |         13 |
+| Batch              |          1 |          2 |          0 |          0 |          2 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                      | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                         |        266 |     57,214 |      1,633 |      5,090 |     63,937 |
+| . (Files)                                                                                                 |         12 |      8,499 |         10 |        973 |      9,482 |
+| discord                                                                                                   |         27 |      3,103 |        199 |        465 |      3,767 |
+| discord (Files)                                                                                           |          2 |      1,220 |          7 |        163 |      1,390 |
+| discord\discord_macro                                                                                     |          2 |         88 |          6 |         27 |        121 |
+| discord\discord_macro (Files)                                                                             |          1 |         11 |          2 |          6 |         19 |
+| discord\discord_macro\src                                                                                 |          1 |         77 |          4 |         21 |        102 |
+| discord\src                                                                                               |         21 |      1,784 |        184 |        269 |      2,237 |
+| discord\src (Files)                                                                                       |          3 |        209 |          6 |         35 |        250 |
+| discord\src\types                                                                                         |         18 |      1,575 |        178 |        234 |      1,987 |
+| discord\websocket_message_macro                                                                           |          2 |         11 |          2 |          6 |         19 |
+| discord\websocket_message_macro (Files)                                                                   |          1 |         11 |          2 |          5 |         18 |
+| discord\websocket_message_macro\src                                                                       |          1 |          0 |          0 |          1 |          1 |
+| public                                                                                                    |         11 |        218 |          0 |         16 |        234 |
+| public (Files)                                                                                            |          2 |         25 |          0 |          0 |         25 |
+| public\LoginPage                                                                                          |          7 |         21 |          0 |          7 |         28 |
+| public\SplashScreen                                                                                       |          2 |        172 |          0 |          9 |        181 |
+| shared-types                                                                                              |          1 |        325 |          0 |         62 |        387 |
+| src                                                                                                       |        140 |     14,369 |        643 |      1,686 |     16,698 |
+| src (Files)                                                                                               |         11 |      1,006 |         91 |        139 |      1,236 |
+| src-tauri                                                                                                 |         63 |     24,633 |        435 |      1,452 |     26,520 |
+| src-tauri (Files)                                                                                         |          4 |      5,152 |         20 |        564 |      5,736 |
+| src-tauri\capabilities                                                                                    |          2 |         33 |          0 |          1 |         34 |
+| src-tauri\gen                                                                                             |          4 |     13,668 |          0 |          0 |     13,668 |
+| src-tauri\gen\schemas                                                                                     |          4 |     13,668 |          0 |          0 |     13,668 |
+| src-tauri\src                                                                                             |         53 |      5,780 |        415 |        887 |      7,082 |
+| src-tauri\src (Files)                                                                                     |         12 |        666 |         65 |        131 |        862 |
+| src-tauri\src\commands                                                                                    |          2 |        382 |         19 |         41 |        442 |
+| src-tauri\src\discord                                                                                     |         25 |      1,936 |        237 |        318 |      2,491 |
+| src-tauri\src\discord (Files)                                                                             |          8 |        654 |        184 |        122 |        960 |
+| src-tauri\src\discord\types                                                                               |         17 |      1,282 |         53 |        196 |      1,531 |
+| src-tauri\src\events                                                                                      |          3 |        298 |          4 |         47 |        349 |
+| src-tauri\src\modules                                                                                     |          8 |      2,274 |         90 |        303 |      2,667 |
+| src-tauri\src\proto                                                                                       |          3 |        224 |          0 |         47 |        271 |
+| src\API                                                                                                   |         12 |      1,631 |         69 |        138 |      1,838 |
+| src\API (Files)                                                                                           |         10 |      1,213 |         67 |        128 |      1,408 |
+| src\API\settings                                                                                          |          1 |        296 |          2 |          6 |        304 |
+| src\API\tests                                                                                             |          1 |        122 |          0 |          4 |        126 |
+| src\Components                                                                                            |         80 |      6,063 |        208 |        682 |      6,953 |
+| src\Components\Application                                                                                |          2 |        122 |          2 |         15 |        139 |
+| src\Components\ChannelList                                                                                |          5 |        568 |         17 |         67 |        652 |
+| src\Components\Chat                                                                                       |         19 |      2,253 |        127 |        202 |      2,582 |
+| src\Components\Chat (Files)                                                                               |         15 |      2,042 |        118 |        191 |      2,351 |
+| src\Components\Chat\Recipients                                                                            |          3 |        100 |          0 |          6 |        106 |
+| src\Components\Chat\embeds                                                                                |          1 |        111 |          9 |          5 |        125 |
+| src\Components\Checkbox                                                                                   |          2 |         59 |          3 |         10 |         72 |
+| src\Components\ContextMenu                                                                                |          1 |         84 |          0 |         12 |         96 |
+| src\Components\ContextMenuItems                                                                           |          1 |         33 |          0 |          4 |         37 |
+| src\Components\ContextMenuNew                                                                             |          3 |        252 |         11 |         36 |        299 |
+| src\Components\ControlPanel                                                                               |          5 |        186 |          2 |         16 |        204 |
+| src\Components\Dev                                                                                        |          3 |         77 |          1 |         14 |         92 |
+| src\Components\DevTools                                                                                   |          2 |         54 |          0 |         13 |         67 |
+| src\Components\Friends                                                                                    |          4 |        246 |          2 |         34 |        282 |
+| src\Components\Guild                                                                                      |          5 |        410 |         11 |         63 |        484 |
+| src\Components\Loading                                                                                    |          2 |        150 |          0 |          6 |        156 |
+| src\Components\Login                                                                                      |          4 |        260 |         11 |         35 |        306 |
+| src\Components\Login (Files)                                                                              |          1 |        108 |          1 |         11 |        120 |
+| src\Components\Login\LoginBox                                                                             |          1 |         58 |          5 |          9 |         72 |
+| src\Components\Login\MFABox                                                                               |          1 |         51 |          3 |          8 |         62 |
+| src\Components\Login\QRCode                                                                               |          1 |         43 |          2 |          7 |         52 |
+| src\Components\Popups                                                                                     |          1 |          0 |          0 |          1 |          1 |
+| src\Components\Settings                                                                                   |          6 |        524 |          8 |         43 |        575 |
+| src\Components\SuspenseErrorBoundary                                                                      |          1 |         31 |          0 |          2 |         33 |
+| src\Components\Switch                                                                                     |          2 |         73 |          1 |         14 |         88 |
+| src\Components\Tabs                                                                                       |          8 |        387 |         11 |         74 |        472 |
+| src\Components\VoiceChannel                                                                               |          2 |        208 |          1 |         11 |        220 |
+| src\Components\WindowDecoration                                                                           |          2 |         86 |          0 |         10 |         96 |
+| src\Locales                                                                                               |          2 |         82 |          0 |          5 |         87 |
+| src\Routes                                                                                                |         24 |      1,579 |         58 |        223 |      1,860 |
+| src\Routes\Dev                                                                                            |         20 |      1,008 |         13 |        153 |      1,174 |
+| src\Routes\Dev (Files)                                                                                    |          2 |        265 |          7 |         27 |        299 |
+| src\Routes\Dev\ComponentDocs                                                                              |         15 |        511 |          5 |        104 |        620 |
+| src\Routes\Dev\ComponentDocs (Files)                                                                      |          2 |        127 |          1 |         28 |        156 |
+| src\Routes\Dev\ComponentDocs\assets                                                                       |          3 |        136 |          2 |         38 |        176 |
+| src\Routes\Dev\ComponentDocs\docs                                                                         |         10 |        248 |          2 |         38 |        288 |
+| src\Routes\Dev\ComponentDocs\docs (Files)                                                                 |          5 |         80 |          0 |         10 |         90 |
+| src\Routes\Dev\ComponentDocs\docs\ChatComponents                                                          |          2 |         64 |          2 |         14 |         80 |
+| src\Routes\Dev\ComponentDocs\docs\LoginComponents                                                         |          3 |        104 |          0 |         14 |        118 |
+| src\Routes\Dev\ContextMenu                                                                                |          1 |        185 |          0 |         16 |        201 |
+| src\Routes\Dev\LoadingTest                                                                                |          2 |         47 |          1 |          6 |         54 |
+| src\Routes\Error                                                                                          |          2 |        148 |         23 |         11 |        182 |
+| src\Routes\Login                                                                                          |          2 |        423 |         22 |         59 |        504 |
+| src\Styles                                                                                                |          2 |         37 |          0 |          6 |         43 |
+| src\types                                                                                                 |          9 |      3,971 |        217 |        493 |      4,681 |
+| src\types (Files)                                                                                         |          7 |      3,486 |         49 |        416 |      3,951 |
+| src\types\google                                                                                          |          2 |        485 |        168 |         77 |        730 |
+| src\types\google\protobuf                                                                                 |          2 |        485 |        168 |         77 |        730 |
+| test                                                                                                      |          4 |      4,513 |        259 |        424 |      5,196 |
+| test (Files)                                                                                              |          2 |      4,028 |         91 |        347 |      4,466 |
+| test\google                                                                                               |          2 |        485 |        168 |         77 |        730 |
+| test\google\protobuf                                                                                      |          2 |        485 |        168 |         77 |        730 |
+| tests                                                                                                     |          4 |        655 |          0 |          4 |        659 |
+| types                                                                                                     |          4 |        899 |         87 |          8 |        994 |
+| types (Files)                                                                                             |          2 |         30 |          3 |          7 |         40 |
+| types\src                                                                                                 |          2 |        869 |         84 |          1 |        954 |
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                  | language           | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\gamin\Desktop\Projects\strife\Cargo.lock                                                         | TOML               |      5,820 |          2 |        608 |      6,430 |
+| c:\Users\gamin\Desktop\Projects\strife\Cargo.toml                                                         | TOML               |          6 |          0 |          4 |         10 |
+| c:\Users\gamin\Desktop\Projects\strife\README.md                                                          | Markdown           |         10 |          0 |          3 |         13 |
+| c:\Users\gamin\Desktop\Projects\strife\biome.json                                                         | JSON               |         48 |          0 |          2 |         50 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\Cargo.lock                                                 | TOML               |      1,192 |          2 |        152 |      1,346 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\Cargo.toml                                                 | TOML               |         28 |          5 |         11 |         44 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\discord_macro\Cargo.toml                                   | TOML               |         11 |          2 |          6 |         19 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\discord_macro\src\lib.rs                                   | Rust               |         77 |          4 |         21 |        102 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\lib.rs                                                 | Rust               |        127 |          1 |         16 |        144 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\attachment.rs                                    | Rust               |         14 |          0 |          1 |         15 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\channel.rs                                       | Rust               |        153 |          1 |         28 |        182 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\embed.rs                                         | Rust               |         62 |          0 |          2 |         64 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\emoji.rs                                         | Rust               |         13 |          0 |          3 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\gateway.rs                                       | Rust               |        432 |         12 |         66 |        510 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\guild.rs                                         | Rust               |        461 |        118 |         63 |        642 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\interaction.rs                                   | Rust               |          9 |          0 |          1 |         10 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\member.rs                                        | Rust               |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\message.rs                                       | Rust               |        132 |          3 |         23 |        158 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\mod.rs                                           | Rust               |          3 |         14 |          2 |         19 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\protos.rs                                        | Rust               |         20 |          0 |          3 |         23 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\reaction.rs                                      | Rust               |          8 |          0 |          2 |         10 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\relationship.rs                                  | Rust               |         37 |          0 |          5 |         42 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\role.rs                                          | Rust               |         24 |          0 |          3 |         27 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\sticker.rs                                       | Rust               |         48 |          0 |          6 |         54 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\thread.rs                                        | Rust               |         13 |          1 |          3 |         17 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\user.rs                                          | Rust               |        128 |         29 |         17 |        174 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\types\voice.rs                                         | Rust               |         18 |          0 |          5 |         23 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\websocket_connection.rs                                | Rust               |         49 |          1 |          8 |         58 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\src\websocket_trait.rs                                     | Rust               |         33 |          4 |         11 |         48 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\websocket_message_macro\Cargo.toml                         | TOML               |         11 |          2 |          5 |         18 |
+| c:\Users\gamin\Desktop\Projects\strife\discord\websocket_message_macro\src\lib.rs                         | Rust               |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\generateTypes.bat                                                  | Batch              |          2 |          0 |          0 |          2 |
+| c:\Users\gamin\Desktop\Projects\strife\icon.svg                                                           | XML                |         11 |          0 |          0 |         11 |
+| c:\Users\gamin\Desktop\Projects\strife\index.html                                                         | HTML               |         12 |          0 |          4 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\package.json                                                       | JSON               |         54 |          0 |          1 |         55 |
+| c:\Users\gamin\Desktop\Projects\strife\pnpm-lock.yaml                                                     | YAML               |      2,470 |          0 |        347 |      2,817 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom1.svg                                   | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom2.svg                                   | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftBottom3.svg                                   | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftTop1.svg                                      | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\LeftTop2.svg                                      | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\RightTop1.svg                                     | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\LoginPage\RightTop2.svg                                     | XML                |          3 |          0 |          1 |          4 |
+| c:\Users\gamin\Desktop\Projects\strife\public\SplashScreen\splashscreen.css                               | CSS                |        142 |          0 |          6 |        148 |
+| c:\Users\gamin\Desktop\Projects\strife\public\SplashScreen\splashscreen.html                              | HTML               |         30 |          0 |          3 |         33 |
+| c:\Users\gamin\Desktop\Projects\strife\public\icon.svg                                                    | XML                |         11 |          0 |          0 |         11 |
+| c:\Users\gamin\Desktop\Projects\strife\public\test.svg                                                    | XML                |         14 |          0 |          0 |         14 |
+| c:\Users\gamin\Desktop\Projects\strife\shared-types\SharedTypes.proto                                     | Protocol Buffers   |        325 |          0 |         62 |        387 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\Cargo.lock                                               | TOML               |      4,976 |          2 |        532 |      5,510 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\Cargo.toml                                               | TOML               |         66 |         16 |         23 |        105 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\build.rs                                                 | Rust               |         23 |          2 |          4 |         29 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\capabilities\main.json                                   | JSON               |         13 |          0 |          1 |         14 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\capabilities\migrated.json                               | JSON               |         20 |          0 |          0 |         20 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\acl-manifests.json                           | JSON               |          1 |          0 |          0 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\capabilities.json                            | JSON               |          1 |          0 |          0 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\desktop-schema.json                          | JSON               |      6,833 |          0 |          0 |      6,833 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\gen\schemas\windows-schema.json                          | JSON               |      6,833 |          0 |          0 |      6,833 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands.rs                                          | Rust               |          2 |          0 |          1 |          3 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands\general.rs                                  | Rust               |        127 |          8 |         12 |        147 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\commands\main_app.rs                                 | Rust               |        255 |         11 |         29 |        295 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\dev.rs                                               | Rust               |         52 |         34 |         13 |         99 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord.rs                                           | Rust               |         11 |          0 |          5 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\constants.rs                                 | Rust               |         14 |          0 |         12 |         26 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\gateway_packets.rs                           | Rust               |        292 |        108 |         40 |        440 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\http_packets.rs                              | Rust               |         54 |          0 |          5 |         59 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\idk.rs                                       | Rust               |         52 |          2 |          5 |         59 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\remote_auth_packets.rs                       | Rust               |         26 |         27 |          9 |         62 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types.rs                                     | Rust               |         17 |          0 |         10 |         27 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\attachment.rs                          | Rust               |         14 |          0 |          2 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\channel.rs                             | Rust               |        153 |          1 |         28 |        182 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\embed.rs                               | Rust               |         62 |          0 |          3 |         65 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\emoji.rs                               | Rust               |         13 |          0 |          3 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\gateway.rs                             | Rust               |        436 |         12 |         66 |        514 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\guild.rs                               | Rust               |        166 |          5 |         27 |        198 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\interaction.rs                         | Rust               |          9 |          0 |          2 |         11 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\member.rs                              | Rust               |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\message.rs                             | Rust               |        132 |          3 |         23 |        158 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\protos.rs                              | Rust               |          8 |          9 |          3 |         20 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\reaction.rs                            | Rust               |          8 |          0 |          3 |         11 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\relationship.rs                        | Rust               |         40 |          0 |          5 |         45 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\role.rs                                | Rust               |         24 |          0 |          3 |         27 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\sticker.rs                             | Rust               |         48 |          0 |          6 |         54 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\thread.rs                              | Rust               |         13 |          1 |          3 |         17 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\user.rs                                | Rust               |        138 |         22 |         12 |        172 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\types\voice.rs                               | Rust               |         18 |          0 |          6 |         24 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\user.rs                                      | Rust               |         76 |          1 |         18 |         95 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\discord\voice_gateway_packets.rs                     | Rust               |        123 |         46 |         23 |        192 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\event_manager.rs                                     | Rust               |         44 |          4 |          8 |         56 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events.rs                                            | Rust               |          2 |          0 |          1 |          3 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\auth.rs                                       | Rust               |        141 |          1 |         22 |        164 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\debug.rs                                      | Rust               |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\events\main_app.rs                                   | Rust               |        157 |          3 |         24 |        184 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\main.rs                                              | Rust               |        130 |          9 |         31 |        170 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\main_app_state.rs                                    | Rust               |         95 |          1 |         21 |        117 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules.rs                                           | Rust               |          8 |          0 |          7 |         15 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\auth.rs                                      | Rust               |        542 |          6 |         51 |        599 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\gateway.rs                                   | Rust               |        422 |         24 |         69 |        515 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\gateway_utils.rs                             | Rust               |         55 |         47 |         15 |        117 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\main_app.rs                                  | Rust               |        399 |          8 |         49 |        456 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\remote_auth.rs                               | Rust               |        349 |          2 |         55 |        406 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\user_manager.rs                              | Rust               |        104 |          2 |         14 |        120 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\voice_gateway.rs                             | Rust               |        346 |          0 |         42 |        388 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\modules\websocket.rs                                 | Rust               |         57 |          1 |          8 |         66 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\notifications.rs                                     | Rust               |         74 |          8 |         14 |         96 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\Formated_Guilds.proto                          | Protocol Buffers   |         13 |          0 |          9 |         22 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\PreloadedUserSettings.proto                    | Protocol Buffers   |        206 |          0 |         35 |        241 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\proto\d.proto                                        | Protocol Buffers   |          5 |          0 |          3 |          8 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\tests.rs                                             | Rust               |         80 |          2 |          9 |         91 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\token_utils.rs                                       | Rust               |          7 |          0 |          2 |          9 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\src\webview_packets.rs                                   | Rust               |        161 |          7 |         19 |        187 |
+| c:\Users\gamin\Desktop\Projects\strife\src-tauri\tauri.conf.json                                          | JSON               |         87 |          0 |          5 |         92 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Channels.ts                                                | TypeScript         |         68 |          2 |          5 |         75 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Guilds.ts                                                  | TypeScript         |        180 |          2 |         20 |        202 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Messages.tsx                                               | TypeScript JSX     |        420 |         25 |         38 |        483 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Settings.tsx                                               | TypeScript JSX     |        117 |          1 |         12 |        130 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Style.tsx                                                  | TypeScript JSX     |        192 |         26 |         23 |        241 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Tabs.ts                                                    | TypeScript         |        170 |          7 |         22 |        199 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\User.ts                                                    | TypeScript         |         42 |          4 |          4 |         50 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\Utils.ts                                                   | TypeScript         |          9 |          0 |          2 |         11 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\anchor.d.ts                                                | TypeScript         |          8 |          0 |          1 |          9 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\anchor.tsx                                                 | TypeScript JSX     |          7 |          0 |          1 |          8 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\settings\Style.ts                                          | TypeScript         |        296 |          2 |          6 |        304 |
+| c:\Users\gamin\Desktop\Projects\strife\src\API\tests\messages.test.ts                                     | TypeScript         |        122 |          0 |          4 |        126 |
+| c:\Users\gamin\Desktop\Projects\strife\src\AppState.tsx                                                   | TypeScript JSX     |        108 |          3 |         15 |        126 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Application\Application.module.css                  | CSS                |         44 |          1 |          3 |         48 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Application\Application.tsx                         | TypeScript JSX     |         78 |          1 |         12 |         91 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelList.tsx                         | TypeScript JSX     |         76 |          5 |         17 |         98 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelListCategory.tsx                 | TypeScript JSX     |         32 |          3 |          3 |         38 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelListElement.tsx                  | TypeScript JSX     |         89 |          4 |         16 |        109 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\ChannelTitle.tsx                        | TypeScript JSX     |        157 |          0 |          2 |        159 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ChannelList\css.module.css                          | CSS                |        214 |          5 |         29 |        248 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Attachments.module.css                         | CSS                |         24 |          9 |          9 |         42 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Attachments.tsx                                | TypeScript JSX     |         70 |         10 |          2 |         82 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Chat.tsx                                       | TypeScript JSX     |        253 |         22 |         23 |        298 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Embed.module.css                               | CSS                |        217 |          3 |         35 |        255 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Embed.tsx                                      | TypeScript JSX     |        111 |          0 |          5 |        116 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Message.module.css                             | CSS                |        153 |          6 |         39 |        198 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Message.tsx                                    | TypeScript JSX     |        169 |         30 |         18 |        217 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageContextMenu.tsx                         | TypeScript JSX     |         45 |          0 |          2 |         47 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageEditor.tsx                              | TypeScript JSX     |        176 |          5 |         13 |        194 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageListVirtualized.tsx                     | TypeScript JSX     |         86 |         21 |          7 |        114 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageSender.tsx                              | TypeScript JSX     |        146 |          3 |          5 |        154 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\MessageUpdater.tsx                             | TypeScript JSX     |        142 |          4 |          5 |        151 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\RecipientCategory.tsx               | TypeScript JSX     |         20 |          0 |          2 |         22 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\Recipients.module.css               | CSS                |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\Recipients\RecipientsList.tsx                  | TypeScript JSX     |         80 |          0 |          3 |         83 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\TypingStatus.tsx                               | TypeScript JSX     |         76 |          0 |          1 |         77 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\UserMention.tsx                                | TypeScript JSX     |         22 |          1 |          3 |         26 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\css.module.css                                 | CSS                |        352 |          4 |         24 |        380 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Chat\embeds\TwitterEmbed.tsx                        | TypeScript JSX     |        111 |          9 |          5 |        125 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Checkbox\Checkbox.module.css                        | CSS                |         38 |          1 |          7 |         46 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Checkbox\Checkbox.tsx                               | TypeScript JSX     |         21 |          2 |          3 |         26 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuItems\OpenInNewTab.tsx                   | TypeScript JSX     |         33 |          0 |          4 |         37 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\ContextMenu.module.css               | CSS                |         24 |          0 |          4 |         28 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\ContextMenu.tsx                      | TypeScript JSX     |        220 |         11 |         31 |        262 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenuNew\contextMenu.d.ts                     | TypeScript         |          8 |          0 |          1 |          9 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ContextMenu\ContextMenu.tsx                         | TypeScript JSX     |         84 |          0 |         12 |         96 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\ContextPanel.tsx                       | TypeScript JSX     |         42 |          0 |          1 |         43 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\ControlPanel.tsx                       | TypeScript JSX     |         16 |          0 |          1 |         17 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\MediaPanel.tsx                         | TypeScript JSX     |         20 |          0 |          1 |         21 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\UserPanel.tsx                          | TypeScript JSX     |         27 |          1 |          4 |         32 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\ControlPanel\css.module.css                         | CSS                |         81 |          1 |          9 |         91 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\DevTools\DevTools.module.css                        | CSS                |         21 |          0 |          5 |         26 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\DevTools\DevTools.tsx                               | TypeScript JSX     |         33 |          0 |          8 |         41 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\Dev.tsx                                         | TypeScript JSX     |         14 |          1 |          3 |         18 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\SplashText.module.css                           | CSS                |         34 |          0 |          6 |         40 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Dev\SplashText.tsx                                  | TypeScript JSX     |         29 |          0 |          5 |         34 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\FriendsList.tsx                             | TypeScript JSX     |        105 |          0 |         14 |        119 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\FriendsTitle.tsx                            | TypeScript JSX     |         10 |          1 |          1 |         12 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\Person.tsx                                  | TypeScript JSX     |         24 |          1 |          5 |         30 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Friends\css.module.css                              | CSS                |        107 |          0 |         14 |        121 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\FriendsTab.tsx                                | TypeScript JSX     |         72 |          5 |         11 |         88 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\Guild.tsx                                     | TypeScript JSX     |         89 |          4 |         15 |        108 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\GuildList.tsx                                 | TypeScript JSX     |         94 |          0 |         11 |        105 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\GuildShadow.tsx                               | TypeScript JSX     |         32 |          2 |          6 |         40 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Guild\css.module.css                                | CSS                |        123 |          0 |         20 |        143 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Loading\Loading.module.css                          | CSS                |        137 |          0 |          4 |        141 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Loading\Loading.tsx                                 | TypeScript JSX     |         13 |          0 |          2 |         15 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\LoginBox\LoginBox.tsx                         | TypeScript JSX     |         58 |          5 |          9 |         72 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\MFABox\MFABox.tsx                             | TypeScript JSX     |         51 |          3 |          8 |         62 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\QRCode\QRCode.tsx                             | TypeScript JSX     |         43 |          2 |          7 |         52 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Login\css.module.css                                | CSS                |        108 |          1 |         11 |        120 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Popups\Popup.tsx                                    | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\CssPropertyInput.tsx                       | TypeScript JSX     |         41 |          0 |          2 |         43 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\Settings.module.css                        | CSS                |        116 |          0 |          8 |        124 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\Settings.tsx                               | TypeScript JSX     |         69 |          1 |          6 |         76 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsEntry.tsx                          | TypeScript JSX     |        151 |          1 |         16 |        168 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsGroup.tsx                          | TypeScript JSX     |         57 |          0 |          5 |         62 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Settings\SettingsTypes.ts                           | TypeScript         |         90 |          6 |          6 |        102 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\SuspenseErrorBoundary\SuspenseErrorBoundary.tsx     | TypeScript JSX     |         31 |          0 |          2 |         33 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Switch\Switch.module.css                            | CSS                |         51 |          0 |          8 |         59 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Switch\Switch.tsx                                   | TypeScript JSX     |         22 |          1 |          6 |         29 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\Sortable.d.ts                                  | TypeScript         |          8 |          0 |          1 |          9 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabList.tsx                                    | TypeScript JSX     |         85 |          1 |         13 |         99 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabShadow.tsx                                  | TypeScript JSX     |         47 |          1 |          9 |         57 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabSortable.tsx                                | TypeScript JSX     |         73 |          6 |         13 |         92 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabUtils.tsx                                   | TypeScript JSX     |         28 |          1 |          6 |         35 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\TabWindow.tsx                                  | TypeScript JSX     |         40 |          0 |          7 |         47 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\Tabs.module.css                                | CSS                |         87 |          0 |         18 |        105 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\Tabs\WelcomeTab.tsx                                 | TypeScript JSX     |         19 |          2 |          7 |         28 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\VoiceChannel\VoiceChannel.module.css                | CSS                |         37 |          0 |          3 |         40 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\VoiceChannel\VoiceChannel.tsx                       | TypeScript JSX     |        171 |          1 |          8 |        180 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\WindowDecoration\WindowDecoration.tsx               | TypeScript JSX     |         56 |          0 |          4 |         60 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Components\WindowDecoration\css.module.css                     | CSS                |         30 |          0 |          6 |         36 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Constants.ts                                                   | TypeScript         |         16 |          0 |          1 |         17 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Locales\en_US.json                                             | JSON               |         41 |          0 |          1 |         42 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Locales\pl_PL.json                                             | JSON               |         41 |          0 |          4 |         45 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Redirect.tsx                                                   | TypeScript JSX     |         23 |          0 |          2 |         25 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\ComponentDocs.module.css              | CSS                |         78 |          0 |         19 |         97 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\ComponentDocs.tsx                     | TypeScript JSX     |         49 |          1 |          9 |         59 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\messageList.module.css         | CSS                |          3 |          2 |          1 |          6 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\messageMockups.ts              | TypeScript         |        120 |          0 |         34 |        154 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\assets\userMockUps.ts                 | TypeScript         |         13 |          0 |          3 |         16 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ButtonDocs.tsx                   | TypeScript JSX     |         15 |          0 |          2 |         17 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ChatComponents\ChatDocs.tsx      | TypeScript JSX     |         17 |          1 |          4 |         22 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\ChatComponents\MessageDocs.tsx   | TypeScript JSX     |         47 |          1 |         10 |         58 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\CheckboxDocs.tsx                 | TypeScript JSX     |         20 |          0 |          2 |         22 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\InputDocs.tsx                    | TypeScript JSX     |         13 |          0 |          2 |         15 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoadingDocs.tsx                  | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\LoginBoxDocs.tsx | TypeScript JSX     |         34 |          0 |          4 |         38 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\MFABoxDocs.tsx   | TypeScript JSX     |         29 |          0 |          4 |         33 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\LoginComponents\QRCodeDocs.tsx   | TypeScript JSX     |         41 |          0 |          6 |         47 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ComponentDocs\docs\SwitchDocs.tsx                   | TypeScript JSX     |         20 |          0 |          2 |         22 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\ContextMenu\ContextMenuTest.tsx                     | TypeScript JSX     |        185 |          0 |         16 |        201 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\LoadingTest\LoadingTest.module.css                  | CSS                |         17 |          0 |          3 |         20 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\LoadingTest\LoadingTest.tsx                         | TypeScript JSX     |         30 |          1 |          3 |         34 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\Prev.tsx                                            | TypeScript JSX     |        197 |          7 |         16 |        220 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Dev\prev.module.css                                     | CSS                |         68 |          0 |         11 |         79 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Error\Error.module.css                                  | CSS                |         57 |          0 |          3 |         60 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Error\Error.tsx                                         | TypeScript JSX     |         91 |         23 |          8 |        122 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Login\Login.module.css                                  | CSS                |        197 |         10 |         29 |        236 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Routes\Login\Login.tsx                                         | TypeScript JSX     |        226 |         12 |         30 |        268 |
+| c:\Users\gamin\Desktop\Projects\strife\src\StateSetter.tsx                                                | TypeScript JSX     |         87 |         16 |          7 |        110 |
+| c:\Users\gamin\Desktop\Projects\strife\src\StateSetterNew.tsx                                             | TypeScript JSX     |         86 |         15 |          9 |        110 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Styles\Buttons.module.css                                      | CSS                |         16 |          0 |          4 |         20 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Styles\Inputs.module.css                                       | CSS                |         21 |          0 |          2 |         23 |
+| c:\Users\gamin\Desktop\Projects\strife\src\Translation.tsx                                                | TypeScript JSX     |        106 |          0 |          9 |        115 |
+| c:\Users\gamin\Desktop\Projects\strife\src\index.tsx                                                      | TypeScript JSX     |         88 |          2 |         16 |        106 |
+| c:\Users\gamin\Desktop\Projects\strife\src\style.css                                                      | CSS                |        289 |         47 |         53 |        389 |
+| c:\Users\gamin\Desktop\Projects\strife\src\test.ts                                                        | TypeScript         |        140 |          5 |         16 |        161 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types.ts                                                       | TypeScript         |         28 |          2 |          6 |         36 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\Auth.ts                                                  | TypeScript         |         55 |          0 |          2 |         57 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\Channel.ts                                               | TypeScript         |         66 |          1 |          5 |         72 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\Guild.ts                                                 | TypeScript         |         58 |          1 |         10 |         69 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\Messages.ts                                              | TypeScript         |         68 |          7 |         17 |         92 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\SharedTypes.ts                                           | TypeScript         |      3,160 |          7 |        346 |      3,513 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\User.ts                                                  | TypeScript         |         67 |         25 |         32 |        124 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\google\protobuf\timestamp.ts                             | TypeScript         |         76 |        108 |         15 |        199 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\google\protobuf\wrappers.ts                              | TypeScript         |        409 |         60 |         62 |        531 |
+| c:\Users\gamin\Desktop\Projects\strife\src\types\utils.ts                                                 | TypeScript         |         12 |          8 |          4 |         24 |
+| c:\Users\gamin\Desktop\Projects\strife\src\voiceGateway.ts                                                | TypeScript         |         35 |          1 |          5 |         41 |
+| c:\Users\gamin\Desktop\Projects\strife\test\SharedTypes.rs                                                | Rust               |        868 |         84 |          1 |        953 |
+| c:\Users\gamin\Desktop\Projects\strife\test\SharedTypes.ts                                                | TypeScript         |      3,160 |          7 |        346 |      3,513 |
+| c:\Users\gamin\Desktop\Projects\strife\test\google\protobuf\timestamp.ts                                  | TypeScript         |         76 |        108 |         15 |        199 |
+| c:\Users\gamin\Desktop\Projects\strife\test\google\protobuf\wrappers.ts                                   | TypeScript         |        409 |         60 |         62 |        531 |
+| c:\Users\gamin\Desktop\Projects\strife\tests\hello.json                                                   | JSON               |          9 |          0 |          1 |         10 |
+| c:\Users\gamin\Desktop\Projects\strife\tests\ready WIP.json                                               | JSON               |        306 |          0 |          1 |        307 |
+| c:\Users\gamin\Desktop\Projects\strife\tests\ready supplemental.json                                      | JSON               |        306 |          0 |          1 |        307 |
+| c:\Users\gamin\Desktop\Projects\strife\tests\typing_start.json                                            | JSON               |         34 |          0 |          1 |         35 |
+| c:\Users\gamin\Desktop\Projects\strife\tsconfig.json                                                      | JSON with Comments |         24 |          0 |          1 |         25 |
+| c:\Users\gamin\Desktop\Projects\strife\types\Cargo.toml                                                   | TOML               |          9 |          1 |          4 |         14 |
+| c:\Users\gamin\Desktop\Projects\strife\types\build.rs                                                     | Rust               |         21 |          2 |          3 |         26 |
+| c:\Users\gamin\Desktop\Projects\strife\types\src\SharedTypes.rs                                           | Rust               |        868 |         84 |          1 |        953 |
+| c:\Users\gamin\Desktop\Projects\strife\types\src\lib.rs                                                   | Rust               |          1 |          0 |          0 |          1 |
+| c:\Users\gamin\Desktop\Projects\strife\vite.config.ts                                                     | TypeScript         |         25 |          8 |          2 |         35 |
+| c:\Users\gamin\Desktop\Projects\strife\vitest.config.js                                                   | JavaScript         |         17 |          0 |          1 |         18 |
+| Total                                                                                                     |                    |     57,214 |      1,633 |      5,090 |     63,937 |
++-----------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

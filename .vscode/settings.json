@@ -1,6 +1,10 @@
 {
-	"easynpm.packageManager": "pnpm",
-	"[rust]": {
-		"editor.defaultFormatter": "jinxdash.prettier-rust"
-	}
+  "easynpm.packageManager": "pnpm",
+  "[rust]": {
+    "editor.defaultFormatter": "jinxdash.prettier-rust"
+  },
+  "rust-analyzer.server.extraEnv": {
+    "CARGO_TARGET_DIR": "target/analyzer"
+  },
+  "rust-analyzer.check.extraArgs": ["--target-dir=target/analyzer"]
 }

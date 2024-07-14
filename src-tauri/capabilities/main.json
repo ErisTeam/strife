@@ -6,6 +6,22 @@
   "permissions": [
     "fs:default",
     {
+      "identifier": "fs:allow-appdata-write-recursive",
+      "allow": [{ "path": "*" }]
+    },
+    {
+      "identifier": "fs:allow-appdata-read-recursive",
+      "allow": [{ "path": "*" }]
+    },
+    {
+      "identifier": "fs:allow-applocaldata-read-recursive",
+      "allow": [{ "path": "*" }]
+    },
+    {
+      "identifier": "fs:allow-applocaldata-write-recursive",
+      "allow": [{ "path": "*" }]
+    },
+    {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "*" }]
     }

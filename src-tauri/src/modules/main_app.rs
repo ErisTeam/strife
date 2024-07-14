@@ -17,6 +17,7 @@ use crate::discord::types::guild::strife::{Group, GroupType, GuildListData};
 use crate::discord::types::user::PublicUser;
 use crate::discord::types::SnowFlake;
 use crate::discord::user::UserData;
+
 use crate::{token_utils, webview_packets, Result};
 
 use super::gateway::{Gateway, Messages};
