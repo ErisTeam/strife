@@ -5,25 +5,19 @@
   "windows": ["main"],
   "permissions": [
     "fs:default",
-    {
-      "identifier": "fs:allow-appdata-write-recursive",
-      "allow": [{ "path": "*" }]
-    },
-    {
-      "identifier": "fs:allow-appdata-read-recursive",
-      "allow": [{ "path": "*" }]
-    },
-    {
-      "identifier": "fs:allow-applocaldata-read-recursive",
-      "allow": [{ "path": "*" }]
-    },
-    {
-      "identifier": "fs:allow-applocaldata-write-recursive",
-      "allow": [{ "path": "*" }]
-    },
+    "fs:write-all",
+    "fs:read-all",
     {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "*" }]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$APPDATA" },
+        { "path": "$APPDATA/**" },
+        { "path": "*" }
+      ]
     }
   ]
 }

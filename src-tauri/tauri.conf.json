@@ -47,13 +47,7 @@
       }
     ]
   },
-  "plugins": {
-    "fs": {
-      "scope": {
-        "allow": ["*"]
-      }
-    }
-  },
+  "plugins": {},
 
   "productName": "PandaCord",
   "version": "0.0.0",
