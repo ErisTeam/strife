@@ -77,7 +77,7 @@ export function ChannelListElement(props: ChannelProps) {
     }
   }
 
-  const channelIcon = createMemo((): string | Component => {
+  const channelIcon = createMemo((): string | Element => {
     const { emoji, newName } = getChannelIcon(props.data);
     setDisplayName(newName);
     console.log('emoji', emoji);
@@ -93,7 +93,7 @@ export function ChannelListElement(props: ChannelProps) {
           <div class={style.channelIcon}>
             <Switch>
               <Match when={typeof channelIcon() === 'function'}>
-                <Dynamic component={channelIcon()} />
+                <Dynamic component={channelIcon} />
               </Match>
               <Match when={typeof channelIcon() === 'string'}>
                 {channelIcon() as string}

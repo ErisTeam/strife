@@ -58,7 +58,9 @@ winrt-notification = "0.5.1"
 #Logging📋
 fern = { version = "0.6.2", features = ["colored"] }
 log = { version = "0.4.19", features = ["max_level_debug"] }
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2", features = ["colored"] }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2", features = [
+	"colored",
+] }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }
 
 chrono = "0.4.26"
@@ -71,9 +73,7 @@ prost-types = "0.13.1"
 reqwest = { version = "0.12.5", features = ["json"] }
 
 #🕸socket
-tokio-tungstenite = { version = "0.23.1", features = [
-	"rustls-tls-webpki-roots",
-] }
+tokio-tungstenite = { version = "0.23.1", features = ["native-tls"] }
 
 anyhow = "1.0.79"
 serde-error = "0.1.2"
