@@ -44,6 +44,7 @@ const [settingsCategories, setSettingsCategories] = createStore<
   SettingsCategory[]
 >(defaultSettings.categories);
 const [settingsEntries, setSettingsEntries] = createStore<SettingsEntry[]>([]);
+const [userId, setUserId] = createSignal();
 
 const ContextValue = {
   userGuilds,
@@ -71,7 +72,8 @@ const ContextValue = {
     }
     setCurrentTabIdx(index);
   },
-
+  userId,
+  setUserId,
   currentGuild,
   setCurrentGuild,
   currentState,
@@ -94,8 +96,8 @@ export function AppStateProvider(props: {
   userId: string;
   children: JSX.Element[] | JSX.Element;
 }) {
-  const [userId, setUserId] = createSignal(props.userId);
   console.log('UserId', userId(), props);
+  setUserId(props.userId);
   return (
     <AppState.Provider
       value={

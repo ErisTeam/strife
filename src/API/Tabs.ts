@@ -159,7 +159,7 @@ export async function saveToFile() {
 
 	//uint8array
 	const data = new TextEncoder().encode(JSON.stringify(tabsFile));
-	await writeFile(tabsPath, data);
+	await writeFile(tabsPath, data, { baseDir: BaseDirectory.AppData });
 }
 export async function loadFromFile(): Promise<boolean> {
 	const AppState = useAppState();
