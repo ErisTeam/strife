@@ -85,9 +85,8 @@ export function ChannelListElement(props: ChannelProps) {
     return emoji;
   });
 
-  const openRef: HTMLLIElement | undefined = undefined;
   return (
-    <li class={style.channel} ref={openRef} use:contextMenu>
+    <li class={style.channel} use:contextMenu>
       <button onMouseDown={onMouseDown} type="button">
         <div class={style.channelIcon}>
           <Switch>
