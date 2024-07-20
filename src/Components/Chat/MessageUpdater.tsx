@@ -7,6 +7,7 @@ import type { Message as MessageType } from '../../types/Messages';
 import type { UploadFile } from './Chat';
 import { sendMessage } from '@/API/Messages';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { useAppState } from '@/AppState';
 type MessageUpdaterProps = {
   message: MessageType;
   setIsEditing: Setter<boolean>;
@@ -16,9 +17,10 @@ export function MessageUpdater(props: MessageUpdaterProps) {
   const [files, setFiles] = createSignal<UploadFile[]>([]);
 
   console.log('updater props', props);
-
+  const AppState = useAppState();
   async function updateMessage() {
     await sendMessage(
+      AppState,
       props.message.channel_id,
       props.message.id,
       msgText(),

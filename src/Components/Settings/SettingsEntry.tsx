@@ -24,12 +24,12 @@ import { saveToFile } from '@/API/Settings';
 function updateSettingsEntry(index: number, newValue: any) {
   const AppState = useAppState();
 
-  const entry = AppState.settings.entries[index];
+  const entry = AppState.settingsEntries[index];
   if (entry.formatValue) {
     newValue = entry.formatValue(newValue as never);
   }
 
-  AppState.settings.setEntries(
+  AppState.setSettingsEntries(
     index,
     produce((draft) => {
       draft.value = newValue;
@@ -40,7 +40,7 @@ function updateSettingsEntry(index: number, newValue: any) {
     new CustomEvent('settingsChanged', { detail: { id: entry.id } })
   );
 
-  console.log(AppState.settings.entries);
+  console.log(AppState.settingsEntries);
   saveToFile();
 }
 

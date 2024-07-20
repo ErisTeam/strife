@@ -131,7 +131,7 @@ export function LoginPage() {
       })
     );
     //TODO: check if correct usage
-    updateCurrentUserID().catch((e) => {
+    updateCurrentUserID(appState).catch((e) => {
       console.log(e);
     });
   }

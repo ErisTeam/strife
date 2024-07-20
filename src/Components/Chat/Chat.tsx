@@ -1,26 +1,26 @@
-import { For, Show, createResource, createSignal, onMount } from "solid-js";
-import { useAppState } from "../../AppState";
+import { For, Show, createResource, createSignal, onMount } from 'solid-js';
+import { useAppState } from '../../AppState';
 import type {
   MessageReference,
   Message as MessageType,
-} from "../../types/Messages";
-import { type messageCreate, startGatewayListener } from "../../test";
-import { useTabContext } from "../Tabs/TabUtils";
-import { Message } from "./Message";
-import style from "./css.module.css";
-import { MessageSender } from "./MessageSender";
-import { getMessages } from "@/API/Messages";
+} from '../../types/Messages';
+import { type messageCreate, startGatewayListener } from '../../test';
+import { useTabContext } from '../Tabs/TabUtils';
+import { Message } from './Message';
+import style from './css.module.css';
+import { MessageSender } from './MessageSender';
+import { getMessages } from '@/API/Messages';
 import {
   addAdditionalGuildDataToState,
   getListIdForChannel as computeChannelListHash,
   requestLazyGuilds,
-} from "@/API/Guilds";
-import { RecipientsList } from "./Recipients/RecipientsList";
-import type { GuildListUpdate } from "@/types/Guild";
-import { TypingStatus } from "./TypingStatus";
-import { getChannelById } from "@/API/Channels";
-import { Dev } from "../Dev/Dev";
-import { invoke } from "@tauri-apps/api/core";
+} from '@/API/Guilds';
+import { RecipientsList } from './Recipients/RecipientsList';
+import type { GuildListUpdate } from '@/types/Guild';
+import { TypingStatus } from './TypingStatus';
+import { getChannelById } from '@/API/Channels';
+import { Dev } from '../Dev/Dev';
+import { invoke } from '@tauri-apps/api/core';
 
 export type UploadFile =
   | string
@@ -33,7 +33,7 @@ export type UploadFile =
 export function Chat() {
   const TabContext = useTabContext<{ channelId: string; guildId: string }>();
   const [typingUsers, setTypingUsers] = createSignal<any[]>([]);
-  console.log("TabContext", TabContext);
+  console.log('TabContext', TabContext);
   const AppState = useAppState();
   let chatref: HTMLOListElement;
 
@@ -43,7 +43,7 @@ export function Chat() {
   );
 
   const hash = computeChannelListHash(
-    getChannelById(TabContext.guildId, TabContext.channelId)
+    getChannelById(AppState, TabContext.guildId, TabContext.channelId)
   );
 
   //TODO: make it possible to select multiple characters
@@ -52,7 +52,7 @@ export function Chat() {
   // 	chatref.scrollTo(0, chatref.scrollHeight);
   // }
   const listener = startGatewayListener(AppState.userId());
-  listener.on<messageCreate>("messageCreate", (event) => {
+  listener.on<messageCreate>('messageCreate', (event) => {
     console.log(
       TabContext.channelId,
       event.data.channel_id,
@@ -75,7 +75,7 @@ export function Chat() {
       if (chatref.scrollTop + chatref.clientHeight >= chatref.scrollHeight) {
         isAtBottom = true;
       }
-      console.log("newMessage", newMessage);
+      console.log('newMessage', newMessage);
       setMessages(messages().concat(newMessage));
 
       // if (isAtBottom) {
@@ -83,11 +83,11 @@ export function Chat() {
       // }
     }
   });
-  listener.on<any>("typingStart", (event) => {
+  listener.on<any>('typingStart', (event) => {
     if (event.data.channel_id !== TabContext.channelId) {
       return;
     }
-    console.log("typingStart", event);
+    console.log('typingStart', event);
     if (
       typingUsers().findIndex(
         (user) => user.user.member.user.id === event.data.user_id
@@ -108,7 +108,7 @@ export function Chat() {
     if (typingUsers().length > 1) {
       return;
     }
-    console.log("typingUsers", typingUsers());
+    console.log('typingUsers', typingUsers());
     const end = setInterval(() => {
       setTypingUsers((prev) => {
         const newUsers = prev.map((user) => {
@@ -121,18 +121,18 @@ export function Chat() {
       }
     }, 1000);
   });
-  listener.on<{ data: GuildListUpdate }>("guildMemberListUpdate", (event) => {
+  listener.on<{ data: GuildListUpdate }>('guildMemberListUpdate', (event) => {
     console.log(event);
 
-    addAdditionalGuildDataToState(event.data);
+    addAdditionalGuildDataToState(AppState, event.data);
   });
-  listener.on<any>("GuildMembersChunk", (event) => {
+  listener.on<any>('GuildMembersChunk', (event) => {
     console.log(event);
     // addAdditionalGuildDataToState(event.data);
   });
 
   const [messages, { mutate: setMessages }] = createResource(async () => {
-    const messages = await getMessages(TabContext.channelId);
+    const messages = await getMessages(AppState, TabContext.channelId);
     return messages.reverse();
   });
 
@@ -168,14 +168,14 @@ export function Chat() {
     }
 
     console.warn(
-      "test",
-      AppState.openedGuildsAdditionalData["1085131579652845609"]
+      'test',
+      AppState.openedGuildsAdditionalData['1085131579652845609']
     );
     mainref.ondrop = (e) => {
       e.preventDefault();
-      console.log("drop", e);
+      console.log('drop', e);
       const files = e.dataTransfer.files;
-      console.log("files", files);
+      console.log('files', files);
       for (let i = 0; i < files.length; i++) {
         const blob = files[i];
         const fileName = blob.name;
@@ -185,13 +185,13 @@ export function Chat() {
     };
     mainref.ondragenter = (e) => {
       e.preventDefault();
-      console.log("dragenter", e);
+      console.log('dragenter', e);
 
       setIsDragging(true);
     };
     mainref.ondragend = (e) => {
       e.preventDefault();
-      console.log("dragend", e);
+      console.log('dragend', e);
       setIsDragging(false);
     };
 
@@ -204,11 +204,11 @@ export function Chat() {
 
     // scrollToBottom();
     console.log(
-      "recipients chat",
+      'recipients chat',
       AppState.openedGuildsAdditionalData[TabContext.guildId]?.recipients
     );
   });
-  let lastAuthor = "";
+  let lastAuthor = '';
   return (
     <main
       class={style.main}
@@ -229,7 +229,7 @@ export function Chat() {
                 .filter((value, index, self) => self.indexOf(value) === index)
                 .filter((id) => id !== AppState.userId())
             );
-            invoke("get_members_info", {
+            invoke('get_members_info', {
               userId: AppState.userId(),
               guildId: TabContext.guildId,
               members: messages()

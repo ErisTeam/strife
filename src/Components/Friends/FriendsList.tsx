@@ -10,7 +10,7 @@ import { add, setAsCurrent } from '@/API/Tabs';
 export function FriendsList(props: { className?: string }) {
   const [friends] = createResource(async () => {
     console.log('updating relationships');
-    await updateRelationships();
+    await updateRelationships(AppState);
     return AppState.relationships;
   });
   let resizeRef: HTMLDivElement;
@@ -89,18 +89,18 @@ export function FriendsList(props: { className?: string }) {
                     case 0: {
                       console.log('left click', e.button);
                       if (listIndex === -1) {
-                        add(tab, true);
+                        add(AppState, tab, true);
                       } else {
-                        setAsCurrent(tab);
+                        setAsCurrent(AppState, tab);
                       }
                       break;
                     }
                     case 1: {
                       console.log('middle click', e.button);
                       if (listIndex !== -1) {
-                        setAsCurrent(listIndex);
+                        setAsCurrent(AppState, listIndex);
                       } else {
-                        add(tab);
+                        add(AppState, tab);
                       }
 
                       break;

@@ -10,14 +10,14 @@ export function SettingsPage() {
   const AppState = useAppState();
 
   const [currentRoute, setCurrentRoute] = createSignal(
-    AppState.settings.categories[0]
+    AppState.settingsCategories[0]
   );
 
   return (
     <article class={style.container}>
       <nav class={style.navbar}>
         <ol>
-          <For each={AppState.settings.categories}>
+          <For each={AppState.settingsCategories}>
             {(category) => (
               <li class={style.routeContainer}>
                 <button

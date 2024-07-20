@@ -10,7 +10,7 @@ export function Redirect() {
       navigate('/login');
       console.log('navigated to login');
     } else {
-      const token = getToken();
+      const token = getToken(AppState);
       if (token == null) {
         navigate('/login');
         console.log('navigated to login');

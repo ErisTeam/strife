@@ -14,7 +14,7 @@ export type EmbedProps = {
 export function Embed(props: EmbedProps) {
   console.log(props.embed);
   const AppState = useAppState();
-  const dateFormater = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
+  const dateFormater = new Intl.DateTimeFormat(AppState.locale(), {
     dateStyle: 'short',
     timeStyle: 'short',
   });

@@ -46,7 +46,7 @@ export function ChannelListElement(props: ChannelProps) {
 
     console.log('listIndex', listIndex);
 
-    const tab = createTextChannelTab(props.data);
+    const tab = createTextChannelTab(AppState, props.data);
     if (props.data.type === 2) {
       tab.component = 'voiceChannel';
     }
@@ -57,9 +57,9 @@ export function ChannelListElement(props: ChannelProps) {
       case 0: {
         console.log('left click', e.button);
         if (listIndex === -1) {
-          add(tab, true);
+          add(AppState, tab, true);
         } else {
-          setAsCurrent(listIndex);
+          setAsCurrent(AppState, listIndex);
         }
 
         break;
@@ -67,9 +67,9 @@ export function ChannelListElement(props: ChannelProps) {
       case 1: {
         console.log('middle click', e.button);
         if (listIndex !== -1) {
-          setAsCurrent(listIndex);
+          setAsCurrent(AppState, listIndex);
         } else {
-          add(tab);
+          add(AppState, tab);
         }
 
         break;

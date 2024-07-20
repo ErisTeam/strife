@@ -50,7 +50,7 @@ export function TabSortable(props: TabProps) {
           // console.log(state.active);
           // if (state.active.draggableId) return;
           // console.log(props.tab);
-          setAsCurrent(tab);
+          setAsCurrent(AppState, tab);
         }}
       >
         <Switch fallback={'❓'}>
@@ -81,7 +81,7 @@ export function TabSortable(props: TabProps) {
         disabled={props.disabled}
         onClick={() => {
           // if (state.active.draggableId) return;
-          remove(tab);
+          remove(AppState, tab);
         }}
       >
         <X />

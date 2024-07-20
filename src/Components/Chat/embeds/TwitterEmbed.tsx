@@ -5,11 +5,11 @@ import type { EmbedProps } from '../Embed';
 //TODO: translate component
 export function TwitterEmbed(props: EmbedProps) {
   const AppState = useAppState();
-  const dateFormater = new Intl.DateTimeFormat(AppState.localeJsFormat(), {
+  const dateFormater = new Intl.DateTimeFormat(AppState.locale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
-  const numberFormater = new Intl.NumberFormat(AppState.localeJsFormat(), {
+  const numberFormater = new Intl.NumberFormat(AppState.locale(), {
     notation: 'compact',
   });
 

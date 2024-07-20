@@ -12,11 +12,11 @@ export function SettingsGroupElement(props: { group: SettingsGroup }) {
   const options = createMemo(() => {
     const a: { entry: SettingsEntryType; index: number }[] = [];
     for (const entryId of props.group.entriesIds) {
-      const entry = AppState.settings.entries.find(
+      const entry = AppState.settingsEntries.find(
         (entry) => entry.id === entryId
       );
       if (entry != null) {
-        a.push({ entry, index: AppState.settings.entries.indexOf(entry) });
+        a.push({ entry, index: AppState.settingsEntries.indexOf(entry) });
       } else {
         console.error(`Entry with id ${entryId} not found`);
         a.push({
