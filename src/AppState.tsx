@@ -4,6 +4,7 @@ import {
   type JSX,
   type Setter,
   createContext,
+  createResource,
   createSignal,
   useContext,
 } from 'solid-js';
@@ -19,6 +20,7 @@ import type {
 import { defaultSettings } from '@api/Settings';
 import type { Relationship } from './types/User';
 import type { Guild, GuildListUpdate } from './types/Guild';
+import { invoke } from '@tauri-apps/api/core';
 
 type AppStateType = {
   userId: Accessor<string>;
@@ -78,7 +80,14 @@ export function AppStateProvider(props: {
     []
   );
   const [userId, setUserId] = createSignal(props.userId);
-
+  const [id] = createResource(async () => {
+    const users: { userId: string }[] = await invoke('get_users', {});
+    console.log('index users', users);
+    if (users.length === 0) return null;
+    await invoke('close_splashscreen');
+    setUserId(users[0].userId);
+    return users[0].userId;
+  });
   return (
     <AppState.Provider
       value={{

@@ -141,9 +141,9 @@ export function start() {
 
   const cachedEntries = createMemo(() => {
     return Object.entries(CSSSettingsVariables).map(([id, variable]) => {
-      const entry = AppState.settings.entries.find((e) => e.id === id);
+      const entry = AppState.settingsEntries.find((e) => e.id === id);
       return {
-        index: AppState.settings.entries.findIndex((e) => e.id === id),
+        index: AppState.settingsEntries.findIndex((e) => e.id === id),
         entry: entry,
         variable: variable,
       };
@@ -151,7 +151,7 @@ export function start() {
   });
 
   function updateSettingsEntry(event: {} & { detail: { id: string } }) {
-    const entry = AppState.settings.entries.find(
+    const entry = AppState.settingsEntries.find(
       (e) => e.id === event.detail.id
     );
     const variable = CSSSettingsVariables[event.detail.id];

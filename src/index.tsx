@@ -54,18 +54,16 @@ export function App() {
   document.addEventListener('keydown', changeZoom);
 
   return (
-    <Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_INTERNALS__}>
-      <WindowDecoration />
-      <Show when={!id.loading} fallback={<Loading />}>
-        <Router>
-          <AppStateProvider userId={id()}>
+    <AppStateProvider userId={id()}>
+      <Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_INTERNALS__}>
+        <WindowDecoration />
+        <Show when={!id.loading} fallback={<Loading />}>
+          <Router>
             <Dev />
 
             <Route path="/loadingtest" component={LoadingTest} />
 
             <Route path="/login" component={LoginPage} />
-
-            <Route path="/" component={Prev} />
 
             <Route path="/dev">
               <Route path="/contextmenutest" component={ContextMenuTest} />
@@ -77,11 +75,13 @@ export function App() {
             <Route path="/login" component={LoginPage} />
 
             <Route path="/app" component={Application} />
+            <Route path="/" component={Prev} />
+
             <Route path="*" component={ErrorElement} />
-          </AppStateProvider>
-        </Router>
+          </Router>
+        </Show>
       </Show>
-    </Show>
+    </AppStateProvider>
   );
 }
 
