@@ -10,6 +10,7 @@ import {
 import style from './css.module.css';
 import type { UploadFile } from './Chat';
 import {
+  formatMarkdownToHTMLPreserve,
   getCursorPosition,
   mentionRegex,
   setCursorPosition,
@@ -77,6 +78,7 @@ export function MessageEditor(props: MessageEditorProps) {
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(text));
         selection.collapseToEnd();
+        textarea.innerHTML = formatMarkdownToHTMLPreserve(textarea.innerText);
       } else {
         for (let i = 0; i < e.clipboardData.files.length; i++) {
           const blob = e.clipboardData.files[i];
@@ -147,9 +149,10 @@ export function MessageEditor(props: MessageEditorProps) {
             { pos: 0, done: false }
           );
           if (sel.focusOffset === 0) pos.pos += 0.5;
-          setEditor(textarea.innerText);
+
+          textarea.innerHTML = formatMarkdownToHTMLPreserve(textarea.innerText);
+
           //TODO: Readd Formatting
-          setEditor(textarea.innerText);
 
           sel.removeAllRanges();
           const range = setCursorPosition(textarea, document.createRange(), {

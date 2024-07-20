@@ -94,12 +94,12 @@ const codeRulesPreserve = [
   ],
 ];
 const rulesPreserve = [
-  [
-    regex.insides.header3,
-    '<span class="mdHint">&num;&num;&num;</span><h6>$1</h6>',
-  ],
-  [regex.insides.header2, '<span class="mdHint">&num;&num;</span><h5>$1</h5>'],
-  [regex.insides.header1, '<span class="mdHint">&num;</span><h4>$1</h4>'],
+  // [
+  //   regex.insides.header3,
+  //   '<span class="mdHint">&num;&num;&num;</span><h6>$1</h6>',
+  // ],
+  // [regex.insides.header2, '<span class="mdHint">&num;&num;</span><h5>$1</h5>'],
+  // [regex.insides.header1, '<span class="mdHint">&num;</span><h4>$1</h4>'],
   [
     regex.insides.bold,
     '<span class="mdHint">&ast;&ast;</span><b>$2</b><span class="mdHint">&ast;&ast;</span>',
@@ -110,7 +110,7 @@ const rulesPreserve = [
   ],
   [
     regex.insides.strikethrough,
-    '<span class="mdHint">&tilde;&tilde</span><s>$2</s><span class="mdHint">&tilde;&tilde</span>',
+    '<span class="mdHint">&#126;&#126;</span><s>$2</s><span class="mdHint">&#126;&#126;</span>',
   ],
   [
     regex.insides.underline,

@@ -8,6 +8,7 @@ import type { Tab } from '@/types';
 import { add, setAsCurrent } from '@/API/Tabs';
 
 export function FriendsList(props: { className?: string }) {
+  const AppState = useAppState();
   const [friends] = createResource(async () => {
     console.log('updating relationships');
     await updateRelationships(AppState);
@@ -48,7 +49,6 @@ export function FriendsList(props: { className?: string }) {
     document.removeEventListener('mouseup', stopResize);
   });
 
-  const AppState = useAppState();
   return (
     <nav class={[props.className, style.list].join(' ')}>
       <FriendsTitle />
