@@ -1,5 +1,5 @@
 // SolidJS
-import { type AppStateType, useAppState } from "@/AppState";
+import type { AppStateType } from "@/AppState";
 // Tauri
 // API
 import type { Tab, TabComponents, TabsFile } from "@/types";
@@ -16,8 +16,7 @@ export function findByComponent(component: keyof typeof TabComponents, AppState:
 	return AppState.tabs.findIndex((t) => t.component === component);
 }
 //! NOT working
-export function swapOrderByIdx(idx1: number, idx2: number) {
-	const AppState = useAppState();
+export function swapOrderByIdx(AppState: AppStateType, idx1: number, idx2: number) {
 	console.log(AppState.tabsOrder());
 	AppState.setTabsOrder((prev) => {
 		const temp = prev[idx1];
@@ -26,10 +25,9 @@ export function swapOrderByIdx(idx1: number, idx2: number) {
 		return prev;
 	});
 	console.log(AppState.tabsOrder());
-	saveToFile().catch((err) => console.error(err));
+	saveToFile(AppState).catch((err) => console.error(err));
 }
-export function setAsCurrent(tab: Tab | number) {
-	const AppState = useAppState();
+export function setAsCurrent(AppState: AppStateType, tab: Tab | number) {
 	if (typeof tab !== "number") {
 		const index = AppState.tabs.indexOf(tab);
 		if (index === -1) {
@@ -40,12 +38,10 @@ export function setAsCurrent(tab: Tab | number) {
 	} else {
 		AppState.setCurrentTabIndex(tab);
 	}
-	saveToFile().catch((err) => console.error(err));
+	saveToFile(AppState).catch((err) => console.error(err));
 }
 
-export function remove(tab: Tab | number, keepOrder = false) {
-	const AppState = useAppState();
-
+export function remove(AppState: AppStateType, tab: Tab | number, keepOrder = false) {
 	const tabIndex = typeof tab === "number" ? tab : AppState.tabs.indexOf(tab);
 	if (tabIndex === -1) {
 		console.error(`Tab ${tab} not found`);
@@ -86,10 +82,9 @@ export function remove(tab: Tab | number, keepOrder = false) {
 			});
 		}
 	});
-	saveToFile().catch((err) => console.error(err));
+	saveToFile(AppState).catch((err) => console.error(err));
 }
-export function add(tab: Tab, replaceCurrent = false) {
-	const AppState = useAppState();
+export function add(AppState: AppStateType, tab: Tab, replaceCurrent = false) {
 	console.log("adding tab", tab);
 	//? batch is important here, otherwise tabs might not be updated correctly
 	batch(() => {
@@ -114,7 +109,7 @@ export function add(tab: Tab, replaceCurrent = false) {
 
 		const currentOrder = AppState.tabsOrder().indexOf(tabIndex);
 		console.log("currentOrder", currentOrder, [...AppState.tabsOrder()]);
-		remove(tabIndex, true);
+		remove(AppState, tabIndex, true);
 		const newIndex = AppState.tabs.length;
 		console.log("newIndex", newIndex);
 		AppState.setTabs(newIndex, tab);
@@ -132,11 +127,10 @@ export function add(tab: Tab, replaceCurrent = false) {
 		});
 		console.log("currentOrder", currentOrder, AppState.tabsOrder());
 	});
-	saveToFile().catch((err) => console.error(err));
+	saveToFile(AppState).catch((err) => console.error(err));
 }
 
-export async function saveToFile() {
-	const AppState = useAppState();
+export async function saveToFile(AppState: AppStateType) {
 	const doesDirExist = await exists(sessionDataPath, { baseDir: BaseDirectory.AppData });
 	if (!doesDirExist) {
 		await mkdir(sessionDataPath, { baseDir: BaseDirectory.AppData });
@@ -160,8 +154,7 @@ export async function saveToFile() {
 	const data = new TextEncoder().encode(JSON.stringify(tabsFile));
 	await writeFile(tabsPath, data, { baseDir: BaseDirectory.AppData });
 }
-export async function loadFromFile(): Promise<boolean> {
-	const AppState = useAppState();
+export async function loadFromFile(AppState: AppStateType): Promise<boolean> {
 	const dir = BaseDirectory.AppData;
 	const doesDirExist = await exists(sessionDataPath, { baseDir: BaseDirectory.AppData });
 	if (!doesDirExist) {

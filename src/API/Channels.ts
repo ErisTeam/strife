@@ -1,5 +1,5 @@
 import type { Channel } from "@/types/Channel";
-import { useAppState } from "@/AppState";
+import type { AppStateType } from "@/AppState";
 import type { Relationship } from "@/types/User";
 import { CONSTANTS } from "@/Constants";
 
@@ -57,8 +57,7 @@ export function getChannelIcon(channel: Channel): {
 	}
 	return { emoji, newName };
 }
-export function getChannelById(guildId: string, channelId: string): Channel | undefined {
-	const AppState = useAppState();
+export function getChannelById(AppState: AppStateType, guildId: string, channelId: string): Channel | undefined {
 	const guild = AppState.userGuilds.find((g) => g.properties.id === guildId);
 	if (!guild) {
 		console.error("Guild not found!");
