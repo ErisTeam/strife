@@ -51,7 +51,7 @@ export function Application() {
             true
           );
         }
-        if (findByComponent('settings') === -1) {
+        if (findByComponent('settings', AppState) === -1) {
           add({
             component: 'settings',
             title: 'Settings',

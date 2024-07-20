@@ -1,5 +1,5 @@
 // SolidJS
-import { useAppState } from "@/AppState";
+import { type AppStateType, useAppState } from "@/AppState";
 // Tauri
 // API
 import type { Tab, TabComponents, TabsFile } from "@/types";
@@ -12,8 +12,7 @@ import { mkdir } from "@tauri-apps/plugin-fs";
 
 const sessionDataPath = "session_data";
 const tabsPath = `${sessionDataPath}/tabs.json`;
-export function findByComponent(component: keyof typeof TabComponents) {
-	const AppState = useAppState();
+export function findByComponent(component: keyof typeof TabComponents, AppState: AppStateType) {
 	return AppState.tabs.findIndex((t) => t.component === component);
 }
 //! NOT working
