@@ -20,8 +20,11 @@ import './style.css';
 
 import { start } from './API/Style';
 import { defaultSettings, loadFromFile } from './API/Settings';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { getCurrentWebview } from '@tauri-apps/api/webview';
 
 export function App() {
+  console.log('TAURI', window.__TAURI__);
   function changeZoom(e: KeyboardEvent) {
     const root = document.querySelector(':root') as HTMLDivElement;
     const fontSize = window

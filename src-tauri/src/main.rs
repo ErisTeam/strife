@@ -28,6 +28,7 @@ use std::sync::Arc;
 use fern::colors::{Color, ColoredLevelConfig};
 use serde::Deserialize;
 use tauri::{Manager, UserAttentionType};
+use tauri_plugin_decorum::WebviewWindowExt;
 use tauri_plugin_log::{Target, TargetKind};
 
 use crate::main_app_state::MainState;
@@ -74,7 +75,10 @@ fn close_loading(app: &mut tauri::App) -> Result<()> {
 #[cfg(target_os = "windows")]
 fn enable_round_borders(window: tauri::WebviewWindow) {
     use log::debug;
+    use tauri::Listener;
     use windows::Win32::{Graphics::Dwm::DwmExtendFrameIntoClientArea, UI::Controls::MARGINS};
+    use windows::Win32::UI::WindowsAndMessaging::WM_NCHITTEST;
+
 
     let hwnd = windows::Win32::Foundation::HWND(window.hwnd().unwrap().0 as _);
     let margins = MARGINS {
@@ -92,6 +96,9 @@ fn enable_round_borders(window: tauri::WebviewWindow) {
 #[cfg(not(target_os = "windows"))]
 fn enable_round_borders(window: tauri::Window) {}
 
+
+
+
 #[tokio::main]
 async fn main() {
     println!("Starting");
@@ -99,6 +106,8 @@ async fn main() {
     let event_manager = event_manager::EventManager::new();
 
     let main_state = Arc::new(MainState::new(event_manager));
+    
+
 
     main_state
         .event_manager
@@ -112,6 +121,7 @@ async fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_decorum::init())
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([
@@ -133,6 +143,8 @@ async fn main() {
             let app_handle = app.handle();
 
             // enable_round_borders(app_handle.get_webview_window("main").unwrap());
+            let window = app_handle.get_webview_window("main").unwrap();
+            window.create_overlay_titlebar().unwrap();
 
             let path = app_handle.path().app_data_dir().unwrap();
             let main_state = m.clone();
