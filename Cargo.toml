@@ -1,8 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = ["src-tauri", "discord"]
-exclude = ["disord/discord_macro"]
+members = ["src-tauri", "discord", "websocket_strife"]
 
 
 [workspace.package]

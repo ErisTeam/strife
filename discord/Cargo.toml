@@ -11,7 +11,7 @@ authors.workspace = true
 
 [dependencies]
 discord_macro = { path = "./discord_macro" }
-websocket_message_macro = { path = "./websocket_message_macro" }
+websocket_strife = { path = "../websocket_strife" }
 
 serde_json = "1.0.100"
 serde_repr = "0.1.14"
