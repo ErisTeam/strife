@@ -64,7 +64,7 @@ impl<'a, T: WebsocketStream + 'a> RestartResult<T> {
     }
 }
 
-pub struct Connection<'a> {
+pub struct Connection {
     pub sender: Arc<tokio::sync::broadcast::Sender<WebsocketMessage>>,
 
     message_sender: tokio::sync::mpsc::Sender<WebsocketMessage>,
@@ -76,11 +76,11 @@ pub struct Connection<'a> {
             ) -> Pin<Box<dyn Future<Output = RestartResult<Box<dyn WebsocketStream>>>>>) +
                 Send +
                 Sync +
-                'a
+                'static
         >
     >,
 }
-impl<'a> Connection<'a> {
+impl Connection {
     pub fn new() -> Arc<Self> {
         let (sender, _) = tokio::sync::broadcast::channel(10);
         let (message_sender, message_receiver) = tokio::sync::mpsc::channel(10);
@@ -109,7 +109,7 @@ impl<'a> Connection<'a> {
             ) -> Pin<Box<dyn Future<Output = RestartResult<Box<dyn WebsocketStream>>>>> +
                 Send +
                 Sync +
-                'a
+                'static
     {
         let b = Box::new(new_handler);
         let mut handler = self.restart_handler.write().unwrap();
@@ -136,7 +136,8 @@ impl<'a> Connection<'a> {
     }
 
     pub async fn create_websocket_url(
-        url: &str
+        url: &str,
+        headers: Vec<(String, String)>
     ) -> anyhow::Result<
         (
             WebSocket<hyper_util::rt::TokioIo<hyper::upgrade::Upgraded>>,
@@ -152,34 +153,38 @@ impl<'a> Connection<'a> {
             return Err(anyhow::anyhow!("{} is not ws or wss", &url[..3]));
         };
 
-        let domain = if secure { url[6..].to_string() } else { url[5..].to_string() };
+        let domain_string = if secure { url[6..].to_string() } else { url[5..].to_string() };
 
         let port = if secure { 443 } else { 80 };
-        let stream = TcpStream::connect(format!("{}:{}", domain, port)).await?;
+        let stream = TcpStream::connect(format!("{}:{}", domain_string, port)).await?;
         debug!("TCP Stream created");
 
         let tls_connector = tls_connector()?;
         debug!("TLS Connector Created");
-        let domain = ServerName::try_from(domain).map_err(|_| {
+        let domain = ServerName::try_from(domain_string.clone()).map_err(|_| {
             std::io::Error::new(std::io::ErrorKind::InvalidInput, "invalid dnsname")
         })?;
 
         let tls_stream = tls_connector.connect(domain, stream).await?;
         println!("streamCreated 2");
-        let req = Request::builder()
+        let mut req = Request::builder()
             .method("GET")
-            .uri("wss://echo.websocket.org/")
-            .header("Host", "echo.websocket.org")
+            .uri(url)
+            .header("Host", domain_string)
             .header(UPGRADE, "websocket")
             .header(CONNECTION, "upgrade")
             .header("Sec-WebSocket-Key", fastwebsockets::handshake::generate_key())
-            .header("Sec-WebSocket-Version", "13")
-            .body(Empty::<hyper::body::Bytes>::new())?;
+            .header("Sec-WebSocket-Version", "13");
+        for (key,value) in headers {
+            req = req.header(key, value);
+        }
+
+        let req = req.body(Empty::<hyper::body::Bytes>::new())?;
         Ok(handshake::client(&SpawnExecutor, req, tls_stream).await?)
     }
 
     pub async fn start_url(&self, url: &str) -> anyhow::Result<()> {
-        let (ws, response) = Self::create_websocket_url(url).await?;
+        let (ws, response) = Self::create_websocket_url(url,Vec::new()).await?;
         if response.status().as_u16() != 101 {
             debug!("status code: {}", response.status());
             todo!("Return Error");
@@ -309,12 +314,12 @@ impl<'a> Connection<'a> {
         self.start_existing(ws).await
     }
 }
-impl<'a> Drop for Connection<'a> {
+impl Drop for Connection {
     fn drop(&mut self) {
         let _result = self.sender.send(WebsocketMessage::Close);
     }
 }
-impl<'a> Debug for Connection<'a> {
+impl Debug for Connection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Connection")
             .field("sender", &self.sender)
