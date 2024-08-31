@@ -142,7 +142,7 @@ async fn main() {
         .setup(move |app| {
             let app_handle = app.handle();
 
-            // enable_round_borders(app_handle.get_webview_window("main").unwrap());
+            enable_round_borders(app_handle.get_webview_window("main").unwrap());
             let window = app_handle.get_webview_window("main").unwrap();
             window.create_overlay_titlebar().unwrap();
 

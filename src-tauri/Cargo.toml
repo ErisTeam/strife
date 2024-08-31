@@ -10,7 +10,7 @@ rust-version = "1.79"
 
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta", features = [] }
+tauri-build = { version = "2.0.0-rc.0", features = [] }
 prost-build = "0.13.1"
 
 [target.'cfg(windows)'.dependencies]
@@ -49,19 +49,19 @@ serde_json = "1.0.100"
 serde = { version = "1.0.167", features = ["derive"] }
 serde_repr = "0.1.14"
 
-tauri = { version = "2.0.0-beta" }
+tauri = { version = "2.0.0-rc.0", features = [] }
 
 
 # stupid notifications
 # notify-rust = "4.8.0"
-winrt-notification = "0.5.1"
+# winrt-notification = "0.5.1"
 
 #Logging📋
 fern = { version = "0.6.2", features = ["colored"] }
 log = { version = "0.4.19", features = ["max_level_debug"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2", features = [
 	"colored",
-] }
+], version = "2.0.0-rc.0" }
 #owo-colors = {version = "3.5.0",features = ["supports-colors"] }
 
 chrono = "0.4.26"
@@ -78,10 +78,10 @@ tokio-tungstenite = { version = "0.23.1", features = ["native-tls"] }
 
 anyhow = "1.0.79"
 serde-error = "0.1.2"
-tauri-plugin-dialog = "2.0.0-beta.11"
-tauri-plugin-fs = "2.0.0-beta.11"
-tauri-plugin-shell = "2.0.0-beta.9"
-tauri-plugin-notification = "2.0.0-beta.10"
+tauri-plugin-dialog = "2.0.0-rc.0"
+tauri-plugin-fs = "2.0.0-rc.0"
+tauri-plugin-shell = "2.0.0-rc.0"
+tauri-plugin-notification = "2.0.0-rc.0"
 tauri-plugin-decorum = { git = "https://github.com/clearlysid/tauri-plugin-decorum" }
 
 

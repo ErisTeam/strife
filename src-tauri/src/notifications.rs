@@ -59,24 +59,24 @@ pub async fn new_message(
     let body = format!("{}", message.content);
 
     if cfg!(windows) {
-        println!("windows");
-        use winrt_notification::Toast;
+        // println!("windows");
+        // use winrt_notification::Toast;
 
-        let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
+        // let powershell_app_id = &Toast::POWERSHELL_APP_ID.to_string();
 
-        //TODO: clean
-        println!("{}", powershell_app_id,);
-        let mut toast = Toast::new(powershell_app_id)
-            .title(title.as_str())
-            .text1(body.as_str());
-        println!("{:?}", icon);
-        if let Some(icon) = icon {
-            toast = toast.icon(icon.as_path(), winrt_notification::IconCrop::Circular, "");
-        }
-        println!("show");
-        tauri::async_runtime::spawn(async move {
-            let _ = toast.show();
-        });
+        // //TODO: clean
+        // println!("{}", powershell_app_id,);
+        // let mut toast = Toast::new(powershell_app_id)
+        //     .title(title.as_str())
+        //     .text1(body.as_str());
+        // println!("{:?}", icon);
+        // if let Some(icon) = icon {
+        //     toast = toast.icon(icon.as_path(), winrt_notification::IconCrop::Circular, "");
+        // }
+        // println!("show");
+        // tauri::async_runtime::spawn(async move {
+        //     let _ = toast.show();
+        // });
     } else {
         let mut notification = handle
             .notification()
