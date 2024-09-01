@@ -1,12 +1,25 @@
 use log::debug;
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
 use serde_repr::Deserialize_repr;
 
 use super::types::gateway::{
     gateway_packets_data::{
-        GuildMemberListUpdate, GuildMembersChunk, Heartbeat, Hello, Identify, LazyGuilds,
-        MessageDelete, MessageEvent, Ready, ReadySupplemental, RequestGuildMembers, Resume,
-        TypingStart, VoiceServerUpdate, VoiceStateUpdate, VoiceStateUpdateSend,
+        GuildMemberListUpdate,
+        GuildMembersChunk,
+        Heartbeat,
+        Hello,
+        Identify,
+        LazyGuilds,
+        MessageDelete,
+        MessageEvent,
+        Ready,
+        ReadySupplemental,
+        RequestGuildMembers,
+        Resume,
+        TypingStart,
+        VoiceServerUpdate,
+        VoiceStateUpdate,
+        VoiceStateUpdateSend,
     },
     SessionReplaceData,
 };
@@ -60,10 +73,11 @@ impl OutGoingPacket {
     }
     //TODO: move to impl OutGoingPacketsData
     pub fn heartbeat(sequence_number: Option<u64>) -> Self {
-        Self::new(OutGoingPacketsData::Heartbeat(Heartbeat {
-            sequence_number,
-        }))
-        .unwrap()
+        Self::new(
+            OutGoingPacketsData::Heartbeat(Heartbeat {
+                sequence_number,
+            })
+        ).unwrap()
     }
     pub fn identify(i: Identify) -> Self {
         Self::new(OutGoingPacketsData::Identify(i)).unwrap()
@@ -218,11 +232,20 @@ pub struct IncomingPacket {
     pub op_code: OpCode,
     pub data: IncomingPacketsData,
 }
+/*
+TODO: turn into macro or find better way.
+    serde has automaticaly tries to find best field in enum but it can't differentiate between things like MESSAGE_CREATE or MESSAGE_UPDATE
+    i was thinking of something like that
+    #[derive(macro_name,...)]
+    enum IncomingPackets{
+        #[macro_name(op_code=Dispatch,event_name=READY)]
+        Ready(Ready),
+        ...
+    }
+
+*/
 impl<'de> Deserialize<'de> for IncomingPacket {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
         #[derive(Deserialize)]
         struct DataInner {
             ///opcode
@@ -239,101 +262,135 @@ impl<'de> Deserialize<'de> for IncomingPacket {
             OpCode::Dispatch => {
                 if let Some(t) = &inner.t {
                     let a = match t.as_str() {
-                        "READY" => DispatchedEvents::Ready(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng Ready Packet {:?}",
-                                    x
-                                ))
-                            })?,
-                        ),
-                        "READY_SUPPLEMENTAL" => DispatchedEvents::ReadySupplemental(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng ReadySupplemental Packet {:?}",
-                                    x
-                                ))
-                            })?,
-                        ),
-                        "SESSIONS_REPLACE" => DispatchedEvents::SessionReplace(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng SessionReplace Packet {:?}",
-                                    x
-                                ))
-                            })?,
-                        ),
-                        "TYPING_START" => DispatchedEvents::TypingStart(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng StartTyping Packet {:?}",
-                                    x
-                                ))
-                            })?,
-                        ),
-                        "MESSAGE_DELETE" => DispatchedEvents::MessageDelete(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng MessageDelete Packet{:?}",
-                                    x
-                                ))
-                            })?,
-                        ),
+                        "READY" =>
+                            DispatchedEvents::Ready(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng Ready Packet {:?}", x)
+                                        )
+                                    })?
+                            ),
+                        "READY_SUPPLEMENTAL" =>
+                            DispatchedEvents::ReadySupplemental(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!(
+                                                "Error While deserializng ReadySupplemental Packet {:?}",
+                                                x
+                                            )
+                                        )
+                                    })?
+                            ),
+                        "SESSIONS_REPLACE" =>
+                            DispatchedEvents::SessionReplace(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!(
+                                                "Error While deserializng SessionReplace Packet {:?}",
+                                                x
+                                            )
+                                        )
+                                    })?
+                            ),
+                        "TYPING_START" =>
+                            DispatchedEvents::TypingStart(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!(
+                                                "Error While deserializng StartTyping Packet {:?}",
+                                                x
+                                            )
+                                        )
+                                    })?
+                            ),
+                        "MESSAGE_DELETE" =>
+                            DispatchedEvents::MessageDelete(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!(
+                                                "Error While deserializng MessageDelete Packet{:?}",
+                                                x
+                                            )
+                                        )
+                                    })?
+                            ),
 
-                        "MESSAGE_CREATE" => DispatchedEvents::MessageCreate(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ),
+                        "MESSAGE_CREATE" =>
+                            DispatchedEvents::MessageCreate(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ),
 
-                        "MESSAGE_UPDATE" => DispatchedEvents::MessageUpdate(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ),
+                        "MESSAGE_UPDATE" =>
+                            DispatchedEvents::MessageUpdate(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ),
                         "BURST_CREDIT_BALANCE_UPDATE" => {
                             DispatchedEvents::BurstCreditBalanceUpdate(inner.d)
                         } //TODO: Implement
 
-                        "VOICE_SERVER_UPDATE" => DispatchedEvents::VoiceServerUpdate(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ),
+                        "VOICE_SERVER_UPDATE" =>
+                            DispatchedEvents::VoiceServerUpdate(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ),
 
-                        "VOICE_STATE_UPDATE" => DispatchedEvents::VoiceStateUpdate(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ), //TODO: Implement
-                        "GUILD_MEMBER_LIST_UPDATE" => DispatchedEvents::GuildMemberListUpdate(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ),
-                        "GUILD_MEMBERS_CHUNK" => DispatchedEvents::GuildMembersChunk(
-                            serde_json::from_value(inner.d).map_err(|x| {
-                                serde::de::Error::custom(format!(
-                                    "Error While deserializng {} Packet {:?}",
-                                    t, x
-                                ))
-                            })?,
-                        ),
+                        "VOICE_STATE_UPDATE" =>
+                            DispatchedEvents::VoiceStateUpdate(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ), //TODO: Implement
+                        "GUILD_MEMBER_LIST_UPDATE" =>
+                            DispatchedEvents::GuildMemberListUpdate(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ),
+                        "GUILD_MEMBERS_CHUNK" =>
+                            DispatchedEvents::GuildMembersChunk(
+                                serde_json
+                                    ::from_value(inner.d)
+                                    .map_err(|x| {
+                                        serde::de::Error::custom(
+                                            format!("Error While deserializng {} Packet {:?}", t, x)
+                                        )
+                                    })?
+                            ),
                         _ => DispatchedEvents::Unknown(inner.d),
                     };
                     IncomingPacketsData::DispatchedEvent(a)
@@ -341,14 +398,18 @@ impl<'de> Deserialize<'de> for IncomingPacket {
                     return Err(serde::de::Error::custom("Missing t field"));
                 }
             }
-            OpCode::Hello => IncomingPacketsData::Hello(
-                serde_json::from_value(inner.d)
-                    .map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?,
-            ),
-            OpCode::Heartbeat => IncomingPacketsData::Heartbeat(
-                serde_json::from_value(inner.d)
-                    .map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?,
-            ),
+            OpCode::Hello =>
+                IncomingPacketsData::Hello(
+                    serde_json
+                        ::from_value(inner.d)
+                        .map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?
+                ),
+            OpCode::Heartbeat =>
+                IncomingPacketsData::Heartbeat(
+                    serde_json
+                        ::from_value(inner.d)
+                        .map_err(|x| serde::de::Error::custom(format!("{:?}", x)))?
+                ),
             OpCode::HeartbeatAck => IncomingPacketsData::HeartbeatAck,
             OpCode::Reconnect => IncomingPacketsData::Reconnect,
             a => {

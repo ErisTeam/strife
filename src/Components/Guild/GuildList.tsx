@@ -28,7 +28,7 @@ export function GuildList(props: GuildListProps) {
   const AppState = useAppState();
 
   onMount(() => {
-    updateGuilds()
+    updateGuilds(AppState)
       .then(() => {
         const newItems = [];
         for (let i = 1; i <= AppState.userGuilds.length; i++) {

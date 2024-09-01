@@ -1,6 +1,6 @@
 // SolidJS
 import { attachDevtoolsOverlay } from '@solid-devtools/overlay';
-import { Route, Router, Routes } from '@solidjs/router';
+import { Route, Router } from '@solidjs/router';
 import { invoke } from '@tauri-apps/api/core';
 import { type Component, DEV, Show, createResource, onMount } from 'solid-js';
 import { render } from 'solid-js/web';
@@ -20,16 +20,11 @@ import './style.css';
 
 import { start } from './API/Style';
 import { defaultSettings, loadFromFile } from './API/Settings';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { getCurrentWebview } from '@tauri-apps/api/webview';
 
 export function App() {
-  const [id] = createResource(async () => {
-    const users: { userId: string }[] = await invoke('get_users', {});
-    console.log('index users', users);
-    if (users.length === 0) return null;
-    await invoke('close_splashscreen');
-    return users[0].userId;
-  });
-
+  console.log('TAURI', window.__TAURI__);
   function changeZoom(e: KeyboardEvent) {
     const root = document.querySelector(':root') as HTMLDivElement;
     const fontSize = window
@@ -54,34 +49,33 @@ export function App() {
   document.addEventListener('keydown', changeZoom);
 
   return (
-    <Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_INTERNALS__}>
-      <WindowDecoration />
-      <Show when={!id.loading} fallback={<Loading />}>
+    <AppStateProvider>
+      <Show fallback={<h1>USE TAURI</h1>} when={!!window.__TAURI_INTERNALS__}>
+        <WindowDecoration />
+
         <Router>
-          <AppStateProvider userId={id()}>
-            <Dev />
+          <Dev />
+
+          <Route path="/loadingtest" component={LoadingTest} />
+
+          <Route path="/login" component={LoginPage} />
+
+          <Route path="/dev">
+            <Route path="/contextmenutest" component={ContextMenuTest} />
 
             <Route path="/loadingtest" component={LoadingTest} />
+            <Route path="/componentdocs" component={ComponentDocs} />
+          </Route>
 
-            <Route path="/login" component={LoginPage} />
+          <Route path="/login" component={LoginPage} />
 
-            <Route path="/" component={Prev} />
+          <Route path="/app" component={Application} />
+          <Route path="/" component={Prev} />
 
-            <Route path="/dev">
-              <Route path="/contextmenutest" component={ContextMenuTest} />
-
-              <Route path="/loadingtest" component={LoadingTest} />
-              <Route path="/componentdocs" component={ComponentDocs} />
-            </Route>
-
-            <Route path="/login" component={LoginPage} />
-
-            <Route path="/app" component={Application} />
-            <Route path="*" component={ErrorElement} />
-          </AppStateProvider>
+          <Route path="*" component={ErrorElement} />
         </Router>
       </Show>
-    </Show>
+    </AppStateProvider>
   );
 }
 

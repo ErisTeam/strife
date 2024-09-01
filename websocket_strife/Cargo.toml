@@ -1,0 +1,28 @@
+[package]
+name = "websocket_strife"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+log = { version = "0.4", features = ["max_level_debug"] }
+anyhow = "1.0"
+fastwebsockets = { version = "0.8", features = ["upgrade"] }
+
+#! no default features because we don't use aws_lc_rs but ring
+tokio-rustls = { version = "0.26", features = [
+    "logging",
+    "tls12",
+    "ring",
+], default-features = false }
+webpki-roots = "0.26"
+hyper-util = "0.1"
+hyper = { version = '1.4', features = ["http1", "client"] }
+http-body-util = "0.1"
+
+futures = "0.3"
+
+[dev-dependencies]
+tokio-test = "0.4"
+test-log = "0.2.16"

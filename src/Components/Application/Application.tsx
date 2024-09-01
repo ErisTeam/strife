@@ -36,13 +36,14 @@ export function Application() {
     AppState.setSettingsEntries(entries);
     start();
 
-    loadFromFile();
+    loadFromFile(AppState);
     console.log('CurrentGuild', !AppState.currentGuild());
 
-    loadFromFile()
+    loadFromFile(AppState)
       .then((result) => {
         if (!result) {
           add(
+            AppState,
             {
               title: 'Welcome',
               component: 'welcomeTab',
@@ -51,8 +52,8 @@ export function Application() {
             true
           );
         }
-        if (findByComponent('settings') === -1) {
-          add({
+        if (findByComponent('settings', AppState) === -1) {
+          add(AppState, {
             component: 'settings',
             title: 'Settings',
             icon: '⚙️',
@@ -69,7 +70,7 @@ export function Application() {
           <button
             type="button"
             onclick={() => {
-              swapOrderByIdx(0, 1);
+              swapOrderByIdx(AppState, 0, 1);
             }}
           >
             Ordering Test

@@ -6,6 +6,7 @@
     "devUrl": "http://localhost:1420",
     "frontendDist": "../dist"
   },
+
   "app": {
     "macOSPrivateApi": false,
     "security": {
@@ -22,7 +23,7 @@
       }
     },
 
-    "withGlobalTauri": false,
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,

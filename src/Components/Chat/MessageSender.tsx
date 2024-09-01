@@ -4,17 +4,17 @@ import {
   type Setter,
   createSignal,
   onMount,
-} from "solid-js";
-import style from "./css.module.css";
-import { open } from "@tauri-apps/plugin-dialog";
-import { MessageEditor } from "./MessageEditor";
-import type { UploadFile } from "./Chat";
-import { sendMessage } from "@/API/Messages";
-import type { MessageReference } from "@/types/Messages";
-import type { GuildMember } from "@/types/Guild";
-import { useAppState } from "@/AppState";
-import { PlusCircle, Send, SendHorizonal } from "lucide-solid";
-import { convertFileSrc } from "@tauri-apps/api/core";
+} from 'solid-js';
+import style from './css.module.css';
+import { open } from '@tauri-apps/plugin-dialog';
+import { MessageEditor } from './MessageEditor';
+import type { UploadFile } from './Chat';
+import { sendMessage } from '@/API/Messages';
+import type { MessageReference } from '@/types/Messages';
+import type { GuildMember } from '@/types/Guild';
+import { useAppState } from '@/AppState';
+import { PlusCircle, Send, SendHorizonal, SendHorizontal } from 'lucide-solid';
+import { convertFileSrc } from '@tauri-apps/api/core';
 type MessageSenderProps = {
   channelId: string;
   //files are passed down so i can later implement drag and drop file functionality for the whole chat window and not just the message editor field, tho we can change that if thats what we prefer, that way we wont need to pass this down
@@ -25,21 +25,22 @@ type MessageSenderProps = {
   recipients: GuildMember[];
 };
 export function MessageSender(props: MessageSenderProps) {
-  const [msgText, setMsgText] = createSignal("");
+  const [msgText, setMsgText] = createSignal('');
   const [mentionList, setMentionList] = createSignal<GuildMember[]>([]);
   const AppState = useAppState();
   onMount(() => {
-    console.log("sender recipients", props.recipients);
+    console.log('sender recipients', props.recipients);
   });
 
   function sendMsg() {
-    console.warn("WOOO");
+    console.warn('WOOO');
     if (!msgText() && props.files().length === 0) return;
     if (props.reference()) {
-      console.log("props.reference()", props.reference());
+      console.log('props.reference()', props.reference());
     }
 
     sendMessage(
+      AppState,
       props.channelId,
       null,
       msgText(),
@@ -51,7 +52,7 @@ export function MessageSender(props: MessageSenderProps) {
       props.reference(),
       AppState.userId()
     );
-    setMsgText("");
+    setMsgText('');
     props.setFiles([]);
   }
   function uploadFile() {
@@ -73,8 +74,8 @@ export function MessageSender(props: MessageSenderProps) {
       <ul>
         <For each={props.files()}>
           {(file) => {
-            if (typeof file === "string") {
-              const assetUrl = convertFileSrc(file, "asset");
+            if (typeof file === 'string') {
+              const assetUrl = convertFileSrc(file, 'asset');
 
               return (
                 <li>
@@ -144,7 +145,7 @@ export function MessageSender(props: MessageSenderProps) {
             onClick={sendMsg}
             type="button"
           >
-            <SendHorizonal />
+            <SendHorizontal />
           </button>
         </div>
       </div>

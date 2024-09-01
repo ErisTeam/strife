@@ -20,7 +20,6 @@ interface ChannelListProps {
 
 export function ChannelList(props: ChannelListProps) {
   const AppState = useAppState();
-  console.log('test', props);
 
   const channels = createMemo(() => {
     console.log('rendering channels');
@@ -31,7 +30,6 @@ export function ChannelList(props: ChannelListProps) {
     const guild = props.guild;
 
     for (let i = guild.channels.length - 1; i >= 0; i--) {
-      //TODO: replace magic number
       if (guild.channels[i].type === ChannelType.GuildCategory) {
         channelsRender.push(
           <ChannelCategory id={guild.channels[i].id} data={guild.channels[i]}>

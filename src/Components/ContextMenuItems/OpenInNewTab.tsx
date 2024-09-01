@@ -19,13 +19,13 @@ export function OpenInNewTab() {
             t.component === 'textChannel' && t.channelId === menu.channel.id
         );
         if (listIndex !== -1) {
-          setAsCurrent(listIndex);
+          setAsCurrent(AppState, listIndex);
         } else {
-          const tab = createTextChannelTab(menu.channel);
+          const tab = createTextChannelTab(AppState, menu.channel);
           if (menu.channel.type === ChannelType.GuildVoice) {
             tab.component = 'voiceChannel';
           }
-          add(tab);
+          add(AppState, tab);
         }
         menu.closeMenu();
       }}

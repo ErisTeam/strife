@@ -149,7 +149,7 @@ export function Prev() {
               type="button"
               class={buttons.default}
               onclick={async (e) => {
-                console.log(await updateGuilds());
+                console.log(await updateGuilds(AppState));
               }}
             >
               Update Guilds

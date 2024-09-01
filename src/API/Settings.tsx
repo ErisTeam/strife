@@ -10,7 +10,7 @@ import {
   readTextFile,
   writeTextFile,
 } from '@tauri-apps/plugin-fs';
-import { useAppState } from '../AppState';
+import { AppStateType, useAppState } from '../AppState';
 import { produce } from 'solid-js/store';
 
 export const SettingsIds = {
@@ -56,7 +56,7 @@ type InputObject = { [key: string]: string | InputObject };
 
 function getEntry(id: string): SettingsEntry | null {
   const AppState = useAppState();
-  return AppState.settings.entries.find((e) => e.id === id);
+  return AppState.settingsEntries.find((e) => e.id === id);
 }
 
 export function save(ob: { [key: string]: string }): null | InputObject {
@@ -93,11 +93,9 @@ export async function load(ob: InputObject, s: InputObject) {
       const entryId = ob[key];
 
       const AppState = useAppState();
-      const index = AppState.settings.entries.findIndex(
-        (e) => e.id === entryId
-      );
+      const index = AppState.settingsEntries.findIndex((e) => e.id === entryId);
       if (index === -1) return;
-      AppState.settings.setEntries(
+      AppState.setSettingsEntries(
         index,
         produce((entry) => {
           entry.value = s[key];
@@ -116,14 +114,15 @@ export async function saveToFile() {
   console.log(result);
 
   await writeTextFile('settings.json', JSON.stringify(result), {
-    dir: BaseDirectory.AppData,
+    baseDir: BaseDirectory.AppData,
   });
 }
 
 export async function loadFromFile() {
-  if (!(await exists('settings.json', { dir: BaseDirectory.AppData }))) return;
+  if (!(await exists('settings.json', { baseDir: BaseDirectory.AppData })))
+    return;
   const content = JSON.parse(
-    await readTextFile('settings.json', { dir: BaseDirectory.AppData })
+    await readTextFile('settings.json', { baseDir: BaseDirectory.AppData })
   );
   load(SettingsIds, content);
 }

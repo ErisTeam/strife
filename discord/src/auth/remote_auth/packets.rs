@@ -1,7 +1,5 @@
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
 
-/// # Information
-/// TODO
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "op")]
 pub enum OutGoingPackets {
@@ -9,7 +7,7 @@ pub enum OutGoingPackets {
     ///
     /// [`hello`]: self::IncomingPackets#variant.Hello
     #[serde(rename = "heartbeat")]
-    Heartbeat {},
+    Heartbeat,
 
     /// Sent after [`hello`], describes generated public key
     ///
@@ -69,5 +67,5 @@ pub enum IncomingPackets {
     ///When the user cancels the login on their device, the server sends a `cancel` packet. This event also marks the closing of the websocket.
     ///
     /// [`cancel`]: self::IncomingPackets#variant.Cancel
-    Cancel,
+    Cancel {},
 }
