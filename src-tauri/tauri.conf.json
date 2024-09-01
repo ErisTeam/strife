@@ -1,4 +1,5 @@
 {
+  "identifier": "com.tauri.strife",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
