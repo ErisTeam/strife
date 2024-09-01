@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = ["src-tauri", "discord"]
+members = ["src-tauri", "discord", "types"]
 exclude = ["disord/discord_macro"]
 
 

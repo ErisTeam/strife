@@ -1,10 +1,194 @@
-use serde::{ Deserialize, Serialize };
-use serde_repr::{ Deserialize_repr, Serialize_repr };
-use super::Snowflake;
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
+use super::snowflake::Snowflake;
+use super::cdn::CdnHash;
+use super::emoji::Emoji;
+use super::sticker::Sticker;
+use crate::types::role::Role;
+use serde_with::{DisplayFromStr, skip_serializing_none};
 
 // Discord Guild types based on the official documentation (https://discord.com/developers/docs/resources/guild)
+// (Nevermind, the unofficail one from https://docs.discord.sex/ is better... (newer))
 
 
+pub trait GuildBroker {
+    type Error;
+
+    async fn guild_list(&self) -> Result<Vec<UserGuild>, Self::Error>;
+    async fn guild_get(&self, guild_id: &Snowflake) -> Result<Guild, Self::Error>;
+    async fn guild_get_preview(&self, guild_id: &Snowflake) -> Result<GuildPreview, Self::Error>;
+    async fn guild_create(&self, guild_params: http::CreateGuild) -> Result<Snowflake, Self::Error>;
+    //async fn guild_modify(&self, guild_id: &Snowflake, guild_params: http::ModifyGuild) -> Result<Guild, Self::Error>;
+    //async fn guild_delete(&self);
+    //async fn guild_get_channels(&self);
+    //async fn guild_create_channel(&self);
+    //async fn guild_modify_channel_positions(&self);
+    //async fn guild_list_active_threads(&self);
+    //async fn guild_get_members(&self);
+    //async fn guild_list_members(&self);
+    //async fn guild_search_members(&self);
+    //async fn guild_add_member(&self);
+    //async fn guild_modify_member(&self);
+    //async fn guild_modify_current_member(&self);
+    //async fn guild_modify_user_nick(&self);
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, Serialize)]
+pub struct UserGuild {
+    /// The ID of the guild
+    pub id: Snowflake,
+    /// The name of the guild (2-100 characters)
+    pub name: String,
+    /// The guild's icon hash
+    pub icon: Option<CdnHash>,
+    /// The guild's banner hash
+    pub banner: Option<CdnHash>,
+    /// Whether the user is the owner of the guild
+    pub owner: bool,
+    /// Enabled guild features
+    pub features: Vec<GuildFeature>,
+    /// Total permissions for the user in the guild (excludes overwrites)
+    pub permissions: String,
+    /// Approximate count of total members in the guild
+    pub approximate_member_count: Option<i64>,
+    /// Approximate count of non-offline members in the guild
+    pub approximate_presence_count: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+pub struct GuildPreview {
+    /// The ID of the guild
+    pub id: Snowflake,
+    /// The name of the guild (2-100 characters)
+    pub name: String,
+    /// The guild's icon hash
+    pub icon: Option<CdnHash>,
+    /// The description for the guild
+    pub description: Option<String>,
+    /// The guild's splash hash
+    pub splash: Option<CdnHash>,
+    /// The guild's discovery splash hash
+    pub discovery_splash: Option<CdnHash>,
+    /// The guild's home header hash, also used in server guide
+    pub home_header: Option<CdnHash>,
+    /// Enabled guild features
+    pub features: Vec<String>,
+    /// Custom guild emojis
+    pub emojis: Vec<Emoji>,
+    /// Custom guild stickers
+    pub stickers: Vec<Sticker>,
+    /// Approximate number of total members in the guild
+    pub approximate_member_count: u64,
+    /// Approximate number of non-offline members in the guild
+    pub approximate_presence_count: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+pub struct Guild {
+    /// The ID of the guild
+    pub id: Snowflake,
+    /// The name of the guild (2-100 characters)
+    pub name: String,
+    /// The guild's icon hash
+    pub icon: Option<String>,
+    /// The guild's banner hash
+    pub banner: Option<String>,
+    /// The guild's home header hash, also used in server guide
+    pub home_header: Option<String>,
+    /// The guild's splash hash
+    pub splash: Option<String>,
+    /// The guild's discovery splash hash
+    pub discovery_splash: Option<String>,
+    /// The user ID of the guild's owner
+    pub owner_id: Snowflake,
+    /// The application ID of the guild's owner, if bot-created
+    pub application_id: Option<Snowflake>,
+    /// The description for the guild
+    pub description: Option<String>,
+    /// The ID of the guild's AFK channel; this is where members in voice idle for longer than afk_timeout are moved
+    pub afk_channel_id: Option<Snowflake>,
+    /// The AFK timeout of the guild (one of 60, 300, 900, 1800, 3600, in seconds)
+    pub afk_timeout: i64,
+    /// Whether the guild widget is enabled
+    pub widget_enabled: Option<bool>,
+    /// The channel ID that the widget will generate an invite to, if any
+    pub widget_channel_id: Option<Snowflake>,
+    /// The verification level required for the guild
+    pub verification_level: i64,
+    /// Default message notification level for the guild
+    pub default_message_notifications: i64,
+    /// Whose messages are scanned and deleted for explicit content in the guild
+    pub explicit_content_filter: i64,
+    /// Enabled guild features
+    pub features: Vec<String>,
+    /// Roles in the guild
+    // TODO: pub roles: Vec<role object>,
+    /// Custom guild emojis
+    // TODO: pub emojis: Vec<emoji object>,
+    /// Custom guild stickers
+    // TODO: pub stickers: Vec<sticker object>,
+    /// Required MFA level for administrative actions within the guild
+    pub mfa_level: i64,
+    /// The ID of the channel where system event messages, such as member joins and premium subscriptions (boosts), are posted
+    pub system_channel_id: Option<Snowflake>,
+    /// The flags that limit system event messages
+    pub system_channel_flags: i64,
+    /// The ID of the channel where community guilds display rules and/or guidelines
+    pub rules_channel_id: Option<Snowflake>,
+    /// The ID of the channel where admins and moderators of community guilds receive notices from Discord
+    pub public_updates_channel_id: Option<Snowflake>,
+    /// The ID of the channel where admins and moderators of community guilds receive safety alerts from Discord
+    pub safety_alerts_channel_id: Option<Snowflake>,
+    /// The maximum number of members for the guild
+    pub max_members: Option<i64>,
+    /// The guild's vanity invite code
+    pub vanity_url_code: Option<String>,
+    /// The guild's premium tier (boost level)
+    pub premium_tier: i64,
+    /// The number of premium subscriptions (boosts) the guild currently has
+    pub premium_subscription_count: i64,
+    /// The preferred locale of the guild; used in discovery and notices from Discord (default "en-US")
+    pub preferred_locale: String,
+    /// The maximum amount of users that can watch a video stream in a voice channel at once
+    pub max_video_channel_users: Option<i64>,
+    /// The maximum amount of users that can watch a video stream in a stage channel at once
+    pub max_stage_video_channel_users: Option<i64>,
+    /// The NSFW level of the guild
+    pub nsfw_level: i64,
+    /// The type of student hub the guild is, if it is a student hub
+    pub hub_type: Option<i64>,
+    /// Whether the guild has the premium (boost) progress bar enabled
+    pub premium_progress_bar_enabled: bool,
+    /// The ID of the guild's latest onboarding prompt option
+    pub latest_onboarding_question_id: Option<Snowflake>,
+    /// Information on the guild's AutoMod incidents
+    // TODO: pub incidents_data: Option<Automod incidents data object>,
+    /// Approximate count of total members in the guild
+    /// Only included when fetched from the Get Guild endpoint with with_counts set to true.
+    pub approximate_member_count: Option<i64>,
+    /// Approximate count of non-offline members in the guild
+    /// Only included when fetched from the Get Guild endpoint with with_counts set to true.
+    pub approximate_presence_count: Option<i64>,
+    // The guild's clan information
+    // Only included in guild objects returned over the Gateway.
+    // TODO: pub clan: Option<Partial clan object>,
+}
+
+/// https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
+//#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+//pub struct GuildPreview {
+//    pub id: Snowflake, // guild id
+//    pub name: String, // guild name (2-100 characters)
+//    pub icon: Option<String>, // icon hash
+//    pub splash: Option<String>, // splash hash
+//    pub discovery_splash: Option<String>, // discovery splash hash
+//    // TODO: pub emojis: array of emoji objects, // custom guild emojis
+//    pub features: Vec<GuildFeature>, // enabled guild features
+//    pub approximate_member_count: u64, // approximate number of members in this guild
+//    pub approximate_presence_count: u64, // approximate number of online members in this guild
+//    pub description: Option<String>, // the description for the guild
+//    // TODO: pub stickers: array of sticker objects, // custom guild stickers
+//}
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-default-message-notification-level
 #[repr(u8)]
@@ -77,7 +261,7 @@ pub enum SystemChannelFlag {
 }
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-guild-features
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum GuildFeature {
     AnimatedBanner, // guild has access to set an animated guild banner image
@@ -107,6 +291,11 @@ pub enum GuildFeature {
     Verified, // guild is verified
     VipRegions, // guild has access to set 384kbps bitrate in voice (previously VIP voice servers)
     WelcomeScreenEnabled, // guild has enabled the welcome screen
+
+
+    // From newer API
+    Soundboard,
+    ChannelIconEmojisGenerated,
 }
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-mutable-guild-features
@@ -167,75 +356,6 @@ pub enum WidgetStyle {
 }
 
 
-/// https://discord.com/developers/docs/resources/guild#guild-object-guild-structure
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct Guild {
-    pub id: Snowflake, // guild id
-    pub name: String, // guild name (2-100 characters, excluding trailing and leading whitespace)
-    pub icon: Option<String>, // icon hash
-    pub icon_hash: Option<String>, // icon hash, returned when in the template object
-    pub splash: Option<String>, // splash hash
-    pub discovery_splash: Option<String>, // discovery splash hash; only present for guilds with the "DISCOVERABLE" feature
-    // These field is only sent when using the GET Current User Guilds endpoint and are relative to the requested user
-    // https://discord.com/developers/docs/resources/user#get-current-user-guilds
-    pub owner: Option<bool>, // true if the user is the owner of the guild
-    pub owner_id: Snowflake, // id of owner
-    // These field is only sent when using the GET Current User Guilds endpoint and are relative to the requested user
-    // https://discord.com/developers/docs/resources/user#get-current-user-guilds
-    pub permissions: Option<String>, // total permissions for the user in the guild (excludes overwrites and implicit permissions)
-    // This field is deprecated and is replaced by channel.rtc_region
-    // https://discord.com/developers/docs/resources/channel#channel-object-channel-structure
-    pub region: Option<String>, // voice region id for the guild (deprecated)
-    pub afk_channel_id: Option<Snowflake>, // id of afk channel
-    pub afk_timeout: i64, // afk timeout in seconds
-    pub widget_enabled: Option<bool>, // true if the server widget is enabled
-    pub widget_channel_id: Option<Snowflake>, // the channel id that the widget will generate an invite to, or null if set to no invite
-    pub verification_level: VerificationLevel, // verification level required for the guild
-    pub default_message_notifications: DefaultMessageNotificationLevel, // default message notifications level
-    pub explicit_content_filter: ExplicitContentFilterLevel, // explicit content filter level
-    // TODO: pub roles: array of role objects, // roles in the guild
-    // TODO: pub emojis: array of emoji objects, // custom guild emojis
-    pub features: Vec<GuildFeature>, // enabled guild features
-    pub mfa_level: MFALevel, // required MFA level for the guild
-    pub application_id: Option<Snowflake>, // application id of the guild creator if it is bot-created
-    pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
-    pub system_channel_flags: SystemChannelFlags, // system channel flags
-    pub rules_channel_id: Option<Snowflake>, // the id of the channel where Community guilds can display rules and/or guidelines
-    pub max_presences: Option<u64>, // the maximum number of presences for the guild (null is always returned, apart from the largest of guilds)
-    pub max_members: Option<u64>, // the maximum number of members for the guild
-    pub vanity_url_code: Option<String>, // the vanity url code for the guild
-    pub description: Option<String>, // the description of a guild
-    pub banner: Option<String>, // banner hash
-    pub premium_tier: PremiumTier, // premium tier (Server Boost level)
-    pub premium_subscription_count: Option<u64>, // the number of boosts this guild currently has
-    pub preferred_locale: String, // the preferred locale of a Community guild; used in server discovery and notices from Discord, and sent in interactions; defaults to "en-US"
-    pub public_updates_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive notices from Discord
-    pub max_video_channel_users: Option<u64>, // the maximum amount of users in a video channel
-    pub max_stage_video_channel_users: Option<u64>, // the maximum amount of users in a stage video channel
-    pub approximate_member_count: Option<u64>, // approximate number of members in this guild, returned from the GET /guilds/<id> and /users/@me/guilds endpoints when with_counts is true
-    pub approximate_presence_count: Option<u64>, // approximate number of non-offline members in this guild, returned from the GET /guilds/<id> and /users/@me/guilds endpoints when with_counts is true
-    // TODO: pub welcome_screen?: welcome screen object, // the welcome screen of a Community guild, shown to new members, returned in an Invite's guild object
-    pub nsfw_level: NSFWLevel, // guild NSFW level
-    // TODO: pub stickers?: array of sticker objects, // custom guild stickers
-    pub premium_progress_bar_enabled: bool, // whether the guild has the boost progress bar enabled
-    pub safety_alerts_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive safety alerts from Discord
-}
-
-/// https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub struct GuildPreview {
-    pub id: Snowflake, // guild id
-    pub name: String, // guild name (2-100 characters)
-    pub icon: Option<String>, // icon hash
-    pub splash: Option<String>, // splash hash
-    pub discovery_splash: Option<String>, // discovery splash hash
-    // TODO: pub emojis: array of emoji objects, // custom guild emojis
-    pub features: Vec<GuildFeature>, // enabled guild features
-    pub approximate_member_count: u64, // approximate number of members in this guild
-    pub approximate_presence_count: u64, // approximate number of online members in this guild
-    pub description: Option<String>, // the description for the guild
-    // TODO: pub stickers: array of sticker objects, // custom guild stickers
-}
 
 /// https://discord.com/developers/docs/resources/guild#guild-widget-settings-object-guild-widget-settings-structure
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
@@ -383,21 +503,66 @@ pub struct PromptOptionStucture {
 pub mod http {
     use super::*;
 
-    /// https://discord.com/developers/docs/resources/guild#create-guild-json-params
-    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, Serialize)]
     pub struct CreateGuild {
-        pub name: String, // name of the guild (2-100 characters)
-        pub region: Option<String>, // voice region id (deprecated)
-        // TODO: pub icon?: image, // data base64 128x128 image for the guild icon
-        pub verification_level: Option<VerificationLevel>, // verification level
-        pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
-        pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
-        // TODO: pub roles?: array of role objects, // new guild roles
-        // TODO: pub channels?: array of partial channel objects, // new guild's channels
-        pub afk_channel_id: Option<Snowflake>, // id for afk channel
-        pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
-        pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
-        pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
+        /// The name of the guild (2-100 characters, excluding trailing and leading whitespace)
+        pub name: String,
+        /// The guild's icon
+        // TODO:
+        pub icon: Option<()>,
+        /// The verification level required for the guild
+        // TODO:
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub verification_level: Option<i64>,
+        /// Default message notification level for the guild
+        // TODO:
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub default_message_notifications: Option<i64>,
+        /// Whose messages are scanned and deleted for explicit content in the guild
+        // TODO:
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub explicit_content_filter: Option<i64>,
+        /// Roles in the new guild
+        ///
+        /// The first member of the array is used to change properties of the guild's default (@everyone) role.
+        /// If you are trying to bootstrap a guild with additional roles, keep this in mind. Additionally, the
+        /// required id field within each role object is an integer placeholder, and will be replaced by the API
+        /// upon consumption. Its purpose is to allow you to overwrite a role's permissions in a channel when also
+        /// passing in channels with the channels array.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub roles: Option<Vec<Role>>,
+        /// Channels in the new guild
+        ///
+        /// When specified, none of the default channels are created, and the position field is always ignored.
+        /// Additionally, the id field within each channel object may be set to an integer placeholder, and will
+        /// be replaced by the API upon consumption. Its purpose is to allow you to create GUILD_CATEGORY channels
+        /// by setting the parent_id field on any children to the category's id field. Category channels must be
+        /// listed before any children.
+        // TODO:
+        pub channels: Option<Vec<()>>, // partial channel object
+        /// The ID of the guild's AFK channel; this is where members in voice idle for longer than afk_timeout are moved
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub afk_channel_id: Option<Snowflake>,
+        /// The AFK timeout of the guild (one of 60, 300, 900, 1800, 3600, in seconds)
+        // TODO:
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub afk_timeout: Option<i64>,
+        /// Whether the new guild will only be accessible for Discord employees
+        ///
+        /// Adds the INTERNAL_EMPLOYEE_ONLY guild feature, making the server only available for Discord employees.
+        /// Only settable by Discord employees.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub staff_only: Option<bool>,
+        /// The ID of the channel where system event messages, such as member joins and premium subscriptions (boosts), are posted
+        //#[serde(skip_serializing_if = "Option::is_none")]
+        pub system_channel_id: Option<Snowflake>,
+        /// The flags that limit system event messages
+        // TODO:
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub system_channel_flags: Option<i64>,
+        /// The template code that inspired this guild, used for analytics
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub guild_template_code: Option<String>,
     }
 
     /// https://discord.com/developers/docs/resources/guild#get-guild-query-string-params
@@ -406,31 +571,53 @@ pub mod http {
         pub with_counts: Option<bool>, // when true, will return approximate member and presence counts for the guild (required: false) (default: false)
     }
 
-    /// https://discord.com/developers/docs/resources/guild#modify-guild-json-params
-    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-    pub struct ModifyGuild {
-        pub name: Option<String>, // guild name
-        pub region: Option<String>, // guild voice region id (deprecated)
-        pub verification_level: Option<VerificationLevel>, // verification level
-        pub default_message_notifications: Option<DefaultMessageNotificationLevel>, // default message notification level
-        pub explicit_content_filter: Option<ExplicitContentFilterLevel>, // explicit content filter level
-        pub afk_channel_id: Option<Snowflake>, // id for afk channel
-        pub afk_timeout: Option<u64>, // afk timeout in seconds, can be set to: 60, 300, 900, 1800, 3600
-        // TODO: pub icon: Option<image>, // data base64 1024x1024 png/jpeg/gif image for the guild icon (can be animated gif when the server has the ANIMATED_ICON feature)
-        pub owner_id: Option<Snowflake>, // user id to transfer guild ownership to (must be owner)
-        // TODO: pub splash: Option<image>, // data base64 16:9 png/jpeg image for the guild splash (when the server has the INVITE_SPLASH feature)
-        // TODO: pub discovery_splash: Option<image>, // data base64 16:9 png/jpeg image for the guild discovery splash (when the server has the DISCOVERABLE feature)
-        // TODO: pub banner: Option<image>, // data base64 16:9 png/jpeg image for the guild banner (when the server has the BANNER feature; can be animated gif when the server has the ANIMATED_BANNER feature)
-        pub system_channel_id: Option<Snowflake>, // the id of the channel where guild notices such as welcome messages and boost events are posted
-        pub system_channel_flags: Option<SystemChannelFlags>, // system channel flags
-        pub rules_channel_id: Option<Snowflake>, // the id of the channel where Community guilds display rules and/or guidelines
-        pub public_updates_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive notices from Discord
-        pub preferred_locale: Option<String>, // the preferred locale of a Community guild used in server discovery and notices from Discord; defaults to "en-US"
-        pub features: Option<Vec<GuildFeature>>, // enabled guild features
-        pub description: Option<String>, // the description for the guild
-        pub premium_progress_bar_enabled: Option<bool>, // whether the guild's boost progress bar should be enabled
-        pub safety_alerts_channel_id: Option<Snowflake>, // the id of the channel where admins and moderators of Community guilds receive safety alerts from Discord
-    }
+    // TODO:
+    //#[skip_serializing_none]
+    //#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    //pub struct ModifyGuild {
+    //    /// The name of the guild (2-100 characters, excluding trailing and leading whitespace)
+    //    name: Option<String>,
+    //    /// The guild's icon; animated icons are only shown when the guild has the ANIMATED_ICON feature
+    //    icon: Option<Option<image data>>,
+    //    /// The guild's banner; banners are only shown when the guild has the BANNER feature, animated banners are only shown when the guild has the ANIMATED_BANNER feature
+    //    banner: Option<Option<image data>>,
+    //    /// The guild's home header, also used in server guide; home headers are only shown when the guild has the BANNER feature
+    //    home_header: Option<Option<image data>>,
+    //    /// The guild's invite splash; splashes are only shown when the guild has the INVITE_SPLASH feature
+    //    splash: Option<Option<image data>>,
+    //    /// The guild's discovery splash
+    //    discovery_splash: Option<Option<image data>>,
+    //    /// The user ID of the guild's owner (must be the current owner)
+    //    owner_id: Option<Snowflake>,
+    //    /// The description for the guild
+    //    description: Option<Option<String>>,
+    //    /// The ID of the guild's AFK channel; this is where members in voice idle for longer than afk_timeout are moved
+    //    afk_channel_id: Option<Option<Snowflake>>,
+    //    /// The AFK timeout of the guild (one of 60, 300, 900, 1800, 3600, in seconds)
+    //    afk_timeout: Option<integer>,
+    //    /// The verification level required for the guild
+    //    verification_level: Option<integer>,
+    //    /// Default message notification level for the guild
+    //    default_message_notifications: Option<integer>,
+    //    /// Whose messages are scanned and deleted for explicit content in the guild
+    //    explicit_content_filter: Option<integer>,
+    //    /// Mutable guild features
+    //    features: Option<Vec<String>>,
+    //    /// The ID of the channel where system event messages, such as member joins and premium subscriptions (boosts), are posted
+    //    system_channel_id 1: Option<Option<Snowflake>>,
+    //    /// The flags that limit system event messages
+    //    system_channel_flags: Option<integer>,
+    //    /// The ID of the channel where community guilds display rules and/or guidelines
+    //    rules_channel_id 1: Option<Option<Snowflake>>,
+    //    /// The ID of the channel where admins and moderators of community guilds receive notices from Discord
+    //    public_updates_channel_id: Option<Option<Snowflake>>,
+    //    /// The ID of the channel where admins and moderators of community guilds receive safety alerts from Discord
+    //    safety_alerts_channel_id: Option<Option<Snowflake>>,
+    //    /// The preferred locale of the guild; used in discovery and notices from Discord (default "en-US")
+    //    preferred_locale: Option<String>,
+    //    /// Whether the guild has the premium (boost) progress bar enabled
+    //    premium_progress_bar_enabled: Option<bool>,
+    //}
 
     /// https://discord.com/developers/docs/resources/guild#create-guild-channel-json-params
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
@@ -638,4 +825,104 @@ pub mod http {
         pub channel_id: Snowflake, // the id of the channel the user is currently in
         pub suppress: Option<bool>, // toggles the user's suppress state
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::types::*;
+    use snowflake::Snowflake;
+    use guild::GuildBroker;
+    use crate::broker::tests::test_env;
+    use crate::broker::DiscordBroker;
+
+    fn guild_test_env() -> (DiscordBroker, Snowflake, Snowflake) {
+        let broker = test_env();
+        let view_guild_id = Snowflake::try_from(dotenv::var("VIEW_GUILD_ID").expect("`VIEW_GUILD_ID` env variable should be defined")).expect("`VIEW_GUILD_ID` env variable should be a valid snowflake");
+        let edit_guild_id = Snowflake::try_from(dotenv::var("EDIT_GUILD_ID").expect("`EDIT_GUILD_ID` env variable should be defined")).expect("`EDIT_GUILD_ID` env variable should be a valid snowflake");
+
+        (broker, view_guild_id, edit_guild_id)
+    }
+
+    #[tokio::test]
+    async fn guild_list() {
+        let (broker, _, _) = guild_test_env();
+
+        let user_guilds = broker
+            .guild_list()
+            .await
+            .expect("Should fetch guild");
+
+        dbg!(&user_guilds);
+        assert!(false);
+    }
+
+    #[tokio::test]
+    async fn guild_get() {
+        let (broker, view_guild_id, _) = guild_test_env();
+
+        let guild = broker
+            .guild_get(&view_guild_id)
+            .await
+            .expect("Should fetch guild");
+
+        dbg!(&guild);
+        assert!(false);
+    }
+
+    #[tokio::test]
+    async fn guild_get_preview() {
+        let (broker, view_guild_id, _) = guild_test_env();
+
+        let guild_preview = broker
+            .guild_get_preview(&view_guild_id)
+            .await
+            .expect("Should fetch guild");
+
+        dbg!(&guild_preview);
+        assert!(false);
+    }
+
+    #[tokio::test]
+    async fn guild_create() {
+        let (broker, _, _) = guild_test_env();
+
+        let created_guild_id = broker
+            .guild_create(guild::http::CreateGuild {
+                name: "test".to_string(),
+                icon: None,
+                channels: Some(Vec::default()),
+                roles: None,
+                verification_level: None,
+                default_message_notifications: None,
+                explicit_content_filter: None,
+                afk_channel_id: None,
+                afk_timeout: None,
+                staff_only: None,
+                system_channel_id: None,
+                system_channel_flags: None,
+                guild_template_code: Some("2TffvPucqHkN".to_string()),
+            })
+            .await
+            .expect("Should fetch guild");
+
+        dbg!(&created_guild_id);
+        assert!(false);
+    }
+
+    // TODO:
+    //#[tokio::test]
+    //async fn guild_modify() {
+    //    let (broker, _, edit_guild_id) = guild_test_env();
+
+    //    let modified_guild = broker
+    //        .guild_modify(&edit_guild_id, guild::http::ModifyGuild {
+    //            name: Some("Bondzios".to_string()),
+    //            ..Default::default()
+    //        })
+    //        .await
+    //        .expect("Should fetch guild");
+
+    //    dbg!(&modified_guild);
+    //    assert!(false);
+    //}
 }

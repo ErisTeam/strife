@@ -4,8 +4,10 @@ use websocket_connection::WebsocketConnection;
 use websocket_trait::{ ConnectionInfo, WebsocketThreads };
 
 pub mod types;
+pub mod broker;
 pub mod websocket_trait;
 pub mod websocket_connection;
+
 #[cfg(test)]
 mod tests {
     use discord_macro::Websocket;

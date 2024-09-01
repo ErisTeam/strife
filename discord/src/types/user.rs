@@ -1,7 +1,7 @@
 use serde::{ Deserialize, Serialize };
 use serde_repr::{ Deserialize_repr, Serialize_repr };
 use super::{
-    Snowflake,
+    snowflake::Snowflake,
     guild::Integration,
 };
 
@@ -79,7 +79,7 @@ pub enum Visibility {
 
 
 /// https://discord.com/developers/docs/resources/user#user-object-user-structure
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, Serialize)]
 pub struct User {
     pub id: Snowflake, // the user's id identify
     pub username: String, // the user's username, not unique across the platform identify
