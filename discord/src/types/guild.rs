@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use super::snowflake::Snowflake;
-use super::cdn::CdnHash;
+use super::cdn;
 use super::emoji::Emoji;
 use super::sticker::Sticker;
 use crate::types::role::Role;
@@ -40,9 +40,9 @@ pub struct UserGuild {
     /// The name of the guild (2-100 characters)
     pub name: String,
     /// The guild's icon hash
-    pub icon: Option<CdnHash>,
+    pub icon: Option<cdn::Hash>,
     /// The guild's banner hash
-    pub banner: Option<CdnHash>,
+    pub banner: Option<cdn::Hash>,
     /// Whether the user is the owner of the guild
     pub owner: bool,
     /// Enabled guild features
@@ -62,15 +62,15 @@ pub struct GuildPreview {
     /// The name of the guild (2-100 characters)
     pub name: String,
     /// The guild's icon hash
-    pub icon: Option<CdnHash>,
+    pub icon: Option<cdn::Hash>,
     /// The description for the guild
     pub description: Option<String>,
     /// The guild's splash hash
-    pub splash: Option<CdnHash>,
+    pub splash: Option<cdn::Hash>,
     /// The guild's discovery splash hash
-    pub discovery_splash: Option<CdnHash>,
+    pub discovery_splash: Option<cdn::Hash>,
     /// The guild's home header hash, also used in server guide
-    pub home_header: Option<CdnHash>,
+    pub home_header: Option<cdn::Hash>,
     /// Enabled guild features
     pub features: Vec<String>,
     /// Custom guild emojis
@@ -571,53 +571,52 @@ pub mod http {
         pub with_counts: Option<bool>, // when true, will return approximate member and presence counts for the guild (required: false) (default: false)
     }
 
-    // TODO:
-    //#[skip_serializing_none]
-    //#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-    //pub struct ModifyGuild {
-    //    /// The name of the guild (2-100 characters, excluding trailing and leading whitespace)
-    //    name: Option<String>,
-    //    /// The guild's icon; animated icons are only shown when the guild has the ANIMATED_ICON feature
-    //    icon: Option<Option<image data>>,
-    //    /// The guild's banner; banners are only shown when the guild has the BANNER feature, animated banners are only shown when the guild has the ANIMATED_BANNER feature
-    //    banner: Option<Option<image data>>,
-    //    /// The guild's home header, also used in server guide; home headers are only shown when the guild has the BANNER feature
-    //    home_header: Option<Option<image data>>,
-    //    /// The guild's invite splash; splashes are only shown when the guild has the INVITE_SPLASH feature
-    //    splash: Option<Option<image data>>,
-    //    /// The guild's discovery splash
-    //    discovery_splash: Option<Option<image data>>,
-    //    /// The user ID of the guild's owner (must be the current owner)
-    //    owner_id: Option<Snowflake>,
-    //    /// The description for the guild
-    //    description: Option<Option<String>>,
-    //    /// The ID of the guild's AFK channel; this is where members in voice idle for longer than afk_timeout are moved
-    //    afk_channel_id: Option<Option<Snowflake>>,
-    //    /// The AFK timeout of the guild (one of 60, 300, 900, 1800, 3600, in seconds)
-    //    afk_timeout: Option<integer>,
-    //    /// The verification level required for the guild
-    //    verification_level: Option<integer>,
-    //    /// Default message notification level for the guild
-    //    default_message_notifications: Option<integer>,
-    //    /// Whose messages are scanned and deleted for explicit content in the guild
-    //    explicit_content_filter: Option<integer>,
-    //    /// Mutable guild features
-    //    features: Option<Vec<String>>,
-    //    /// The ID of the channel where system event messages, such as member joins and premium subscriptions (boosts), are posted
-    //    system_channel_id 1: Option<Option<Snowflake>>,
-    //    /// The flags that limit system event messages
-    //    system_channel_flags: Option<integer>,
-    //    /// The ID of the channel where community guilds display rules and/or guidelines
-    //    rules_channel_id 1: Option<Option<Snowflake>>,
-    //    /// The ID of the channel where admins and moderators of community guilds receive notices from Discord
-    //    public_updates_channel_id: Option<Option<Snowflake>>,
-    //    /// The ID of the channel where admins and moderators of community guilds receive safety alerts from Discord
-    //    safety_alerts_channel_id: Option<Option<Snowflake>>,
-    //    /// The preferred locale of the guild; used in discovery and notices from Discord (default "en-US")
-    //    preferred_locale: Option<String>,
-    //    /// Whether the guild has the premium (boost) progress bar enabled
-    //    premium_progress_bar_enabled: Option<bool>,
-    //}
+    #[skip_serializing_none]
+    #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
+    pub struct ModifyGuild {
+        /// The name of the guild (2-100 characters, excluding trailing and leading whitespace)
+        name: Option<String>,
+        /// The guild's icon; animated icons are only shown when the guild has the ANIMATED_ICON feature
+        icon: Option<Option<cdn::Data>>,
+        /// The guild's banner; banners are only shown when the guild has the BANNER feature, animated banners are only shown when the guild has the ANIMATED_BANNER feature
+        banner: Option<Option<cdn::Data>>,
+        /// The guild's home header, also used in server guide; home headers are only shown when the guild has the BANNER feature
+        home_header: Option<Option<cdn::Data>>,
+        /// The guild's invite splash; splashes are only shown when the guild has the INVITE_SPLASH feature
+        splash: Option<Option<cdn::Data>>,
+        /// The guild's discovery splash
+        discovery_splash: Option<Option<cdn::Data>>,
+        /// The user ID of the guild's owner (must be the current owner)
+        owner_id: Option<Snowflake>,
+        /// The description for the guild
+        description: Option<Option<String>>,
+        /// The ID of the guild's AFK channel; this is where members in voice idle for longer than afk_timeout are moved
+        afk_channel_id: Option<Option<Snowflake>>,
+        // /// The AFK timeout of the guild (one of 60, 300, 900, 1800, 3600, in seconds)
+        // TODO: afk_timeout: Option<integer>,
+        /// The verification level required for the guild
+        // TODO: verification_level: Option<integer>,
+        // /// Default message notification level for the guild
+        // TODO: default_message_notifications: Option<integer>,
+        // /// Whose messages are scanned and deleted for explicit content in the guild
+        // TODO: explicit_content_filter: Option<integer>,
+        /// Mutable guild features
+        features: Option<Vec<String>>,
+        /// The ID of the channel where system event messages, such as member joins and premium subscriptions (boosts), are posted
+        system_channel_id: Option<Option<Snowflake>>,
+        // /// The flags that limit system event messages
+        // TODO: system_channel_flags: Option<integer>,
+        /// The ID of the channel where community guilds display rules and/or guidelines
+        rules_channel_id: Option<Option<Snowflake>>,
+        /// The ID of the channel where admins and moderators of community guilds receive notices from Discord
+        public_updates_channel_id: Option<Option<Snowflake>>,
+        /// The ID of the channel where admins and moderators of community guilds receive safety alerts from Discord
+        safety_alerts_channel_id: Option<Option<Snowflake>>,
+        /// The preferred locale of the guild; used in discovery and notices from Discord (default "en-US")
+        preferred_locale: Option<String>,
+        /// Whether the guild has the premium (boost) progress bar enabled
+        premium_progress_bar_enabled: Option<bool>,
+    }
 
     /// https://discord.com/developers/docs/resources/guild#create-guild-channel-json-params
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
