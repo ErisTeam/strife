@@ -51,5 +51,6 @@
     "solid-js": "^1.8.18",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log",
     "vite-tsconfig-paths": "^4.3.2"
-  }
+  },
+  "packageManager": "yarn@3.6.4"
 }
